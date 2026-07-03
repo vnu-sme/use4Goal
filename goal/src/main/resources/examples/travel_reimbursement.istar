@@ -1,0 +1,42 @@
+// iStar 2.0 Example — Travel Reimbursement Scenario
+// Based on iStar 2.0 Language Guide (Figure 2)
+
+istar TravelReimbursement {
+
+  role Student {
+    goal   TravelOrganized
+    goal   AuthorizationObtained
+    goal   TripBooked
+    task   FillInOnlineForm
+    task   BuyFlightTickets
+    resource FlightReceipt
+    quality  NoErrors
+
+    and-refine TravelOrganized : AuthorizationObtained, TripBooked
+    or-refine  TripBooked : BuyFlightTickets
+    needed-by  FlightReceipt for BuyFlightTickets
+    qualifies  NoErrors FillInOnlineForm
+    contributes FillInOnlineForm help to NoErrors
+  }
+
+  agent UnivOfWonderLand {
+    task   ProcessReimbursement
+    resource ReimbursementForm
+    quality  InTime
+
+    qualifies InTime ProcessReimbursement
+  }
+
+  role TravelAgency {
+    task   IssueTicket
+    resource Ticket
+    quality  LowCost
+
+    needed-by Ticket for IssueTicket
+    contributes IssueTicket help to LowCost
+  }
+
+  depend Student -> BuyFlightTickets -> TravelAgency
+  depend Student -> AuthorizationObtained -> UnivOfWonderLand
+  depend Student -> ProcessReimbursement -> UnivOfWonderLand
+}

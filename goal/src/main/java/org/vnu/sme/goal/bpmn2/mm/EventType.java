@@ -1,0 +1,19 @@
+package org.vnu.sme.goal.bpmn2.mm;
+
+public enum EventType {
+    NONE, MESSAGE, TIMER, ERROR, SIGNAL, TERMINATE, COMPENSATION, CONDITIONAL;
+
+    public static EventType from(String s) {
+        if (s == null) return NONE;
+        return switch (s.toLowerCase()) {
+            case "message"      -> MESSAGE;
+            case "timer"        -> TIMER;
+            case "error"        -> ERROR;
+            case "signal"       -> SIGNAL;
+            case "terminate"    -> TERMINATE;
+            case "compensation" -> COMPENSATION;
+            case "conditional"  -> CONDITIONAL;
+            default             -> NONE;
+        };
+    }
+}

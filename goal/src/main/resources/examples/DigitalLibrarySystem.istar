@@ -1,0 +1,221 @@
+// iStar 2.0 Model — Hệ thống đặt vé máy bay đa kênh
+// Thể hiện nhiều lựa chọn: kênh đặt vé, phương thức thanh toán, kênh nhận vé, ưu đãi VIP
+
+istar DatVeMayBayDaKenh {
+
+  // ==========================================
+  // Vai trò: Khách hàng
+  // ==========================================
+  role KhachHang {
+    goal      VeDuocDat                 // Mục tiêu gốc: Vé được đặt thành công
+    goal      ChuyenBayDuocChon         // Mục tiêu con: Chọn được chuyến bay
+    goal      DatVeQuaKenh              // Mục tiêu con: Đặt vé qua một kênh nào đó
+    goal      ThanhToanHoanTat          // Mục tiêu con: Thanh toán hoàn tất
+    goal      VeDuocNhan                // Mục tiêu con: Vé được nhận
+    task      TuNhapThongTin            // Tác vụ: Tự nhập thông tin tìm kiếm (online)
+    task      GoiTongDai                // Tác vụ: Gọi tổng đài nhờ đặt hộ
+    task      ThanhToanTheTinDung       // Tác vụ: Thanh toán bằng thẻ tín dụng
+    task      ThanhToanChuyenKhoan      // Tác vụ: Thanh toán bằng chuyển khoản
+    task      ThanhToanViDienTu         // Tác vụ: Thanh toán bằng ví điện tử
+    task      NhanVeQuaEmail            // Tác vụ: Nhận vé qua email
+    task      NhanVeQuaSMS              // Tác vụ: Nhận vé qua SMS
+    task      ChonGheUuThich            // Tác vụ: Chọn ghế ưu thích (VIP)
+    task      TichDiemThuong            // Tác vụ: Tích điểm thưởng (VIP)
+    resource  VeMayBay                  // Tài nguyên: Vé máy bay
+    resource  DiemThuong                // Tài nguyên: Điểm thưởng tích lũy
+    quality   KetQuaChinhXac            // Chất lượng: Kết quả tìm kiếm chính xác
+    quality   ThanhToanAnToan           // Chất lượng: Thanh toán an toàn
+    quality   TienLoi                   // Chất lượng: Tiện lợi cho khách
+    quality   UuDaiVIP                  // Chất lượng: Được hưởng ưu đãi VIP
+
+    // ====== PHÂN RÃ AND ======
+    // Vé được đặt cần CẢ: chọn chuyến bay, đặt qua kênh, thanh toán, và nhận vé
+    and-refine VeDuocDat : ChuyenBayDuocChon
+    and-refine VeDuocDat : DatVeQuaKenh
+    and-refine VeDuocDat : ThanhToanHoanTat
+    and-refine VeDuocDat : VeDuocNhan
+
+    // ====== PHÂN RÃ OR — THỂ HIỆN NHIỀU LỰA CHỌN ======
+
+    // ĐẶT VÉ QUA KÊNH: Có thể tự nhập online HOẶC gọi tổng đài
+    or-refine DatVeQuaKenh : TuNhapThongTin
+    or-refine DatVeQuaKenh : GoiTongDai
+
+    // THANH TOÁN: Có thể bằng thẻ tín dụng, chuyển khoản, HOẶC ví điện tử
+    or-refine ThanhToanHoanTat : ThanhToanTheTinDung
+    or-refine ThanhToanHoanTat : ThanhToanChuyenKhoan
+    or-refine ThanhToanHoanTat : ThanhToanViDienTu
+
+    // NHẬN VÉ: Có thể qua email HOẶC SMS
+    or-refine VeDuocNhan : NhanVeQuaEmail
+    or-refine VeDuocNhan : NhanVeQuaSMS
+
+    // ====== CHẤT LƯỢNG & ĐÓNG GÓP ======
+    // Tự nhập thông tin chính xác → kết quả chính xác
+    qualifies KetQuaChinhXac TuNhapThongTin
+    contributes TuNhapThongTin help to KetQuaChinhXac
+
+    // Thanh toán an toàn từ thẻ tín dụng hoặc ví điện tử
+    qualifies ThanhToanAnToan ThanhToanTheTinDung
+    contributes ThanhToanTheTinDung help to ThanhToanAnToan
+
+    qualifies ThanhToanAnToan ThanhToanViDienTu
+    contributes ThanhToanViDienTu help to ThanhToanAnToan
+
+    // Gọi tổng đài giúp tiện lợi hơn
+    qualifies TienLoi GoiTongDai
+    contributes GoiTongDai help to TienLoi
+
+    // Ưu đãi VIP: Chọn ghế và tích điểm thưởng góp phần vào ưu đãi VIP
+    qualifies UuDaiVIP ChonGheUuThich
+    contributes ChonGheUuThich help to UuDaiVIP
+
+    qualifies UuDaiVIP TichDiemThuong
+    contributes TichDiemThuong help to UuDaiVIP
+
+    // ====== TÀI NGUYÊN ======
+    qualifies VeMayBay NhanVeQuaEmail
+    contributes NhanVeQuaEmail make to VeMayBay
+
+    qualifies VeMayBay NhanVeQuaSMS
+    contributes NhanVeQuaSMS make to VeMayBay
+
+    qualifies DiemThuong TichDiemThuong
+    contributes TichDiemThuong make to DiemThuong
+  }
+
+  // ==========================================
+  // Tác nhân: Hệ thống đặt vé (Website)
+  // ==========================================
+  agent HeThongDatVe {
+    task      TraCuuChuyenBay
+    task      XacNhanThanhToan
+    task      GuiVeEmail
+    task      GuiVeSMS
+    resource  DanhSachChuyenBay
+    resource  VeDienTu
+    resource  LichSuGiaoDich
+    quality   TocDoPhanHoiNhanh
+    quality   HeThongOnDinh
+
+    // Tốc độ phản hồi nhanh từ tra cứu
+    qualifies TocDoPhanHoiNhanh TraCuuChuyenBay
+    contributes TraCuuChuyenBay help to TocDoPhanHoiNhanh
+
+    // Hệ thống ổn định từ xác nhận thanh toán
+    qualifies HeThongOnDinh XacNhanThanhToan
+    contributes XacNhanThanhToan help to HeThongOnDinh
+
+    // Tài nguyên
+    qualifies DanhSachChuyenBay TraCuuChuyenBay
+    contributes TraCuuChuyenBay make to DanhSachChuyenBay
+
+    qualifies VeDienTu GuiVeEmail
+    contributes GuiVeEmail make to VeDienTu
+
+    qualifies VeDienTu GuiVeSMS
+    contributes GuiVeSMS make to VeDienTu
+
+    qualifies LichSuGiaoDich XacNhanThanhToan
+    contributes XacNhanThanhToan make to LichSuGiaoDich
+  }
+
+  // ==========================================
+  // Tác nhân: Tổng đài viên
+  // ==========================================
+  agent TongDaiVien {
+    task      NhapThongTinHoKhach
+    task      TuVanChuyenBay
+    resource  PhieuYeuCauDatVe
+    quality   DichVuChuDao
+
+    qualifies DichVuChuDao TuVanChuyenBay
+    contributes TuVanChuyenBay help to DichVuChuDao
+
+    qualifies PhieuYeuCauDatVe NhapThongTinHoKhach
+    contributes NhapThongTinHoKhach make to PhieuYeuCauDatVe
+  }
+
+  // ==========================================
+  // Tác nhân: Cổng thanh toán
+  // ==========================================
+  agent CongThanhToan {
+    task      XuLyTheTinDung
+    task      XuLyChuyenKhoan
+    task      XuLyViDienTu
+    resource  BienBanGiaoDich
+    quality   BaoMatCao
+
+    qualifies BaoMatCao XuLyTheTinDung
+    contributes XuLyTheTinDung help to BaoMatCao
+
+    qualifies BaoMatCao XuLyChuyenKhoan
+    contributes XuLyChuyenKhoan help to BaoMatCao
+
+    qualifies BaoMatCao XuLyViDienTu
+    contributes XuLyViDienTu help to BaoMatCao
+
+    qualifies BienBanGiaoDich XuLyTheTinDung
+    contributes XuLyTheTinDung make to BienBanGiaoDich
+
+    qualifies BienBanGiaoDich XuLyChuyenKhoan
+    contributes XuLyChuyenKhoan make to BienBanGiaoDich
+
+    qualifies BienBanGiaoDich XuLyViDienTu
+    contributes XuLyViDienTu make to BienBanGiaoDich
+  }
+
+  // ==========================================
+  // Tác nhân: Ngân hàng
+  // ==========================================
+  agent NganHang {
+    task      XacThucTaiKhoan
+    task      PhoDuyetGiaoDich
+    resource  SaoKeGiaoDich
+    quality   ChongGianLan
+
+    qualifies ChongGianLan PhoDuyetGiaoDich
+    contributes PhoDuyetGiaoDich help to ChongGianLan
+
+    qualifies SaoKeGiaoDich PhoDuyetGiaoDich
+    contributes PhoDuyetGiaoDich make to SaoKeGiaoDich
+  }
+
+  // ==========================================
+  // QUAN HỆ PHỤ THUỘC
+  // ==========================================
+
+  // ——— Khách hàng → Hệ thống đặt vé ———
+  // Khi khách tự nhập thông tin, Hệ thống phải tra cứu chuyến bay
+  depend KhachHang -> TuNhapThongTin -> HeThongDatVe
+
+  // Khi khách thanh toán bằng thẻ, Hệ thống phải xác nhận thanh toán
+  depend KhachHang -> ThanhToanTheTinDung -> HeThongDatVe
+
+  // Khi khách thanh toán bằng chuyển khoản, Hệ thống phải xác nhận
+  depend KhachHang -> ThanhToanChuyenKhoan -> HeThongDatVe
+
+  // Khi khách thanh toán bằng ví, Hệ thống phải xác nhận
+  depend KhachHang -> ThanhToanViDienTu -> HeThongDatVe
+
+  // Khi khách muốn nhận vé qua email, Hệ thống phải gửi vé email
+  depend KhachHang -> NhanVeQuaEmail -> HeThongDatVe
+
+  // Khi khách muốn nhận vé qua SMS, Hệ thống phải gửi vé SMS
+  depend KhachHang -> NhanVeQuaSMS -> HeThongDatVe
+
+  // ——— Khách hàng → Tổng đài viên ———
+  // Khi khách gọi tổng đài, tổng đài viên phải nhập thông tin hộ
+  depend KhachHang -> GoiTongDai -> TongDaiVien
+
+  // ——— Hệ thống đặt vé → Cổng thanh toán ———
+  // Khi hệ thống xác nhận thanh toán thẻ, cổng phải xử lý thẻ
+  depend HeThongDatVe -> XacNhanThanhToan -> CongThanhToan
+
+  // ——— Cổng thanh toán → Ngân hàng ———
+  // Khi cổng xử lý chuyển khoản, ngân hàng phải phê duyệt giao dịch
+  depend CongThanhToan -> XuLyChuyenKhoan -> NganHang
+
+  // Khi cổng xử lý thẻ tín dụng, ngân hàng phải xác thực tài khoản
+  depend CongThanhToan -> XuLyTheTinDung -> NganHang
+}
