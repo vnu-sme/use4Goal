@@ -1,21 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <?use version="7.1.1" ?>
-<plugin name="MAXGoal Plugin" version="3.0">
+<plugin name="GoalModel Plugin" version="3.0">
     <actions>
-        <action label="MAXGoal Compiler"
-                icon="images/goal.png"
-                class="org.vnu.sme.goal.actions2.ActionOpenMAXGoal"
-                tooltip="MAXGoal Multi-Actor Goal Compiler"
-                menu="MAXGoal Plugin"
-                menuitem="MAXGoal Compiler"
-                toolbaritem="MAXGoal Compiler"
-                id="org.vnu.sme.goal.actions2.ActionOpenMAXGoal">
-        </action>
         <action label="iStar 2.0 Viewer"
                 icon="images/goal.png"
                 class="org.vnu.sme.goal.istar.action.ActionOpenIStar"
                 tooltip="iStar 2.0 Strategic Rationale Diagram Viewer"
-                menu="MAXGoal Plugin"
+                menu="GoalModel Plugin"
                 menuitem="iStar 2.0 Viewer"
                 toolbaritem="iStar 2.0 Viewer"
                 id="org.vnu.sme.goal.istar.action.ActionOpenIStar">
@@ -24,7 +15,7 @@
                 icon="images/goal.png"
                 class="org.vnu.sme.goal.bpmn2.action.ActionOpenBpmn2"
                 tooltip="BPMN 2.0 Collaboration Diagram Viewer"
-                menu="MAXGoal Plugin"
+                menu="GoalModel Plugin"
                 menuitem="BPMN 2.0 Viewer"
                 toolbaritem="BPMN 2.0 Viewer"
                 id="org.vnu.sme.goal.bpmn2.action.ActionOpenBpmn2">
