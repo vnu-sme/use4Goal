@@ -1,364 +1,193 @@
-# Bước 4 — Thiết kế Diagram View
+# Bước 5 — Thiết kế Diagram View: Adapter → Layout → Renderer
 
 ## Vị trí
 
 ```
-src/main/java/org/vnu/sme/<plugin>/view/
-    <Lang>View.java          # JPanel custom rendering
-    <Lang>BpmnView.java      # (nếu có transform sang BPMN)
+src/main/java/org/vnu/sme/<plugin>/<lang>/view/
+    <Lang>View.java          # Renderer — JPanel + Graphics2D, KHÔNG tự tính layout
 ```
 
----
-
-## Kiến trúc View thực tế trong project
-
-> **Quan trọng — không làm theo pattern cũ**: Plugin trong project này (MAXGoalView, MAXBpmnView)
-> KHÔNG kế thừa từ `PlaceableNode`, `CompartmentNode`, hay `DiagramView` của USE GUI.
-> Các class đó chỉ dùng cho USE core ClassDiagram (ClassNode, EnumNode, etc.).
->
-> Plugin view của chúng ta là **JPanel custom** với:
-> - Internal node model (class `Node` với x, y, w, h)
-> - Toàn bộ rendering trong `paintComponent(Graphics2D)`
-> - Drag bằng `MouseListener` trên chính JPanel
-> - Không dùng `null layout + setBounds` cho component con
+(Nếu tách đúng theo khuyến nghị dưới đây, thêm 2 file nữa — xem mục "Thiết kế đề xuất".)
 
 ---
 
-## Pattern chuẩn: JPanel + internal Node model
+## USE core làm gì (căn cứ, không phải suy đoán)
+
+`ClassDiagramView`/`ObjectDiagramView` của USE core (`use/use-gui/.../gui/views/diagrams/`)
+tách rõ 3 việc:
+
+1. **Adapter**: mỗi phần tử MM (`MClass`, `MObject`) được bọc thành 1 node đặt-được-vị-trí
+   (`PlaceableNode`, `ClassNode` kế thừa nó), thêm vào `DirectedGraph<PlaceableNode,EdgeBase>`
+   — đồ thị này **chỉ phục vụ layout/vẽ**, tách biệt khỏi đồ thị ngữ nghĩa của model.
+2. **Layout**: sau khi mọi node/edge đã có trong graph, **1 bước riêng** (`loadDefaultLayout()`,
+   hoặc thuật toán `SpringLayout`) tính toạ độ (x,y).
+3. **Renderer**: `paintComponent` chỉ vẽ node/edge đã có toạ độ sẵn — không tính toán gì thêm.
+
+Chi tiết đầy đủ + trích dẫn class/file: `doc/use-core-design-rules.md` mục 3.
+
+---
+
+## Hiện trạng `IStarView`/`Bpmn2View` — CHƯA tách đúng 3 tầng
+
+Cả 2 View hiện có trong codebase (`istar/view/IStarView.java`, `bpmn2/view/Bpmn2View.java`)
+đều là `JPanel implements View`, **tự đọc MM và tự tính toạ độ ngay trong chính nó**:
+`setModel(model)` gọi `buildLayout()` (tính x,y,w,h cho từng node) rồi `paintComponent` vẽ
+luôn — cả 3 việc Adapter/Layout/Render gộp trong 1 class. Đây là nợ kỹ thuật hiện tại (hoạt
+động đúng, nhưng không tách được để test layout độc lập hay tái dùng cho renderer khác, ví
+dụ export SVG).
+
+**Không bắt buộc sửa lại `IStarView`/`Bpmn2View` ngay** — nhưng **ngôn ngữ mới nên làm đúng
+3 tầng ngay từ đầu**, theo thiết kế dưới đây.
+
+---
+
+## Thiết kế đề xuất cho ngôn ngữ mới
+
+```
+view/
+├── <Lang>Node.java / <Lang>Edge.java   # Adapter — bọc 1 phần tử MM, có id/kind/x/y/w/h
+├── <Lang>Layout.java                    # Kết quả layout: List<Node> + List<Edge>, POJO thuần
+├── <Lang>LayoutBuilder.java             # MM → <Lang>Layout (Adapter + thuật toán layout)
+└── <Lang>View.java                      # JPanel — CHỈ nhận <Lang>Layout và vẽ + xử lý drag/zoom
+```
+
+### 1. Adapter — Node/Edge bọc phần tử MM
 
 ```java
-package org.vnu.sme.<plugin>.view;
+package org.vnu.sme.goal.<lang>.view;
 
-import org.tzi.use.gui.views.View;   // USE View interface — chỉ cần implement
+public final class <Lang>Node {
+    public final String id, label;
+    public final NodeKind kind;     // enum: theo từng loại concept của ngôn ngữ
+    public int x, y, w, h;          // do LayoutBuilder gán, View chỉ đọc
 
+    public <Lang>Node(String id, String label, NodeKind kind) {
+        this.id = id; this.label = label; this.kind = kind;
+    }
+}
+
+public record <Lang>Edge(String fromId, String toId, EdgeKind kind, String label) {}
+```
+
+### 2. Layout — kết quả thuần, không phụ thuộc Swing
+
+```java
+public final class <Lang>Layout {
+    public final Map<String, <Lang>Node> nodes;
+    public final List<<Lang>Edge>        edges;
+    public final int width, height;      // kích thước canvas cần thiết
+
+    public <Lang>Layout(Map<String, <Lang>Node> nodes, List<<Lang>Edge> edges, int w, int h) {
+        this.nodes = Map.copyOf(nodes); this.edges = List.copyOf(edges);
+        this.width = w; this.height = h;
+    }
+}
+```
+
+### 3. LayoutBuilder — MM → Layout (Adapter step + thuật toán tính toạ độ)
+
+```java
+public final class <Lang>LayoutBuilder {
+    private <Lang>LayoutBuilder() {}
+
+    public static <Lang>Layout build(<Lang>Model model) {
+        Map<String, <Lang>Node> nodes = new LinkedHashMap<>();
+        List<<Lang>Edge> edges = new ArrayList<>();
+
+        // bước Adapter: 1 phần tử MM → 1 Node
+        for (var element : model.allElements()) {
+            nodes.put(element.id(), toNode(element));
+        }
+        // bước Layout: tính x,y (thuật toán tuỳ ngôn ngữ — grid theo actor, tree, spring...)
+        int x = MARGIN;
+        for (<Lang>Node n : nodes.values()) {
+            n.x = x; n.y = MARGIN;
+            x += n.w + HGAP;
+        }
+        return new <Lang>Layout(nodes, edges, x + MARGIN, 600);
+    }
+
+    private static <Lang>Node toNode(/* MM element */ Object element) {
+        // switch theo sealed interface của MM, map sang NodeKind + kích thước chuẩn
+        throw new UnsupportedOperationException();
+    }
+}
+```
+
+### 4. View — chỉ render, xử lý input, KHÔNG tính layout
+
+```java
 public final class <Lang>View extends JPanel implements View {
+    private <Lang>Layout layout;
 
-    // ── Màu sắc (dark palette như MAXGoalView) ─────────────────────
-    private static final Color C_BG       = new Color(22,  24,  34);
-    private static final Color C_ACTOR_BG = new Color(33,  37,  52);
-    // ... các màu khác theo concept
-
-    // ── Internal node model (không phải Swing component) ───────────
-    private enum NT { ACTOR, GOAL, TASK, RES }  // hoặc enum riêng của ngôn ngữ
-
-    private static class Node {
-        String     id, label, clause;
-        NT         kind;
-        String     actorId;          // nếu có container
-        RefineSpec refine;           // từ MM
-        int        x, y, w, h;      // absolute coords trong canvas
+    public void setLayout(<Lang>Layout l) {
+        this.layout = l;
+        setPreferredSize(new Dimension(l.width, l.height));
+        revalidate(); repaint();
     }
 
-    private final Map<String, Node> nodes      = new LinkedHashMap<>();
-    private final List<Node>        actorNodes = new ArrayList<>();
-    private <Lang>Model             model;
-
-    public <Lang>View() {
-        setBackground(C_BG);
-        setPreferredSize(new Dimension(1400, 800));
-    }
-
-    // Gọi từ Form sau khi compile xong
-    public void setModel(<Lang>Model m) {
-        this.model = m;
-        buildLayout();   // Bước 6: tính x,y,w,h cho mỗi Node
-        revalidate();
-        repaint();
-    }
-
-    // ── Paint pipeline (thứ tự quan trọng) ─────────────────────────
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        if (layout == null) return;
         Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                            RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                            RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
-
-        paintActors(g2);        // Layer 1: container boxes
-        paintRefineEdges(g2);   // Layer 2: cạnh refinement
-        paintDependEdges(g2);   // Layer 3: cạnh dependency
-        paintNodes(g2);         // Layer 4: nodes (vẽ sau để đè lên cạnh)
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        paintEdges(g2);   // vẽ cạnh TRƯỚC
+        paintNodes(g2);   // vẽ node SAU (đè lên cạnh)
     }
 
-    // ── View interface ──────────────────────────────────────────────
-    @Override public void detachModel() { model = null; repaint(); }
-    @Override public void update()      { repaint(); }
+    // drag chỉ cập nhật x/y trên chính layout.nodes.get(id), không tính lại toàn bộ layout
+    private void installDrag() { /* MouseListener cập nhật node.x/node.y rồi repaint() */ }
+
+    @Override public void detachModel() { layout = null; repaint(); }
 }
+```
+
+Form gọi: `view.setLayout(<Lang>LayoutBuilder.build(model))` thay vì `view.setModel(model)` —
+tách rõ "tính layout" khỏi "render". Muốn export SVG hay renderer khác chỉ cần viết 1
+class mới đọc `<Lang>Layout`, không đụng vào `LayoutBuilder`.
+
+---
+
+## Palette màu & shape — vẫn giữ trong View (đây là phần render, đúng chỗ)
+
+```java
+private static final Color C_GOAL_FILL = new Color(230, 248, 232);
+private static final Color C_GOAL_BDR  = new Color(30, 140, 60);
+// ... theo từng NodeKind của ngôn ngữ, xem IStarView/Bpmn2View hiện có để tham khảo màu sắc
 ```
 
 ---
 
-## buildLayout(): tính vị trí node
-
-Layout algorithm phản ánh đúng cấu trúc semantic của ngôn ngữ:
+## USE `View` interface (bắt buộc implement)
 
 ```java
-private void buildLayout() {
-    nodes.clear();
-    actorNodes.clear();
-    if (model == null) return;
-
-    int ax = MARGIN;
-    for (Actor a : model.getActors()) {
-        Node actor   = new Node();
-        actor.id     = a.name();
-        actor.label  = a.name() + " «" + a.kind().name().toLowerCase() + "»";
-        actor.kind   = NT.ACTOR;
-        actor.x      = ax;
-        actor.y      = MARGIN;
-
-        int maxW = 0, cy = MARGIN + TITLEH + PAD;
-        List<Node> children = new ArrayList<>();
-
-        for (Intentional item : a.intentionals()) {
-            Node n = new Node();
-            n.id      = item.name();
-            n.actorId = a.name();
-
-            // Kích thước theo loại concept
-            switch (item) {
-                case GoalDef g -> {
-                    n.label  = g.name();
-                    n.clause = g.intentClause();
-                    n.kind   = NT.GOAL;
-                    n.refine = g.refine();
-                    n.w = GW; n.h = GH;      // GW=138, GH=44
-                }
-                case TaskDef t -> {
-                    n.label  = t.name();
-                    n.kind   = NT.TASK;
-                    n.refine = t.refine();
-                    n.w = TW; n.h = TH;      // TW=122, TH=36
-                }
-                case ResourceDef r -> {
-                    n.label = r.name();
-                    n.kind  = NT.RES;
-                    n.w = RW; n.h = RH;
-                }
-            }
-            n.x = ax + PAD;
-            n.y = cy;
-            cy += n.h + VG;
-            maxW = Math.max(maxW, n.w);
-            children.add(n);
-            nodes.put(n.id, n);
-        }
-
-        actor.w = maxW + PAD * 2;
-        actor.h = cy - MARGIN + PAD;
-
-        // Căn giữa các node trong actor
-        for (Node cn : children) cn.x = ax + (actor.w - cn.w) / 2;
-
-        nodes.put(actor.id, actor);
-        actorNodes.add(actor);
-        ax += actor.w + HGAP;  // HGAP=50: khoảng cách giữa actors
-    }
-
-    int totalW = ax + MARGIN;
-    int maxH   = actorNodes.stream()
-                    .mapToInt(n -> n.y + n.h).max().orElse(400) + MARGIN;
-    setPreferredSize(new Dimension(Math.max(totalW, 800), Math.max(maxH, 600)));
-    installDrag();
-}
-```
-
----
-
-## Drag and drop (internal Node model)
-
-Drag dùng `MouseListener`/`MouseMotionListener` trên JPanel:
-
-```java
-private void installDrag() {
-    // Xoá listener cũ trước (tránh accumulate)
-    for (MouseMotionListener ml : getMouseMotionListeners()) removeMouseMotionListener(ml);
-    for (MouseListener ml : getMouseListeners()) removeMouseListener(ml);
-
-    int[] drag = {0, 0, 0, 0};  // [prevX, prevY, lastMouseX, lastMouseY]
-
-    addMouseListener(new MouseAdapter() {
-        @Override public void mousePressed(MouseEvent e) {
-            Node h = hitTestNonActor(e.getX(), e.getY());
-            if (h != null) {
-                drag[2] = e.getX();
-                drag[3] = e.getY();
-            }
-        }
-    });
-
-    addMouseMotionListener(new MouseMotionAdapter() {
-        @Override public void mouseDragged(MouseEvent e) {
-            Node h = hitTestNonActor(e.getX(), e.getY());
-            if (h == null) return;
-            h.x += e.getX() - drag[2];
-            h.y += e.getY() - drag[3];
-            drag[2] = e.getX();
-            drag[3] = e.getY();
-            recomputeActorBounds(h.actorId);
-            repaint();
-        }
-    });
-}
-
-private Node hitTestNonActor(int x, int y) {
-    for (Node n : nodes.values())
-        if (n.kind != NT.ACTOR &&
-            x >= n.x && x <= n.x + n.w &&
-            y >= n.y && y <= n.y + n.h)
-            return n;
-    return null;
-}
-
-private void recomputeActorBounds(String actorId) {
-    Node actor = nodes.get(actorId);
-    if (actor == null) return;
-    int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
-    int maxX = 0, maxY = 0;
-    for (Node n : nodes.values()) {
-        if (actorId.equals(n.actorId)) {
-            minX = Math.min(minX, n.x);   minY = Math.min(minY, n.y);
-            maxX = Math.max(maxX, n.x + n.w); maxY = Math.max(maxY, n.y + n.h);
-        }
-    }
-    if (minX == Integer.MAX_VALUE) return;
-    actor.x = minX - PAD;
-    actor.y = minY - TITLEH - PAD;
-    actor.w = maxX - minX + PAD * 2;
-    actor.h = maxY - minY + TITLEH + PAD * 2;
-}
-```
-
----
-
-## Paint helpers chuẩn
-
-```java
-// Vẽ node goal (oval)
-private void paintGoal(Graphics2D g2, Node n) {
-    Color c = switch (n.clause == null ? "" : n.clause) {
-        case "achieve"  -> C_GOAL_ACH;    // green
-        case "maintain" -> C_GOAL_MNT;    // blue
-        case "avoid"    -> C_GOAL_AVD;    // red
-        default         -> C_GOAL_NONE;
-    };
-    g2.setColor(c.darker().darker());
-    g2.fillOval(n.x, n.y, n.w, n.h);
-    g2.setColor(c);
-    g2.setStroke(new BasicStroke(1.5f));
-    g2.drawOval(n.x, n.y, n.w, n.h);
-    g2.setFont(FG); g2.setColor(C_LABEL);
-    drawCentredString(g2, n.label, n.x + n.w/2, n.y + n.h/2 - 4);
-    if (n.clause != null) {
-        g2.setFont(FC); g2.setColor(C_COND);
-        drawCentredString(g2, "«" + n.clause + "»", n.x + n.w/2, n.y + n.h/2 + 9);
-    }
-}
-
-// Vẽ node task (rounded rect)
-private void paintTask(Graphics2D g2, Node n) {
-    g2.setColor(C_TASK_BG); g2.fillRoundRect(n.x, n.y, n.w, n.h, 8, 8);
-    g2.setColor(C_TASK_BDR); g2.setStroke(new BasicStroke(1.5f));
-    g2.drawRoundRect(n.x, n.y, n.w, n.h, 8, 8);
-    g2.setFont(FT); g2.setColor(C_LABEL);
-    drawCentredString(g2, n.label, n.x + n.w/2, n.y + n.h/2 + 4);
-}
-
-// Vẽ actor container (rounded box với dashed border)
-private void paintActor(Graphics2D g2, Node a, Color borderColor) {
-    Stroke dashed = new BasicStroke(1.5f, BasicStroke.CAP_ROUND,
-            BasicStroke.JOIN_ROUND, 0, new float[]{6, 4}, 0);
-    g2.setColor(C_ACTOR_BG);
-    g2.fillRoundRect(a.x, a.y, a.w, a.h, 14, 14);
-    g2.setColor(borderColor); g2.setStroke(dashed);
-    g2.drawRoundRect(a.x, a.y, a.w, a.h, 14, 14);
-    // Title bar
-    g2.setStroke(new BasicStroke(1));
-    g2.setColor(borderColor.darker());
-    g2.fillRoundRect(a.x + 1, a.y + 1, a.w - 2, TITLEH, 12, 12);
-    g2.setFont(FA); g2.setColor(C_ACTOR_TITLE);
-    g2.drawString(a.label, a.x + 8, a.y + 17);
-}
-
-// Arrow head
-private void drawArrowHead(Graphics2D g2, int x1, int y1, int x2, int y2) {
-    double angle = Math.atan2(y2 - y1, x2 - x1);
-    int sz = 8;
-    int[] xp = { x2,
-                 x2 - (int)(sz * Math.cos(angle - 0.4)),
-                 x2 - (int)(sz * Math.cos(angle + 0.4)) };
-    int[] yp = { y2,
-                 y2 - (int)(sz * Math.sin(angle - 0.4)),
-                 y2 - (int)(sz * Math.sin(angle + 0.4)) };
-    g2.fillPolygon(xp, yp, 3);
-}
-
-// Edge endpoints (tiếp xúc với border node, không phải center)
-private int[] edgePair(Node a, Node b) {
-    int ax = a.x + a.w/2, ay = a.y + a.h/2;
-    int bx = b.x + b.w/2, by = b.y + b.h/2;
-    int dx = bx - ax, dy = by - ay;
-    if (Math.abs(dx) > Math.abs(dy)) {
-        return new int[]{
-            dx > 0 ? a.x + a.w : a.x, ay,
-            dx > 0 ? b.x : b.x + b.w, by
-        };
-    } else {
-        return new int[]{
-            ax, dy > 0 ? a.y + a.h : a.y,
-            bx, dy > 0 ? b.y : b.y + b.h
-        };
-    }
-}
-
-// Centered string
-private void drawCentredString(Graphics2D g2, String s, int cx, int cy) {
-    FontMetrics fm = g2.getFontMetrics();
-    g2.drawString(s, cx - fm.stringWidth(s)/2, cy);
-}
-```
-
----
-
-## USE View interface
-
-```java
-// org.tzi.use.gui.views.View — implement 2 method này
+// org.tzi.use.gui.views.View
 public interface View {
     void detachModel();  // Gọi khi USE unload model
-    // update() — optional, một số version có, một số không
 }
 ```
 
-Thực tế trong MAXGoalView:
-```java
-@Override public void detachModel() { model = null; repaint(); }
-public    void update()             { repaint(); }
-```
+Thực tế: `@Override public void detachModel() { layout = null; repaint(); }`.
 
 ---
 
-## Checklist bước 4
+## Checklist bước 5
 
-- [ ] View là `JPanel` extends + implements `View` (không kế thừa `CompartmentNode`)
-- [ ] Internal `Node` class với `x, y, w, h` (không phải JPanel per node)
-- [ ] `paintComponent` vẽ theo layers: actors → edges → nodes
-- [ ] Drag dùng `MouseListener`/`MouseMotionListener` trên JPanel
-- [ ] `installDrag()` gọi `removeMouseXxxListener` trước khi add mới
-- [ ] `setModel()` là public method để Form gọi
-- [ ] `detachModel()` và `update()` implement đúng
-- [ ] Không import gì từ package `ast` hoặc `parser`
-- [ ] Màu sắc theo concept type (goal clause, task vs resource, actor kind)
+- [ ] Có tách `<Lang>Node`/`<Lang>Edge` (Adapter) khỏi `<Lang>View` (Renderer) — không bắt buộc
+      với ngôn ngữ đơn giản, nhưng khuyến nghị mạnh cho ngôn ngữ mới
+- [ ] `<Lang>LayoutBuilder` không import Swing/AWT — chỉ tính toán số học
+- [ ] `<Lang>View.paintComponent` KHÔNG gọi lại logic tính toạ độ — chỉ đọc field có sẵn
+- [ ] Vẽ theo layer: actors/container → edges → nodes (nodes vẽ sau để đè lên cạnh)
+- [ ] Drag cập nhật trực tiếp `x,y` trên Node đang có, không rebuild toàn bộ Layout
+- [ ] `detachModel()` implement đúng theo `View` interface của USE
 
 ## Lỗi thường gặp
 
 | Lỗi | Sửa |
 |-----|-----|
-| Node không drag được | Dùng internal Node model, cập nhật `x,y` của Node rồi `repaint()` |
-| Drag accumulate listeners | Gọi `removeMouseXxxListener()` trong `installDrag()` |
-| Cạnh không cập nhật sau drag | `repaint()` sau khi update tọa độ Node |
-| Actor bounds không co dãn theo drag | Implement `recomputeActorBounds()` |
-| Node vẽ đè lên cạnh | Vẽ cạnh (edges) TRƯỚC khi vẽ nodes trong `paintComponent` |
-| Arrow head sai hướng | `atan2(y2-y1, x2-x1)` — đảm bảo tính từ source tới target |
+| Node không drag được | Cập nhật `x,y` của Node trong Layout hiện có, rồi `repaint()` |
+| Cạnh không cập nhật sau drag | `repaint()` ngay sau khi đổi toạ độ |
+| Node vẽ đè lên cạnh | Vẽ edges TRƯỚC nodes trong `paintComponent` |
+| Layout tính lại mỗi lần vẽ | Tách `LayoutBuilder.build()` khỏi `paintComponent` — chỉ gọi 1 lần khi `setModel`/reload |
+| Muốn thêm renderer khác (SVG, PDF) mà phải sửa cả logic tính vị trí | Dấu hiệu Adapter/Layout đang bị trộn với Renderer — tách theo mẫu ở trên |

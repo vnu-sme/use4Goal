@@ -1,79 +1,92 @@
-<mxfile host="65bd71144e">
-    <diagram id="target" name="Target Pipeline Architecture (de xuat)">
-        <mxGraphModel dx="692" dy="770" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1300" background="#ffffff" math="0" shadow="0">
-            <root>
-                <mxCell id="0"/>
-                <mxCell id="1" parent="0"/>
-                <mxCell id="title" value="Kien truc pipeline DE XUAT — moi buoc bien dich ap 1 design pattern ro rang, tach rieng buoc MM -&gt; model hien thi" style="text;fontSize=16;fontStyle=1;align=left;fontColor=#000000;strokeColor=#000000;" parent="1" vertex="1">
-                    <mxGeometry x="20" y="10" width="1100" height="40" as="geometry"/>
-                </mxCell>
-                <mxCell id="s1" value=".maxgoal / .istar / .bpmn2 file (DSL van ban)" style="rounded=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#000000;fontSize=12;fontColor=#000000;" parent="1" vertex="1">
-                    <mxGeometry x="440" y="70" width="320" height="40" as="geometry"/>
-                </mxCell>
-                <mxCell id="s2" value="ANTLR4 Lexer/Parser (sinh tu &lt;lang&gt;.g4)&#10;--&amp;gt; ParseTree&lt;/lang&gt;" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#000000;fontSize=12;fontColor=#000000;" parent="1" vertex="1">
-                    <mxGeometry x="440" y="140" width="320" height="50" as="geometry"/>
-                </mxCell>
-                <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;fontColor=#000000;strokeColor=#000000;" parent="1" source="s1" target="s2" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="p1" value="[Pattern: VISITOR]&#10;&lt;lang&gt;BaseVisitor (ANTLR sinh)&#10;implemented boi &lt;lang&gt;AstBuildingVisitor&lt;/lang&gt;&lt;/lang&gt;" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#000000;fontSize=11;dashed=1;fontColor=#000000;" parent="1" vertex="1">
-                    <mxGeometry x="800" y="140" width="300" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="s3" value="AST — CS records (bat buoc cho MOI ngon ngu, ke ca MAXGoal)&#10;vd: GoalDefCS, TaskDefCS, RefineSpecCS..." style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#000000;fontSize=12;fontColor=#000000;" parent="1" vertex="1">
-                    <mxGeometry x="440" y="220" width="320" height="50" as="geometry"/>
-                </mxCell>
-                <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;fontColor=#000000;strokeColor=#000000;" parent="1" source="s2" target="s3" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="p2" value="[Pattern: FACTORY METHOD]&#10;interface ModelFactory&lt;cs,mm&gt; { MM build(CS cs); }&#10;moi ngon ngu implement 1 lan, khong duplicate tu do&lt;/cs,mm&gt;" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#000000;fontSize=11;dashed=1;fontColor=#000000;" parent="1" vertex="1">
-                    <mxGeometry x="800" y="220" width="300" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="s4" value="MetaModel (MM) — record / sealed interface&#10;vd: MAXGoalModel, RefineSpec(sealed: Seq/Par/Xor/Ior/Iter)&#10;KHONG import AST, KHONG import View" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#000000;fontSize=12;fontColor=#000000;" parent="1" vertex="1">
-                    <mxGeometry x="440" y="300" width="320" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;fontColor=#000000;strokeColor=#000000;" parent="1" source="s3" target="s4" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="branchA" value="[Pattern: VISITOR / STRATEGY]&#10;interface RefineSpecVisitor&lt;r&gt; { R seq(...); R par(...); R xor(...); R ior(...); R iter(...); }&#10;GoalToBpmnTransformer implements RefineSpecVisitor&lt;fragment&gt;&#10;&#10;Nghiep vu: MM (MAXGoalModel) --&amp;gt; MM ngon ngu khac (BpmnProcess)&#10;Day la buoc \&quot;ve nghiep vu da xong\&quot; ban da co (GoalToBpmnTransformer)&#10;-- chi can chuan hoa switch thanh interface Visitor dung chung&lt;/fragment&gt;&lt;/r&gt;" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#000000;fontSize=11;align=left;spacingLeft=8;fontColor=#000000;" parent="1" vertex="1">
-                    <mxGeometry x="40" y="380" width="380" height="140" as="geometry"/>
-                </mxCell>
-                <mxCell id="eA" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;dashed=1;fontColor=#000000;strokeColor=#000000;" parent="1" source="s4" target="branchA" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="s4b" value="MM dich (vd: BpmnProcess) — co the tiep tuc di qua nhanh B rieng de hien thi" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#000000;fontSize=11;fontColor=#000000;" parent="1" vertex="1">
-                    <mxGeometry x="40" y="540" width="380" height="50" as="geometry"/>
-                </mxCell>
-                <mxCell id="eAb" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;fontColor=#000000;strokeColor=#000000;" parent="1" source="branchA" target="s4b" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="p3" value="[Pattern: BUILDER / STRATEGY — day la BUOC HIEN CHUA CO trong code]&#10;&lt;lang&gt;LayoutBuilder.build(MM model): DiagramLayout&#10;dung RefineSpecVisitor&lt;layoutfragment&gt; de tinh vi tri/canh theo tung loai refine&#10;&#10;DiagramLayout la POJO thuan: List&lt;node{id,x,y,w,h,kind}&gt;, List&lt;edge{from,to,style}&gt;&#10;KHONG phu thuoc Swing/Graphics2D -&amp;gt; test duoc doc lap, tai su dung cho renderer khac (SVG, in an)&lt;/edge{from,to,style}&gt;&lt;/node{id,x,y,w,h,kind}&gt;&lt;/layoutfragment&gt;&lt;/lang&gt;" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#000000;fontSize=11;align=left;spacingLeft=8;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
-                    <mxGeometry x="480" y="400" width="680" height="120" as="geometry"/>
-                </mxCell>
-                <mxCell id="eB" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;fontColor=#000000;strokeColor=#000000;" parent="1" source="s4" target="p3" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="s5" value="DiagramLayout (ViewModel) — Node/Edge voi toa do da tinh san" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#000000;fontSize=12;fontColor=#000000;" parent="1" vertex="1">
-                    <mxGeometry x="480" y="560" width="680" height="50" as="geometry"/>
-                </mxCell>
-                <mxCell id="eC" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;fontColor=#000000;strokeColor=#000000;" parent="1" source="p3" target="s5" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="s6" value="View — &lt;lang&gt;View extends JPanel&#10;paintComponent(Graphics2D) CHI render DiagramLayout (khong tu tinh layout nua)&#10;xu ly input: drag/zoom/select&lt;/lang&gt;" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#000000;fontSize=12;fontColor=#000000;" parent="1" vertex="1">
-                    <mxGeometry x="480" y="640" width="680" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;fontColor=#000000;strokeColor=#000000;" parent="1" source="s5" target="s6" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="p4" value="[Pattern: TABLE-DRIVEN LOOKUP]&#10;abstract EnumLookup&lt;t extends=&quot;&quot; enum&lt;t=&quot;&quot;&gt;&amp;gt; { T from(String) qua Map co san }&#10;dung chung cho ActorKind, ResKind, GatewayType, EventType, ContribType, AssocKind&#10;thay vi moi enum tu viet lai ham from(String) rieng le&lt;/t&gt;" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#000000;fontSize=11;dashed=1;align=left;spacingLeft=8;fontColor=#000000;" parent="1" vertex="1">
-                    <mxGeometry x="40" y="740" width="1120" height="70" as="geometry"/>
-                </mxCell>
-                <mxCell id="p5" value="Khong doi: Action (IPluginActionDelegate, nhan Session+MainWindow) -&amp;gt; Form (JDialog, non-modal) -&amp;gt; Compiler (Result record: model + errors)&#10;— cac lop nay da dung khuon tot o iStar/BPMN2, chi can bo sung tuong tu cho MAXGoal + rieng cho MAXBpmn (hien dang dung ke MAXGoalForm)" style="rounded=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#000000;fontSize=11;align=left;spacingLeft=8;fontColor=#000000;" parent="1" vertex="1">
-                    <mxGeometry x="40" y="830" width="1120" height="50" as="geometry"/>
-                </mxCell>
-                <mxCell id="legend" value="Mau do (vien do dam) = buoc/pattern HIEN CHUA CO trong code, can bo sung.&#10;Mau xanh la = buoc da co dung. Mau tim (net dut) = pattern de nghi ap dung/chuan hoa lai." style="text;fontSize=11;align=left;fontStyle=2;fontColor=#000000;strokeColor=#000000;" parent="1" vertex="1">
-                    <mxGeometry x="40" y="900" width="1100" height="40" as="geometry"/>
-                </mxCell>
-            </root>
-        </mxGraphModel>
-    </diagram>
+<mxfile host="app.diagrams.net">
+  <diagram id="target" name="Target Pipeline Architecture (de xuat)">
+    <mxGraphModel dx="1400" dy="900" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1300" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="title" value="Kien truc pipeline DE XUAT — moi buoc bien dich ap 1 design pattern ro rang, tach rieng buoc MM -&gt; model hien thi" style="text;fontSize=16;fontStyle=1;align=left;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="20" y="10" width="1100" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Stage 1: DSL file -->
+        <mxCell id="s1" value=".istar / .bpmn2 / &lt;lang moi&gt; file (DSL van ban)" style="rounded=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="440" y="70" width="320" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Stage 2: ANTLR -->
+        <mxCell id="s2" value="ANTLR4 Lexer/Parser (sinh tu &lt;LANG&gt;.g4) --&gt; ParseTree" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="440" y="140" width="320" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;fontColor=#000000;strokeColor=#000000;" edge="1" parent="1" source="s1" target="s2"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- pattern label: Visitor -->
+        <mxCell id="p1" value="[Pattern: VISITOR]&#10;&lt;LANG&gt;BaseVisitor (ANTLR sinh)&#10;implemented boi &lt;Lang&gt;BuildingVisitor" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;dashed=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="800" y="140" width="300" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Stage 3: AST -->
+        <mxCell id="s3" value="AST — CS records (bat buoc cho MOI ngon ngu)&#10;vd that: ActorDefCS/ElementBodyCS (istar), PoolCS/FlowNodeCS (bpmn2)" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="440" y="220" width="320" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;fontColor=#000000;strokeColor=#000000;" edge="1" parent="1" source="s2" target="s3"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- pattern label: Factory -->
+        <mxCell id="p2" value="[Pattern: FACTORY METHOD]&#10;&lt;Lang&gt;ModelFactory.build(cs): MM&#10;moi ngon ngu implement 1 lan (da dung o IStarModelFactory, Bpmn2ModelFactory)" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;dashed=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="800" y="220" width="300" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Stage 4: MM -->
+        <mxCell id="s4" value="MetaModel (MM) — record / sealed interface&#10;vd that: IStarModel/IntentionalElement/Refinement, Bpmn2Collaboration/FlowNode&#10;KHONG import AST, KHONG import View" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="440" y="300" width="320" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;fontColor=#000000;strokeColor=#000000;" edge="1" parent="1" source="s3" target="s4"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Branch A: business transform to another language MM (optional) -->
+        <mxCell id="branchA" value="[Pattern: VISITOR / STRATEGY] (TUY CHON)&#10;interface &lt;X&gt;Visitor&lt;R&gt; { R visitCase1(...); R visitCase2(...); ... }&#10;&lt;LangA&gt;To&lt;LangB&gt;Transformer implements &lt;X&gt;Visitor&lt;Fragment&gt;&#10;&#10;Nghiep vu: MM ngon ngu A --&gt; MM ngon ngu B (vd tuong lai: Goal -&gt; BPMN)&#10;Hien codebase CHUA co vi du nao (transform GOAL-&gt;BPMN cu da bi xoa cung MAXGoal)&#10;-- neu them lai, dung 1 interface Visitor chung, khong switch roi rac" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;spacingLeft=8;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="40" y="380" width="380" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="eA" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;dashed=1;fontColor=#000000;strokeColor=#000000;" edge="1" parent="1" source="s4" target="branchA"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="s4b" value="MM dich (ngon ngu B) — co the tiep tuc di qua nhanh B rieng de hien thi" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="40" y="550" width="380" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="eAb" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;fontColor=#000000;strokeColor=#000000;" edge="1" parent="1" source="branchA" target="s4b"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Branch B: MM -> LayoutModel (the missing step) -->
+        <mxCell id="p3" value="[Pattern: ADAPTER + BUILDER — day la BUOC HIEN CHUA CO trong code, IStarView/Bpmn2View dang gop chung]&#10;&lt;Lang&gt;LayoutBuilder.build(MM model): &lt;Lang&gt;Layout&#10;dung Visitor/Strategy de tinh vi tri/canh theo tung loai node/edge&#10;&#10;&lt;Lang&gt;Layout la POJO thuan: Map&lt;id,Node{x,y,w,h,kind}&gt;, List&lt;Edge{from,to,style}&gt;&#10;KHONG phu thuoc Swing/Graphics2D -&gt; test duoc doc lap, tai su dung cho renderer khac (SVG, in an)" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;align=left;spacingLeft=8;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="480" y="400" width="680" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="eB" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;fontColor=#000000;strokeColor=#000000;" edge="1" parent="1" source="s4" target="p3"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="s5" value="&lt;Lang&gt;Layout (ViewModel) — Node/Edge voi toa do da tinh san" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="480" y="570" width="680" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="eC" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;fontColor=#000000;strokeColor=#000000;" edge="1" parent="1" source="p3" target="s5"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Stage 6: View render only -->
+        <mxCell id="s6" value="View — &lt;Lang&gt;View extends JPanel implements View&#10;paintComponent(Graphics2D) CHI render &lt;Lang&gt;Layout (khong tu tinh layout nua)&#10;xu ly input: drag/zoom/select" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="480" y="650" width="680" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;fontColor=#000000;strokeColor=#000000;" edge="1" parent="1" source="s5" target="s6"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- side: table-driven enum lookup -->
+        <mxCell id="p4" value="[Pattern: TABLE-DRIVEN LOOKUP] (tuy chon, khi co nhieu enum from(String) trung lap)&#10;abstract EnumLookup&lt;T extends Enum&lt;T&gt;&gt; { T from(String) qua Map co san }&#10;co the dung chung cho ActorKind (istar), EventType/GatewayType (bpmn2), v.v.&#10;thay vi moi enum tu viet lai ham from(String) rieng le" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;dashed=1;align=left;spacingLeft=8;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="40" y="750" width="1120" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- Action/Form/Compiler unchanged note -->
+        <mxCell id="p5" value="Khong doi: Action (IPluginActionDelegate, nhan Session+MainWindow) -&gt; Form (JDialog, non-modal) -&gt; Compiler (Result record: model + errors)&#10;— cac lop nay da dung khuon tot o istar/bpmn2 (ActionOpenIStar/IStarForm/IStarCompiler, ActionOpenBpmn2/Bpmn2Form/Bpmn2Compiler), giu nguyen cho ngon ngu moi" style="rounded=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;align=left;spacingLeft=8;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="40" y="840" width="1120" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legend" value="Mau do (vien do dam) = buoc/pattern HIEN CHUA CO trong code, can bo sung. Mau xanh la = buoc da co dung.&#10;Mau vang = tuy chon / theo tung ngon ngu. Mau tim (net dut) = pattern de nghi ap dung/chuan hoa lai." style="text;fontSize=11;align=left;fontStyle=2;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="40" y="900" width="1100" height="40" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="reftext" value="Tham chieu: .claude/skills/use-plugin-skill/references/step-4-view.md, step-6-transform.md, doc/use-core-design-rules.md" style="text;fontSize=10;fontStyle=2;align=left;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="40" y="940" width="1100" height="24" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
 </mxfile>

@@ -1,9 +1,10 @@
-# Bước 3 — Thiết kế MetaModel (MM) ngôn ngữ
+# Bước 3 — Thiết kế MetaModel (MM) + Factory (AST → MM)
 
 ## Vị trí
 
 ```
-src/main/java/org/vnu/sme/<plugin>/mm/
+src/main/java/org/vnu/sme/<plugin>/<lang>/mm/
+src/main/java/org/vnu/sme/<plugin>/<lang>/parser/<Lang>ModelFactory.java
 ```
 
 ## MM vs AST: khác nhau ở đâu?
@@ -12,304 +13,211 @@ src/main/java/org/vnu/sme/<plugin>/mm/
 |--|---------|----------------|
 | Mục đích | Lưu cú pháp đã parse | Runtime semantic objects |
 | Suffix | `CS` | Không có suffix |
-| Mutability | Immutable | Thường immutable (record/final) |
-| Logic | Không | Có (query, lookup, validate) |
 | Quan hệ | String ID references | Có thể object references |
 | Import | Không import MM | Không import AST |
-| Dùng bởi | Factory/Visitor | View, Analyzer, Transformer |
+| Dùng bởi | Factory | View, Transformer |
+
+**Dependency 1 chiều bắt buộc**: `view → mm ← factory ← ast`. MM không được biết đến `ast`
+hay `view`. Factory là cầu nối **duy nhất** — không có Factory nghĩa là Visitor phải tự lo
+mọi việc, lặp lại đúng lỗi thiết kế mà MAXGoal (đã xoá) từng mắc phải.
 
 ---
 
-## Pattern hiện đại: Java Record + Sealed Interface
+## Vì sao không dùng `M*`/`M*Impl` như USE core
 
-Codebase này dùng Java 17+ records và sealed interfaces cho MM. Đây là pattern chuẩn cho plugin mới.
+USE core (`org.tzi.use.uml.mm.MClass`/`MClassImpl`, tạo qua `ModelFactory.createClass()`)
+tách interface/implementation vì **thời điểm viết code đó Java chưa có `record`** — đây là
+compensating pattern, không phải mục tiêu tự thân. MM trong `goal/` dùng **Java record +
+sealed interface hiện đại**: ngắn gọn hơn, immutable sẵn, tự sinh `equals`/`hashCode`/`toString`,
+không mất khả năng test hay mở rộng. Điều **giữ lại** từ USE core là ý tưởng cốt lõi: **Factory
+chịu trách nhiệm tạo MM, không rải logic tạo object khắp nơi**.
 
-### Root model
+---
+
+## Ví dụ thật: MM của iStar 2.0 (`istar/mm/`)
+
+### Root model — class thường (cần Map lookup, không phải record)
 
 ```java
-package org.vnu.sme.<plugin>.mm;
+public final class IStarModel {
+    private final String                 name;
+    private final List<ActorDef>         actors = new ArrayList<>();
+    private final List<Dependency>       dependencies = new ArrayList<>();
+    private final Map<String, ActorDef>  actorMap = new LinkedHashMap<>();
 
-public final class MAXGoalModel {
+    public IStarModel(String name) { this.name = name; }
 
-    private final String           name;
-    private final List<Actor>      actors       = new ArrayList<>();
-    private final List<Dependency> dependencies = new ArrayList<>();
-
-    // Lookup maps — build lúc addActor() để query O(1)
-    private final Map<String, Intentional> intentionalMap = new HashMap<>();
-    private final Map<String, String>      ownerMap       = new HashMap<>();
-
-    public MAXGoalModel(String name) { this.name = name; }
-
-    public String getName() { return name; }
-
-    public void addActor(Actor a) {
-        actors.add(a);
-        for (Intentional i : a.intentionals()) {
-            intentionalMap.put(i.name(), i);
-            ownerMap.put(i.name(), a.name());
-        }
-    }
-
+    public void addActor(ActorDef a) { actors.add(a); actorMap.put(a.id(), a); }
     public void addDependency(Dependency d) { dependencies.add(d); }
 
-    public List<Actor>      getActors()       { return Collections.unmodifiableList(actors); }
+    public List<ActorDef>   getActors()       { return Collections.unmodifiableList(actors); }
     public List<Dependency> getDependencies() { return Collections.unmodifiableList(dependencies); }
-
-    public Optional<Intentional> find(String id) {
-        return Optional.ofNullable(intentionalMap.get(id));
-    }
-
-    public Optional<Actor> actorOf(String intentionalId) {
-        String aname = ownerMap.get(intentionalId);
-        if (aname == null) return Optional.empty();
-        return actors.stream().filter(a -> a.name().equals(aname)).findFirst();
-    }
-
-    public Map<String, Intentional> allIntentionals() {
-        return Collections.unmodifiableMap(intentionalMap);
-    }
+    public Optional<ActorDef> findActor(String id) { return Optional.ofNullable(actorMap.get(id)); }
 }
 ```
 
-### Intentional element (sealed interface)
+### Sealed interface cho hierarchy đa nhánh
 
 ```java
-public sealed interface Intentional
-        permits GoalDef, TaskDef, ResourceDef {
-    String name();
+public sealed interface IntentionalElement
+        permits IntentionalElement.Goal, IntentionalElement.Task,
+                IntentionalElement.Resource, IntentionalElement.Quality {
+    String id();
+
+    record Goal(String id)     implements IntentionalElement {}
+    record Task(String id)     implements IntentionalElement {}
+    record Resource(String id) implements IntentionalElement {}
+    record Quality(String id)  implements IntentionalElement {}
+}
+
+// Hierarchy cho quan hệ refine (And/Or khác cấu trúc: nhiều con vs 1 con)
+public sealed interface Refinement permits Refinement.And, Refinement.Or {
+    String parent();
+    record And(String parent, List<String> children) implements Refinement {}
+    record Or (String parent, String child)          implements Refinement {}
 }
 ```
 
-### MM nodes dùng record
-
-```java
-// GoalDef — immutable, dùng record
-public record GoalDef(
-        String     name,
-        String     owner,          // actor name
-        String     intentClause,   // "achieve"|"maintain"|"avoid"|null
-        String     intentExpr,     // raw condition text (cho OCL eval sau)
-        RefineSpec refine          // null nếu leaf
-) implements Intentional {}
-
-// TaskDef
-public record TaskDef(
-        String     name,
-        String     owner,
-        String     pre,
-        String     post,
-        String     needby,         // resource ID, nullable
-        RefineSpec refine
-) implements Intentional {}
-
-// ResourceDef
-public record ResourceDef(
-        String  name,
-        String  owner,
-        ResKind kind
-) implements Intentional {}
-```
-
-### Enums
+### Enum có `from(String)` factory method
 
 ```java
 public enum ActorKind {
-    AGENT, ROLE, POSITION;
+    ACTOR, AGENT, ROLE;
 
     public static ActorKind from(String text) {
         return switch (text.toLowerCase()) {
-            case "agent"    -> AGENT;
-            case "role"     -> ROLE;
-            case "position" -> POSITION;
-            default -> throw new IllegalArgumentException("Unknown actor kind: " + text);
-        };
-    }
-}
-
-public enum ResKind {
-    DATA, SERVICE, PHYSICAL;
-
-    public static ResKind from(String text) {
-        return switch (text.toLowerCase()) {
-            case "data"     -> DATA;
-            case "service"  -> SERVICE;
-            case "physical" -> PHYSICAL;
-            default -> DATA; // default safe
+            case "agent" -> AGENT;
+            case "role"  -> ROLE;
+            default      -> ACTOR;
         };
     }
 }
 ```
 
-### Actor (không phải record — cần List mutable lúc build)
+### Ví dụ MM khác dạng: BPMN2 (`bpmn2/mm/FlowNode.java`) — hierarchy 6 nhánh, 1 nhánh phức tạp hơn record thường
 
 ```java
-public final class Actor {
-    private final String          name;
-    private final ActorKind       kind;
-    private final List<Intentional> intentionals;
+public sealed interface FlowNode
+        permits FlowNode.StartEvent, FlowNode.EndEvent, FlowNode.IntermediateEvent,
+                FlowNode.Task, FlowNode.SubProcess, FlowNode.Gateway {
+    String id();
 
-    public Actor(String name, ActorKind kind, List<Intentional> intentionals) {
-        this.name         = name;
-        this.kind         = kind;
-        this.intentionals = List.copyOf(intentionals);
+    record StartEvent(String id, EventType type) implements FlowNode {}
+    record Task(String id, String label)         implements FlowNode {}
+
+    // Nhánh có List con → dùng final class thay vì record (cần validate/List.copyOf trong constructor)
+    final class SubProcess implements FlowNode {
+        private final String id, label;
+        private final List<FlowNode> elements;
+        private final List<SequenceFlow> flows;
+
+        public SubProcess(String id, String label, List<FlowNode> elements, List<SequenceFlow> flows) {
+            this.id = id; this.label = label;
+            this.elements = List.copyOf(elements);
+            this.flows    = List.copyOf(flows);
+        }
+        @Override public String id() { return id; }
+        public String label() { return label; }
+        public List<FlowNode> elements() { return elements; }
+        public List<SequenceFlow> flows() { return flows; }
     }
-
-    public String              name()         { return name; }
-    public ActorKind           kind()         { return kind; }
-    public List<Intentional>   intentionals() { return intentionals; }
 }
 ```
 
-### Dependency
+> **Quy tắc chọn record vs final class cho 1 nhánh sealed interface**: dùng `record` khi mọi
+> field truyền thẳng vào constructor không cần biến đổi; dùng `final class` viết tay khi cần
+> `List.copyOf()` hay validate trong constructor (record cũng hỗ trợ compact constructor cho
+> việc này — final class chỉ cần khi có thêm behavior ngoài accessor).
+
+### Pattern matching exhaustive
 
 ```java
-public record Dependency(String from, String to) {}
+switch (node) {
+    case FlowNode.StartEvent e -> paintEvent(e, THIN);
+    case FlowNode.EndEvent   e -> paintEvent(e, THICK);
+    case FlowNode.Task       t -> paintTask(t);
+    case FlowNode.Gateway    g -> paintGateway(g);
+    case FlowNode.SubProcess s -> paintSubProcess(s);
+    case FlowNode.IntermediateEvent e -> paintEvent(e, DOUBLE);
+}
 ```
+
+`sealed interface` bắt compiler báo lỗi nếu switch thiếu case — không cần `default`.
 
 ---
 
-## Refinement hierarchy (sealed interface phức tạp)
-
-Pattern thực tế từ `RefineSpec.java`:
+## Factory: AST → MM (bắt buộc, đây là cầu nối duy nhất)
 
 ```java
-public sealed interface RefineSpec
-        permits RefineSpec.SeqRefine, RefineSpec.IterRefine,
-                RefineSpec.ParRefine,
-                RefineSpec.IorRefine, RefineSpec.XorRefine {
+public final class IStarModelFactory {
+    private IStarModelFactory() {}
 
-    // ── Sequential (ordered, chạy 1 lần) ──────────────────────────
-    non-sealed abstract class SeqRefine implements RefineSpec {
-        public abstract List<String> children();
-
-        public static SeqRefine of(List<String> children) {
-            return new SeqRefine() {
-                @Override public List<String> children() { return children; }
-                @Override public String toString() { return "SEQ" + children; }
-            };
-        }
+    public static IStarModel build(IStarModelCS cs) {
+        IStarModel model = new IStarModel(cs.name());
+        for (ActorDefCS aCS : cs.actors()) model.addActor(buildActor(aCS));
+        for (DependencyCS dCS : cs.dependencies())
+            model.addDependency(new Dependency(dCS.depender(), dCS.dependum(), dCS.dependee()));
+        return model;
     }
 
-    // ── ITER extends SEQ (loop body) ───────────────────────────────
-    final class IterRefine extends SeqRefine implements RefineSpec {
-        private final List<String> children;
-        private final String       until;
-
-        public IterRefine(List<String> body, String until) {
-            this.children = List.copyOf(body);
-            this.until    = until;
+    private static ActorDef buildActor(ActorDefCS cs) {
+        ActorKind kind = ActorKind.from(cs.kind());
+        List<IntentionalElement> elements = new ArrayList<>();
+        for (ElementBodyCS item : cs.body()) {
+            switch (item) {
+                case ElementBodyCS.GoalCS e -> elements.add(new IntentionalElement.Goal(e.id()));
+                case ElementBodyCS.TaskCS e -> elements.add(new IntentionalElement.Task(e.id()));
+                // ... các case khác
+                default -> {}
+            }
         }
-
-        @Override public List<String> children() { return children; }
-        public       String           until()     { return until; }
+        return new ActorDef(cs.id(), kind, elements /* , ... */);
     }
-
-    // ── Parallel ────────────────────────────────────────────────────
-    record ParRefine(List<String> children) implements RefineSpec {}
-
-    // ── Inclusive-OR (1 hoặc nhiều nhánh) ──────────────────────────
-    non-sealed abstract class IorRefine implements RefineSpec {
-        public abstract List<GuardedChild> branches();
-
-        public static IorRefine of(List<GuardedChild> branches) {
-            return new IorRefine() {
-                @Override public List<GuardedChild> branches() { return branches; }
-            };
-        }
-    }
-
-    // ── XOR extends IOR (đúng 1 nhánh) ─────────────────────────────
-    final class XorRefine extends IorRefine implements RefineSpec {
-        private final List<GuardedChild> branches;
-        public XorRefine(List<GuardedChild> branches) {
-            this.branches = List.copyOf(branches);
-        }
-        @Override public List<GuardedChild> branches() { return branches; }
-    }
-}
-
-// Guarded branch: (condition → childId)
-public record GuardedChild(String condition, String childId) {}
-```
-
-### Pattern matching với sealed interface
-
-```java
-// Exhaustive switch — compiler báo lỗi nếu thiếu case
-switch (refine) {
-    case RefineSpec.IterRefine it  -> handleIter(it.children(), it.until());
-    case RefineSpec.SeqRefine  s   -> handleSeq(s.children());
-    case RefineSpec.ParRefine  p   -> handlePar(p.children());
-    case RefineSpec.XorRefine  x   -> handleXor(x.branches());
-    case RefineSpec.IorRefine  io  -> handleIor(io.branches());
 }
 ```
 
-> **Thứ tự quan trọng**: `IterRefine` phải đứng trước `SeqRefine` vì nó là subclass.
+`static` factory method là đủ cho quy mô hiện tại (1 method `build(CS): MM`, stateless). Chỉ
+cân nhắc factory dạng instance/interface (`interface ModelFactory<CS,MM> { MM build(CS cs); }`)
+nếu sau này cần nhiều biến thể Factory cho cùng 1 CS (ví dụ build MM "strict" vs "lenient").
 
 ---
 
-## Validation trong MM root
+## Validation trong MM root (tuỳ chọn, khi cần cross-reference check)
 
 ```java
-// Trong MAXGoalModel (hoặc tương tự)
 public List<String> validate() {
     List<String> errors = new ArrayList<>();
-
-    // Check: mọi refine child reference phải tồn tại
-    for (Intentional item : intentionalMap.values()) {
-        RefineSpec refine = switch (item) {
-            case GoalDef g     -> g.refine();
-            case TaskDef t     -> t.refine();
-            case ResourceDef r -> null;
-        };
-        if (refine == null) continue;
-
-        List<String> childIds = switch (refine) {
-            case RefineSpec.SeqRefine  s  -> s.children();
-            case RefineSpec.ParRefine  p  -> p.children();
-            case RefineSpec.IorRefine io  -> io.branches().stream()
-                                               .map(GuardedChild::childId)
-                                               .collect(Collectors.toList());
-            case RefineSpec.IterRefine it -> it.children();
-        };
-
-        for (String childId : childIds) {
-            if (!intentionalMap.containsKey(childId))
-                errors.add("Unresolved reference '" + childId +
-                           "' in refinement of '" + item.name() + "'");
-        }
+    for (Dependency d : dependencies) {
+        if (findActor(d.depender()).isEmpty())
+            errors.add("Unknown actor in dependency: " + d.depender());
     }
-
-    // Check: không có circular refinement (DFS)
-    // ...
-
     return errors;
 }
 ```
+
+Nếu ngôn ngữ cần nhiều rule validate phức tạp, cân nhắc gộp vào 1 `Context`-like object được
+truyền qua Factory thay vì để rải rác — xem `step-2-ast.md` phần forward-reference.
 
 ---
 
 ## Checklist bước 3
 
-- [ ] Có sealed interface cho hierarchy (Intentional, RefineSpec)
-- [ ] MM nodes dùng Java record (immutable, tự sinh equals/hashCode/toString)
-- [ ] Enums có `from(String)` factory method để parse từ text
+- [ ] Có sealed interface cho hierarchy đa nhánh (`IntentionalElement`, `FlowNode`, `Refinement`)
+- [ ] MM node dùng Java record khi có thể; final class viết tay khi cần `List.copyOf`/validate
+- [ ] Enum có `from(String)` factory method để parse từ text
 - [ ] MM root có `Map<String, X>` để lookup O(1) theo ID
-- [ ] MM root có `validate()` kiểm tra cross-reference
-- [ ] Không import gì từ package `ast` hoặc `parser`
-- [ ] Không import Swing/AWT
+- [ ] Factory (`<Lang>ModelFactory`) là cầu nối DUY NHẤT từ AST sang MM — không bỏ qua bước này
+- [ ] Không import gì từ package `ast` hoặc `view` trong MM
+- [ ] Không import Swing/AWT trong MM
 - [ ] Sealed interface `permits` liệt kê đủ tất cả subtype
-- [ ] Thứ tự case trong switch: subclass trước, superclass sau
 
 ## Lỗi thường gặp
 
 | Lỗi | Sửa |
 |-----|-----|
-| `switch` không exhaustive | Thêm đủ case hoặc default |
-| `IterRefine` bị match bởi `SeqRefine` trước | Đặt `IterRefine` trước `SeqRefine` trong switch |
+| `switch` không exhaustive | Thêm đủ case, không cần `default` nếu sealed liệt kê đủ |
+| Bỏ qua Factory, Visitor tự build MM | Luôn tách Factory riêng — xem lý do ở `step-2-ast.md` |
 | MM import CS class | Xoá — MM không được biết đến AST |
-| MM chứa Swing/AWT | Chuyển toàn bộ UI sang View (Bước 4) |
-| HashMap thay LinkedHashMap trong root | Mất thứ tự khai báo — dùng LinkedHashMap |
-| Record thiếu `List.copyOf` | List có thể bị mutate từ ngoài — thêm vào constructor |
+| MM chứa Swing/AWT | Chuyển toàn bộ UI sang View (Bước 4-5) |
+| `HashMap` thay `LinkedHashMap` trong root | Mất thứ tự khai báo — dùng `LinkedHashMap` |
+| Record thiếu `List.copyOf` | List có thể bị mutate từ ngoài — thêm compact constructor |
