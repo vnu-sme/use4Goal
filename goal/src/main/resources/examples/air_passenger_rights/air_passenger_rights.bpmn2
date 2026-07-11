@@ -1,0 +1,65 @@
+// BPMN 2.0 Example — Air Passenger Rights Delay Compensation Claim
+// Transcribed from example/Data/air-passenger-rights/petri_net.pnml (place/transition net).
+// Translation rule applied by hand: a place with N outgoing transitions = XOR-choice;
+// a transition with N incoming arcs = AND-join; a transition with N outgoing arcs = AND-split.
+// Silent (unnamed) 1-in/1-out transitions of the source net (t6, t8, t9, t15) were pure
+// pass-through routing and are omitted here — their neighbours are connected directly.
+//
+// Data artifact worth flagging: the source net has TWO transitions with the identical label
+// "Record the justification for exclusion as an extraordinary circumstance" (t10 and t14),
+// reached via different branches and leading to different outcomes (approve vs deny). Both
+// are kept as distinct tasks below (recordJustificationExclusionA / B); see air_passenger_rights.map
+// for which one is treated as the mapped occurrence.
+
+collaboration AirPassengerRightsClaim {
+
+  pool AirlineClaimProcess "Airline Claim Process" {
+    lane assessment_lane "Delay Assessment" {
+      start   start1 : none
+      gateway gw_split      : and
+      task    retrieveBookingTime   "Retrieve Arrival Time From Booking"
+      task    retrieveDoorOpenTime  "Retrieve Door Open Time"
+      gateway gw_join       : and
+      task    calculateDelay "Calculate Delay At Arrival"
+      gateway gw_afterCalc  : xor
+      task    retrieveInternalSystemsInfo "Retrieve Info From Internal Systems"
+      gateway gw_afterInfo  : xor
+      task    registerJudgementCriteria "Register Judgement Criteria And Type Of EC"
+      gateway gw_afterRegister : xor
+      task    recordJustificationExclusionA "Record justification for exclusion (A)"
+      task    recordJustificationExclusionB "Record justification for exclusion (B)"
+    }
+    lane decision_lane "Compensation Decision" {
+      task approveCompensation "Approve Compensation"
+      task denyCompensation    "Deny Compensation"
+      task documentAndSaveFileCase "Document And Save File Case"
+      end  end1 : none
+    }
+
+    flow start1 -> gw_split
+    flow gw_split -> retrieveBookingTime
+    flow gw_split -> retrieveDoorOpenTime
+    flow retrieveBookingTime  -> gw_join
+    flow retrieveDoorOpenTime -> gw_join
+    flow gw_join -> calculateDelay
+    flow calculateDelay -> gw_afterCalc
+
+    flow gw_afterCalc -> retrieveInternalSystemsInfo
+    flow gw_afterCalc -> recordJustificationExclusionB : "extraordinary circumstance branch"
+
+    flow retrieveInternalSystemsInfo -> gw_afterInfo
+    flow gw_afterInfo -> registerJudgementCriteria
+    flow gw_afterInfo -> recordJustificationExclusionA : "extraordinary circumstance branch"
+
+    flow registerJudgementCriteria -> gw_afterRegister
+    flow gw_afterRegister -> denyCompensation
+    flow gw_afterRegister -> approveCompensation
+
+    flow recordJustificationExclusionA -> denyCompensation
+    flow recordJustificationExclusionB -> approveCompensation
+
+    flow denyCompensation    -> documentAndSaveFileCase
+    flow approveCompensation -> documentAndSaveFileCase
+    flow documentAndSaveFileCase -> end1
+  }
+}

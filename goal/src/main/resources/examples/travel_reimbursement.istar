@@ -5,38 +5,27 @@ istar TravelReimbursement {
 
   role Student {
     goal   TravelOrganized
-    goal   AuthorizationObtained
-    goal   TripBooked
-    task   FillInOnlineForm
-    task   BuyFlightTickets
-    resource FlightReceipt
-    quality  NoErrors
-
-    and-refine TravelOrganized : AuthorizationObtained, TripBooked
-    or-refine  TripBooked : BuyFlightTickets
-    needed-by  FlightReceipt for BuyFlightTickets
-    qualifies  NoErrors FillInOnlineForm
-    contributes FillInOnlineForm help to NoErrors
+    goal   AuthorizationObtained > TravelOrganized
+    goal   TripBooked            > TravelOrganized
+    task   FillInOnlineForm > help NoErrors
+    task   BuyFlightTickets > or TripBooked
+    resource FlightReceipt > needed-by BuyFlightTickets
+    quality  NoErrors > qualifies FillInOnlineForm
   }
 
   agent UnivOfWonderLand {
     task   ProcessReimbursement
     resource ReimbursementForm
-    quality  InTime
-
-    qualifies InTime ProcessReimbursement
+    quality  InTime > qualifies ProcessReimbursement
   }
 
   role TravelAgency {
-    task   IssueTicket
-    resource Ticket
+    task   IssueTicket > help LowCost
+    resource Ticket > needed-by IssueTicket
     quality  LowCost
-
-    needed-by Ticket for IssueTicket
-    contributes IssueTicket help to LowCost
   }
 
-  depend Student -> BuyFlightTickets -> TravelAgency
-  depend Student -> AuthorizationObtained -> UnivOfWonderLand
-  depend Student -> ProcessReimbursement -> UnivOfWonderLand
+  depend Student -> task BuyFlightTickets -> TravelAgency
+  depend Student -> goal AuthorizationObtained -> UnivOfWonderLand
+  depend Student -> task ProcessReimbursement -> UnivOfWonderLand
 }

@@ -1,17 +1,12 @@
 package org.vnu.sme.goal.istar.mm;
 
 /**
- * iStar 2.0 intentional elements: Goal (oval), Task (hexagon),
- * Resource (rectangle), Quality (cloud).
+ * iStar 2.0 intentional elements: {@link Quality} (cloud) directly, and
+ * everything under {@link ConcreteIntentionalElement} (Resource,
+ * GoalTaskElement, Obstacle).
  */
 public sealed interface IntentionalElement
-        permits IntentionalElement.Goal, IntentionalElement.Task,
-                IntentionalElement.Resource, IntentionalElement.Quality {
+        permits Quality, ConcreteIntentionalElement {
 
     String id();
-
-    record Goal    (String id) implements IntentionalElement {}
-    record Task    (String id) implements IntentionalElement {}
-    record Resource(String id) implements IntentionalElement {}
-    record Quality (String id) implements IntentionalElement {}
 }

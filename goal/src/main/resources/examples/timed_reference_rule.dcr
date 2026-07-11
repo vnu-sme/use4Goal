@@ -1,0 +1,19 @@
+dcr TimedReferenceRule {
+  event f1 "Submit a change request";
+  event f2 "Finish processing request";
+  event f3 "Cancel processing";
+  event f4 "Revise decision";
+
+  marking f1: included;
+  marking f2: ;
+  marking f3: included;
+  marking f4: included;
+
+  include f1 -> f2;
+  response f1 within 60 -> f2;
+  condition f1 after 60 -> f3;
+  exclude f3 -> f2;
+
+  response f4 within omega -> f2;
+  milestone f2 -> f4;
+}

@@ -5,11 +5,11 @@ import java.nio.file.Path;
 import java.util.*;
 
 import org.antlr.v4.runtime.*;
-import org.vnu.sme.goal.bpmn2.mm.Bpmn2Collaboration;
+import org.vnu.sme.goal.bpmn2.mm.Bpmn2Model;
 
 public final class Bpmn2Compiler {
 
-    public record Result(Bpmn2Collaboration model, List<String> errors) {
+    public record Result(Bpmn2Model model, List<String> errors) {
         public boolean ok() { return errors.isEmpty(); }
     }
 
@@ -40,12 +40,12 @@ public final class Bpmn2Compiler {
         lexer.addErrorListener(errListener);
         parser.addErrorListener(errListener);
 
-        Bpmn2Parser.CollaborationContext tree = parser.collaboration();
+        Bpmn2Parser.ModelContext tree = parser.model();
         if (!errors.isEmpty()) return new Result(null, errors);
 
         // AST pipeline: parse tree → CS (AST) → MM
-        org.vnu.sme.goal.bpmn2.ast.Bpmn2CollaborationCS ast = Bpmn2BuildingVisitor.build(tree);
-        Bpmn2Collaboration collab = Bpmn2ModelFactory.build(ast);
-        return new Result(collab, Collections.emptyList());
+        org.vnu.sme.goal.bpmn2.ast.Bpmn2ModelCS ast = Bpmn2BuildingVisitor.build(tree);
+        Bpmn2Model model = Bpmn2ModelFactory.build(ast);
+        return new Result(model, Collections.emptyList());
     }
 }

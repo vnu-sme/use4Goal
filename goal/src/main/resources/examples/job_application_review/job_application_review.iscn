@@ -1,0 +1,62 @@
+// i* Scenario — 5 Candidate OBJECTS coexisting in one scenario (object-diagram style
+// multiplicity), each running its own independent trace through the whole
+// job_application_review.istar model. HRDepartment/HiringManager stay singleton actors in
+// the .istar model, but since a shared 'ScreenApplication' value could never distinguish
+// "screened c1" from "screened c2", each candidate gets its own private copy of the whole
+// marking — exactly what a single shared IStarMarking (like the old generic_example.iscn)
+// cannot express.
+//
+// c1..c4 are hired (fire MakeOffer); c5 is rejected (fire MakeRejection instead). This is
+// deliberate: it lets the 'aggregate' checks below show a real pass AND a real fail, instead
+// of a trivial "everyone succeeds" demo.
+
+scenario JobApplicationFiveCandidates for "job_application_review.istar" {
+    instance c1, c2, c3, c4, c5 : Candidate;
+
+    fire c1.SubmitApplication;
+    fire c1.AttendInterview;
+    fire c1.ScreenApplication;
+    fire c1.ConductInterview;
+    fire c1.MakeOffer;
+    fire c1.NotifyOutcome;
+
+    fire c2.SubmitApplication;
+    fire c2.AttendInterview;
+    fire c2.ScreenApplication;
+    fire c2.ConductInterview;
+    fire c2.MakeOffer;
+    fire c2.NotifyOutcome;
+
+    fire c3.SubmitApplication;
+    fire c3.AttendInterview;
+    fire c3.ScreenApplication;
+    fire c3.ConductInterview;
+    fire c3.MakeOffer;
+    fire c3.NotifyOutcome;
+
+    fire c4.SubmitApplication;
+    fire c4.AttendInterview;
+    fire c4.ScreenApplication;
+    fire c4.ConductInterview;
+    fire c4.MakeOffer;
+    fire c4.NotifyOutcome;
+
+    // c5 is rejected instead of hired: MakeRejection breaks TeamQuality instead of making it,
+    // even though the process still completes normally (HR still notifies the outcome).
+    fire c5.SubmitApplication;
+    fire c5.AttendInterview;
+    fire c5.ScreenApplication;
+    fire c5.ConductInterview;
+    fire c5.MakeRejection;
+    fire c5.NotifyOutcome;
+
+    // Every candidate's application reaches a conclusion and gets told the outcome,
+    // regardless of hire/reject — both should hold for all 5.
+    aggregate EveryApplicationProcessed : all over ApplicationProcessed;
+    aggregate EveryCandidateNotified    : all over CandidateExperience;
+
+    // But team quality only holds for candidates who were actually hired — expected to FAIL
+    // for c5, proving the mechanism actually distinguishes individual instances instead of
+    // reporting one shared "good enough on average" value.
+    aggregate EveryHireIsQualityHire : all over TeamQuality;
+}

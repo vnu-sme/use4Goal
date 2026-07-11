@@ -1,0 +1,17 @@
+# Conformance mapping file — shop_order_fulfillment
+# Format implemented by org.vnu.sme.goal.conformance.mapping.ConformanceMappingParser
+# (see doc/paper/conformance-istar-bpmn2.md, §4.1). Transcribed from
+# example/Data/shop/map-bpmn.csv (columns: Task, Event) — identical labels on both sides.
+#   actor <istarActorName> -> pool <poolId> [lane <laneId>]
+#   map   <istarElementId (leaf Goal|Task)> -> node <bpmnNodeId>
+
+actor WarehouseTeam -> pool WarehouseProcess
+
+map PickItems -> node pickItems
+map PackItems -> node packItems
+map ShipItems -> node shipItems
+
+# Not mapped (silent BPMN routing steps, map(n) = epsilon):
+#   start1, end1
+# Not mapped (i* elements satisfied only via AND/OR propagation, never directly):
+#   FulfillOrder, DeliverOnTime

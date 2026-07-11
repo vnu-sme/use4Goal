@@ -1,0 +1,351 @@
+<mxfile host="65bd71144e">
+    <diagram id="istar-mtg-scenario" name="iStar Scenario Diagram — mtg.iscn (instance-level)">
+        <mxGraphModel dx="2296" dy="1427" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1400" pageHeight="1220" background="#ffffff" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="b_init" value="Initiator  [abdul]" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#666666;verticalAlign=top;align=left;fontStyle=1;fontSize=13;spacingTop=6;spacingLeft=8;fontColor=#000000;labelBackgroundColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="-68" y="60" width="740" height="590" as="geometry"/>
+                </mxCell>
+                <mxCell id="b_org" value="Organizer  [matilda]" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#666666;verticalAlign=top;align=left;fontStyle=1;fontSize=13;spacingTop=6;spacingLeft=8;fontColor=#000000;labelBackgroundColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="240" y="1197" width="2035" height="1160" as="geometry"/>
+                </mxCell>
+                <mxCell id="b_sec" value="Secretary  [alex]" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#666666;verticalAlign=top;align=left;fontStyle=1;fontSize=13;spacingTop=6;spacingLeft=8;fontColor=#000000;labelBackgroundColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="981" y="2560" width="280" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="b_xing" value="Participant  [xing]  — hasCalendar" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#666666;verticalAlign=top;align=left;fontStyle=1;fontSize=12;spacingTop=6;spacingLeft=8;fontColor=#000000;" vertex="1" parent="1">
+                    <mxGeometry x="689" y="-37" width="300" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="b_amr" value="Participant  [amr]  — hasCalendar" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#666666;verticalAlign=top;align=left;fontStyle=1;fontSize=12;spacingTop=6;spacingLeft=8;fontColor=#000000;" vertex="1" parent="1">
+                    <mxGeometry x="885" y="166.68" width="300" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="b_naya" value="Participant  [naya]  — no calendar" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#666666;verticalAlign=top;align=left;fontStyle=1;fontSize=12;spacingTop=6;spacingLeft=8;fontColor=#000000;" vertex="1" parent="1">
+                    <mxGeometry x="1111" y="320" width="300" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_HaveMeetingOrganized" value="HaveMeetingOrganized&#10;Fulfilled" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=11;labelBackgroundColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="167" y="110" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_DecideMeetingDetails" value="DecideMeetingDetails&#10;Fulfilled" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=11;labelBackgroundColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="-79" y="250" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_HaveSchedulingPerformed" value="HaveSchedulingPerformed&#10;Fulfilled" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=10;labelBackgroundColor=none;rotation=-5;" parent="1" vertex="1">
+                    <mxGeometry x="3" y="460" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_HaveSchedulingPerformedByOrganizer" value="HaveSchedulingPerformedByOrganizer&#10;Fulfilled (assign)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;labelBackgroundColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="37" y="555" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_MeetingAttended" value="MeetingAttended&#10;Fulfilled  (AND of 3 participants)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" parent="1" vertex="1">
+                    <mxGeometry x="326" y="211.68" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_MAP_xing" value="MeetingAttendedByParticipant&#10;(xing) — Fulfilled (assign)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="404" y="336" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_MAP_amr" value="MeetingAttendedByParticipant&#10;(amr) — Fulfilled (assign)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="393" y="452" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_MAP_naya" value="MeetingAttendedByParticipant&#10;(naya) — Fulfilled (assign)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="234" y="505" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_HaveMeetingScheduled" value="HaveMeetingScheduled&#10;Fulfilled" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=11;labelBackgroundColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="1390" y="1276" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_TimetablesCollected" value="TimetablesCollected&#10;Fulfilled  (AND of 3 participants)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" parent="1" vertex="1">
+                    <mxGeometry x="987" y="1513" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_TC_xing" value="TimetableCollected&#10;(xing) — Fulfilled" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="820" y="1735" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_TC_amr" value="TimetableCollected&#10;(amr) — Fulfilled" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="1096" y="1717" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_TC_naya" value="TimetableCollected&#10;(naya) — Fulfilled" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="1390" y="1732" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_CFC_xing" value="CollectFromCalendar&#10;(xing) — Fulfilled" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="750" y="1946" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_CFC_amr" value="CollectFromCalendar&#10;(amr) — Fulfilled" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="1047" y="1948" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_HavePPCalled_naya" value="HavePPCalled&#10;(naya) — Fulfilled" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="1397" y="2013" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_HaveSecretaryCallPP_naya" value="HaveSecretaryCallPP&#10;(naya) — Fulfilled (assign)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="1266" y="2165" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_ChooseTimeAndDate" value="ChooseTimeAndDate&#10;Fulfilled" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=11;labelBackgroundColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="1370" y="1559" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_MeetingAnnounced" value="MeetingAnnounced&#10;Fulfilled  (AND of 3 participants)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" parent="1" vertex="1">
+                    <mxGeometry x="1747" y="1489" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_AM_xing" value="AnnounceMeeting&#10;(xing) — Fulfilled" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="1963" y="1659" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_AM_amr" value="AnnounceMeeting&#10;(amr) — Fulfilled" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="1770" y="1639" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_AM_naya" value="AnnounceMeeting&#10;(naya) — Fulfilled" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="1632" y="1577" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_Inclusivity" value="Inclusivity&#10;True (via naya)" style="shape=cloud;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000;fontSize=10;" parent="1" vertex="1">
+                    <mxGeometry x="1703" y="2093" width="260" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_QuickScheduling" value="QuickScheduling&#10;True (via xing, amr)" style="shape=cloud;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000;fontSize=10;" parent="1" vertex="1">
+                    <mxGeometry x="482" y="1709" width="260" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_CCBP_naya" value="CollectConstraintsByPhone&#10;(naya) — Fulfilled" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="994" y="2618" width="240" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_Participate_xing" value="Participate&#10;Fulfilled" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+                    <mxGeometry x="709" y="13" width="260" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_Participate_amr" value="Participate&#10;Fulfilled" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+                    <mxGeometry x="905" y="216.68" width="260" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_Participate_naya" value="Participate&#10;Fulfilled" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+                    <mxGeometry x="1131" y="370" width="260" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="e1" value="AND" style="endArrow=block;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;labelBackgroundColor=none;" parent="1" source="i_DecideMeetingDetails" target="i_HaveMeetingOrganized" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e2" value="AND" style="endArrow=block;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;labelBackgroundColor=none;" parent="1" source="i_HaveSchedulingPerformed" target="i_HaveMeetingOrganized" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e3" value="AND" style="endArrow=block;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;labelBackgroundColor=none;" parent="1" source="i_MeetingAttended" target="i_HaveMeetingOrganized" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e6" value="AND" style="endArrow=block;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;labelBackgroundColor=none;" parent="1" source="i_TimetablesCollected" target="i_HaveMeetingScheduled" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e7" value="AND" style="endArrow=block;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;labelBackgroundColor=none;" parent="1" source="i_ChooseTimeAndDate" target="i_HaveMeetingScheduled" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e8" value="AND" style="endArrow=block;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;labelBackgroundColor=none;" parent="1" source="i_MeetingAnnounced" target="i_HaveMeetingScheduled" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_tc1" value="AND" style="endArrow=block;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;" edge="1" parent="1" source="i_TC_xing" target="i_TimetablesCollected">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_tc2" value="AND" style="endArrow=block;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;" edge="1" parent="1" source="i_TC_amr" target="i_TimetablesCollected">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_tc3" value="AND" style="endArrow=block;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;" edge="1" parent="1" source="i_TC_naya" target="i_TimetablesCollected">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_ma1" value="AND" style="endArrow=block;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;" edge="1" parent="1" source="i_MAP_xing" target="i_MeetingAttended">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_ma2" value="AND" style="endArrow=block;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;" edge="1" parent="1" source="i_MAP_amr" target="i_MeetingAttended">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_ma3" value="AND" style="endArrow=block;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;" edge="1" parent="1" source="i_MAP_naya" target="i_MeetingAttended">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_am1" value="AND" style="endArrow=block;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;" edge="1" parent="1" source="i_AM_xing" target="i_MeetingAnnounced">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_am2" value="AND" style="endArrow=block;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;" edge="1" parent="1" source="i_AM_amr" target="i_MeetingAnnounced">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_am3" value="AND" style="endArrow=block;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;" edge="1" parent="1" source="i_AM_naya" target="i_MeetingAnnounced">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e4" value="OR" style="endArrow=open;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;labelBackgroundColor=none;" parent="1" source="i_HaveSchedulingPerformedByOrganizer" target="i_HaveSchedulingPerformed" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e10" value="OR" style="endArrow=open;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;labelBackgroundColor=none;" parent="1" source="i_CFC_xing" target="i_TC_xing" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e11" value="OR" style="endArrow=open;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;labelBackgroundColor=none;" parent="1" source="i_CFC_amr" target="i_TC_amr" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e12" value="OR" style="endArrow=open;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;labelBackgroundColor=none;" parent="1" source="i_HavePPCalled_naya" target="i_TC_naya" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e13" value="OR" style="endArrow=open;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;labelBackgroundColor=none;" parent="1" source="i_HaveSecretaryCallPP_naya" target="i_HavePPCalled_naya" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e14" value="make" style="endArrow=open;dashed=1;html=1;fontColor=#000000;strokeColor=#9673a6;fontSize=10;labelBackgroundColor=none;" parent="1" source="i_HavePPCalled_naya" target="i_Inclusivity" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1274" y="2114" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e15" value="make" style="endArrow=open;dashed=1;html=1;fontColor=#000000;strokeColor=#9673a6;fontSize=10;labelBackgroundColor=none;" parent="1" source="i_CFC_xing" target="i_QuickScheduling" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e15b" value="make" style="endArrow=open;dashed=1;html=1;fontColor=#000000;strokeColor=#9673a6;fontSize=10;" edge="1" parent="1" source="i_CFC_amr" target="i_QuickScheduling">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e16" value="depend (assign)" style="edgeStyle=orthogonalEdgeStyle;endArrow=open;dashed=1;html=1;fontColor=#000000;strokeColor=#b85450;fontSize=10;labelBackgroundColor=none;" parent="1" source="i_HaveSchedulingPerformedByOrganizer" target="i_HaveMeetingScheduled" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1210" y="594"/>
+                            <mxPoint x="1210" y="1301"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e17" value="depend (assign)" style="edgeStyle=orthogonalEdgeStyle;endArrow=open;dashed=1;html=1;fontColor=#000000;strokeColor=#b85450;fontSize=10;labelBackgroundColor=none;" parent="1" source="i_HaveSecretaryCallPP_naya" target="i_CCBP_naya" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e19" value="depend (assign)" style="edgeStyle=orthogonalEdgeStyle;endArrow=open;dashed=1;html=1;fontColor=#000000;strokeColor=#b85450;fontSize=10;" edge="1" parent="1" source="i_MAP_amr" target="i_Participate_amr">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e20" value="depend (assign)" style="edgeStyle=orthogonalEdgeStyle;endArrow=open;dashed=1;html=1;fontColor=#000000;strokeColor=#b85450;fontSize=10;" edge="1" parent="1" source="i_MAP_naya" target="i_Participate_naya">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="20" style="edgeStyle=none;html=1;exitX=0;exitY=0;exitDx=0;exitDy=0;entryX=0.044;entryY=-0.012;entryDx=0;entryDy=0;entryPerimeter=0;labelBackgroundColor=none;" edge="1" parent="1" source="b_amr" target="b_amr">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" value="depend (assign)" style="edgeStyle=orthogonalEdgeStyle;endArrow=open;dashed=1;html=1;fontColor=#000000;strokeColor=#b85450;fontSize=10;" edge="1" parent="1" source="i_MAP_xing" target="i_Participate_xing">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="814.999537776956" y="476.0666666666666" as="sourcePoint"/>
+                        <mxPoint x="1045.066666666667" y="286.68000000000006" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="839" y="361"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="i_HavePPCalled_xing" value="HavePPCalled&#10;(xing)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontColor=#666666;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="800" y="2043" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_HavePPCalled_amr" value="HavePPCalled&#10;(amr)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontColor=#666666;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="1131" y="2028" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_CFC_naya" value="CollectFromCalendar&#10;(naya)" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#f5f5f5;strokeColor=#999999;fontColor=#666666;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="1676" y="1936" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_new1" value="OR" style="endArrow=open;html=1;fontColor=#999999;strokeColor=#999999;fontSize=10;dashed=1;" edge="1" parent="1" source="i_HavePPCalled_xing" target="i_TC_xing">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_new2" value="OR" style="endArrow=open;html=1;fontColor=#999999;strokeColor=#999999;fontSize=10;dashed=1;" edge="1" parent="1" source="i_HavePPCalled_amr" target="i_TC_amr">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_new3" value="OR" style="endArrow=open;html=1;fontColor=#999999;strokeColor=#999999;fontSize=10;dashed=1;" edge="1" parent="1" source="i_CFC_naya" target="i_TC_naya">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend" value="Mau sac = trang thai (thay vi ghi chu):&#10;Xanh la = Fulfilled / True (dat duoc)&#10;Xam = nhanh khong dung toi cho participant nay (UNKNOWN, khong phai loi)&#10;Cam (neu co) = Pending" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontColor=#000000;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="700" width="320" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="b_charlie" value="Participant  [charlie]  — no calendar, alex cannot call" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#666666;verticalAlign=top;align=left;fontStyle=1;fontSize=12;spacingTop=6;spacingLeft=8;fontColor=#000000;" vertex="1" parent="1">
+                    <mxGeometry x="1111" y="480" width="300" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_Participate_charlie" value="Participate&#10;Fulfilled" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+                    <mxGeometry x="1131" y="530" width="260" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="b_bao" value="Participant  [bao]  — no calendar, alex cannot call" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#666666;verticalAlign=top;align=left;fontStyle=1;fontSize=12;spacingTop=6;spacingLeft=8;fontColor=#000000;" vertex="1" parent="1">
+                    <mxGeometry x="1111" y="640" width="300" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_Participate_bao" value="Participate&#10;Fulfilled" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=11;" vertex="1" parent="1">
+                    <mxGeometry x="1131" y="690" width="260" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_MAP_charlie" value="MeetingAttendedByParticipant&#10;(charlie) — Fulfilled (assign)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="700" y="660" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_MAP_bao" value="MeetingAttendedByParticipant&#10;(bao) — Fulfilled (assign)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="1000" y="660" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_ma4" value="AND" style="endArrow=block;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;" edge="1" parent="1" source="i_MAP_charlie" target="i_MeetingAttended">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_ma5" value="AND" style="endArrow=block;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;" edge="1" parent="1" source="i_MAP_bao" target="i_MeetingAttended">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_dep_charlie" value="depend (assign)" style="edgeStyle=orthogonalEdgeStyle;endArrow=open;dashed=1;html=1;fontColor=#000000;strokeColor=#b85450;fontSize=10;" edge="1" parent="1" source="i_MAP_charlie" target="i_Participate_charlie">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_dep_bao" value="depend (assign)" style="edgeStyle=orthogonalEdgeStyle;endArrow=open;dashed=1;html=1;fontColor=#000000;strokeColor=#b85450;fontSize=10;" edge="1" parent="1" source="i_MAP_bao" target="i_Participate_bao">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_TC_charlie" value="TimetableCollected&#10;(charlie) — Fulfilled" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="469" y="1881" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_TC_bao" value="TimetableCollected&#10;(bao) — Fulfilled" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="913" y="2109" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_tc4" value="AND" style="endArrow=block;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;" edge="1" parent="1" source="i_TC_charlie" target="i_TimetablesCollected">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_tc5" value="AND" style="endArrow=block;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;" edge="1" parent="1" source="i_TC_bao" target="i_TimetablesCollected">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_HavePPCalled_charlie" value="HavePPCalled&#10;(charlie) — Fulfilled" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="496" y="2038" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_HavePPCalled_bao" value="HavePPCalled&#10;(bao) — Fulfilled" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="1140" y="2227" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_new4" value="OR" style="endArrow=open;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;" edge="1" parent="1" source="i_HavePPCalled_charlie" target="i_TC_charlie">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_new5" value="OR" style="endArrow=open;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;" edge="1" parent="1" source="i_HavePPCalled_bao" target="i_TC_bao">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_HaveSecretaryCallPP_charlie" value="HaveSecretaryCallPP&#10;(charlie) — Fulfilled (assign)&#10;via hung, not alex" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=8;" vertex="1" parent="1">
+                    <mxGeometry x="482" y="2165" width="260" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_HaveSecretaryCallPP_bao" value="HaveSecretaryCallPP&#10;(bao) — Fulfilled (assign)&#10;via hung, not alex" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=8;" vertex="1" parent="1">
+                    <mxGeometry x="1200" y="2392" width="260" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_new6" value="OR" style="endArrow=open;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;" edge="1" parent="1" source="i_HaveSecretaryCallPP_charlie" target="i_HavePPCalled_charlie">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_new7" value="OR" style="endArrow=open;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;" edge="1" parent="1" source="i_HaveSecretaryCallPP_bao" target="i_HavePPCalled_bao">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_AM_charlie" value="AnnounceMeeting&#10;(charlie) — Fulfilled" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="2052" y="1833" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_AM_bao" value="AnnounceMeeting&#10;(bao) — Fulfilled" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="2041" y="1927" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_am4" value="AND" style="endArrow=block;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;" edge="1" parent="1" source="i_AM_charlie" target="i_MeetingAnnounced">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_am5" value="AND" style="endArrow=block;html=1;fontColor=#000000;strokeColor=#000000;fontSize=10;" edge="1" parent="1" source="i_AM_bao" target="i_MeetingAnnounced">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e14b" value="make" style="endArrow=open;dashed=1;html=1;fontColor=#000000;strokeColor=#9673a6;fontSize=10;" edge="1" parent="1" source="i_HavePPCalled_charlie" target="i_Inclusivity">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e14c" value="make" style="endArrow=open;dashed=1;html=1;fontColor=#000000;strokeColor=#9673a6;fontSize=10;" edge="1" parent="1" source="i_HavePPCalled_bao" target="i_Inclusivity">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="b_hung" value="Secretary  [hung]  — canCall(charlie,bao), alex cannot" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#666666;verticalAlign=top;align=left;fontStyle=1;fontSize=12;spacingTop=6;spacingLeft=8;fontColor=#000000;" vertex="1" parent="1">
+                    <mxGeometry x="1300" y="2560" width="280" height="220" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_CCBP_charlie" value="CollectConstraintsByPhone&#10;(charlie) — Fulfilled" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="1327" y="2637" width="240" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_CCBP_bao" value="CollectConstraintsByPhone&#10;(bao) — Fulfilled" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#000000;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="1303" y="2711" width="240" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_dep_ccbp_charlie" value="depend (assign)" style="edgeStyle=orthogonalEdgeStyle;endArrow=open;dashed=1;html=1;fontColor=#000000;strokeColor=#b85450;fontSize=10;" edge="1" parent="1" source="i_HaveSecretaryCallPP_charlie" target="i_CCBP_charlie">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="673" y="2662"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e_dep_ccbp_bao" value="depend (assign)" style="edgeStyle=orthogonalEdgeStyle;endArrow=open;dashed=1;html=1;fontColor=#000000;strokeColor=#b85450;fontSize=10;" edge="1" parent="1" source="i_HaveSecretaryCallPP_bao" target="i_CCBP_bao">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="note2" value="kich ban meeting_five_participants_two_secretaries.iscn: +2 participant (charlie, bao) khong co calendar va alex KHONG goi duoc ho -&gt; phai qua secretary thu 2 'hung'. mtg.istar khong doi mot dong nao — multiplicity la chuyen cua scenario, khong phai domain model." style="text;fontSize=11;fontStyle=2;align=left;fontColor=#333333;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="2830" width="1300" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_CFC_charlie" value="CollectFromCalendar&#10;(charlie)" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#f5f5f5;strokeColor=#999999;fontColor=#666666;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="342" y="2281" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="i_CFC_bao" value="CollectFromCalendar&#10;(bao)" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#f5f5f5;strokeColor=#999999;fontColor=#666666;fontSize=9;" vertex="1" parent="1">
+                    <mxGeometry x="740" y="2220" width="260" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_new8" value="OR" style="endArrow=open;html=1;fontColor=#999999;strokeColor=#999999;fontSize=10;dashed=1;" edge="1" parent="1" source="i_CFC_charlie" target="i_TC_charlie">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_new9" value="OR" style="endArrow=open;html=1;fontColor=#999999;strokeColor=#999999;fontSize=10;dashed=1;" edge="1" parent="1" source="i_CFC_bao" target="i_TC_bao">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

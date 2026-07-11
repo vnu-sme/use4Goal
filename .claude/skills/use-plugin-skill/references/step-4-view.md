@@ -7,7 +7,7 @@ src/main/java/org/vnu/sme/<plugin>/<lang>/view/
     <Lang>View.java          # Renderer — JPanel + Graphics2D, KHÔNG tự tính layout
 ```
 
-(Nếu tách đúng theo khuyến nghị dưới đây, thêm 2 file nữa — xem mục "Thiết kế đề xuất".)
+(Tách đúng 3 tầng thì có thêm 2 file nữa — xem mục "Thiết kế bắt buộc cho View".)
 
 ---
 
@@ -27,21 +27,93 @@ Chi tiết đầy đủ + trích dẫn class/file: `doc/use-core-design-rules.md
 
 ---
 
-## Hiện trạng `IStarView`/`Bpmn2View` — CHƯA tách đúng 3 tầng
+## Bắt buộc: mọi ngôn ngữ làm đúng 3 tầng ngay từ đầu
 
-Cả 2 View hiện có trong codebase (`istar/view/IStarView.java`, `bpmn2/view/Bpmn2View.java`)
-đều là `JPanel implements View`, **tự đọc MM và tự tính toạ độ ngay trong chính nó**:
-`setModel(model)` gọi `buildLayout()` (tính x,y,w,h cho từng node) rồi `paintComponent` vẽ
-luôn — cả 3 việc Adapter/Layout/Render gộp trong 1 class. Đây là nợ kỹ thuật hiện tại (hoạt
-động đúng, nhưng không tách được để test layout độc lập hay tái dùng cho renderer khác, ví
-dụ export SVG).
-
-**Không bắt buộc sửa lại `IStarView`/`Bpmn2View` ngay** — nhưng **ngôn ngữ mới nên làm đúng
-3 tầng ngay từ đầu**, theo thiết kế dưới đây.
+`<Lang>Node`/`<Lang>Edge` (Adapter) + `<Lang>Layout` (POJO thuần, không Swing) +
+`<Lang>LayoutBuilder` (MM → Layout, không import Swing/AWT) + `<Lang>View` (chỉ render + xử
+lý drag/resize, không tính toạ độ trong `paintComponent`). `<Lang>Form` gọi
+`view.setModel(model)` — View tự delegate sang `<Lang>LayoutBuilder.build(model)` một lần rồi
+gọi `setLayout(...)`, không lặp lại thuật toán tính toạ độ trong chính nó. Đây không phải gợi
+ý tuỳ chọn — mọi View mới đều phải theo thiết kế này ngay từ đầu, theo đúng khuôn mẫu
+`ClassDiagramView`/`PlaceableNode`/`DirectedGraph` của USE core đã trích ở trên.
 
 ---
 
-## Thiết kế đề xuất cho ngôn ngữ mới
+## Ưu tiên UI đồng bộ với USE: kế thừa hạ tầng diagram sẵn có
+
+Khi view là một diagram graph tương tác thật (node/edge, kéo thả, zoom, context menu, save/load
+layout), **không tự viết một Swing canvas hoàn toàn riêng**. Hãy reuse các component trong
+`use/use-gui/src/main/java/org/tzi/use/gui/views/diagrams/` từ plugin trong `goal/`:
+
+- `<Lang>View extends JPanel implements View`: wrapper mỏng để nhúng diagram vào form/dialog.
+- `<Lang>Diagram extends DiagramView`: canvas chính, dùng `DiagramGraph`, `DiagramInputHandling`,
+  menu layout, grid, anti-aliasing, grayscale và repaint lifecycle của USE.
+- `<Lang>DiagramOptions extends DiagramOptions`: gom màu, stroke, font, persist option theo
+  cùng kiểu USE.
+- `<Lang>Node extends PlaceableNode`: adapter node của ngôn ngữ, override `onDraw`,
+  `doCalculateSize`, tooltip và store/restore placement nếu cần.
+- `<Lang>Edge extends EdgeBase`: adapter edge của ngôn ngữ, dùng `DirectedEdgeFactory`/
+  waypoint support và chỉ custom glyph/màu/label theo semantics riêng.
+
+Vẫn giữ `<Lang>Layout` + `<Lang>LayoutBuilder` thuần Java để tạo node/edge semantic và toạ độ
+mặc định trước khi đổ vào `DiagramGraph`. Phần Swing nằm ở lớp adapter diagram, không nằm trong
+MM hay compiler.
+
+Custom `JPanel + Graphics2D` chỉ dùng cho preview rất nhỏ, prototype, hoặc trường hợp đã kiểm
+tra mà `DiagramView` không phù hợp. Nếu dùng fallback này, ghi rõ lý do trong code hoặc tài liệu
+ngắn của view để lần sau không vô tình làm UI lệch khỏi USE tool gốc.
+
+Không kế thừa trực tiếp `ClassDiagramView`/`ObjectDiagramView` cho ngôn ngữ không phải UML class
+hoặc object diagram; chúng gắn với `MClass`, `MObject`, `MSystem`. Với DSL riêng, kế thừa lớp
+nền tổng quát `DiagramView` và tự cung cấp node/edge adapter.
+
+Khi hỗ trợ lưu/đọc layout, dùng action/persistence sẵn có của USE:
+
+- `ActionSaveLayout` / `ActionLoadLayout` cho menu.
+- `storePlacementInfo(...)` trên node/edge và `restorePlacementInfo(...)` khi load.
+- `getDefaultLayoutFileSuffix()` để đặt suffix riêng cho ngôn ngữ.
+- Không sửa code trong `use/`; chỉ import và reuse public/protected API có sẵn từ plugin.
+
+---
+
+## Form loader, ViewFrame và popup window
+
+Với diagram view, `<Lang>Form` chỉ là form mở file cổ điển. Không nhúng canvas/diagram vào form
+loader. Giữ UI cô đọng, tên tiếng Anh ngắn:
+
+```
+File: [........................] [Browse] [Open] [v] [Close]
+```
+
+Quy tắc:
+
+- `Open` mặc định compile file và mở diagram trong USE desktop bằng `ViewFrame`.
+- Nút `v` nếu có chỉ mở `JPopupMenu` nhỏ với lựa chọn phụ như `Open in USE` và `Open popup`.
+- Không để vùng preview trắng, header dài, log `Ready`, hoặc text hướng dẫn thừa trong loader.
+- Parse/IO lỗi hiển thị bằng `JOptionPane` hoặc status label rất ngắn; không biến loader thành
+  console/debug panel.
+
+Đặt logic mở window ở `<Lang>View`, không dàn trải trong form:
+
+- `<Lang>View.openUseDesktop(MainWindow, Model, Path)` tạo `<Lang>View`, bọc bằng `ViewFrame`,
+  add vào `mainWindow.addNewViewFrame(frame)`.
+- `<Lang>View.openPopupWindow(MainWindow, Model, Path)` tạo cùng view nhưng đặt trong `JFrame`.
+- `<Lang>View implements View, PrintableView` nếu muốn Print/Export của USE bật khi frame được
+  chọn.
+
+Nếu hỗ trợ cả hai placement (`ViewFrame` trong USE và popup ngoài USE), context menu chuột phải
+trên chính diagram phải chuyển được hai chiều:
+
+- Đang trong USE `ViewFrame` → menu item `Open popup`.
+- Đang trong popup `JFrame` → menu item `Open in USE`.
+
+Nối menu này qua callback từ `<Lang>View` xuống `<Lang>Diagram` (ví dụ `setSwitchAction(label,
+Runnable)`), để `<Lang>Diagram` chỉ dựng `JPopupMenu`, còn `<Lang>View` quản lý lifecycle
+`ViewFrame`/`JFrame`. Không sửa `MainWindow` hoặc `ViewFrame` của USE core để làm việc này.
+
+---
+
+## Thiết kế bắt buộc cho View
 
 ```
 view/
@@ -154,7 +226,7 @@ class mới đọc `<Lang>Layout`, không đụng vào `LayoutBuilder`.
 ```java
 private static final Color C_GOAL_FILL = new Color(230, 248, 232);
 private static final Color C_GOAL_BDR  = new Color(30, 140, 60);
-// ... theo từng NodeKind của ngôn ngữ, xem IStarView/Bpmn2View hiện có để tham khảo màu sắc
+// ... 1 cặp fill/border color cho mỗi NodeKind của ngôn ngữ
 ```
 
 ---
@@ -174,8 +246,8 @@ Thực tế: `@Override public void detachModel() { layout = null; repaint(); }`
 
 ## Checklist bước 5
 
-- [ ] Có tách `<Lang>Node`/`<Lang>Edge` (Adapter) khỏi `<Lang>View` (Renderer) — không bắt buộc
-      với ngôn ngữ đơn giản, nhưng khuyến nghị mạnh cho ngôn ngữ mới
+- [ ] Có tách `<Lang>Node`/`<Lang>Edge` (Adapter) khỏi `<Lang>View` (Renderer) — bắt buộc cho
+      mọi ngôn ngữ mới, kể cả ngôn ngữ trông đơn giản
 - [ ] `<Lang>LayoutBuilder` không import Swing/AWT — chỉ tính toán số học
 - [ ] `<Lang>View.paintComponent` KHÔNG gọi lại logic tính toạ độ — chỉ đọc field có sẵn
 - [ ] Vẽ theo layer: actors/container → edges → nodes (nodes vẽ sau để đè lên cạnh)

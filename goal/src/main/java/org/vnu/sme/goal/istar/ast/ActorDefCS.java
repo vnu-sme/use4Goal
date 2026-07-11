@@ -5,6 +5,6 @@ import java.util.List;
 /** Actor definition in concrete syntax. */
 public record ActorDefCS(
         String              id,
-        String              kind,     // "actor" | "role" | "agent"
+        String              kind,     // "role" | "agent"
         List<ElementBodyCS> body
 ) {}

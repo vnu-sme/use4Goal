@@ -1,0 +1,61 @@
+// iStar 2.0 — Harder example 6: two parallel deep chains combined under one root
+// G1 <-AND- {G2, G3}
+//   Branch 1 (actor type C): G2 <-AND- {G2a, G2b}
+//     G2a <-OR- {K1,K2}
+//     G2b <-forall(C)- G2bF <-pick(C)- G2bFP <-AND- {K3,K4}
+//   Branch 2 (actor type D, reversed order): G3 <-OR- {G3a, G3b}
+//     G3a <-pick(D)- G3aP <-forall(D)- G3aPF <-AND- {K5,K6}
+//     G3b <-AND- {K7,K8}
+
+istar Example6 {
+
+  role C {
+    task K20
+    goal G20
+  }
+
+  role D {
+    resource R20
+    task     K21
+  }
+
+  agent A {
+    goal G1                         // root: AND of branch1 (G2) and branch2 (G3)
+
+    goal G2 > G1
+    goal G3 > G1
+
+    // Branch 1: AND -> OR, and AND -> forall -> pick -> AND
+    goal G2a > G2
+    goal G2b > G2                   // AND: G2 needs G2a and G2b
+
+    task K1 > or G2a
+    task K2 > or G2a                 // OR under G2a
+
+    goal G2bF  > forall C G2b        // forall under G2b
+    goal G2bFP > pick C G2bF         // pick nested under the forall
+
+    task K3 > G2bFP > make Q1
+    task K4 > G2bFP                  // AND closing branch 1's inner chain
+
+    // Branch 2: OR -> pick -> forall -> AND (reversed order, different actor type D)
+    goal G3a > or G3
+    goal G3b > or G3
+
+    goal G3aP  > pick D G3a           // pick first
+    goal G3aPF > forall D G3aP        // forall nested under the pick
+
+    task K5 > G3aPF
+    task K6 > G3aPF > hurt Q1         // AND closing branch 2's inner chain
+
+    task K7 > G3b
+    task K8 > G3b                     // AND under the plain OR alternative G3b
+
+    quality Q1
+  }
+
+  depend A.G2bF  -> goal     G20 -> C.G20
+  depend A.G2bFP -> task     K20 -> C.K20
+  depend A.G3aP  -> resource R20 -> D.R20
+  depend A.G3aPF -> task     K21 -> D.K21
+}

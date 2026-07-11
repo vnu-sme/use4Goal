@@ -1,0 +1,308 @@
+-- Unified UML/OCL specification for the construction-permit case study
+-- (see construction_permit.istar / .bpmn2 / .dcr / .map in this same
+-- folder, and doc/paper/alig.md + doc/paper/conformance-istar-bpmn2.md).
+--
+-- Goal: a single, real USE model (classes + associations + OCL
+-- invariants) that describes the *entities* of the Goal Model (i*,
+-- including Actor/Agent), of BPMN2 and of DCR, plus the state each one
+-- carries (Definition 3.1) and how the two process notations must agree
+-- with the goal model (Definition 4.1) -- so that a .soil scenario can
+-- drive any of the two process representations and USE checks, via the
+-- invariants below, whether the run stays consistent ("on dinh").
+--
+-- Deliberately reduced to what compliance-checking needs (leaf Goal/Task
+-- mapping, AND/OR refinement, Make/Break contribution; no Dependency,
+-- Resource, Obstacle, Qualification, NeededBy, Obstruction, Resolution,
+-- Association, Lane, Message/MessageFlow) -- see doc/04-istar-metamodel
+-- .drawio, doc/05-bpmn2-metamodel.drawio and doc/06-dcr-metamodel.drawio
+-- for the full per-language metamodels.
+
+model ConstructionPermitCompliance
+
+-- =====================================================================
+-- Value domains (Definition 3.1, alig.md): Delta = {bottom, top, ?}
+-- restricted per element kind -- E := Delta (+) (Delta x Delta). Each
+-- enum below encodes exactly the *restricted* subset of that domain, so
+-- USE's type system enforces Definition 3.1(ii)/(iii) for free.
+-- =====================================================================
+enum GoalTaskStatus   {gtUnknown, gtFulfilled, gtPending}   -- {(?,?), (top,bottom), (top,top)}
+enum QualityStatus    {qUnknown, qFulfilled, qDenied}       -- Delta = {?, top, bottom}
+enum GoalType         {achieve, maintain, avoid}
+enum ContributionType {make, help, hurt, break}
+
+enum EventTrigger     {none, message, timer, error, signal, terminate, compensation, conditional}
+enum EventDirection   {catching, throwing}
+enum GatewayKind      {gwXor, gwAnd, gwOr, gwEventBased}
+
+enum DcrRelationKind  {condition, response, include, exclude}
+
+-- =====================================================================
+-- 1. Goal model -- org.vnu.sme.goal.istar.mm
+-- =====================================================================
+class GoalModel
+attributes
+  gmName : String
+operations
+  -- Definition 4.1: F_C membership test, restricted to this model's own qualities.
+  isSuccess(): Boolean =
+    self.actors.elements->select(oclIsKindOf(Quality))->collect(oclAsType(Quality))->asSet()
+      ->forAll(q | q.qualityStatus = #qFulfilled)
+end
+
+abstract class Actor
+attributes
+  actorName : String
+end
+
+class Agent < Actor end
+class Role  < Actor end
+
+composition GoalModelActors between
+  GoalModel [1] role goalModel
+  Actor     [*] role actors
+end
+
+abstract class IntentionalElement
+attributes
+  elementId : String
+end
+
+abstract class ConcreteIntentionalElement < IntentionalElement end
+
+abstract class GoalTaskElement < ConcreteIntentionalElement
+attributes
+  taskStatus : GoalTaskStatus
+end
+
+class Goal < GoalTaskElement
+attributes
+  goalType : GoalType
+end
+
+class Task < GoalTaskElement end
+
+class Quality < IntentionalElement
+attributes
+  qualityStatus : QualityStatus
+end
+
+composition ActorElements between
+  Actor              [1] role owner
+  IntentionalElement [*] role elements
+end
+
+-- Refinement links (Definition 3.2): child -> parent, mirroring
+-- org.vnu.sme.goal.istar.mm.Refinement / AndRefinement / OrRefinement.
+abstract class Refinement end
+
+class AndRefinement < Refinement end
+
+class OrRefinement < Refinement
+operations
+  exactlyOneChild(): Boolean = self.children->size() = 1
+end
+
+association RefinementOf between
+  Refinement      [*] role refinements
+  GoalTaskElement [1] role parent
+end
+
+association RefinementChildren between
+  Refinement      [*] role childOf
+  GoalTaskElement [*] role children
+end
+
+associationclass Contribution between
+  GoalTaskElement [*] role contributesFrom
+  Quality         [*] role contributesTo
+attributes
+  contribType : ContributionType
+end
+
+-- =====================================================================
+-- 2. Process model A: BPMN2 -- org.vnu.sme.goal.bpmn2.mm (single
+--    Process; Lane/Message/MessageFlow out of scope here)
+-- =====================================================================
+class Process
+attributes
+  processId : String
+end
+
+abstract class FlowElement
+attributes
+  flowElementId : String
+end
+
+abstract class Event < FlowElement
+attributes
+  trigger : EventTrigger
+end
+
+class StartEvent < Event end
+class EndEvent   < Event end
+
+class IntermediateEvent < Event
+attributes
+  direction : EventDirection
+end
+
+abstract class Activity < FlowElement
+attributes
+  fired : Boolean   -- has this activity executed at least once? (Definition 4.1, rule (1)/(2))
+end
+
+class BpmnTask     < Activity end   -- org.vnu.sme.goal.bpmn2.mm.Task, renamed to avoid a clash with istar's Task
+class CallActivity < Activity end
+class SubProcess   < Activity end
+
+class Gateway < FlowElement
+attributes
+  kind : GatewayKind
+end
+
+composition ProcessFlowElements between
+  Process     [1] role process
+  FlowElement [*] role flowElements
+end
+
+class SequenceFlow
+attributes
+  hasToken : Boolean   -- WF-net safe marking (Definition 2.2/2.3): true = 1 token on this arc
+end
+
+composition ProcessSequenceFlows between
+  Process      [1] role owningProcess
+  SequenceFlow [*] role sequenceFlows
+end
+
+association SequenceFlowSource between
+  SequenceFlow [*] role outgoing
+  FlowElement  [1] role source
+end
+
+association SequenceFlowTarget between
+  SequenceFlow [*] role incoming
+  FlowElement  [1] role target
+end
+
+-- =====================================================================
+-- 3. Process model B: DCR graphs -- org.vnu.sme.goal.dcr.mm
+-- =====================================================================
+class DcrModel
+attributes
+  dcrName : String
+end
+
+class DcrEvent
+attributes
+  dcrEventId : String
+  dcrLabel   : String
+  executed   : Boolean
+  included   : Boolean
+  pending    : Boolean
+end
+
+composition DcrModelEvents between
+  DcrModel [1] role dcrModel
+  DcrEvent [*] role dcrEvents
+end
+
+class DcrRelation
+attributes
+  dcrKind : DcrRelationKind
+end
+
+composition DcrModelRelations between
+  DcrModel    [1] role dcrModelOfRelation
+  DcrRelation [*] role dcrRelations
+end
+
+association DcrRelationSource between
+  DcrRelation [*] role outgoingRelations
+  DcrEvent    [1] role dcrSource
+end
+
+association DcrRelationTarget between
+  DcrRelation [*] role incomingRelations
+  DcrEvent    [1] role dcrTarget
+end
+
+-- =====================================================================
+-- 4. Correspondence layer (Definition 3.8, org.vnu.sme.goal.conformance
+--    .mapping.ElementMapping): explicit, optional links from a leaf
+--    Goal/Task to whichever process action realises it, in either
+--    notation -- map(n) = epsilon is simply "no link".
+-- =====================================================================
+association BpmnGoalMapping between
+  GoalTaskElement [0..1] role mappedGoalTaskBpmn
+  Activity        [0..1] role mappedActivity
+end
+
+association DcrGoalMapping between
+  GoalTaskElement [0..1] role mappedGoalTaskDcr
+  DcrEvent        [0..1] role mappedEvent
+end
+
+constraints
+
+-- ---------------------------------------------------------------------
+-- Well-formedness (Definition 3.4)
+-- ---------------------------------------------------------------------
+context OrRefinement inv exactlyOneChild:
+  self.children->size() = 1
+
+context Quality inv hasAtLeastOneMakeContribution:
+  Contribution.allInstances->exists(c | c.contributesTo = self and c.contribType = #make)
+
+-- ---------------------------------------------------------------------
+-- Goal-model propagation rules (Fig. 7, alig.md) as consistency
+-- invariants over the stored taskStatus/qualityStatus attributes: a
+-- .soil scenario must update parent/quality status itself whenever it
+-- updates a child/contributor (mirroring IStarPropagation.fire() in the
+-- real Java code) -- USE then checks the result is a *consistent*
+-- marking, not that the propagation happened automatically.
+--
+-- Evaluated per *parent*, aggregating over every Refinement record that
+-- targets it (not per Refinement object): the istar concrete syntax lets
+-- several `or-refine X : Y` lines share the same parent X, which must be
+-- merged into one Ch(X) before applying P_OR/P_AND (see the "Or chi co 1
+-- child/record" note in doc/paper/conformance-istar-bpmn2.md, S2.1).
+-- ---------------------------------------------------------------------
+context GoalTaskElement inv andRefinementFulfilledRequiresAllChildrenFulfilled:
+  let andChildren : Set(GoalTaskElement) =
+    self.refinements->select(oclIsKindOf(AndRefinement))->collect(children)->asSet()
+  in
+  andChildren->notEmpty() and self.taskStatus = #gtFulfilled implies
+    andChildren->forAll(c | c.taskStatus = #gtFulfilled)
+
+context GoalTaskElement inv orRefinementFulfilledRequiresSomeChildFulfilled:
+  let orChildren : Set(GoalTaskElement) =
+    self.refinements->select(oclIsKindOf(OrRefinement))->collect(children)->asSet()
+  in
+  orChildren->notEmpty() and self.taskStatus = #gtFulfilled implies
+    orChildren->exists(c | c.taskStatus = #gtFulfilled)
+
+context Quality inv fulfilledRequiresFulfilledMaker:
+  self.qualityStatus = #qFulfilled implies
+    Contribution.allInstances->exists(c |
+      c.contributesTo = self and c.contribType = #make and c.contributesFrom.taskStatus = #gtFulfilled)
+
+context Quality inv deniedRequiresFulfilledBreaker:
+  self.qualityStatus = #qDenied implies
+    Contribution.allInstances->exists(c |
+      c.contributesTo = self and c.contribType = #break and c.contributesFrom.taskStatus = #gtFulfilled)
+
+-- ---------------------------------------------------------------------
+-- Cross-model state synchronisation (Definition 4.1, rules (1)/(2)):
+-- "the operational semantics only allow a value to move from unknown to
+-- a decided status" (alig.md) -- once the mapped process action has
+-- fired/executed, the goal-model element it realises can never fall
+-- back to gtUnknown.
+-- ---------------------------------------------------------------------
+context Activity inv firedActivityDecidesGoalTask:
+  self.fired and self.mappedGoalTaskBpmn->notEmpty() implies
+    self.mappedGoalTaskBpmn.taskStatus <> #gtUnknown
+
+context DcrEvent inv executedEventDecidesGoalTask:
+  self.executed and self.mappedGoalTaskDcr->notEmpty() implies
+    self.mappedGoalTaskDcr.taskStatus <> #gtUnknown

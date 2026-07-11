@@ -1,17 +1,13 @@
 package org.vnu.sme.goal.istar.mm;
 
-import java.util.List;
-
 /**
  * iStar 2.0 refinement links (both go from children → parent):
- *  - And: all children must be satisfied (T-shaped arrowhead at parent)
- *  - Or:  at least one child satisfies parent (solid arrow at parent)
+ *  - {@link AndRefinement}: all children must be satisfied (T-shaped arrowhead at parent)
+ *  - {@link OrRefinement}:  at least one child satisfies parent (solid arrow at parent)
+ *  - {@link ParameterRefinement}: quantified template link expanded by scenarios
  */
 public sealed interface Refinement
-        permits Refinement.And, Refinement.Or {
+        permits AndRefinement, OrRefinement, ParameterRefinement {
 
     String parent();
-
-    record And(String parent, List<String> children) implements Refinement {}
-    record Or (String parent, String child)          implements Refinement {}
 }

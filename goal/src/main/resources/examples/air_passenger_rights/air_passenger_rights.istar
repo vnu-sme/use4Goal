@@ -1,0 +1,35 @@
+// iStar 2.0 Example — Air Passenger Rights Delay Compensation Claim
+// Transcribed from example/Data/air-passenger-rights/goal_model.txt (piStar 2.1.0 JSON export).
+// Single actor in the source file (generic "Actor" / istar.Actor) — mapped to 'agent' here
+// (Actor is abstract in the iStar 2.0 metamodel; only role/agent are concrete), named Airline for readability.
+
+istar AirPassengerRightsClaim {
+
+  agent Airline {
+    quality DelayMeasuredAppropriately
+    quality ExtraordinaryCircumstancesDocumentedAppropriately
+
+    goal ClaimRequestEvaluated
+    goal DelayAtArrivalMeasured > ClaimRequestEvaluated > make DelayMeasuredAppropriately
+    goal CircumstancesDocumented > ClaimRequestEvaluated
+
+    task CalculateDelayAtArrival > DelayAtArrivalMeasured
+    task RetrieveScheduledArrivalTime > DelayAtArrivalMeasured
+    task RetrieveActualArrivalTime > DelayAtArrivalMeasured
+    task RetrieveArrivalTimeFromBooking > or RetrieveScheduledArrivalTime
+    task RetrieveDoorOpenTime > or RetrieveActualArrivalTime
+
+    task MakeCompensationDecision > ClaimRequestEvaluated
+    task ApproveCompensation > or MakeCompensationDecision
+    task DenyCompensation > or MakeCompensationDecision
+
+    task AnalyzeInternalSystems > or CircumstancesDocumented
+    task DocumentAdditionalInfoForExtraordinaryCircumstances > or CircumstancesDocumented > make ExtraordinaryCircumstancesDocumentedAppropriately
+
+    task RetrieveInfoFromInternalSystems > AnalyzeInternalSystems
+    task DocumentAndSaveFileCase > AnalyzeInternalSystems
+
+    task RegisterJudgementCriteriaAndTypeOfEC > or DocumentAdditionalInfoForExtraordinaryCircumstances
+    task RecordJustificationForExclusion > or DocumentAdditionalInfoForExtraordinaryCircumstances
+  }
+}

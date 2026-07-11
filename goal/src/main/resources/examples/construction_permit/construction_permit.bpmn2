@@ -1,0 +1,31 @@
+// BPMN 2.0 Example — Construction Permit Approval
+// Paired case study for i*/BPMN2 conformance checking (see doc/paper/conformance-istar-bpmn2.md)
+// Single pool, two lanes; deliberately structured so gw_decision is a plain XOR
+// (no loop-back), matching the Workflow-net shape used in Caballero-Villalobos et al. (2026).
+
+collaboration ConstructionPermitApproval {
+
+  pool CityHall "City Hall" {
+    lane frontdesk_lane "Front Desk" {
+      start start1 : none
+      task  submitApplication    "Submit Application"
+      task  registerApplication  "Register Application"
+    }
+    lane authority_lane "Authority" {
+      task    assessApplication "Assess Application"
+      gateway gw_decision : xor
+      task    approve "Approve"
+      task    deny    "Deny"
+      end     end_approved : none
+      end     end_denied   : none
+    }
+    flow start1 -> submitApplication
+    flow submitApplication -> registerApplication
+    flow registerApplication -> assessApplication
+    flow assessApplication -> gw_decision
+    flow gw_decision -> approve : "meets conditions"
+    flow gw_decision -> deny    : "fails conditions"
+    flow approve -> end_approved
+    flow deny -> end_denied
+  }
+}

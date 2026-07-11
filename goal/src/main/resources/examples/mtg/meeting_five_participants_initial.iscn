@@ -1,0 +1,9 @@
+// Initial i* scenario: only declare the participating actor objects.
+// No task has fired yet, and no aggregate check is requested.
+
+scenario MeetingOrganization_FiveParticipants_Initial for "mtg.istar" {
+    instance abdul   : Initiator;
+    instance matilda : Organizer;
+    instance alex, hung    : Secretary;
+    instance xing, amr, naya, bao, chloe : Participant;
+}

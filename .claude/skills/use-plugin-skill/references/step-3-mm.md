@@ -34,92 +34,84 @@ chịu trách nhiệm tạo MM, không rải logic tạo object khắp nơi**.
 
 ---
 
-## Ví dụ thật: MM của iStar 2.0 (`istar/mm/`)
+## Khuôn mẫu MM
 
 ### Root model — class thường (cần Map lookup, không phải record)
 
 ```java
-public final class IStarModel {
-    private final String                 name;
-    private final List<ActorDef>         actors = new ArrayList<>();
-    private final List<Dependency>       dependencies = new ArrayList<>();
-    private final Map<String, ActorDef>  actorMap = new LinkedHashMap<>();
+public final class <Lang>Model {
+    private final String                       name;
+    private final List<<Concept>Def>           entities     = new ArrayList<>();
+    private final List<<Relation>>             relations    = new ArrayList<>();
+    private final Map<String, <Concept>Def>    entityMap    = new LinkedHashMap<>();
 
-    public IStarModel(String name) { this.name = name; }
+    public <Lang>Model(String name) { this.name = name; }
 
-    public void addActor(ActorDef a) { actors.add(a); actorMap.put(a.id(), a); }
-    public void addDependency(Dependency d) { dependencies.add(d); }
+    public void addEntity(<Concept>Def e) { entities.add(e); entityMap.put(e.id(), e); }
+    public void addRelation(<Relation> r) { relations.add(r); }
 
-    public List<ActorDef>   getActors()       { return Collections.unmodifiableList(actors); }
-    public List<Dependency> getDependencies() { return Collections.unmodifiableList(dependencies); }
-    public Optional<ActorDef> findActor(String id) { return Optional.ofNullable(actorMap.get(id)); }
+    public List<<Concept>Def> getEntities()  { return Collections.unmodifiableList(entities); }
+    public List<<Relation>>   getRelations() { return Collections.unmodifiableList(relations); }
+    public Optional<<Concept>Def> findEntity(String id) { return Optional.ofNullable(entityMap.get(id)); }
 }
 ```
 
 ### Sealed interface cho hierarchy đa nhánh
 
 ```java
-public sealed interface IntentionalElement
-        permits IntentionalElement.Goal, IntentionalElement.Task,
-                IntentionalElement.Resource, IntentionalElement.Quality {
+public sealed interface <ConceptKind>
+        permits <ConceptKind>.KindA, <ConceptKind>.KindB {
     String id();
 
-    record Goal(String id)     implements IntentionalElement {}
-    record Task(String id)     implements IntentionalElement {}
-    record Resource(String id) implements IntentionalElement {}
-    record Quality(String id)  implements IntentionalElement {}
+    record KindA(String id) implements <ConceptKind> {}
+    record KindB(String id) implements <ConceptKind> {}
 }
 
-// Hierarchy cho quan hệ refine (And/Or khác cấu trúc: nhiều con vs 1 con)
-public sealed interface Refinement permits Refinement.And, Refinement.Or {
+// Hierarchy cho 1 quan hệ có nhiều hình dạng khác nhau (vd. nhiều-con vs 1-con)
+public sealed interface <MultiShapeRelation> permits <MultiShapeRelation>.KindA, <MultiShapeRelation>.KindB {
     String parent();
-    record And(String parent, List<String> children) implements Refinement {}
-    record Or (String parent, String child)          implements Refinement {}
+    record KindA(String parent, List<String> children) implements <MultiShapeRelation> {}
+    record KindB(String parent, String child)          implements <MultiShapeRelation> {}
 }
 ```
 
 ### Enum có `from(String)` factory method
 
 ```java
-public enum ActorKind {
-    ACTOR, AGENT, ROLE;
+public enum <Concept>Kind {
+    DEFAULT, VARIANT_A, VARIANT_B;
 
-    public static ActorKind from(String text) {
+    public static <Concept>Kind from(String text) {
         return switch (text.toLowerCase()) {
-            case "agent" -> AGENT;
-            case "role"  -> ROLE;
-            default      -> ACTOR;
+            case "variant-a" -> VARIANT_A;
+            case "variant-b" -> VARIANT_B;
+            default          -> DEFAULT;
         };
     }
 }
 ```
 
-### Ví dụ MM khác dạng: BPMN2 (`bpmn2/mm/FlowNode.java`) — hierarchy 6 nhánh, 1 nhánh phức tạp hơn record thường
+### Nhánh sealed interface có List con — final class thay vì record
 
 ```java
 public sealed interface FlowNode
-        permits FlowNode.StartEvent, FlowNode.EndEvent, FlowNode.IntermediateEvent,
-                FlowNode.Task, FlowNode.SubProcess, FlowNode.Gateway {
+        permits FlowNode.SimpleNode, FlowNode.CompositeNode {
     String id();
 
-    record StartEvent(String id, EventType type) implements FlowNode {}
-    record Task(String id, String label)         implements FlowNode {}
+    record SimpleNode(String id, String label) implements FlowNode {}
 
     // Nhánh có List con → dùng final class thay vì record (cần validate/List.copyOf trong constructor)
-    final class SubProcess implements FlowNode {
+    final class CompositeNode implements FlowNode {
         private final String id, label;
         private final List<FlowNode> elements;
-        private final List<SequenceFlow> flows;
 
-        public SubProcess(String id, String label, List<FlowNode> elements, List<SequenceFlow> flows) {
+        public CompositeNode(String id, String label, List<FlowNode> elements) {
             this.id = id; this.label = label;
             this.elements = List.copyOf(elements);
-            this.flows    = List.copyOf(flows);
         }
         @Override public String id() { return id; }
         public String label() { return label; }
         public List<FlowNode> elements() { return elements; }
-        public List<SequenceFlow> flows() { return flows; }
     }
 }
 ```
@@ -133,45 +125,43 @@ public sealed interface FlowNode
 
 ```java
 switch (node) {
-    case FlowNode.StartEvent e -> paintEvent(e, THIN);
-    case FlowNode.EndEvent   e -> paintEvent(e, THICK);
-    case FlowNode.Task       t -> paintTask(t);
-    case FlowNode.Gateway    g -> paintGateway(g);
-    case FlowNode.SubProcess s -> paintSubProcess(s);
-    case FlowNode.IntermediateEvent e -> paintEvent(e, DOUBLE);
+    case FlowNode.SimpleNode    n -> paintSimple(n);
+    case FlowNode.CompositeNode c -> paintComposite(c);
 }
 ```
 
-`sealed interface` bắt compiler báo lỗi nếu switch thiếu case — không cần `default`.
+`sealed interface` bắt compiler báo lỗi nếu switch thiếu case — không cần `default`. Đây
+chính là lợi ích chính của việc chọn `sealed interface`/`record` thay cho `M*`/`M*Impl` của
+USE core (xem phần "Vì sao không dùng `M*`/`M*Impl`" ở trên).
 
 ---
 
 ## Factory: AST → MM (bắt buộc, đây là cầu nối duy nhất)
 
 ```java
-public final class IStarModelFactory {
-    private IStarModelFactory() {}
+public final class <Lang>ModelFactory {
+    private <Lang>ModelFactory() {}
 
-    public static IStarModel build(IStarModelCS cs) {
-        IStarModel model = new IStarModel(cs.name());
-        for (ActorDefCS aCS : cs.actors()) model.addActor(buildActor(aCS));
-        for (DependencyCS dCS : cs.dependencies())
-            model.addDependency(new Dependency(dCS.depender(), dCS.dependum(), dCS.dependee()));
+    public static <Lang>Model build(<Lang>ModelCS cs) {
+        <Lang>Model model = new <Lang>Model(cs.name());
+        for (<Concept>DefCS eCS : cs.entities()) model.addEntity(buildEntity(eCS));
+        for (<Relation>CS rCS : cs.relations())
+            model.addRelation(new <Relation>(rCS.from(), rCS.label(), rCS.to()));
         return model;
     }
 
-    private static ActorDef buildActor(ActorDefCS cs) {
-        ActorKind kind = ActorKind.from(cs.kind());
-        List<IntentionalElement> elements = new ArrayList<>();
+    private static <Concept>Def buildEntity(<Concept>DefCS cs) {
+        <Concept>Kind kind = <Concept>Kind.from(cs.kind());
+        List<ElementBody> elements = new ArrayList<>();
         for (ElementBodyCS item : cs.body()) {
             switch (item) {
-                case ElementBodyCS.GoalCS e -> elements.add(new IntentionalElement.Goal(e.id()));
-                case ElementBodyCS.TaskCS e -> elements.add(new IntentionalElement.Task(e.id()));
+                case ElementBodyCS.KindACS e -> elements.add(new ElementBody.KindA(e.id()));
+                case ElementBodyCS.KindBCS e -> elements.add(new ElementBody.KindB(e.id()));
                 // ... các case khác
                 default -> {}
             }
         }
-        return new ActorDef(cs.id(), kind, elements /* , ... */);
+        return new <Concept>Def(cs.id(), kind, elements /* , ... */);
     }
 }
 ```

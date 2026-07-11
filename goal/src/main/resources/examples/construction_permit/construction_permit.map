@@ -1,0 +1,19 @@
+# Conformance mapping file — construction_permit
+# Format implemented by org.vnu.sme.goal.conformance.mapping.ConformanceMappingParser
+# (see doc/paper/conformance-istar-bpmn2.md, §4.1):
+#   actor <istarActorName> -> pool <poolId> [lane <laneId>]
+#   map   <istarElementId (leaf Goal|Task)> -> node <bpmnNodeId>
+# Lines starting with '#' are comments. Blank lines are ignored.
+
+actor Applicant    -> pool CityHall lane frontdesk_lane
+actor Municipality -> pool CityHall lane authority_lane
+
+map SubmitApplication   -> node submitApplication
+map ApplicationAssessed -> node assessApplication
+map Approve             -> node approve
+map Deny                -> node deny
+
+# Not mapped (silent BPMN steps, map(n) = epsilon):
+#   registerApplication, gw_decision, start1, end_approved, end_denied
+# Not mapped (i* elements satisfied only via AND/OR propagation, never directly):
+#   ApplicationProcessed, ApplicationClosed

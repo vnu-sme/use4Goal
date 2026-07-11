@@ -1,0 +1,40 @@
+// iStar 2.0 — Basic example 2
+// Actors: Agent A, Agent B, Role C
+// Relations covered: AND, OR, forall, pick, contribute (make/hurt), depend
+
+istar Example2 {
+
+  role C {
+    goal G1
+    task K1
+  }
+
+  agent A {
+    goal G2
+    task K2 > G2
+    task K3 > G2                 // AND-refinement: G2 needs both K2 and K3
+
+    goal G3
+    task K4 > or G3
+    task K5 > or G3              // OR-refinement: G3 satisfied by K4 or K5
+
+    quality Q1
+    task K6 > make Q1
+    task K7 > hurt Q1            // contribute: K6 helps Q1, K7 hurts Q1
+
+    goal G4
+    goal G4ByC > forall C G4     // quantified AND: G4 needs G4ByC for every C
+
+    goal G5
+    goal G5ByC > pick C G5       // quantified OR: G5 needs G5ByC for one C
+  }
+
+  agent B {
+    task K8
+    resource R1
+  }
+
+  depend A.G4ByC -> goal G1     -> C.G1
+  depend A.G5ByC -> task K1     -> C.K1
+  depend A       -> resource R1 -> B
+}

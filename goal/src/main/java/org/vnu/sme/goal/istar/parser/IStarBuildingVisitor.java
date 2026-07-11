@@ -40,7 +40,7 @@ public final class IStarBuildingVisitor extends IStarBaseVisitor<Object> {
     @Override
     public Object visitActorDef(IStarParser.ActorDefContext ctx) {
         String id   = ctx.IDENT().getText();
-        String kind = ctx.actorKind().getText();   // "actor" | "role" | "agent"
+        String kind = ctx.actorKind().getText();   // "role" | "agent"
 
         List<ElementBodyCS> body = new ArrayList<>();
         for (IStarParser.ActorBodyContext b : ctx.actorBody()) {
@@ -52,27 +52,21 @@ public final class IStarBuildingVisitor extends IStarBaseVisitor<Object> {
 
     private ElementBodyCS buildBodyItem(IStarParser.ActorBodyContext body) {
         return switch (body) {
-            case IStarParser.BodyGoalContext      b -> new ElementBodyCS.GoalCS(b.IDENT().getText());
-            case IStarParser.BodyTaskContext      b -> new ElementBodyCS.TaskCS(b.IDENT().getText());
-            case IStarParser.BodyResourceContext  b -> new ElementBodyCS.ResourceCS(b.IDENT().getText());
-            case IStarParser.BodyQualityContext   b -> new ElementBodyCS.QualityCS(b.IDENT().getText());
-            case IStarParser.BodyAndRefineContext b -> {
-                List<String> children = b.IDENT().stream()
-                        .skip(1).map(t -> t.getText()).collect(Collectors.toList());
-                yield new ElementBodyCS.AndRefineCS(b.IDENT(0).getText(), children);
-            }
-            case IStarParser.BodyOrRefineContext  b ->
-                    new ElementBodyCS.OrRefineCS(b.IDENT(0).getText(), b.IDENT(1).getText());
-            case IStarParser.BodyNeededByContext  b ->
-                    new ElementBodyCS.NeededByCS(b.IDENT(0).getText(), b.IDENT(1).getText());
-            case IStarParser.BodyContribContext   b ->
-                    new ElementBodyCS.ContributionCS(
-                            b.IDENT(0).getText(),
-                            b.contribType().getText(),
-                            b.IDENT(1).getText());
-            case IStarParser.BodyQualifyContext   b ->
-                    new ElementBodyCS.QualificationCS(b.IDENT(0).getText(), b.IDENT(1).getText());
-            case IStarParser.BodyIsAContext        b ->
+            case IStarParser.BodyGoalContext b -> new ElementBodyCS.GoalCS(
+                    b.IDENT().getText(),
+                    b.goalType() != null ? b.goalType().goalTypeName().getText() : null,
+                    buildRels(b.rel()));
+            case IStarParser.BodyTaskContext b ->
+                    new ElementBodyCS.TaskCS(b.IDENT().getText(), buildRels(b.rel()));
+            case IStarParser.BodyResourceContext b ->
+                    new ElementBodyCS.ResourceCS(b.IDENT().getText(), buildRels(b.rel()));
+            case IStarParser.BodyQualityContext b ->
+                    new ElementBodyCS.QualityCS(b.IDENT().getText(), buildRels(b.rel()));
+            case IStarParser.BodyObstacleContext b -> new ElementBodyCS.ObstacleCS(
+                    b.IDENT().getText(),
+                    b.obstacleType() != null ? b.obstacleType().obstacleTypeName().getText() : null,
+                    buildRels(b.rel()));
+            case IStarParser.BodyIsAContext b ->
                     new ElementBodyCS.IsACS(b.IDENT(0).getText(), b.IDENT(1).getText());
             case IStarParser.BodyParticipatesContext b ->
                     new ElementBodyCS.ParticipatesCS(b.IDENT(0).getText(), b.IDENT(1).getText());
@@ -80,11 +74,45 @@ public final class IStarBuildingVisitor extends IStarBaseVisitor<Object> {
         };
     }
 
+    // ── Inline relations ('>' relation target) ──────────────────────────────
+
+    private List<RelCS> buildRels(List<IStarParser.RelContext> relCtxs) {
+        List<RelCS> rels = new ArrayList<>();
+        for (IStarParser.RelContext r : relCtxs) rels.add(buildRel(r));
+        return rels;
+    }
+
+    private RelCS buildRel(IStarParser.RelContext ctx) {
+        return switch (ctx) {
+            case IStarParser.RelAndContext r -> new RelCS.RefineCS(r.target.getText(), false);
+            case IStarParser.RelOrContext r -> new RelCS.RefineCS(r.target.getText(), true);
+            case IStarParser.RelForAllContext r -> new RelCS.ForRefineCS(
+                    r.target.getText(), r.actorType.getText());
+            case IStarParser.RelPickContext r -> new RelCS.PickRefineCS(
+                    r.target.getText(), r.actorType.getText());
+            case IStarParser.RelContributeContext r ->
+                    new RelCS.ContributesCS(r.target.getText(), r.contribType().getText());
+            case IStarParser.RelQualifiesContext r -> new RelCS.QualifiesCS(r.target.getText());
+            case IStarParser.RelNeededByContext r -> new RelCS.NeededByCS(r.target.getText());
+            case IStarParser.RelObstructsContext r -> new RelCS.ObstructsCS(r.target.getText());
+            case IStarParser.RelResolvesContext r -> new RelCS.ResolvesCS(r.target.getText());
+            default -> throw new IllegalStateException("Unknown relation: " + ctx.getText());
+        };
+    }
+
     // ── Dependency ────────────────────────────────────────────────────────────
 
     @Override
     public Object visitDependency(IStarParser.DependencyContext ctx) {
-        List<org.antlr.v4.runtime.tree.TerminalNode> ids = ctx.IDENT();
-        return new DependencyCS(ids.get(0).getText(), ids.get(1).getText(), ids.get(2).getText());
+        IStarParser.DepEndContext dependerEnd = ctx.depEnd(0);
+        IStarParser.DepEndContext dependeeEnd = ctx.depEnd(1);
+        IStarParser.DependumRefContext dependum = ctx.dependumRef();
+        return new DependencyCS(
+                dependerEnd.IDENT(0).getText(),
+                dependerEnd.IDENT().size() > 1 ? dependerEnd.IDENT(1).getText() : null,
+                dependum.dependumKind() != null ? dependum.dependumKind().getText() : null,
+                dependum.IDENT().getText(),
+                dependeeEnd.IDENT(0).getText(),
+                dependeeEnd.IDENT().size() > 1 ? dependeeEnd.IDENT(1).getText() : null);
     }
 }

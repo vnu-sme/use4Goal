@@ -34,7 +34,7 @@ hook, hay lối tắt nào yêu cầu — hay thậm chí cho phép — sửa co
 
 ---
 
-## Cấu trúc thư mục chuẩn (đã áp dụng đúng ở `istar/` và `bpmn2/`)
+## Cấu trúc thư mục chuẩn cho 1 ngôn ngữ trong `goal/`
 
 ```
 goal/
@@ -45,7 +45,7 @@ goal/
 │   │   ├── parser/         # <Lang>BuildingVisitor (Visitor) + <Lang>ModelFactory (Factory) + <LANG>Compiler
 │   │   ├── action/         # ActionOpen<Lang> — IPluginActionDelegate
 │   │   ├── gui/            # <Lang>Form — JDialog
-│   │   └── view/           # <Lang>View — JPanel render (xem step-4 cho thiết kế đề xuất)
+│   │   └── view/           # <Lang>Node/<Lang>Edge (Adapter) + <Lang>Layout + <Lang>LayoutBuilder + <Lang>View (xem step-4-view.md)
 │   └── resources/
 │       ├── grammars/<LANG>.g4
 │       ├── examples/*.<ext>
@@ -54,8 +54,9 @@ goal/
 └── useplugin.xml
 ```
 
-`istar/` (22 file) và `bpmn2/` (20 file) trong codebase này hiện đã đúng khuôn hoàn chỉnh —
-dùng làm mẫu tham chiếu trực tiếp khi thêm ngôn ngữ thứ 3.
+Cấu trúc này là hợp đồng bắt buộc cho **mọi** ngôn ngữ mới thêm vào `goal/`, không phụ thuộc
+vào việc project hiện đang có sẵn bao nhiêu ngôn ngữ ví dụ (0, 1, hay nhiều) — tự đứng vững
+kể cả khi bắt đầu từ một `goal/` trống.
 
 ---
 
@@ -77,65 +78,88 @@ dùng làm mẫu tham chiếu trực tiếp khi thêm ngôn ngữ thứ 3.
 
 ### Khác với USE core ở đâu, và tại sao (đọc để không copy nhầm)
 
-USE core dùng ANTLR3 + ghép fragment `.gpart` cho `.use/.ocl/.soil` (vì 3 ngôn ngữ đó
-**nhúng lẫn nhau** trong cùng 1 file `.use`), và MM dùng cặp interface `M*`/`M*Impl` (compensating
-pattern cho thời Java chưa có `record`). Plugin trong `goal/` **không cần bắt chước 2 điều
-này**: mỗi ngôn ngữ (iStar, BPMN2, ...) độc lập — không nhúng lẫn nhau, nên ANTLR4 1-file-1-grammar
-là đủ; và MM đã dùng `record`/`sealed interface` hiện đại, ngắn gọn hơn `M*`/`M*Impl` mà không
-mất gì. Điều **nên** lấy từ USE core:
+USE core (mã nguồn thật trong `use/`) dùng ANTLR3 + ghép fragment `.gpart` cho
+`.use/.ocl/.soil` (vì 3 ngôn ngữ đó **nhúng lẫn nhau** trong cùng 1 file `.use`), và MM dùng
+cặp interface `M*`/`M*Impl` (compensating pattern cho thời Java chưa có `record`). Plugin
+trong `goal/` **không cần bắt chước 2 điều này**: một ngôn ngữ mới độc lập — không nhúng lẫn
+ngôn ngữ khác, nên ANTLR4 1-file-1-grammar là đủ; và MM nên dùng `record`/`sealed interface`
+hiện đại, ngắn gọn hơn `M*`/`M*Impl` mà không mất gì. Điều **nên** lấy từ USE core:
 
-1. **Factory bắt buộc cho MỌI ngôn ngữ, không ngoại lệ.** (Bài học từ MAXGoal — plugin cũ đã
-   xoá khỏi codebase này — từng bỏ qua bước AST/Factory, build MM thẳng từ ParseTree trong
-   Visitor. Điều này làm coupling Visitor↔MM chặt, khó test, khó thêm bước validate. `istar/`
-   và `bpmn2/` không mắc lỗi này.)
+1. **Factory bắt buộc cho MỌI ngôn ngữ, không ngoại lệ** — dù ngôn ngữ có vẻ đơn giản đến
+   đâu. Bỏ qua tầng AST/Factory và để Visitor build MM thẳng từ ParseTree làm coupling
+   Visitor↔MM chặt, khó test, khó thêm bước validate (đây từng là lỗi thiết kế của một plugin
+   cũ trong lịch sử project — đã bị xoá khỏi codebase chính vì lý do này).
 2. **Nếu ngôn ngữ có forward-reference** (tham chiếu tên khai báo *sau* nó), áp dụng ý tưởng
    `Context` của USE (`org.tzi.use.parser.Context`: mang symbol table + tích luỹ lỗi) và build
-   theo nhiều pha (khung rỗng trước, nối quan hệ sau) — xem `step-2-ast.md`. iStar/BPMN2 hiện
-   tại chưa cần vì ngôn ngữ chưa có forward-reference phức tạp.
+   theo nhiều pha (khung rỗng trước, nối quan hệ sau) — xem `step-2-ast.md`.
 3. **View = Adapter → Layout → Render, 3 tầng tách biệt** — đúng như `ClassDiagramView`/
-   `PlaceableNode`/`DirectedGraph`/layout-pass của USE core. Đây là điểm `istar/`/`bpmn2/`
-   **hiện chưa làm đúng** (View tự đọc MM và tự tính toạ độ ngay trong `paintComponent`) — xem
-   thiết kế đề xuất trong `step-4-view.md`.
+   `PlaceableNode`/`DirectedGraph`/layout-pass thật của USE core (`use/use-gui/.../gui/views/diagrams/`)
+   — xem thiết kế trong `step-4-view.md`.
+4. **Nếu view là diagram graph thật, ưu tiên kế thừa hạ tầng diagram của USE thay vì tự viết
+   Swing canvas từ đầu**: dùng `DiagramView`, `DiagramOptions`, `PlaceableNode`, `EdgeBase`,
+   `DiagramGraph`, `DiagramInputHandling`, `ActionSaveLayout`, `ActionLoadLayout` khi cần UI
+   đồng bộ với tool gốc. Custom `JPanel + paintComponent` chỉ là fallback cho preview đơn giản
+   hoặc khi hạ tầng USE không phù hợp.
+5. **Form mở file chỉ là loader cổ điển, không phải nơi chứa diagram**: giữ `<Lang>Form`
+   tối giản (`File`, `Browse`, `Open`, tuỳ chọn dropdown nhỏ, `Close`). Sau khi compile OK,
+   mở diagram mặc định trong USE `ViewFrame`; nếu có popup ngoài USE thì đó là placement thứ
+   hai của cùng diagram, và context menu phải chuyển được hai chiều.
 
-Toàn bộ lý giải "vì sao" nằm trong [`doc/use-core-design-rules.md`](../../../doc/use-core-design-rules.md)
-— tài liệu này chỉ giữ phần "phải làm gì".
+Toàn bộ lý giải "vì sao", với trích dẫn class/file cụ thể trong `use/`, nằm trong
+[`doc/use-core-design-rules.md`](../../../doc/use-core-design-rules.md) — tài liệu này chỉ
+giữ phần "phải làm gì". Mọi ví dụ minh hoạ trong skill này (nếu có) lấy từ mã nguồn thật của
+`use/`, **không** lấy từ các ngôn ngữ ví dụ hiện có trong `goal/` (những ngôn ngữ đó có thể bị
+xoá hoặc thay thế bất cứ lúc nào — skill không được phụ thuộc vào chúng còn tồn tại).
 
 ---
 
 ## Quy ước đặt tên
 
-| Thành phần | Pattern | Ví dụ (iStar 2.0) | Ví dụ (BPMN2) |
-|---|---|---|---|
-| Grammar file | `<LANG>.g4` | `IStar.g4` | `Bpmn2.g4` |
-| AST root | `<Lang>ModelCS` | `IStarModelCS` | `Bpmn2CollaborationCS` |
-| AST node | `<Concept>CS` | `ActorDefCS`, `DependencyCS` | `PoolCS`, `FlowNodeCS` |
-| MM root | `<Lang>Model` | `IStarModel` | `Bpmn2Collaboration` |
-| MM node | `<Concept>Def` hoặc `<Concept>` | `ActorDef` | `Pool`, `Lane` |
-| MM hierarchy | `sealed interface <X>` | `Refinement`, `IntentionalElement` | `FlowNode` |
-| Visitor | `<Lang>BuildingVisitor` | `IStarBuildingVisitor` | `Bpmn2BuildingVisitor` |
-| Factory | `<Lang>ModelFactory` | `IStarModelFactory` | `Bpmn2ModelFactory` |
-| Compiler | `<LANG>Compiler` | `IStarCompiler` | `Bpmn2Compiler` |
-| Action | `ActionOpen<Lang>` | `ActionOpenIStar` | `ActionOpenBpmn2` |
-| Form | `<Lang>Form` | `IStarForm` | `Bpmn2Form` |
-| View | `<Lang>View` | `IStarView` | `Bpmn2View` |
+`<Lang>` = tên ngôn ngữ dạng chữ hoa đầu (vd. một ngôn ngữ tên "Foo" → `Foo`), `<LANG>` = toàn
+chữ hoa (`FOO`), `<lang>` = toàn chữ thường dùng cho tên package (`foo`). `<Concept>` = tên
+một khái niệm cụ thể trong ngôn ngữ đó (actor, task, pool, ...).
+
+| Thành phần | Pattern |
+|---|---|
+| Grammar file | `<LANG>.g4` |
+| AST root | `<Lang>ModelCS` |
+| AST node | `<Concept>CS` |
+| MM root | `<Lang>Model` |
+| MM node | `<Concept>Def` hoặc `<Concept>` |
+| MM hierarchy | `sealed interface <X>` (X = tên khái niệm đa nhánh) |
+| Visitor | `<Lang>BuildingVisitor` |
+| Factory | `<Lang>ModelFactory` |
+| Compiler | `<LANG>Compiler` |
+| Action | `ActionOpen<Lang>` |
+| Form | `<Lang>Form` |
+| View — Adapter | `<Lang>Node`, `<Lang>Edge` |
+| View — Layout | `<Lang>Layout`, `<Lang>LayoutBuilder` |
+| View — Renderer | `<Lang>View`; với diagram graph thật thêm `<Lang>Diagram`, `<Lang>DiagramOptions` |
 
 ---
 
 ## Checklist bắt buộc trước khi bắt đầu
 
-- [ ] Tên plugin và tên ngôn ngữ, extension file (`.istar`, `.bpmn2`, ...)?
+- [ ] Tên plugin và tên ngôn ngữ, extension file (dạng `.<ext>`, ví dụ `.foo`)?
 - [ ] Các khái niệm cốt lõi? Quan hệ giữa chúng?
 - [ ] Ngôn ngữ có forward-reference không? (Nếu có → áp dụng `Context` + multi-pha ở `step-2-ast.md`)
 - [ ] Diagram cần hiển thị gì? Thiết kế Node/Edge theo mẫu Adapter ở `step-4-view.md` trước khi vẽ.
+- [ ] Loader form có đang tối giản và tách khỏi diagram window chưa? Diagram phải mở qua `ViewFrame` mặc định.
 - [ ] Có transform sang ngôn ngữ khác không? (→ `step-6-transform.md`)
 - [ ] Đã đọc [`doc/use-core-design-rules.md`](../../../doc/use-core-design-rules.md) để biết pattern nào lấy từ USE core, pattern nào không cần?
 
 ## Cách dùng skill này
 
 Khi implement một bước đơn lẻ: đọc reference file tương ứng → kiểm tra bước trước đã đúng
-pattern chưa → generate code theo pattern trong reference + pattern thực tế đang có trong
-`istar/`/`bpmn2/` → nhắc bước tiếp theo.
+pattern chưa → generate code theo template generic trong reference (không cần đối chiếu với
+bất kỳ ngôn ngữ ví dụ cụ thể nào đang có sẵn trong `goal/`) → nhắc bước tiếp theo.
 
 Khi implement toàn bộ ngôn ngữ mới từ đầu: xác nhận checklist ở trên → đi tuần tự bước 1 → 6,
 confirm sau mỗi bước → ưu tiên record/sealed interface cho MM → thiết kế View theo 3 tầng
-Adapter/Layout/Render ngay từ đầu (đừng để nợ kỹ thuật như `IStarView`/`Bpmn2View` hiện tại).
+Adapter/Layout/Render ngay từ đầu theo `step-4-view.md`.
+
+Nếu `goal/` đã có sẵn 1 vài ngôn ngữ khác (ví dụ hiện tại có thể là iStar, BPMN2, hoặc bất kỳ
+tên nào) và bạn muốn đối chiếu thực tế: được phép đọc code của chúng để tham khảo phong cách,
+nhưng **không được coi chúng là nguồn chân lý của quy tắc** — quy tắc nằm trong skill này và
+trong `doc/use-core-design-rules.md` (dựa trên `use/`). Các ngôn ngữ ví dụ đó có thể bị xoá
+bất cứ lúc nào mà không ảnh hưởng gì đến tính đúng đắn của skill.

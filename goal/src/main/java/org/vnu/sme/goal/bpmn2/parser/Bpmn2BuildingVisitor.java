@@ -11,127 +11,143 @@ import org.vnu.sme.goal.bpmn2.ast.*;
  */
 public final class Bpmn2BuildingVisitor extends Bpmn2BaseVisitor<Object> {
 
-    private Bpmn2CollaborationCS collab;
+    private Bpmn2ModelCS model;
 
-    public static Bpmn2CollaborationCS build(Bpmn2Parser.CollaborationContext ctx) {
+    public static Bpmn2ModelCS build(Bpmn2Parser.ModelContext ctx) {
         Bpmn2BuildingVisitor v = new Bpmn2BuildingVisitor();
-        v.visitCollaboration(ctx);
-        return v.collab;
+        v.visitModel(ctx);
+        return v.model;
     }
 
     // ── Root ─────────────────────────────────────────────────────────────────
 
     @Override
-    public Object visitCollaboration(Bpmn2Parser.CollaborationContext ctx) {
-        List<PoolCS> pools = ctx.pool().stream()
-                .map(p -> (PoolCS) visitPool(p))
+    public Object visitModel(Bpmn2Parser.ModelContext ctx) {
+        List<ProcessCS> processes = ctx.pool().stream()
+                .map(p -> (ProcessCS) visitPool(p))
+                .collect(Collectors.toList());
+
+        List<MessageCS> messages = ctx.message().stream()
+                .map(m -> (MessageCS) visitMessage(m))
                 .collect(Collectors.toList());
 
         List<MessageFlowCS> msgFlows = ctx.messageFlow().stream()
                 .map(mf -> (MessageFlowCS) visitMessageFlow(mf))
                 .collect(Collectors.toList());
 
-        collab = new Bpmn2CollaborationCS(ctx.IDENT().getText(), pools, msgFlows);
-        return collab;
+        model = new Bpmn2ModelCS(ctx.IDENT().getText(), processes, messages, msgFlows);
+        return model;
     }
 
-    // ── Pool ─────────────────────────────────────────────────────────────────
+    // ── Process (pool) ──────────────────────────────────────────────────────
 
     @Override
     public Object visitPool(Bpmn2Parser.PoolContext ctx) {
-        String id    = ctx.IDENT().getText();
-        String label = ctx.STRING() != null ? stripQuotes(ctx.STRING().getText()) : id;
+        String id   = ctx.IDENT().getText();
+        String name = ctx.STRING() != null ? stripQuotes(ctx.STRING().getText()) : null;
 
-        List<LaneCS>         lanes    = ctx.lane().stream()
+        List<LaneCS> lanes = ctx.lane().stream()
                 .map(l -> (LaneCS) visitLane(l))
                 .collect(Collectors.toList());
-        List<FlowNodeCS>     elements = ctx.poolElement().stream()
-                .map(e -> (FlowNodeCS) visit(e))
+        List<FlowElementCS> elements = ctx.poolElement().stream()
+                .map(e -> (FlowElementCS) visit(e))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-        List<SequenceFlowCS> flows    = ctx.sequenceFlow().stream()
+        List<SequenceFlowCS> flows = ctx.sequenceFlow().stream()
                 .map(sf -> (SequenceFlowCS) visitSequenceFlow(sf))
                 .collect(Collectors.toList());
 
-        return new PoolCS(id, label, lanes, elements, flows);
+        return new ProcessCS(id, name, lanes, elements, flows);
     }
 
     // ── Lane ─────────────────────────────────────────────────────────────────
 
     @Override
     public Object visitLane(Bpmn2Parser.LaneContext ctx) {
-        String id    = ctx.IDENT().getText();
-        String label = ctx.STRING() != null ? stripQuotes(ctx.STRING().getText()) : id;
+        String id   = ctx.IDENT().getText();
+        String name = ctx.STRING() != null ? stripQuotes(ctx.STRING().getText()) : null;
 
-        List<FlowNodeCS> elements = ctx.poolElement().stream()
-                .map(e -> (FlowNodeCS) visit(e))
+        List<FlowElementCS> elements = ctx.poolElement().stream()
+                .map(e -> (FlowElementCS) visit(e))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-        return new LaneCS(id, label, elements);
+        return new LaneCS(id, name, elements);
     }
 
-    // ── Pool elements ─────────────────────────────────────────────────────────
+    // ── Pool elements (flow elements) ────────────────────────────────────────
 
     @Override
     public Object visitElemStart(Bpmn2Parser.ElemStartContext ctx) {
-        String type = ctx.eventType() != null ? ctx.eventType().getText() : "none";
-        return new FlowNodeCS.StartEventCS(ctx.IDENT().getText(), type);
+        String trigger = ctx.eventType() != null ? ctx.eventType().getText() : "none";
+        return new FlowElementCS.StartEventCS(ctx.IDENT().getText(), trigger);
     }
 
     @Override
     public Object visitElemEnd(Bpmn2Parser.ElemEndContext ctx) {
-        String type = ctx.eventType() != null ? ctx.eventType().getText() : "none";
-        return new FlowNodeCS.EndEventCS(ctx.IDENT().getText(), type);
+        String trigger = ctx.eventType() != null ? ctx.eventType().getText() : "none";
+        return new FlowElementCS.EndEventCS(ctx.IDENT().getText(), trigger);
     }
 
     @Override
     public Object visitElemIntermediate(Bpmn2Parser.ElemIntermediateContext ctx) {
-        String  type     = ctx.eventType() != null ? ctx.eventType().getText() : "none";
-        boolean catching = ctx.eventDir() == null || ctx.eventDir().getText().equals("catching");
-        return new FlowNodeCS.IntermediateEventCS(ctx.IDENT().getText(), type, catching);
+        String trigger   = ctx.eventType() != null ? ctx.eventType().getText() : "none";
+        String direction = ctx.eventDir() != null ? ctx.eventDir().getText() : "catching";
+        return new FlowElementCS.IntermediateEventCS(ctx.IDENT().getText(), trigger, direction);
     }
 
     @Override
     public Object visitElemTask(Bpmn2Parser.ElemTaskContext ctx) {
-        String id    = ctx.IDENT().getText();
-        String label = ctx.STRING() != null ? stripQuotes(ctx.STRING().getText()) : id;
-        return new FlowNodeCS.TaskCS(id, label);
+        String id   = ctx.IDENT().getText();
+        String name = ctx.STRING() != null ? stripQuotes(ctx.STRING().getText()) : null;
+        return new FlowElementCS.TaskCS(id, name);
+    }
+
+    @Override
+    public Object visitElemCallActivity(Bpmn2Parser.ElemCallActivityContext ctx) {
+        return new FlowElementCS.CallActivityCS(ctx.IDENT().getText());
     }
 
     @Override
     public Object visitElemSubProcess(Bpmn2Parser.ElemSubProcessContext ctx) {
-        String id    = ctx.IDENT().getText();
-        String label = ctx.STRING() != null ? stripQuotes(ctx.STRING().getText()) : id;
+        String id   = ctx.IDENT().getText();
+        String name = ctx.STRING() != null ? stripQuotes(ctx.STRING().getText()) : null;
 
-        List<FlowNodeCS> children = ctx.poolElement().stream()
-                .map(e -> (FlowNodeCS) visit(e))
+        List<FlowElementCS> children = ctx.poolElement().stream()
+                .map(e -> (FlowElementCS) visit(e))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         List<SequenceFlowCS> flows = ctx.sequenceFlow().stream()
                 .map(sf -> (SequenceFlowCS) visitSequenceFlow(sf))
                 .collect(Collectors.toList());
-        return new FlowNodeCS.SubProcessCS(id, label, children, flows);
+        return new FlowElementCS.SubProcessCS(id, name, children, flows);
     }
 
     @Override
     public Object visitElemGateway(Bpmn2Parser.ElemGatewayContext ctx) {
-        return new FlowNodeCS.GatewayCS(ctx.IDENT().getText(), ctx.gwType().getText());
+        return new FlowElementCS.GatewayCS(ctx.IDENT().getText(), ctx.gwType().getText());
     }
 
-    // ── Flows ─────────────────────────────────────────────────────────────────
+    // ── Flows / messages ──────────────────────────────────────────────────────
 
     @Override
     public Object visitSequenceFlow(Bpmn2Parser.SequenceFlowContext ctx) {
         List<org.antlr.v4.runtime.tree.TerminalNode> ids = ctx.IDENT();
-        String cond = ctx.STRING() != null ? stripQuotes(ctx.STRING().getText()) : null;
-        return new SequenceFlowCS(ids.get(0).getText(), ids.get(1).getText(), cond);
+        String label = ctx.STRING() != null ? stripQuotes(ctx.STRING().getText()) : null;
+        return new SequenceFlowCS(ids.get(0).getText(), ids.get(1).getText(), label);
+    }
+
+    @Override
+    public Object visitMessage(Bpmn2Parser.MessageContext ctx) {
+        String id   = ctx.IDENT().getText();
+        String name = ctx.STRING() != null ? stripQuotes(ctx.STRING().getText()) : null;
+        return new MessageCS(id, name);
     }
 
     @Override
     public Object visitMessageFlow(Bpmn2Parser.MessageFlowContext ctx) {
         List<org.antlr.v4.runtime.tree.TerminalNode> ids = ctx.IDENT();
-        String label = ctx.STRING() != null ? stripQuotes(ctx.STRING().getText()) : null;
-        return new MessageFlowCS(ids.get(0).getText(), ids.get(1).getText(), label);
+        String messageId = ids.size() > 2 ? ids.get(2).getText() : null;
+        return new MessageFlowCS(ids.get(0).getText(), ids.get(1).getText(), messageId);
     }
 
     private static String stripQuotes(String s) {

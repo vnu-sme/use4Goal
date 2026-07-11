@@ -11,6 +11,15 @@
                 toolbaritem="iStar 2.0 Viewer"
                 id="org.vnu.sme.goal.istar.action.ActionOpenIStar">
         </action>
+        <action label="i* Scenario Viewer"
+                icon="images/goal.png"
+                class="org.vnu.sme.goal.istarscenario.action.ActionOpenIStarScenario"
+                tooltip="Run an i* satisfaction scenario (.iscn) against its goal model"
+                menu="GoalModel Plugin"
+                menuitem="i* Scenario Viewer"
+                toolbaritem="i* Scenario Viewer"
+                id="org.vnu.sme.goal.istarscenario.action.ActionOpenIStarScenario">
+        </action>
         <action label="BPMN 2.0 Viewer"
                 icon="images/goal.png"
                 class="org.vnu.sme.goal.bpmn2.action.ActionOpenBpmn2"
@@ -19,6 +28,33 @@
                 menuitem="BPMN 2.0 Viewer"
                 toolbaritem="BPMN 2.0 Viewer"
                 id="org.vnu.sme.goal.bpmn2.action.ActionOpenBpmn2">
+        </action>
+        <action label="BPMN Scenario Viewer"
+                icon="images/goal.png"
+                class="org.vnu.sme.goal.bpmn2scenario.action.ActionOpenBpmn2Scenario"
+                tooltip="Run a BPMN scenario (.bscn) against its process model"
+                menu="GoalModel Plugin"
+                menuitem="BPMN Scenario Viewer"
+                toolbaritem="BPMN Scenario Viewer"
+                id="org.vnu.sme.goal.bpmn2scenario.action.ActionOpenBpmn2Scenario">
+        </action>
+        <action label="DCR Graph Viewer"
+                icon="images/goal.png"
+                class="org.vnu.sme.goal.dcr.action.ActionOpenDcr"
+                tooltip="Dynamic Condition Response Graph Viewer"
+                menu="GoalModel Plugin"
+                menuitem="DCR Graph Viewer"
+                toolbaritem="DCR Graph Viewer"
+                id="org.vnu.sme.goal.dcr.action.ActionOpenDcr">
+        </action>
+        <action label="i*/BPMN2 Conformance Checker"
+                icon="images/goal.png"
+                class="org.vnu.sme.goal.conformance.action.ActionCheckConformance"
+                tooltip="Check conformance between an i* goal model and a BPMN2 process model"
+                menu="GoalModel Plugin"
+                menuitem="i*/BPMN2 Conformance Checker"
+                toolbaritem="Conformance Checker"
+                id="org.vnu.sme.goal.conformance.action.ActionCheckConformance">
         </action>
     </actions>
 </plugin>

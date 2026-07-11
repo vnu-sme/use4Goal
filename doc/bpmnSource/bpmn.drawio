@@ -1,0 +1,859 @@
+<mxfile host="65bd71144e">
+    <diagram name="BPMN2 Metamodel" id="bpmn2-ecore">
+        <mxGraphModel dx="4063" dy="2200" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" background="#ffffff" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="cls_BaseElement" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;&lt;i&gt;BaseElement&lt;/i&gt;&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;id : EString {id}&lt;/div&gt;&lt;div&gt;description : EString[0..1]&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;extensionDefinitions : ExtensionDefinition[0..*]&lt;/div&gt;&lt;div&gt;◆ extensionValues : ExtensionAttributeValue[0..*]&lt;/div&gt;&lt;div&gt;◆ documentation : Documentation[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#f5f5f5;strokeColor=#6c8ebf;dashed=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="40" width="260" height="138" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ExtensionDefinition" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ExtensionDefinition&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString&lt;/div&gt;&lt;div&gt;id : EString {id}&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ extensionAttributeDefinitions : ExtensionAttributeDefinition[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="340" y="40" width="260" height="106" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ExtensionAttributeDefinition" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ExtensionAttributeDefinition&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString&lt;/div&gt;&lt;div&gt;type : EString&lt;/div&gt;&lt;div&gt;isReference : EBoolean = false&lt;/div&gt;&lt;div&gt;id : EString {id}&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;extensionDefinition : ExtensionDefinition&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="640" y="40" width="260" height="138" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ExtensionAttributeValue" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ExtensionAttributeValue&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;id : EString {id}&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;valueRef : EObject[0..1]&lt;/div&gt;&lt;div&gt;◆ value : EObject[0..1]&lt;/div&gt;&lt;div&gt;extensionAttributeDefinition : ExtensionAttributeDefinition[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="940" y="40" width="260" height="122" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Import" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Import&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;importType : EString&lt;/div&gt;&lt;div&gt;location : EString&lt;/div&gt;&lt;div&gt;namespace : EString&lt;/div&gt;&lt;div&gt;id : EString {id}&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="1240" y="40" width="260" height="114" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_InputOutputBinding" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;InputOutputBinding&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;id : EString {id}&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;inputDataRef : InputSet&lt;/div&gt;&lt;div&gt;outputDataRef : OutputSet&lt;/div&gt;&lt;div&gt;operationRef : Operation&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="1540" y="40" width="260" height="122" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ResourceParameterBinding" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ResourceParameterBinding&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;id : EString {id}&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ expression : Expression&lt;/div&gt;&lt;div&gt;parameterRef : ResourceParameter&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="1840" y="40" width="260" height="106" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ResourceAssignmentExpression" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ResourceAssignmentExpression&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;id : EString {id}&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ expression : Expression&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="2140" y="40" width="260" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_InteractionNode" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;&lt;i&gt;InteractionNode&lt;/i&gt;&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;incomingConversationLinks : ConversationLink[0..*]&lt;/div&gt;&lt;div&gt;outgoingConversationLinks : ConversationLink[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#f5f5f5;strokeColor=#6c8ebf;dashed=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="2440" y="40" width="260" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ParticipantMultiplicity" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ParticipantMultiplicity&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;minimum : EInt = 0&lt;/div&gt;&lt;div&gt;maximum : EInt[0..1] = 1&lt;/div&gt;&lt;div&gt;id : EString {id}&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="2740" y="40" width="260" height="98" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Extension" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Extension&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;mustUnderstand : EBoolean = false&lt;/div&gt;&lt;div&gt;id : EString {id}&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ definition : ExtensionDefinition&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="3040" y="40" width="260" height="106" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Escalation" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Escalation&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString&lt;/div&gt;&lt;div&gt;escalationCode : EString&lt;/div&gt;&lt;div&gt;id : EString {id}&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;structureRef : ItemDefinition[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="3340" y="40" width="260" height="122" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_RootElement" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;&lt;i&gt;RootElement&lt;/i&gt;&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#f5f5f5;strokeColor=#6c8ebf;dashed=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="248" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Documentation" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Documentation&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;text : EString&lt;/div&gt;&lt;div&gt;textFormat : EString = text/plain&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="340" y="248" width="260" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Operation" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Operation&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;inMessageRef : Message&lt;/div&gt;&lt;div&gt;outMessageRef : Message[0..1]&lt;/div&gt;&lt;div&gt;errorRefs : Error[0..*]&lt;/div&gt;&lt;div&gt;implementationRef : EObject[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="640" y="248" width="260" height="138" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Auditing" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Auditing&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="940" y="248" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_InputOutputSpecification" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;InputOutputSpecification&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ inputSets : InputSet[0..*]&lt;/div&gt;&lt;div&gt;◆ outputSets : OutputSet[0..*]&lt;/div&gt;&lt;div&gt;◆ dataInputs : DataInput[0..*]&lt;/div&gt;&lt;div&gt;◆ dataOutputs : DataOutput[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="1240" y="248" width="260" height="114" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_InputSet" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;InputSet&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString[0..1]&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;dataInputRefs : DataInput[0..*]&lt;/div&gt;&lt;div&gt;optionalInputRefs : DataInput[0..*]&lt;/div&gt;&lt;div&gt;whileExecutingInputRefs : DataInput[0..*]&lt;/div&gt;&lt;div&gt;outputSetRefs : OutputSet[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="1540" y="248" width="260" height="138" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ItemAwareElement" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ItemAwareElement&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;itemSubjectRef : ItemDefinition[0..1]&lt;/div&gt;&lt;div&gt;◆ dataState : DataState[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="1840" y="248" width="260" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_DataState" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;DataState&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="2140" y="248" width="260" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_OutputSet" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;OutputSet&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString[0..1]&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;dataOutputRefs : DataOutput[0..*]&lt;/div&gt;&lt;div&gt;optionalOutputRefs : DataOutput[0..*]&lt;/div&gt;&lt;div&gt;whileExecutingOutputRefs : DataOutput[0..*]&lt;/div&gt;&lt;div&gt;inputSetRefs : InputSet[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="2440" y="248" width="260" height="138" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ResourceRole" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ResourceRole&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;resourceRef : Resource[0..1]&lt;/div&gt;&lt;div&gt;◆ resourceParameterBindings : ResourceParameterBinding[0..*]&lt;/div&gt;&lt;div&gt;◆ resourceAssignmentExpression : ResourceAssignmentExpression[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="2740" y="248" width="260" height="122" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ResourceParameter" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ResourceParameter&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString&lt;/div&gt;&lt;div&gt;isRequired : EBoolean&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;type : ItemDefinition[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="3040" y="248" width="260" height="106" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Expression" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Expression&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="3340" y="248" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Monitoring" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Monitoring&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="3640" y="248" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_FlowElementsContainer" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;&lt;i&gt;FlowElementsContainer&lt;/i&gt;&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ flowElements : FlowElement[0..*]&lt;/div&gt;&lt;div&gt;◆ laneSets : LaneSet[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#f5f5f5;strokeColor=#6c8ebf;dashed=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="3940" y="248" width="260" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_FlowElement" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;&lt;i&gt;FlowElement&lt;/i&gt;&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString[0..1]&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ auditing : Auditing[0..1]&lt;/div&gt;&lt;div&gt;◆ monitoring : Monitoring[0..1]&lt;/div&gt;&lt;div&gt;categoryValueRef : CategoryValue[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#f5f5f5;strokeColor=#6c8ebf;dashed=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="4240" y="248" width="260" height="122" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_CategoryValue" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;CategoryValue&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;value : EString&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;categorizedFlowElements : FlowElement[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="4540" y="248" width="260" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_LaneSet" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;LaneSet&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString[0..1]&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ lanes : Lane[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="4840" y="248" width="260" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Lane" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Lane&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString[0..1]&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ childLaneSet : LaneSet[0..1]&lt;/div&gt;&lt;div&gt;partitionElementRef : BaseElement[0..1]&lt;/div&gt;&lt;div&gt;flowNodeRefs : FlowNode[0..*]&lt;/div&gt;&lt;div&gt;◆ partitionElement : BaseElement[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="5140" y="248" width="260" height="138" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Artifact" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;&lt;i&gt;Artifact&lt;/i&gt;&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#f5f5f5;strokeColor=#6c8ebf;dashed=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="5440" y="248" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ParticipantAssociation" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ParticipantAssociation&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;innerParticipantRef : Participant&lt;/div&gt;&lt;div&gt;outerParticipantRef : Participant&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="5740" y="248" width="260" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Participant" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Participant&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString[0..1]&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;interfaceRefs : Interface[0..*]&lt;/div&gt;&lt;div&gt;◆ participantMultiplicity : ParticipantMultiplicity[0..1]&lt;/div&gt;&lt;div&gt;endPointRefs : EndPoint[0..*]&lt;/div&gt;&lt;div&gt;processRef : Process[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="6040" y="248" width="260" height="138" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ConversationLink" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ConversationLink&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString[0..1]&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;sourceRef : InteractionNode&lt;/div&gt;&lt;div&gt;targetRef : InteractionNode&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="6340" y="248" width="260" height="106" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_MessageFlowAssociation" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;MessageFlowAssociation&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;innerMessageFlowRef : MessageFlow&lt;/div&gt;&lt;div&gt;outerMessageFlowRef : MessageFlow&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="6640" y="248" width="260" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_MessageFlow" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;MessageFlow&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString[0..1]&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;sourceRef : InteractionNode[0..1]&lt;/div&gt;&lt;div&gt;targetRef : InteractionNode[0..1]&lt;/div&gt;&lt;div&gt;messageRef : Message[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="6940" y="248" width="260" height="122" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ConversationAssociation" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ConversationAssociation&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;innerConversationNodeRef : ConversationNode&lt;/div&gt;&lt;div&gt;outerConversationNodeRef : ConversationNode&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="7240" y="248" width="260" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ConversationNode" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;&lt;i&gt;ConversationNode&lt;/i&gt;&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;participantRefs : Participant[2..*]&lt;/div&gt;&lt;div&gt;messageFlowRefs : MessageFlow[0..*]&lt;/div&gt;&lt;div&gt;◆ correlationKeys : CorrelationKey[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#f5f5f5;strokeColor=#6c8ebf;dashed=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="7540" y="248" width="260" height="122" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_CorrelationKey" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;CorrelationKey&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;correlationPropertyRef : CorrelationProperty[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="7840" y="248" width="260" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_CorrelationPropertyRetrievalExpression" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;CorrelationPropertyRetrievalExpression&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ messagePath : FormalExpression&lt;/div&gt;&lt;div&gt;messageRef : Message&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="8140" y="248" width="260" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_CorrelationSubscription" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;CorrelationSubscription&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;correlationKeyRef : CorrelationKey&lt;/div&gt;&lt;div&gt;◆ correlationPropertyBinding : CorrelationPropertyBinding[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="8440" y="248" width="260" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_CorrelationPropertyBinding" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;CorrelationPropertyBinding&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ dataPath : FormalExpression&lt;/div&gt;&lt;div&gt;correlationPropertyRef : CorrelationProperty&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="8740" y="248" width="260" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_LoopCharacteristics" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;&lt;i&gt;LoopCharacteristics&lt;/i&gt;&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#f5f5f5;strokeColor=#6c8ebf;dashed=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="9040" y="248" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_DataAssociation" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;DataAssociation&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ transformation : FormalExpression[0..1]&lt;/div&gt;&lt;div&gt;◆ assignment : Assignment[0..*]&lt;/div&gt;&lt;div&gt;targetRef : ItemAwareElement&lt;/div&gt;&lt;div&gt;sourceRef : ItemAwareElement[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="9340" y="248" width="260" height="114" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Assignment" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Assignment&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ from : Expression&lt;/div&gt;&lt;div&gt;◆ to : Expression&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="9640" y="248" width="260" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Rendering" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Rendering&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="9940" y="248" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Relationship" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Relationship&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;type : EString&lt;/div&gt;&lt;div&gt;direction : RelationshipDirection&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;sources : EObject[1..*]&lt;/div&gt;&lt;div&gt;targets : EObject[1..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="10240" y="248" width="260" height="122" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ComplexBehaviorDefinition" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ComplexBehaviorDefinition&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ condition : FormalExpression&lt;/div&gt;&lt;div&gt;◆ event : ImplicitThrowEvent[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="10540" y="248" width="260" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Definitions" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Definitions&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString[0..1]&lt;/div&gt;&lt;div&gt;targetNamespace : EString[0..1]&lt;/div&gt;&lt;div&gt;expressionLanguage : EString = http://www.w3.org/1999/XPath&lt;/div&gt;&lt;div&gt;typeLanguage : EString = http://www.w3.org/2001/XMLSchema&lt;/div&gt;&lt;div&gt;exporter : EString[0..1]&lt;/div&gt;&lt;div&gt;exporterVersion : EString[0..1]&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ imports : Import[0..*]&lt;/div&gt;&lt;div&gt;◆ extensions : Extension[0..*]&lt;/div&gt;&lt;div&gt;◆ relationships : Relationship[0..*]&lt;/div&gt;&lt;div&gt;◆ rootElements : RootElement[0..*]&lt;/div&gt;&lt;div&gt;◆ diagrams : BPMNDiagram[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="10840" y="248" width="260" height="234" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Interface" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Interface&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ operations : Operation[1..*]&lt;/div&gt;&lt;div&gt;implementationRef : EObject[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="552" width="260" height="106" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Message" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Message&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString[0..1]&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;itemRef : ItemDefinition[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="340" y="552" width="260" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ItemDefinition" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ItemDefinition&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;itemKind : ItemKind&lt;/div&gt;&lt;div&gt;isCollection : EBoolean = false&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;structureRef : EObject&lt;/div&gt;&lt;div&gt;import : Import[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="640" y="552" width="260" height="122" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Error" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Error&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString&lt;/div&gt;&lt;div&gt;errorCode : EString&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;structureRef : ItemDefinition[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="940" y="552" width="260" height="106" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_EndPoint" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;EndPoint&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="1240" y="552" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_CallableElement" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;&lt;i&gt;CallableElement&lt;/i&gt;&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString[0..1]&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ ioSpecification : InputOutputSpecification[0..1]&lt;/div&gt;&lt;div&gt;supportedInterfaceRefs : Interface[0..*]&lt;/div&gt;&lt;div&gt;◆ ioBinding : InputOutputBinding[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#f5f5f5;strokeColor=#6c8ebf;dashed=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="1540" y="552" width="260" height="122" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_DataInput" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;DataInput&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString[0..1]&lt;/div&gt;&lt;div&gt;isCollection : EBoolean = false&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;inputSetWithOptional : InputSet[0..*]&lt;/div&gt;&lt;div&gt;inputSetWithWhileExecuting : InputSet[0..*]&lt;/div&gt;&lt;div&gt;inputSetRefs : InputSet[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="1840" y="552" width="260" height="138" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_DataOutput" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;DataOutput&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString[0..1]&lt;/div&gt;&lt;div&gt;isCollection : EBoolean = false&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;outputSetWithOptional : OutputSet[0..*]&lt;/div&gt;&lt;div&gt;outputSetWithWhileExecuting : OutputSet[0..*]&lt;/div&gt;&lt;div&gt;outputSetRefs : OutputSet[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="2140" y="552" width="260" height="138" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Resource" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Resource&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ resourceParameters : ResourceParameter[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="2440" y="552" width="260" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Performer" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Performer&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="2740" y="552" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_FlowNode" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;&lt;i&gt;FlowNode&lt;/i&gt;&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;outgoing : SequenceFlow[0..*]&lt;/div&gt;&lt;div&gt;incoming : SequenceFlow[0..*]&lt;/div&gt;&lt;div&gt;lanes : Lane[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#f5f5f5;strokeColor=#6c8ebf;dashed=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="3040" y="552" width="260" height="98" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_SequenceFlow" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;SequenceFlow&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;isImmediate : EBoolean[0..1]&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ conditionExpression : Expression[0..1]&lt;/div&gt;&lt;div&gt;targetRef : FlowNode[0..1]&lt;/div&gt;&lt;div&gt;sourceRef : FlowNode[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="3340" y="552" width="260" height="122" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Property" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Property&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="3640" y="552" width="260" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Collaboration" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Collaboration&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString[0..1]&lt;/div&gt;&lt;div&gt;isClosed : EBoolean&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;choreographyRef : Choreography[0..*]&lt;/div&gt;&lt;div&gt;◆ artifacts : Artifact[0..*]&lt;/div&gt;&lt;div&gt;◆ participantAssociations : ParticipantAssociation[0..*]&lt;/div&gt;&lt;div&gt;◆ messageFlowAssociations : MessageFlowAssociation[0..*]&lt;/div&gt;&lt;div&gt;◆ conversationAssociations : ConversationAssociation[0..1]&lt;/div&gt;&lt;div&gt;◆ participants : Participant[0..*]&lt;/div&gt;&lt;div&gt;◆ messageFlows : MessageFlow[0..*]&lt;/div&gt;&lt;div&gt;◆ correlationKeys : CorrelationKey[0..*]&lt;/div&gt;&lt;div&gt;◆ conversations : ConversationNode[0..*]&lt;/div&gt;&lt;div&gt;◆ conversationLinks : ConversationLink[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="3940" y="552" width="260" height="250" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_CorrelationProperty" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;CorrelationProperty&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ correlationPropertyRetrievalExpression : CorrelationPropertyRetrievalExpression[1..*]&lt;/div&gt;&lt;div&gt;type : ItemDefinition[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="4240" y="552" width="260" height="106" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_FormalExpression" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;FormalExpression&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;language : EString&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;body : EObject&lt;/div&gt;&lt;div&gt;evaluatesToTypeRef : ItemDefinition&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="4540" y="552" width="260" height="106" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_EventDefinition" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;&lt;i&gt;EventDefinition&lt;/i&gt;&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#f5f5f5;strokeColor=#6c8ebf;dashed=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="4840" y="552" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_DataOutputAssociation" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;DataOutputAssociation&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="5140" y="552" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_DataInputAssociation" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;DataInputAssociation&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="5440" y="552" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Signal" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Signal&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;structureRef : ItemDefinition[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="5740" y="552" width="260" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_DataObject" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;DataObject&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;isCollection : EBoolean = false&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="6040" y="552" width="260" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_DataStore" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;DataStore&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString[0..1]&lt;/div&gt;&lt;div&gt;capacity : EInt&lt;/div&gt;&lt;div&gt;isUnlimited : EBoolean = true&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="6340" y="552" width="260" height="98" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_DataStoreReference" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;DataStoreReference&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;dataStoreRef : DataStore[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="6640" y="552" width="260" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_DataObjectReference" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;DataObjectReference&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;dataObjectRef : DataObject&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="6940" y="552" width="260" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_CallConversation" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;CallConversation&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;calledCollaborationRef : Collaboration[0..1]&lt;/div&gt;&lt;div&gt;◆ participantAssociations : ParticipantAssociation[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="7240" y="552" width="260" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Conversation" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Conversation&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="7540" y="552" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_SubConversation" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;SubConversation&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ conversationNodes : ConversationNode[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="7840" y="552" width="260" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_PartnerEntity" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;PartnerEntity&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;participantRef : Participant[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="8140" y="552" width="260" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_PartnerRole" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;PartnerRole&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;participantRef : Participant[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="8440" y="552" width="260" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_TextAnnotation" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;TextAnnotation&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;text : EString[0..1]&lt;/div&gt;&lt;div&gt;textFormat : EString = text/plain&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="8740" y="552" width="260" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Group" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Group&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;categoryValueRef : CategoryValue[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="9040" y="552" width="260" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Association" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Association&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;associationDirection : AssociationDirection&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;sourceRef : BaseElement[0..1]&lt;/div&gt;&lt;div&gt;targetRef : BaseElement[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="9340" y="552" width="260" height="106" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Category" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Category&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ categoryValue : CategoryValue[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="9640" y="552" width="260" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_MultiInstanceLoopCharacteristics" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;MultiInstanceLoopCharacteristics&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;isSequential : EBoolean = false&lt;/div&gt;&lt;div&gt;behavior : MultiInstanceBehavior = All&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ loopCardinality : Expression[0..1]&lt;/div&gt;&lt;div&gt;loopDataInputRef : ItemAwareElement[0..1]&lt;/div&gt;&lt;div&gt;loopDataOutputRef : ItemAwareElement[0..1]&lt;/div&gt;&lt;div&gt;◆ inputDataItem : DataInput[0..1]&lt;/div&gt;&lt;div&gt;◆ outputDataItem : DataOutput[0..1]&lt;/div&gt;&lt;div&gt;◆ completionCondition : Expression[0..1]&lt;/div&gt;&lt;div&gt;◆ complexBehaviorDefinition : ComplexBehaviorDefinition[0..*]&lt;/div&gt;&lt;div&gt;oneBehaviorEventRef : EventDefinition[0..1]&lt;/div&gt;&lt;div&gt;noneBehaviorEventRef : EventDefinition[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="9940" y="552" width="260" height="234" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_StandardLoopCharacteristics" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;StandardLoopCharacteristics&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;testBefore : EBoolean = false&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ loopCondition : Expression[0..1]&lt;/div&gt;&lt;div&gt;◆ loopMaximum : Expression[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="10240" y="552" width="260" height="106" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_GlobalTask" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;GlobalTask&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ resources : ResourceRole[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="872" width="260" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Process" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Process&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;processType : ProcessType&lt;/div&gt;&lt;div&gt;isClosed : EBoolean&lt;/div&gt;&lt;div&gt;isExecutable : EBoolean&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ auditing : Auditing[0..1]&lt;/div&gt;&lt;div&gt;◆ monitoring : Monitoring[0..1]&lt;/div&gt;&lt;div&gt;◆ properties : Property[0..*]&lt;/div&gt;&lt;div&gt;supports : Process[0..*]&lt;/div&gt;&lt;div&gt;definitionalCollaborationRef : Collaboration[0..1]&lt;/div&gt;&lt;div&gt;◆ resources : ResourceRole[0..*]&lt;/div&gt;&lt;div&gt;◆ artifacts : Artifact[0..*]&lt;/div&gt;&lt;div&gt;◆ correlationSubscriptions : CorrelationSubscription[0..*]&lt;/div&gt;&lt;div&gt;◆ decomposedBy : Process[0..*]&lt;/div&gt;&lt;div&gt;decomposes : Process[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="340" y="872" width="260" height="266" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Choreography" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Choreography&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="640" y="872" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Activity" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;&lt;i&gt;Activity&lt;/i&gt;&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;isForCompensation : EBoolean = false&lt;/div&gt;&lt;div&gt;startQuantity : EInt = 1&lt;/div&gt;&lt;div&gt;completionQuantity : EInt = 1&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ loopCharacteristics : LoopCharacteristics[0..1]&lt;/div&gt;&lt;div&gt;◆ resources : ResourceRole[0..*]&lt;/div&gt;&lt;div&gt;default : SequenceFlow[0..1]&lt;/div&gt;&lt;div&gt;◆ properties : Property[0..*]&lt;/div&gt;&lt;div&gt;◆ ioSpecification : InputOutputSpecification[0..1]&lt;/div&gt;&lt;div&gt;boundaryEventRefs : BoundaryEvent[0..*]&lt;/div&gt;&lt;div&gt;◆ dataInputAssociations : DataInputAssociation[0..*]&lt;/div&gt;&lt;div&gt;◆ dataOutputAssociations : DataOutputAssociation[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#f5f5f5;strokeColor=#6c8ebf;dashed=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="940" y="872" width="260" height="234" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Event" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;&lt;i&gt;Event&lt;/i&gt;&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ properties : Property[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#f5f5f5;strokeColor=#6c8ebf;dashed=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="1240" y="872" width="260" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_HumanPerformer" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;HumanPerformer&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="1540" y="872" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Gateway" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;&lt;i&gt;Gateway&lt;/i&gt;&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;gatewayDirection : GatewayDirection = Unspecified&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#f5f5f5;strokeColor=#6c8ebf;dashed=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="1840" y="872" width="260" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_CancelEventDefinition" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;CancelEventDefinition&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="2140" y="872" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ErrorEventDefinition" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ErrorEventDefinition&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;errorRef : Error[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="2440" y="872" width="260" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_TerminateEventDefinition" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;TerminateEventDefinition&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="2740" y="872" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_EscalationEventDefinition" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;EscalationEventDefinition&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;escalationRef : Escalation[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="3040" y="872" width="260" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_CompensateEventDefinition" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;CompensateEventDefinition&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;waitForCompletion : EBoolean&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;activityRef : Activity[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="3340" y="872" width="260" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_TimerEventDefinition" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;TimerEventDefinition&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ timeDate : Expression[0..1]&lt;/div&gt;&lt;div&gt;◆ timeCycle : Expression[0..1]&lt;/div&gt;&lt;div&gt;◆ timeDuration : Expression[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="3640" y="872" width="260" height="98" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_LinkEventDefinition" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;LinkEventDefinition&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;name : EString[0..1]&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;target : LinkEventDefinition[0..1]&lt;/div&gt;&lt;div&gt;source : LinkEventDefinition[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="3940" y="872" width="260" height="106" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_MessageEventDefinition" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;MessageEventDefinition&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;messageRef : Message[0..1]&lt;/div&gt;&lt;div&gt;operationRef : Operation[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="4240" y="872" width="260" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ConditionalEventDefinition" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ConditionalEventDefinition&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ condition : Expression&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="4540" y="872" width="260" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_SignalEventDefinition" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;SignalEventDefinition&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;signalRef : Signal[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="4840" y="872" width="260" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_GlobalConversation" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;GlobalConversation&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="5140" y="872" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ChoreographyActivity" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;&lt;i&gt;ChoreographyActivity&lt;/i&gt;&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;loopType : ChoreographyLoopType = None&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;participantRefs : Participant[0..*]&lt;/div&gt;&lt;div&gt;initiatingParticipantRef : Participant[0..1]&lt;/div&gt;&lt;div&gt;◆ correlationKeys : CorrelationKey[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#f5f5f5;strokeColor=#6c8ebf;dashed=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="5440" y="872" width="260" height="122" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_GlobalManualTask" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;GlobalManualTask&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="1208" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Task" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Task&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="340" y="1208" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_CatchEvent" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;&lt;i&gt;CatchEvent&lt;/i&gt;&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;parallelMultiple : EBoolean = false&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ outputSet : OutputSet[0..1]&lt;/div&gt;&lt;div&gt;eventDefinitionRefs : EventDefinition[0..*]&lt;/div&gt;&lt;div&gt;◆ dataOutputAssociation : DataOutputAssociation[0..*]&lt;/div&gt;&lt;div&gt;◆ dataOutputs : DataOutput[0..*]&lt;/div&gt;&lt;div&gt;◆ eventDefinitions : EventDefinition[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#f5f5f5;strokeColor=#6c8ebf;dashed=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="640" y="1208" width="260" height="154" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_PotentialOwner" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;PotentialOwner&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="940" y="1208" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_GlobalUserTask" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;GlobalUserTask&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;implementation : EString&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ renderings : Rendering[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="1240" y="1208" width="260" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_EventBasedGateway" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;EventBasedGateway&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;instantiate : EBoolean = false&lt;/div&gt;&lt;div&gt;eventGatewayType : EventBasedGatewayType&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="1540" y="1208" width="260" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ComplexGateway" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ComplexGateway&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ activationCondition : Expression[0..1]&lt;/div&gt;&lt;div&gt;default : SequenceFlow[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="1840" y="1208" width="260" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ExclusiveGateway" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ExclusiveGateway&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;default : SequenceFlow[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="2140" y="1208" width="260" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_InclusiveGateway" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;InclusiveGateway&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;default : SequenceFlow[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="2440" y="1208" width="260" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ParallelGateway" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ParallelGateway&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="2740" y="1208" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ThrowEvent" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;&lt;i&gt;ThrowEvent&lt;/i&gt;&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ inputSet : InputSet[0..1]&lt;/div&gt;&lt;div&gt;eventDefinitionRefs : EventDefinition[0..*]&lt;/div&gt;&lt;div&gt;◆ dataInputAssociation : DataInputAssociation[0..*]&lt;/div&gt;&lt;div&gt;◆ dataInputs : DataInput[0..*]&lt;/div&gt;&lt;div&gt;◆ eventDefinitions : EventDefinition[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#f5f5f5;strokeColor=#6c8ebf;dashed=1;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="3040" y="1208" width="260" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_CallChoreography" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;CallChoreography&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;calledChoreographyRef : Choreography[0..1]&lt;/div&gt;&lt;div&gt;◆ participantAssociations : ParticipantAssociation[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="3340" y="1208" width="260" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_SubChoreography" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;SubChoreography&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ artifacts : Artifact[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="3640" y="1208" width="260" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ChoreographyTask" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ChoreographyTask&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;messageFlowRef : MessageFlow[0..2]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="3940" y="1208" width="260" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_GlobalChoreographyTask" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;GlobalChoreographyTask&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;initiatingParticipantRef : Participant&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="4240" y="1208" width="260" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_SubProcess" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;SubProcess&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;triggeredByEvent : EBoolean = false&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ artifacts : Artifact[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="4540" y="1208" width="260" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_CallActivity" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;CallActivity&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;calledElementRef : CallableElement[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="4840" y="1208" width="260" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_GlobalScriptTask" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;GlobalScriptTask&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;scriptLanguage : EString&lt;/div&gt;&lt;div&gt;script : EString&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="5140" y="1208" width="260" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_GlobalBusinessRuleTask" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;GlobalBusinessRuleTask&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;implementation : EString&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="5440" y="1208" width="260" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ManualTask" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ManualTask&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="1432" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_BoundaryEvent" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;BoundaryEvent&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;cancelActivity : EBoolean = true&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;attachedToRef : Activity&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="340" y="1432" width="260" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_UserTask" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;UserTask&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;implementation : EString[0..1]&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ renderings : Rendering[0..*]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="640" y="1432" width="260" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_IntermediateCatchEvent" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;IntermediateCatchEvent&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="940" y="1432" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_IntermediateThrowEvent" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;IntermediateThrowEvent&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="1240" y="1432" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_EndEvent" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;EndEvent&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="1540" y="1432" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_StartEvent" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;StartEvent&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;isInterrupting : EBoolean = true&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="1840" y="1432" width="260" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ImplicitThrowEvent" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ImplicitThrowEvent&lt;/b&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="2140" y="1432" width="260" height="58" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ServiceTask" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ServiceTask&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;implementation : EString[0..1]&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;operationRef : Operation[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="2440" y="1432" width="260" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_SendTask" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;SendTask&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;implementation : EString[0..1]&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;operationRef : Operation[0..1]&lt;/div&gt;&lt;div&gt;messageRef : Message[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="2740" y="1432" width="260" height="106" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ReceiveTask" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ReceiveTask&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;implementation : EString[0..1]&lt;/div&gt;&lt;div&gt;instantiate : EBoolean = false&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;operationRef : Operation[0..1]&lt;/div&gt;&lt;div&gt;messageRef : Message[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="3040" y="1432" width="260" height="122" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_ScriptTask" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;ScriptTask&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;scriptFormat : EString[0..1]&lt;/div&gt;&lt;div&gt;script : EString[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="3340" y="1432" width="260" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_BusinessRuleTask" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;BusinessRuleTask&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;implementation : EString[0..1]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="3640" y="1432" width="260" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_AdHocSubProcess" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;AdHocSubProcess&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;ordering : AdHocOrdering&lt;/div&gt;&lt;div&gt;cancelRemainingInstances : EBoolean = true&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;◆ completionCondition : Expression&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="3940" y="1432" width="260" height="106" as="geometry"/>
+                </mxCell>
+                <mxCell id="cls_Transaction" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;Transaction&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;protocol : EString[0..1]&lt;/div&gt;&lt;div&gt;method : EString&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="4240" y="1432" width="260" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="enum_ItemKind" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;«enumeration»&lt;br&gt;ItemKind&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;Physical = 0&lt;/div&gt;&lt;div&gt;Information = 1&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="1624" width="220" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="enum_ProcessType" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;«enumeration»&lt;br&gt;ProcessType&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;None = 0&lt;/div&gt;&lt;div&gt;Public = 1&lt;/div&gt;&lt;div&gt;Private = 2&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="300" y="1624" width="220" height="98" as="geometry"/>
+                </mxCell>
+                <mxCell id="enum_GatewayDirection" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;«enumeration»&lt;br&gt;GatewayDirection&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;Unspecified = 0&lt;/div&gt;&lt;div&gt;Converging = 1&lt;/div&gt;&lt;div&gt;Diverging = 2&lt;/div&gt;&lt;div&gt;Mixed = 3&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="560" y="1624" width="220" height="114" as="geometry"/>
+                </mxCell>
+                <mxCell id="enum_EventBasedGatewayType" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;«enumeration»&lt;br&gt;EventBasedGatewayType&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;Parallel = 0&lt;/div&gt;&lt;div&gt;Exclusive = 1&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="820" y="1624" width="220" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="enum_RelationshipDirection" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;«enumeration»&lt;br&gt;RelationshipDirection&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;None = 0&lt;/div&gt;&lt;div&gt;Forward = 1&lt;/div&gt;&lt;div&gt;Backward = 2&lt;/div&gt;&lt;div&gt;Both = 3&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="1080" y="1624" width="220" height="114" as="geometry"/>
+                </mxCell>
+                <mxCell id="enum_ChoreographyLoopType" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;«enumeration»&lt;br&gt;ChoreographyLoopType&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;None = 0&lt;/div&gt;&lt;div&gt;Standard = 1&lt;/div&gt;&lt;div&gt;MultiInstanceSequential = 2&lt;/div&gt;&lt;div&gt;MultiInstanceParallel = 3&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="1340" y="1624" width="220" height="114" as="geometry"/>
+                </mxCell>
+                <mxCell id="enum_AssociationDirection" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;«enumeration»&lt;br&gt;AssociationDirection&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;None = 0&lt;/div&gt;&lt;div&gt;One = 1&lt;/div&gt;&lt;div&gt;Both = 2&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="1808" width="220" height="98" as="geometry"/>
+                </mxCell>
+                <mxCell id="enum_MultiInstanceBehavior" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;«enumeration»&lt;br&gt;MultiInstanceBehavior&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;None = 0&lt;/div&gt;&lt;div&gt;One = 1&lt;/div&gt;&lt;div&gt;All = 2&lt;/div&gt;&lt;div&gt;Complex = 3&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="300" y="1808" width="220" height="114" as="geometry"/>
+                </mxCell>
+                <mxCell id="enum_AdHocOrdering" value="&lt;div style=&quot;text-align:center;&quot;&gt;&lt;b&gt;«enumeration»&lt;br&gt;AdHocOrdering&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;div&gt;Parallel = 0&lt;/div&gt;&lt;div&gt;Sequential = 1&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;spacingRight=6;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="560" y="1808" width="220" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_1" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;strokeColor=#000000;" parent="1" source="cls_Interface" target="cls_RootElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_2" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_RootElement" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_3" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Documentation" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_4" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Operation" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_5" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Message" target="cls_RootElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_6" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_ItemDefinition" target="cls_RootElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_7" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Error" target="cls_RootElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_8" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_EndPoint" target="cls_RootElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_9" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Auditing" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_10" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_GlobalTask" target="cls_CallableElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_11" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_CallableElement" target="cls_RootElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_12" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_InputOutputSpecification" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_13" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_InputSet" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_14" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_DataInput" target="cls_ItemAwareElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_15" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_ItemAwareElement" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_16" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_DataState" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_17" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_OutputSet" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_18" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_DataOutput" target="cls_ItemAwareElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_19" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_ResourceRole" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_20" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Resource" target="cls_RootElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_21" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_ResourceParameter" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_22" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Expression" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_23" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Monitoring" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_24" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Performer" target="cls_ResourceRole" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_25" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Process" target="cls_CallableElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_26" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Process" target="cls_FlowElementsContainer" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_27" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_FlowElementsContainer" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_28" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_FlowElement" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_29" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_CategoryValue" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_30" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_LaneSet" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_31" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Lane" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_32" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_FlowNode" target="cls_FlowElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_33" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_SequenceFlow" target="cls_FlowElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_34" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Property" target="cls_ItemAwareElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_35" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Collaboration" target="cls_RootElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_36" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Choreography" target="cls_Collaboration" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_37" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Choreography" target="cls_FlowElementsContainer" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_38" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Artifact" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_39" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_ParticipantAssociation" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_40" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Participant" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_41" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Participant" target="cls_InteractionNode" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_42" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_ConversationLink" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_43" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_MessageFlowAssociation" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_44" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_MessageFlow" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_45" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_ConversationAssociation" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_46" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_ConversationNode" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_47" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_ConversationNode" target="cls_InteractionNode" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_48" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_CorrelationKey" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_49" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_CorrelationProperty" target="cls_RootElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_50" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_CorrelationPropertyRetrievalExpression" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_51" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_FormalExpression" target="cls_Expression" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_52" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_CorrelationSubscription" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_53" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_CorrelationPropertyBinding" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_54" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_GlobalManualTask" target="cls_GlobalTask" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_55" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_ManualTask" target="cls_Task" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_56" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Task" target="cls_Activity" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_57" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Activity" target="cls_FlowNode" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_58" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Activity" target="cls_InteractionNode" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_59" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_LoopCharacteristics" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_60" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_BoundaryEvent" target="cls_CatchEvent" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_61" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_CatchEvent" target="cls_Event" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_62" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Event" target="cls_FlowNode" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_63" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Event" target="cls_InteractionNode" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_64" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_EventDefinition" target="cls_RootElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_65" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_DataOutputAssociation" target="cls_DataAssociation" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_66" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_DataAssociation" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_67" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Assignment" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_68" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_DataInputAssociation" target="cls_DataAssociation" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_69" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_UserTask" target="cls_Task" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_70" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Rendering" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_71" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_HumanPerformer" target="cls_Performer" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_72" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_PotentialOwner" target="cls_HumanPerformer" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_73" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_GlobalUserTask" target="cls_GlobalTask" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_74" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Gateway" target="cls_FlowNode" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_75" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_EventBasedGateway" target="cls_Gateway" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_76" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_ComplexGateway" target="cls_Gateway" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_77" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_ExclusiveGateway" target="cls_Gateway" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_78" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_InclusiveGateway" target="cls_Gateway" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_79" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_ParallelGateway" target="cls_Gateway" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_80" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Relationship" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_81" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_IntermediateCatchEvent" target="cls_CatchEvent" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_82" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_IntermediateThrowEvent" target="cls_ThrowEvent" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_83" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_ThrowEvent" target="cls_Event" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_84" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_EndEvent" target="cls_ThrowEvent" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_85" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_StartEvent" target="cls_CatchEvent" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_86" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_CancelEventDefinition" target="cls_EventDefinition" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_87" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_ErrorEventDefinition" target="cls_EventDefinition" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_88" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_TerminateEventDefinition" target="cls_EventDefinition" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_89" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_EscalationEventDefinition" target="cls_EventDefinition" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_90" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_CompensateEventDefinition" target="cls_EventDefinition" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_91" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_TimerEventDefinition" target="cls_EventDefinition" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_92" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_LinkEventDefinition" target="cls_EventDefinition" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_93" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_MessageEventDefinition" target="cls_EventDefinition" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_94" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_ConditionalEventDefinition" target="cls_EventDefinition" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_95" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_SignalEventDefinition" target="cls_EventDefinition" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_96" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Signal" target="cls_RootElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_97" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_ImplicitThrowEvent" target="cls_ThrowEvent" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_98" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_DataObject" target="cls_FlowElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_99" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_DataObject" target="cls_ItemAwareElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_100" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_DataStore" target="cls_ItemAwareElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_101" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_DataStore" target="cls_RootElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_102" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_DataStoreReference" target="cls_FlowElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_103" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_DataStoreReference" target="cls_ItemAwareElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_104" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_DataObjectReference" target="cls_FlowElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_105" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_DataObjectReference" target="cls_ItemAwareElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_106" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_CallConversation" target="cls_ConversationNode" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_107" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Conversation" target="cls_ConversationNode" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_108" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_SubConversation" target="cls_ConversationNode" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_109" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_GlobalConversation" target="cls_Collaboration" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_110" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_PartnerEntity" target="cls_RootElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_111" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_PartnerRole" target="cls_RootElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_112" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_ChoreographyActivity" target="cls_FlowNode" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_113" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_CallChoreography" target="cls_ChoreographyActivity" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_114" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_SubChoreography" target="cls_ChoreographyActivity" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_115" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_SubChoreography" target="cls_FlowElementsContainer" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_116" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_ChoreographyTask" target="cls_ChoreographyActivity" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_117" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_GlobalChoreographyTask" target="cls_Choreography" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_118" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_TextAnnotation" target="cls_Artifact" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_119" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Group" target="cls_Artifact" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_120" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Association" target="cls_Artifact" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_121" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Category" target="cls_RootElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_122" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_ServiceTask" target="cls_Task" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_123" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_SubProcess" target="cls_Activity" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_124" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_SubProcess" target="cls_FlowElementsContainer" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_125" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_MultiInstanceLoopCharacteristics" target="cls_LoopCharacteristics" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_126" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_ComplexBehaviorDefinition" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_127" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_StandardLoopCharacteristics" target="cls_LoopCharacteristics" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_128" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_CallActivity" target="cls_Activity" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_129" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_SendTask" target="cls_Task" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_130" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_ReceiveTask" target="cls_Task" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_131" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_ScriptTask" target="cls_Task" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_132" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_BusinessRuleTask" target="cls_Task" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_133" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_AdHocSubProcess" target="cls_SubProcess" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_134" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Transaction" target="cls_SubProcess" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_135" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_GlobalScriptTask" target="cls_GlobalTask" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_136" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_GlobalBusinessRuleTask" target="cls_GlobalTask" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gen_137" style="edgeStyle=none;html=1;endArrow=block;endFill=0;endSize=14;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;fontColor=#000000;" parent="1" source="cls_Definitions" target="cls_BaseElement" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

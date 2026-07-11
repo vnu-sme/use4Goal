@@ -2,14 +2,27 @@ package org.vnu.sme.goal.istar.parser;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import org.antlr.v4.runtime.*;
-import org.vnu.sme.goal.istar.mm.IStarModel;
+import org.antlr.v4.runtime.ANTLRErrorListener;
+import org.antlr.v4.runtime.BaseErrorListener;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Recognizer;
+import org.vnu.sme.goal.istar.mm.GoalModel;
+import org.vnu.sme.goal.istar.mm.GoalModelValidator;
 
+/**
+ * Compiles i* concrete syntax into the MM. The compiler owns parsing and AST -> MM
+ * orchestration; semantic invariants of the model are enforced by {@link GoalModelValidator}.
+ */
 public final class IStarCompiler {
 
-    public record Result(IStarModel model, List<String> errors) {
+    public record Result(GoalModel model, List<String> errors) {
         public boolean ok() { return errors.isEmpty(); }
     }
 
@@ -43,23 +56,10 @@ public final class IStarCompiler {
         IStarParser.ModelContext tree = parser.model();
         if (!errors.isEmpty()) return new Result(null, errors);
 
-        // AST pipeline: parse tree → CS (AST) → MM
         org.vnu.sme.goal.istar.ast.IStarModelCS ast = IStarBuildingVisitor.build(tree);
-        IStarModel model = IStarModelFactory.build(ast);
+        GoalModel model = IStarModelFactory.build(ast);
 
-        // Semantic validation (MM-layer rules applied after type resolution)
-        List<String> semErrors = new ArrayList<>();
-        for (org.vnu.sme.goal.istar.mm.ActorDef actor : model.getActors()) {
-            for (org.vnu.sme.goal.istar.mm.Refinement ref : actor.refinements()) {
-                if (ref instanceof org.vnu.sme.goal.istar.mm.Refinement.And and
-                        && and.children().size() < 2) {
-                    semErrors.add("semantic: and-refine '" + and.parent()
-                            + "' in actor '" + actor.name()
-                            + "' must have at least 2 children (found "
-                            + and.children().size() + ")");
-                }
-            }
-        }
+        List<String> semErrors = GoalModelValidator.validate(model);
         if (!semErrors.isEmpty()) return new Result(null, semErrors);
 
         return new Result(model, Collections.emptyList());

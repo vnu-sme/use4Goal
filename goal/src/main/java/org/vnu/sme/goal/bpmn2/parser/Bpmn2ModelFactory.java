@@ -5,58 +5,106 @@ import java.util.stream.Collectors;
 
 import org.vnu.sme.goal.bpmn2.ast.*;
 import org.vnu.sme.goal.bpmn2.mm.*;
+import org.vnu.sme.goal.bpmn2.mm.Process; // disambiguate from java.lang.Process
 
 /**
  * Converts the BPMN 2.0 AST (CS layer) to the runtime MetaModel (MM layer).
+ *
+ * <p>Two containment/reference subtleties handled here (see
+ * doc/05-bpmn2-metamodel.drawio):
+ * <ul>
+ *   <li>A FlowElement written inside a {@code lane} block is, in the MM,
+ *       OWNED by the enclosing Process (added to {@code Process.flowElements});
+ *       the Lane only keeps a reference list for partitioning.</li>
+ *   <li>SequenceFlow endpoints only resolve within the same Process/SubProcess
+ *       scope (they never cross a Process boundary); MessageFlow endpoints and
+ *       its optional Message resolve against the whole Model.</li>
+ * </ul>
  */
 public final class Bpmn2ModelFactory {
 
     private Bpmn2ModelFactory() {}
 
-    public static Bpmn2Collaboration build(Bpmn2CollaborationCS cs) {
-        Bpmn2Collaboration collab = new Bpmn2Collaboration(cs.id());
+    public static Bpmn2Model build(Bpmn2ModelCS cs) {
+        Bpmn2Model model = new Bpmn2Model(cs.name());
 
-        for (PoolCS pCS : cs.pools()) {
-            collab.addPool(buildPool(pCS));
+        for (ProcessCS pCS : cs.processes()) {
+            model.addProcess(buildProcess(pCS));
         }
-        for (MessageFlowCS mCS : cs.messageFlows()) {
-            collab.addMessageFlow(new MessageFlow(mCS.source(), mCS.target(), mCS.label()));
+        for (MessageCS mCS : cs.messages()) {
+            model.addMessage(new Message(mCS.id(), mCS.name()));
         }
-        return collab;
+        for (MessageFlowCS mfCS : cs.messageFlows()) {
+            FlowElement source = model.findFlowElement(mfCS.source())
+                    .orElseThrow(() -> new IllegalStateException("Unknown message-flow source: " + mfCS.source()));
+            FlowElement target = model.findFlowElement(mfCS.target())
+                    .orElseThrow(() -> new IllegalStateException("Unknown message-flow target: " + mfCS.target()));
+            Message message = mfCS.message() == null ? null
+                    : model.findMessage(mfCS.message())
+                            .orElseThrow(() -> new IllegalStateException("Unknown message: " + mfCS.message()));
+            model.addMessageFlow(new MessageFlow(source, target, message));
+        }
+        return model;
     }
 
-    private static Pool buildPool(PoolCS cs) {
-        List<Lane>         lanes    = cs.lanes().stream()
-                .map(Bpmn2ModelFactory::buildLane)
+    private static Process buildProcess(ProcessCS cs) {
+        List<FlowElement> topLevel = cs.flowElements().stream()
+                .map(Bpmn2ModelFactory::buildFlowElement)
                 .collect(Collectors.toList());
-        List<FlowNode>     elements = cs.elements().stream()
-                .map(Bpmn2ModelFactory::buildFlowNode)
+
+        List<Lane> lanes = new ArrayList<>();
+        List<FlowElement> owned = new ArrayList<>(topLevel);
+        for (LaneCS lCS : cs.lanes()) {
+            List<FlowElement> laneElements = lCS.flowElements().stream()
+                    .map(Bpmn2ModelFactory::buildFlowElement)
+                    .collect(Collectors.toList());
+            owned.addAll(laneElements);
+            lanes.add(new Lane(lCS.id(), lCS.name(), laneElements));
+        }
+
+        Map<String, FlowElement> scope = new LinkedHashMap<>();
+        for (FlowElement fe : owned) scope.put(fe.id(), fe);
+
+        List<SequenceFlow> flows = cs.sequenceFlows().stream()
+                .map(sf -> resolveSequenceFlow(sf, scope))
                 .collect(Collectors.toList());
-        List<SequenceFlow> flows    = cs.sequenceFlows().stream()
-                .map(sf -> new SequenceFlow(sf.source(), sf.target(), sf.condition()))
-                .collect(Collectors.toList());
-        return new Pool(cs.id(), cs.label(), lanes, elements, flows);
+
+        return new Process(cs.id(), cs.name(), lanes, owned, flows);
     }
 
-    private static Lane buildLane(LaneCS cs) {
-        List<FlowNode> elements = cs.elements().stream()
-                .map(Bpmn2ModelFactory::buildFlowNode)
-                .collect(Collectors.toList());
-        return new Lane(cs.id(), cs.label(), elements);
-    }
-
-    private static FlowNode buildFlowNode(FlowNodeCS cs) {
+    private static FlowElement buildFlowElement(FlowElementCS cs) {
         return switch (cs) {
-            case FlowNodeCS.StartEventCS      e -> new FlowNode.StartEvent(e.id(), EventType.from(e.eventType()));
-            case FlowNodeCS.EndEventCS        e -> new FlowNode.EndEvent(e.id(), EventType.from(e.eventType()));
-            case FlowNodeCS.IntermediateEventCS e ->
-                    new FlowNode.IntermediateEvent(e.id(), EventType.from(e.eventType()), e.catching());
-            case FlowNodeCS.TaskCS            e -> new FlowNode.Task(e.id(), e.label());
-            case FlowNodeCS.GatewayCS         e -> new FlowNode.Gateway(e.id(), GatewayType.from(e.gwType()));
-            case FlowNodeCS.SubProcessCS      e -> new FlowNode.SubProcess(
-                    e.id(), e.label(),
-                    e.children().stream().map(Bpmn2ModelFactory::buildFlowNode).collect(Collectors.toList()),
-                    e.flows().stream().map(sf -> new SequenceFlow(sf.source(), sf.target(), sf.condition())).collect(Collectors.toList()));
+            case FlowElementCS.StartEventCS e -> new StartEvent(e.id(), EventTrigger.from(e.trigger()));
+            case FlowElementCS.EndEventCS e -> new EndEvent(e.id(), EventTrigger.from(e.trigger()));
+            case FlowElementCS.IntermediateEventCS e -> new IntermediateEvent(
+                    e.id(), EventTrigger.from(e.trigger()), EventDirection.from(e.direction()));
+            case FlowElementCS.TaskCS e -> new Task(e.id(), e.name());
+            case FlowElementCS.CallActivityCS e -> new CallActivity(e.id());
+            case FlowElementCS.GatewayCS e -> new Gateway(e.id(), GatewayKind.from(e.kind()));
+            case FlowElementCS.SubProcessCS e -> buildSubProcess(e);
         };
+    }
+
+    private static SubProcess buildSubProcess(FlowElementCS.SubProcessCS cs) {
+        List<FlowElement> children = cs.flowElements().stream()
+                .map(Bpmn2ModelFactory::buildFlowElement)
+                .collect(Collectors.toList());
+
+        Map<String, FlowElement> scope = new LinkedHashMap<>();
+        for (FlowElement fe : children) scope.put(fe.id(), fe);
+
+        List<SequenceFlow> flows = cs.sequenceFlows().stream()
+                .map(sf -> resolveSequenceFlow(sf, scope))
+                .collect(Collectors.toList());
+
+        return new SubProcess(cs.id(), cs.name(), children, flows);
+    }
+
+    private static SequenceFlow resolveSequenceFlow(SequenceFlowCS cs, Map<String, FlowElement> scope) {
+        FlowElement source = scope.get(cs.source());
+        FlowElement target = scope.get(cs.target());
+        if (source == null) throw new IllegalStateException("Unknown flow source: " + cs.source());
+        if (target == null) throw new IllegalStateException("Unknown flow target: " + cs.target());
+        return new SequenceFlow(source, target, cs.label());
     }
 }

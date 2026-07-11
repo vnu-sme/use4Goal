@@ -23,12 +23,13 @@ target/generated-sources/antlr4/
 
 ## Vì sao ANTLR4 1-file-1-grammar (khác USE core)
 
-USE core dùng **ANTLR3** và ghép grammar từ nhiều mảnh `.gpart` (`use/use-core/src/main/resources/grammars/{base,use,ocl,soil,...}/*.gpart`)
-vì `.use`/`.ocl`/`.soil` **nhúng lẫn nhau** trong cùng 1 file — invariant trong `.use` là biểu
-thức OCL, thân operation là SOIL. Plugin trong `goal/` không có nhu cầu đó: mỗi ngôn ngữ
-(iStar, BPMN2, ...) độc lập, không nhúng ngôn ngữ khác vào giữa cú pháp của nó — nên **ANTLR4,
-1 file `.g4` độc lập cho mỗi ngôn ngữ** (như `IStar.g4`, `Bpmn2.g4` hiện có) là lựa chọn đúng,
-không cần bắt chước kỹ thuật ghép fragment của USE core. Chi tiết: `doc/use-core-design-rules.md` mục 2.1.
+USE core (mã nguồn thật trong `use/`) dùng **ANTLR3** và ghép grammar từ nhiều mảnh `.gpart`
+(`use/use-core/src/main/resources/grammars/{base,use,ocl,soil,...}/*.gpart`) vì
+`.use`/`.ocl`/`.soil` **nhúng lẫn nhau** trong cùng 1 file — invariant trong `.use` là biểu
+thức OCL, thân operation là SOIL. Plugin trong `goal/` không có nhu cầu đó: một ngôn ngữ mới
+độc lập, không nhúng ngôn ngữ khác vào giữa cú pháp của nó — nên **ANTLR4, 1 file `.g4` độc
+lập cho mỗi ngôn ngữ** là lựa chọn đúng, không cần bắt chước kỹ thuật ghép fragment của USE
+core. Chi tiết: `doc/use-core-design-rules.md` mục 2.1.
 
 ---
 
@@ -56,39 +57,28 @@ báo tên file riêng lẻ. Thêm 1 ngôn ngữ mới chỉ cần thả `.g4` v�
 
 ---
 
-## Cấu trúc grammar chuẩn — 2 ví dụ thật đang có trong project
+## Cấu trúc grammar chuẩn — khuôn mẫu chung
 
-### Ngôn ngữ Goal/Actor kiểu iStar (`IStar.g4`)
-
-Entry point: `model → actorDef* → dependency*`, mỗi actor chứa các `IntentionalElement`
-(goal/task/resource/quality) và các quan hệ (`Refinement`, `Contribution`, `Qualification`,
-`NeededBy`, `Association`). Dùng **labeled alternatives** (`# label`) cho mọi rule có nhiều
-alternative — ví dụ khối thân actor:
+Entry point thường có dạng phân tầng: `model → declaration* → relation*` — khai báo các thực
+thể (actor/pool/class/...) trước, quan hệ giữa chúng (dependency/flow/association/...) sau.
+Dùng **labeled alternatives** (`# label`) cho mọi rule có nhiều alternative, để Visitor ở
+Bước 2 sinh ra 1 method `visit<Label>()` riêng cho từng nhánh thay vì phải tự phân biệt bằng
+tay trong 1 method `visit<Rule>()` gộp chung. Ví dụ khuôn cho 1 rule "thân thực thể" có nhiều
+loại khai báo trộn lẫn:
 
 ```antlr
-elementBody
-    : 'goal'  IDENT ';'                          # goalElem
-    | 'task'  IDENT ';'                          # taskElem
-    | 'resource' IDENT ';'                        # resourceElem
-    | 'quality'  IDENT ';'                        # qualityElem
-    | 'and-refine' IDENT '<-' IDENT (',' IDENT)* ';'  # andRefine
-    | 'or-refine'  IDENT '<-' IDENT ';'               # orRefine
-    | 'needed-by'  IDENT '<-' IDENT ';'               # neededByElem
-    | 'contributes' IDENT contribType IDENT ';'       # contributionElem
-    | 'qualifies'   IDENT '->' IDENT ';'              # qualificationElem
-    | 'is-a'        IDENT ';'                         # isAElem
-    | 'participates-in' IDENT ';'                     # participatesElem
+entityBody
+    : 'kindA' IDENT ';'                              # kindAElem
+    | 'kindB' IDENT ';'                              # kindBElem
+    | 'relatesTo' IDENT '->' IDENT ';'                # relationElem
+    | 'refines'   IDENT '<-' IDENT (',' IDENT)* ';'   # refineElem
     ;
 ```
 
-Xem `goal/src/main/resources/grammars/IStar.g4` (67 dòng) làm reference đầy đủ.
-
-### Ngôn ngữ Process/BPMN (`Bpmn2.g4`)
-
-Entry: `collaboration → pool* → (lane* | poolElement*) + sequenceFlow* / messageFlow*`.
-Mỗi loại flow node (start/end/intermediate event, task, gateway, sub-process) là 1 alternative
-riêng có label (`# elemStart`, `# elemTask`, `# elemGateway`, ...) — xem
-`goal/src/main/resources/grammars/Bpmn2.g4` (73 dòng).
+Với ngôn ngữ dạng process/flow (nhiều loại node nối bằng cạnh có hướng), áp dụng cùng nguyên
+tắc: mỗi loại node (event/task/gateway/...) là 1 alternative riêng có label, cạnh nối
+(sequence/message/...) là rule riêng tham chiếu id của node bằng `IDENT` (resolve thành object
+thật ở Bước 3 Factory, không resolve ngay trong grammar).
 
 ---
 
@@ -131,8 +121,7 @@ parser.addErrorListener(errListener);
 ```
 
 > **Quan trọng**: Luôn `removeErrorListeners()` trước khi thêm listener riêng,
-> không thì ANTLR vẫn in lỗi ra stderr song song. Xem `IStarCompiler`/`Bpmn2Compiler` thật
-> trong codebase — cả hai đều làm đúng bước này.
+> không thì ANTLR vẫn in lỗi ra stderr song song, làm log lẫn lộn giữa lỗi thật và lỗi trùng lặp.
 
 ---
 

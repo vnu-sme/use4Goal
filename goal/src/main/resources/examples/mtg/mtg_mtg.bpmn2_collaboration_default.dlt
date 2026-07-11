@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<diagram_Layout version="13">
+    <diagramOptions>
+        <autolayout>false</autolayout>
+        <antialiasing>true</antialiasing>
+        <showassocnames>false</showassocnames>
+        <showattributes>true</showattributes>
+        <showmultiplicities>false</showmultiplicities>
+        <showoperations>false</showoperations>
+        <showrolenames>true</showrolenames>
+        <showgrid>false</showgrid>
+    </diagramOptions>
+    <node height="918.0" id="pool:MeetingOrganization"
+        sizeCalculated="false" type="Bpmn2Node" width="911.0">
+        <name>pool:MeetingOrganization</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>-4.0</x>
+            <y>12.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="110.0" id="lane:abdul" sizeCalculated="false"
+        type="Bpmn2Node" width="834.0">
+        <name>lane:abdul</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>46.0</x>
+            <y>28.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="110.0" id="lane:matilda" sizeCalculated="false"
+        type="Bpmn2Node" width="834.0">
+        <name>lane:matilda</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>38.0</x>
+            <y>144.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="110.0" id="lane:alex" sizeCalculated="false"
+        type="Bpmn2Node" width="834.0">
+        <name>lane:alex</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>45.0</x>
+            <y>258.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="110.0" id="lane:xing" sizeCalculated="false"
+        type="Bpmn2Node" width="834.0">
+        <name>lane:xing</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>46.0</x>
+            <y>364.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="110.0" id="lane:amr" sizeCalculated="false"
+        type="Bpmn2Node" width="834.0">
+        <name>lane:amr</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>46.0</x>
+            <y>474.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="110.0" id="lane:naya" sizeCalculated="false"
+        type="Bpmn2Node" width="834.0">
+        <name>lane:naya</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>46.0</x>
+            <y>584.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="110.0" id="lane:bao" sizeCalculated="false"
+        type="Bpmn2Node" width="834.0">
+        <name>lane:bao</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>46.0</x>
+            <y>694.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="110.0" id="lane:chloe" sizeCalculated="false"
+        type="Bpmn2Node" width="834.0">
+        <name>lane:chloe</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>46.0</x>
+            <y>804.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="55.0" id="scenario:done:chooseTimeAndDate:matilda:0"
+        sizeCalculated="false" type="Bpmn2Node" width="170.0">
+        <name>scenario:done:chooseTimeAndDate:matilda:0</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>129.0</x>
+            <y>173.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="55.0" id="scenario:done:announceMeeting:xing:1"
+        sizeCalculated="false" type="Bpmn2Node" width="170.0">
+        <name>scenario:done:announceMeeting:xing:1</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>122.0</x>
+            <y>391.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="55.0" id="scenario:done:announceMeeting:amr:2"
+        sizeCalculated="false" type="Bpmn2Node" width="170.0">
+        <name>scenario:done:announceMeeting:amr:2</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>122.0</x>
+            <y>501.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="55.0" id="scenario:done:announceMeeting:naya:3"
+        sizeCalculated="false" type="Bpmn2Node" width="170.0">
+        <name>scenario:done:announceMeeting:naya:3</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>122.0</x>
+            <y>611.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="55.0" id="scenario:done:announceMeeting:bao:4"
+        sizeCalculated="false" type="Bpmn2Node" width="170.0">
+        <name>scenario:done:announceMeeting:bao:4</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>122.0</x>
+            <y>721.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="55.0" id="scenario:done:announceMeeting:chloe:5"
+        sizeCalculated="false" type="Bpmn2Node" width="170.0">
+        <name>scenario:done:announceMeeting:chloe:5</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>122.0</x>
+            <y>831.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="55.0" id="scenario:active:participate:xing:0"
+        sizeCalculated="false" type="Bpmn2Node" width="170.0">
+        <name>scenario:active:participate:xing:0</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>316.0</x>
+            <y>391.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="55.0" id="scenario:active:participate:amr:1"
+        sizeCalculated="false" type="Bpmn2Node" width="170.0">
+        <name>scenario:active:participate:amr:1</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>316.0</x>
+            <y>501.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="55.0" id="scenario:active:participate:naya:2"
+        sizeCalculated="false" type="Bpmn2Node" width="170.0">
+        <name>scenario:active:participate:naya:2</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>316.0</x>
+            <y>611.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="55.0" id="scenario:active:participate:bao:3"
+        sizeCalculated="false" type="Bpmn2Node" width="170.0">
+        <name>scenario:active:participate:bao:3</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>316.0</x>
+            <y>721.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="55.0" id="scenario:active:participate:chloe:4"
+        sizeCalculated="false" type="Bpmn2Node" width="170.0">
+        <name>scenario:active:participate:chloe:4</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>316.0</x>
+            <y>831.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="55.0" id="scenario:object:abdul"
+        sizeCalculated="false" type="Bpmn2Node" width="110.0">
+        <name>scenario:object:abdul</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>122.0</x>
+            <y>55.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="55.0" id="scenario:object:alex" sizeCalculated="false"
+        type="Bpmn2Node" width="110.0">
+        <name>scenario:object:alex</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>121.0</x>
+            <y>285.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <edge type="Bpmn2Edge">
+        <source>scenario:done:announceMeeting:amr:2</source>
+        <target>scenario:active:participate:amr:1</target>
+        <name>sequence</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="bpmn::SEQUENCE::scenario:done:announceMeeting:amr:2::scenario:active:participate:amr:1::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="bpmn::SEQUENCE::scenario:done:announceMeeting:amr:2::scenario:active:participate:amr:1::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="Bpmn2Edge">
+        <source>scenario:done:announceMeeting:bao:4</source>
+        <target>scenario:active:participate:bao:3</target>
+        <name>sequence</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="bpmn::SEQUENCE::scenario:done:announceMeeting:bao:4::scenario:active:participate:bao:3::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="bpmn::SEQUENCE::scenario:done:announceMeeting:bao:4::scenario:active:participate:bao:3::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="Bpmn2Edge">
+        <source>scenario:done:announceMeeting:chloe:5</source>
+        <target>scenario:active:participate:chloe:4</target>
+        <name>sequence</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="bpmn::SEQUENCE::scenario:done:announceMeeting:chloe:5::scenario:active:participate:chloe:4::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="bpmn::SEQUENCE::scenario:done:announceMeeting:chloe:5::scenario:active:participate:chloe:4::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="Bpmn2Edge">
+        <source>scenario:done:announceMeeting:naya:3</source>
+        <target>scenario:active:participate:naya:2</target>
+        <name>sequence</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="bpmn::SEQUENCE::scenario:done:announceMeeting:naya:3::scenario:active:participate:naya:2::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="bpmn::SEQUENCE::scenario:done:announceMeeting:naya:3::scenario:active:participate:naya:2::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="Bpmn2Edge">
+        <source>scenario:done:announceMeeting:xing:1</source>
+        <target>scenario:active:participate:xing:0</target>
+        <name>sequence</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="bpmn::SEQUENCE::scenario:done:announceMeeting:xing:1::scenario:active:participate:xing:0::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="bpmn::SEQUENCE::scenario:done:announceMeeting:xing:1::scenario:active:participate:xing:0::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+</diagram_Layout>

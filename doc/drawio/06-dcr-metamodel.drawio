@@ -1,0 +1,115 @@
+<mxfile host="65bd71144e">
+    <diagram id="dcr-metamodel-page" name="DCR Metamodel">
+        <mxGraphModel dx="1422" dy="770" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="900" pageHeight="700" background="#ffffff" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="dcr-model" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;DcrModel&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;margin:3px 0;line-height:14px;&quot;&gt;&amp;nbsp;+ name: String&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;fontColor=#000000;strokeColor=#000000;labelBackgroundColor=none;labelBorderColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="350" y="50" width="200" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="dcr-event" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;DcrEvent&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;margin:3px 0;line-height:14px;&quot;&gt;&amp;nbsp;+ id: String&lt;/div&gt;&lt;div style=&quot;margin:3px 0;line-height:14px;&quot;&gt;&amp;nbsp;+ label: String&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;fontColor=#000000;strokeColor=#000000;labelBackgroundColor=none;labelBorderColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="146.5" y="211.5" width="127" height="132" as="geometry"/>
+                </mxCell>
+                <mxCell id="dcr-relation" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;DcrRelation&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;margin:3px 0;line-height:14px;&quot;&gt;&amp;nbsp;+ kind: DcrRelationKind&lt;/div&gt;&lt;div style=&quot;margin:3px 0;line-height:14px;&quot;&gt;&amp;nbsp;+ source: String&lt;/div&gt;&lt;div style=&quot;margin:3px 0;line-height:14px;&quot;&gt;&amp;nbsp;+ target: String&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;fontColor=#000000;strokeColor=#000000;labelBackgroundColor=none;labelBorderColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="577" y="207.5" width="146" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="dcr-marking" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;DcrMarking&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;margin:3px 0;line-height:14px;&quot;&gt;&amp;nbsp;+ executed: Boolean&lt;/div&gt;&lt;div style=&quot;margin:3px 0;line-height:14px;&quot;&gt;&amp;nbsp;+ included: Boolean&lt;/div&gt;&lt;div style=&quot;margin:3px 0;line-height:14px;&quot;&gt;&amp;nbsp;+ pending: Boolean&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;fontColor=#000000;strokeColor=#000000;labelBackgroundColor=none;labelBorderColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="148.5" y="420" width="123" height="107" as="geometry"/>
+                </mxCell>
+                <mxCell id="dcr-relationkind" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;&amp;#171;enumeration&amp;#187;&lt;/b&gt;&lt;br/&gt;&lt;b&gt;DcrRelationKind&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;margin:3px 0;line-height:14px;&quot;&gt;&amp;nbsp;CONDITION&lt;/div&gt;&lt;div style=&quot;margin:3px 0;line-height:14px;&quot;&gt;&amp;nbsp;RESPONSE&lt;/div&gt;&lt;div style=&quot;margin:3px 0;line-height:14px;&quot;&gt;&amp;nbsp;INCLUDE&lt;/div&gt;&lt;div style=&quot;margin:3px 0;line-height:14px;&quot;&gt;&amp;nbsp;EXCLUDE&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;fontColor=#000000;strokeColor=#000000;labelBackgroundColor=none;labelBorderColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="577" y="405" width="116" height="141" as="geometry"/>
+                </mxCell>
+                <mxCell id="dcr-e-model-event" value="" style="strokeColor=#000000;startArrow=diamondThin;startFill=1;endArrow=open;endFill=1;endSize=10;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="dcr-model" target="dcr-event" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="dcr-e-model-event-src" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="dcr-e-model-event" connectable="0" vertex="1">
+                    <mxGeometry x="-0.75" relative="1" as="geometry">
+                        <mxPoint x="11" y="15" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="dcr-e-model-event-tgt" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="dcr-e-model-event" connectable="0" vertex="1">
+                    <mxGeometry x="0.75" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="dcr-e-model-event-role" value="events" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="dcr-e-model-event" connectable="0" vertex="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint y="-12" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="dcr-e-model-relation" value="" style="strokeColor=#000000;startArrow=diamondThin;startFill=1;endArrow=open;endFill=1;endSize=10;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="dcr-model" target="dcr-relation" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="dcr-e-model-relation-src" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="dcr-e-model-relation" connectable="0" vertex="1">
+                    <mxGeometry x="-0.75" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="dcr-e-model-relation-tgt" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="dcr-e-model-relation" connectable="0" vertex="1">
+                    <mxGeometry x="0.75" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="dcr-e-model-relation-role" value="relations" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="dcr-e-model-relation" connectable="0" vertex="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="-32" y="4" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="dcr-e-event-marking" value="" style="strokeColor=#000000;startArrow=diamondThin;startFill=1;endArrow=open;endFill=1;endSize=10;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="dcr-event" target="dcr-marking" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="dcr-e-event-marking-src" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="dcr-e-event-marking" connectable="0" vertex="1">
+                    <mxGeometry x="-0.75" relative="1" as="geometry">
+                        <mxPoint x="12" y="6" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="dcr-e-event-marking-tgt" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="dcr-e-event-marking" connectable="0" vertex="1">
+                    <mxGeometry x="0.75" relative="1" as="geometry">
+                        <mxPoint x="18" y="-1" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="dcr-e-event-marking-role" value="initialMarking" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="dcr-e-event-marking" connectable="0" vertex="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="55" y="1" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="dcr-e-relation-source" value="" style="strokeColor=#000000;startArrow=none;startFill=0;endArrow=open;endFill=1;endSize=10;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="dcr-relation" target="dcr-event" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="427" y="263"/>
+                            <mxPoint x="427" y="263"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="dcr-e-relation-source-tgt" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="dcr-e-relation-source" connectable="0" vertex="1">
+                    <mxGeometry x="0.75" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="dcr-e-relation-source-role" value="source" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="dcr-e-relation-source" connectable="0" vertex="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint y="-14" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="dcr-e-relation-target" value="" style="strokeColor=#000000;startArrow=none;startFill=0;endArrow=open;endFill=1;endSize=10;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="dcr-relation" target="dcr-event" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="430" y="314"/>
+                            <mxPoint x="430" y="314"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="dcr-e-relation-target-tgt" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="dcr-e-relation-target" connectable="0" vertex="1">
+                    <mxGeometry x="0.75" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="dcr-e-relation-target-role" value="target" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="dcr-e-relation-target" connectable="0" vertex="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint y="14" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

@@ -1,0 +1,68 @@
+// BPMN 2.0 Example — Job Application Review
+// Paired with job_application_review.istar (3 actors -> 3 pools). Written against the
+// current 'model ... { pool ... }' grammar (Bpmn2.g4), not the older 'collaboration'
+// keyword still used by the other example .bpmn2 files in this directory tree.
+
+model JobApplicationReview {
+
+  pool CandidatePool "Candidate" {
+    start start_candidate : none
+    task  submitApplication "Submit Application"
+    task  attendInterview   "Attend Interview"
+    end   end_candidate : none
+
+    flow start_candidate -> submitApplication
+    flow submitApplication -> attendInterview
+    flow attendInterview -> end_candidate
+  }
+
+  pool HRDepartmentPool "HR Department" {
+    lane screening_lane "Screening" {
+      start start_hr : none
+      task  screenApplication "Screen Application"
+      gateway gw_screen : xor
+      task  rejectEarly "Reject Early"
+      end   end_rejected : none
+    }
+    lane outcome_lane "Outcome" {
+      task  notifyOutcome "Notify Outcome"
+      end   end_hr : none
+    }
+
+    flow start_hr -> screenApplication
+    flow screenApplication -> gw_screen
+    flow gw_screen -> rejectEarly : "not qualified"
+    flow rejectEarly -> end_rejected
+    flow gw_screen -> notifyOutcome : "qualified"
+    flow notifyOutcome -> end_hr
+  }
+
+  pool HiringManagerPool "Hiring Manager" {
+    start   start_hm : none
+    task    conductInterview "Conduct Interview"
+    gateway gw_decision : xor
+    task    makeOffer     "Make Offer"
+    task    makeRejection "Make Rejection"
+    end     end_offer : none
+    end     end_rejection : none
+
+    flow start_hm -> conductInterview
+    flow conductInterview -> gw_decision
+    flow gw_decision -> makeOffer     : "hire"
+    flow gw_decision -> makeRejection : "no hire"
+    flow makeOffer -> end_offer
+    flow makeRejection -> end_rejection
+  }
+
+  message ApplicationMsg "Application submitted"
+  message InterviewMsg   "Interview invitation"
+  message DecisionMsg    "Hiring decision"
+  message OutcomeMsg     "Outcome notification"
+
+  message-flow submitApplication -> screenApplication : ApplicationMsg
+  message-flow screenApplication -> conductInterview  : InterviewMsg
+  message-flow attendInterview   -> makeOffer         : InterviewMsg
+  message-flow makeOffer         -> notifyOutcome      : DecisionMsg
+  message-flow makeRejection     -> notifyOutcome      : DecisionMsg
+  message-flow notifyOutcome     -> end_candidate       : OutcomeMsg
+}

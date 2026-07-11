@@ -1,0 +1,41 @@
+
+istar MeetingScheduler {
+
+  role Initiator {
+    goal HaveMeetingOrganized
+    task DecideMeetingDetails               > HaveMeetingOrganized
+    goal HaveSchedulingPerformed            > HaveMeetingOrganized
+    goal MeetingAttended                    > HaveMeetingOrganized
+    goal HaveSchedulingPerformedByOrganizer > pick Organizer HaveSchedulingPerformed
+    goal MeetingAttendedByParticipant       > forall Participant MeetingAttended
+  }
+
+  role Organizer {
+    goal HaveMeetingScheduled
+    goal TimetablesCollected > HaveMeetingScheduled
+    task ChooseTimeAndDate   > HaveMeetingScheduled
+    goal MeetingAnnounced    > HaveMeetingScheduled
+
+    goal TimetableCollected  > forall Participant TimetablesCollected
+    goal HavePPCalled        > or TimetableCollected > make Inclusivity
+    task CollectFromCalendar > or TimetableCollected > make QuickScheduling
+    goal HaveSecretaryCallPP > pick Secretary HavePPCalled
+
+    task AnnounceMeeting     > forall Participant MeetingAnnounced
+
+    quality Inclusivity
+    quality QuickScheduling
+  }
+
+  role Secretary {
+    task CollectConstraintsByPhone
+  }
+
+  role Participant {
+    task Participate
+  }
+
+  depend Initiator.HaveSchedulingPerformedByOrganizer -> task ChooseTimeAndDate -> Organizer.ChooseTimeAndDate
+  depend Organizer.HaveSecretaryCallPP -> task CollectConstraintsByPhone -> Secretary.CollectConstraintsByPhone
+  depend Initiator.MeetingAttendedByParticipant -> task Participate -> Participant.Participate
+}

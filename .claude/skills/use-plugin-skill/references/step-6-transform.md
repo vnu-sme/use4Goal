@@ -11,64 +11,57 @@ Bước này có 2 việc khác bản chất, đừng nhầm lẫn:
 
 ## 6.A — Layout algorithm chi tiết
 
-Ví dụ thật từ `IStarView.buildLayout()` (hiện đang nằm trong View — theo `step-4-view.md`,
-nên chuyển phần này sang `<Lang>LayoutBuilder` cho ngôn ngữ mới):
+Đặt toàn bộ logic này trong `<Lang>LayoutBuilder` (Bước 5) — **không** trong `<Lang>View`.
+Khuôn mẫu cho ngôn ngữ có container lồng nhau (container chứa element, ví dụ actor chứa
+intentional-element, hoặc pool chứa lane chứa node):
 
 ```java
-private void buildLayout() {
-    nodes.clear(); actorNodes.clear();
-    if (model == null) return;
+public static <Lang>Layout build(<Lang>Model model) {
+    Map<String, <Lang>Node> nodes = new LinkedHashMap<>();
 
     int ax = MARGIN;
-    for (ActorDef actor : model.getActors()) {
-        Node aNode = new Node();
-        aNode.id = actor.name(); aNode.kind = NT.ACTOR;
-        aNode.x = ax; aNode.y = MARGIN;
+    for (var container : model.getContainers()) {
+        <Lang>Node containerNode = new <Lang>Node(container.id(), NodeKind.CONTAINER);
+        containerNode.x = ax; containerNode.y = MARGIN;
 
-        int cy = MARGIN + ACTOR_HDR + ACTOR_PAD;
+        int cy = MARGIN + CONTAINER_HDR + CONTAINER_PAD;
         int maxW = 0;
-        List<Node> children = new ArrayList<>();
-        for (IntentionalElement elem : actor.elements()) {
-            Node n = new Node();
-            n.id = elem.id(); n.actorId = actor.name();
-            switch (elem) {
-                case IntentionalElement.Goal     g -> { n.kind = NT.GOAL;     n.w = GW; n.h = GH; }
-                case IntentionalElement.Task     t -> { n.kind = NT.TASK;     n.w = TW; n.h = TH; }
-                case IntentionalElement.Resource r -> { n.kind = NT.RESOURCE; n.w = RW; n.h = RH; }
-                case IntentionalElement.Quality  q -> { n.kind = NT.QUALITY;  n.w = QW; n.h = QH; }
-            }
-            n.x = ax + ACTOR_PAD; n.y = cy;
+        List<<Lang>Node> children = new ArrayList<>();
+        for (var elem : container.elements()) {
+            <Lang>Node n = toNode(elem);   // switch theo sealed interface -> NodeKind + w/h chuẩn
+            n.x = ax + CONTAINER_PAD; n.y = cy;
             cy += n.h + ELEM_GAP; maxW = Math.max(maxW, n.w);
             children.add(n); nodes.put(n.id, n);
         }
-        aNode.w = maxW + ACTOR_PAD * 2;
-        aNode.h = cy - MARGIN + ACTOR_PAD;
-        for (Node cn : children) cn.x = ax + (aNode.w - cn.w) / 2;   // căn giữa trong actor
+        containerNode.w = maxW + CONTAINER_PAD * 2;
+        containerNode.h = cy - MARGIN + CONTAINER_PAD;
+        for (<Lang>Node cn : children) cn.x = ax + (containerNode.w - cn.w) / 2;  // căn giữa
 
-        nodes.put(aNode.id, aNode); actorNodes.add(aNode);
-        ax += aNode.w + HGAP;
+        nodes.put(containerNode.id, containerNode);
+        ax += containerNode.w + HGAP;
     }
+    // ... build edges, rồi return new <Lang>Layout(nodes, edges, ax + MARGIN, ...)
 }
 ```
 
-Nguyên tắc rút ra (áp dụng cho ngôn ngữ mới, đặt trong `<Lang>LayoutBuilder`):
-1. Duyệt theo cấu trúc container-lồng-nhau của ngôn ngữ (actor chứa element) — container luôn
-   tính bounds SAU khi đã đặt xong các con.
+Nguyên tắc rút ra:
+1. Duyệt theo cấu trúc container-lồng-nhau của ngôn ngữ — container luôn tính bounds SAU khi
+   đã đặt xong các con.
 2. Kích thước mỗi loại node cố định theo `NodeKind` (không random) — dễ đoán, dễ căn chỉnh.
 3. Container tự co giãn theo tổng kích thước con + padding, không hardcode.
 
 ### Edge clipping — điểm nối cạnh vào đúng biên hình dạng node
 
-`IStarView.clipToShape()` là ví dụ tốt: node hình oval (Goal) và node hình chữ nhật (Resource)
-cần công thức khác nhau để điểm nối nằm đúng trên biên, không phải center:
+Node hình oval và node hình chữ nhật cần công thức khác nhau để điểm nối nằm đúng trên biên,
+không phải center:
 
 ```java
-private static double[] clipToShape(Node n, double tx, double ty) {
+private static double[] clipToShape(<Lang>Node n, double tx, double ty) {
     double cx = n.x + n.w/2.0, cy = n.y + n.h/2.0;
     double dx = tx - cx, dy = ty - cy;
     double hw = n.w/2.0, hh = n.h/2.0;
     double t = switch (n.kind) {
-        case GOAL -> 1.0 / Math.sqrt(Math.pow(dx/hw,2) + Math.pow(dy/hh,2));   // ellipse
+        case OVAL -> 1.0 / Math.sqrt(Math.pow(dx/hw,2) + Math.pow(dy/hh,2));   // ellipse
         default   -> Math.min(                                                  // rectangle
             Math.abs(dx) < 1e-9 ? Double.MAX_VALUE : hw/Math.abs(dx),
             Math.abs(dy) < 1e-9 ? Double.MAX_VALUE : hh/Math.abs(dy));
@@ -80,15 +73,15 @@ private static double[] clipToShape(Node n, double tx, double ty) {
 ### Vẽ theo sealed interface — mỗi nhánh 1 kiểu visual riêng
 
 ```java
-private void paintRefinement(Graphics2D g2, Refinement ref) {
-    switch (ref) {
-        case Refinement.And and -> { /* T-shaped arrowhead, mọi children */ }
-        case Refinement.Or  or  -> { /* filled arrowhead, chỉ 1 child */ }
+private void paintRelation(Graphics2D g2, <MultiShapeRelation> rel) {
+    switch (rel) {
+        case <MultiShapeRelation>.KindA a -> { /* T-shaped arrowhead, mọi children */ }
+        case <MultiShapeRelation>.KindB b -> { /* filled arrowhead, chỉ 1 child */ }
     }
 }
 ```
 
-`sealed interface` cho phép compiler báo lỗi nếu thiếu case khi thêm 1 loại `Refinement` mới.
+`sealed interface` cho phép compiler báo lỗi nếu thiếu case khi thêm 1 nhánh quan hệ mới.
 
 ---
 
@@ -118,27 +111,27 @@ public final class <LangA>To<LangB>Transformer {
 ```
 
 **Khuyến nghị áp dụng Visitor pattern chuẩn hoá thay vì switch rời rạc** nếu logic transform
-theo từng nhánh sealed interface (ví dụ `Refinement`/`FlowNode`) lặp lại ở nhiều nơi (transform
-+ layout builder đều cần switch qua từng nhánh) — định nghĩa 1 interface chung:
+theo từng nhánh 1 sealed interface trong MM lặp lại ở nhiều nơi (transform + layout builder
+đều cần switch qua từng nhánh) — định nghĩa 1 interface chung:
 
 ```java
-public interface RefinementVisitor<R> {
-    R visitAnd(Refinement.And and);
-    R visitOr(Refinement.Or or);
+public interface <X>Visitor<R> {
+    R visitKindA(<X>.KindA a);
+    R visitKindB(<X>.KindB b);
 
-    static <R> R dispatch(Refinement ref, RefinementVisitor<R> v) {
-        return switch (ref) {
-            case Refinement.And and -> v.visitAnd(and);
-            case Refinement.Or  or  -> v.visitOr(or);
+    static <R> R dispatch(<X> x, <X>Visitor<R> v) {
+        return switch (x) {
+            case <X>.KindA a -> v.visitKindA(a);
+            case <X>.KindB b -> v.visitKindB(b);
         };
     }
 }
 ```
 
-Cả `<LangA>To<LangB>Transformer` và `<Lang>LayoutBuilder` implement `RefinementVisitor<R>` với
-`R` khác nhau (`R = TargetFragment` cho transform, `R = LayoutFragment` cho layout) — thêm 1
-nhánh `Refinement` mới thì compiler bắt lỗi thiếu implement ở CẢ HAI nơi thay vì âm thầm bỏ sót
-1 switch nào đó.
+Cả `<LangA>To<LangB>Transformer` và `<Lang>LayoutBuilder` implement `<X>Visitor<R>` với `R`
+khác nhau (`R = TargetFragment` cho transform, `R = LayoutFragment` cho layout) — thêm 1
+nhánh mới vào sealed interface `<X>` thì compiler bắt lỗi thiếu implement ở CẢ HAI nơi thay vì
+âm thầm bỏ sót 1 switch nào đó.
 
 ---
 

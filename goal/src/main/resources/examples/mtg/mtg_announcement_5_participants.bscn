@@ -1,0 +1,47 @@
+// BPMN Scenario — Meeting announcement unfolded for five participants.
+//
+// This is the object-level view of one process instance. The BPMN model has
+// one activity type "announceMeeting"; this scenario has five concrete
+// occurrences of that activity, one per Participant instance.
+
+scenario MeetingAnnouncementFiveParticipants for "mtg.bpmn2" {
+    process m1 : MeetingOrganization;
+
+    actor abdul : Initiator;
+    actor matilda : Organizer;
+    actor alex : Secretary;
+    actor xing, amr, naya, bao, chloe : Participant;
+
+    bind m1.initiator = abdul;
+    bind m1.organizer = matilda;
+    bind m1.secretary = alex;
+    bind m1.participants = [xing, amr, naya, bao, chloe];
+
+    completed m1.chooseTimeAndDate by matilda;
+
+    completed m1.announceMeeting for xing by matilda;
+    completed m1.announceMeeting for amr by matilda;
+    completed m1.announceMeeting for naya by matilda;
+    completed m1.announceMeeting for bao by matilda;
+    completed m1.announceMeeting for chloe by matilda;
+
+    active m1.participate for xing;
+    active m1.participate for amr;
+    active m1.participate for naya;
+    active m1.participate for bao;
+    active m1.participate for chloe;
+
+    token m1.announceMeeting::participate for xing;
+    token m1.announceMeeting::participate for amr;
+    token m1.announceMeeting::participate for naya;
+    token m1.announceMeeting::participate for bao;
+    token m1.announceMeeting::participate for chloe;
+
+    value xing.notified = true;
+    value amr.notified = true;
+    value naya.notified = true;
+    value bao.notified = true;
+    value chloe.notified = true;
+
+    assert count(participants where notified = true) == 5;
+}

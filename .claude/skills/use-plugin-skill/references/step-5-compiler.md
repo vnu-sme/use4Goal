@@ -48,9 +48,6 @@ public final class ActionOpen<Lang> implements IPluginActionDelegate {
 }
 ```
 
-Xem `goal/src/main/java/org/vnu/sme/goal/istar/action/ActionOpenIStar.java` và
-`bpmn2/action/ActionOpenBpmn2.java` — cả hai đều theo đúng khuôn này.
-
 > Luôn lấy cả `getSession()` **và** `getParent()` — Session cần thiết nếu sau này ngôn ngữ
 > cần đọc `MModel`/`MSystem` đang mở trong USE (ví dụ cross-reference với class diagram).
 
@@ -118,9 +115,9 @@ public final class <Lang>Form extends JDialog {
 }
 ```
 
-Thực tế trong `IStarForm`/`Bpmn2Form`: dùng `java.util.prefs.Preferences` để nhớ đường dẫn
-file lần mở gần nhất (`PREFS.get("istar.lastFile", "")`) — tiện lợi cho người dùng, không bắt
-buộc nhưng nên áp dụng nếu ngôn ngữ mới cũng có luồng "mở file rồi load lại nhiều lần".
+Mẹo: dùng `java.util.prefs.Preferences` để nhớ đường dẫn file lần mở gần nhất
+(`PREFS.get("<lang>.lastFile", "")`) — tiện lợi cho người dùng, không bắt buộc nhưng nên áp
+dụng nếu ngôn ngữ mới cũng có luồng "mở file rồi load lại nhiều lần".
 
 ---
 
@@ -181,8 +178,6 @@ public final class <LANG>Compiler {
     }
 }
 ```
-
-Xem `IStarCompiler.java`/`Bpmn2Compiler.java` cho code thật.
 
 ---
 
