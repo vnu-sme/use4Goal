@@ -11,11 +11,11 @@ import java.util.List;
  */
 public sealed interface ElementBodyCS {
 
-    /** goal <id> [: goalType] rel* */
-    record GoalCS(String id, String goalType, List<RelCS> rels) implements ElementBodyCS {}
+    /** goal <id> [: goalType] rel* [ocl: raw ;] */
+    record GoalCS(String id, String goalType, List<RelCS> rels, String oclSource) implements ElementBodyCS {}
 
-    /** task <id> rel* */
-    record TaskCS(String id, List<RelCS> rels) implements ElementBodyCS {}
+    /** task <id> rel* [ocl: raw ;] */
+    record TaskCS(String id, List<RelCS> rels, String oclSource) implements ElementBodyCS {}
 
     /** resource <id> rel* */
     record ResourceCS(String id, List<RelCS> rels) implements ElementBodyCS {}

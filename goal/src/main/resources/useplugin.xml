@@ -3,7 +3,7 @@
 <plugin name="GoalModel Plugin" version="3.0">
     <actions>
         <action label="iStar 2.0 Viewer"
-                icon="images/goal.png"
+                icon="images/istar.png"
                 class="org.vnu.sme.goal.istar.action.ActionOpenIStar"
                 tooltip="iStar 2.0 Strategic Rationale Diagram Viewer"
                 menu="GoalModel Plugin"
@@ -12,16 +12,25 @@
                 id="org.vnu.sme.goal.istar.action.ActionOpenIStar">
         </action>
         <action label="i* Scenario Viewer"
-                icon="images/goal.png"
-                class="org.vnu.sme.goal.istarscenario.action.ActionOpenIStarScenario"
+                icon="images/istar-scenario.png"
+                class="org.vnu.sme.goal.iscn.action.ActionOpenIStarScenario"
                 tooltip="Run an i* satisfaction scenario (.iscn) against its goal model"
                 menu="GoalModel Plugin"
                 menuitem="i* Scenario Viewer"
                 toolbaritem="i* Scenario Viewer"
-                id="org.vnu.sme.goal.istarscenario.action.ActionOpenIStarScenario">
+                id="org.vnu.sme.goal.iscn.action.ActionOpenIStarScenario">
+        </action>
+        <action label="i* + USE Scenario Viewer"
+                icon="images/istar-scenario.png"
+                class="org.vnu.sme.goal.istarusebridge.action.ActionOpenIStarUseScenario"
+                tooltip="Replay a .soil script against a .use structure and evaluate an i* goal model's OCL guards against it"
+                menu="GoalModel Plugin"
+                menuitem="i* + USE Scenario Viewer"
+                toolbaritem="i* + USE Scenario Viewer"
+                id="org.vnu.sme.goal.istarusebridge.action.ActionOpenIStarUseScenario">
         </action>
         <action label="BPMN 2.0 Viewer"
-                icon="images/goal.png"
+                icon="images/bpmn2.png"
                 class="org.vnu.sme.goal.bpmn2.action.ActionOpenBpmn2"
                 tooltip="BPMN 2.0 Collaboration Diagram Viewer"
                 menu="GoalModel Plugin"
@@ -30,7 +39,7 @@
                 id="org.vnu.sme.goal.bpmn2.action.ActionOpenBpmn2">
         </action>
         <action label="BPMN Scenario Viewer"
-                icon="images/goal.png"
+                icon="images/bpmn2-scenario.png"
                 class="org.vnu.sme.goal.bpmn2scenario.action.ActionOpenBpmn2Scenario"
                 tooltip="Run a BPMN scenario (.bscn) against its process model"
                 menu="GoalModel Plugin"
@@ -39,7 +48,7 @@
                 id="org.vnu.sme.goal.bpmn2scenario.action.ActionOpenBpmn2Scenario">
         </action>
         <action label="DCR Graph Viewer"
-                icon="images/goal.png"
+                icon="images/dcr.png"
                 class="org.vnu.sme.goal.dcr.action.ActionOpenDcr"
                 tooltip="Dynamic Condition Response Graph Viewer"
                 menu="GoalModel Plugin"
@@ -48,7 +57,7 @@
                 id="org.vnu.sme.goal.dcr.action.ActionOpenDcr">
         </action>
         <action label="i*/BPMN2 Conformance Checker"
-                icon="images/goal.png"
+                icon="images/conformance.png"
                 class="org.vnu.sme.goal.conformance.action.ActionCheckConformance"
                 tooltip="Check conformance between an i* goal model and a BPMN2 process model"
                 menu="GoalModel Plugin"

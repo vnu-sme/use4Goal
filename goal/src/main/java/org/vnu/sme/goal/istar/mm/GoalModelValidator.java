@@ -2,7 +2,6 @@ package org.vnu.sme.goal.istar.mm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -309,7 +308,6 @@ public final class GoalModelValidator {
     }
 
     private static void validateDependencies(GoalModel model, List<String> errors) {
-        Set<String> decomposedElements = refinementParents(model);
         for (Dependency d : model.getDependencies()) {
             validateActor(model, d.depender(), "depender", d, errors);
             validateActor(model, d.dependee(), "dependee", d, errors);
@@ -321,20 +319,7 @@ public final class GoalModelValidator {
                 errors.add("semantic: dependency '" + dependencyLabel(d)
                         + "' has the same actor '" + d.depender() + "' as both depender and dependee");
             }
-            if (d.dependeeElmt() != null && decomposedElements.contains(d.dependeeElmt())) {
-                errors.add("semantic: dependency '" + dependencyLabel(d) + "' attaches to dependee element '"
-                        + d.dependeeElmt() + "', which is itself further decomposed by a refinement"
-                        + " — the dependee endpoint must be a leaf element");
-            }
         }
-    }
-
-    private static Set<String> refinementParents(GoalModel model) {
-        Set<String> parents = new HashSet<>();
-        for (Actor actor : model.getActors())
-            for (Refinement ref : actor.refinements())
-                parents.add(ref.parent());
-        return parents;
     }
 
     private static void validateActor(GoalModel model, String actorId, String role,

@@ -78,11 +78,11 @@ public final class IStarModelFactory {
             switch (item) {
                 case ElementBodyCS.GoalCS e -> {
                     GoalType gt = e.goalType() != null ? GoalType.from(e.goalType()) : null;
-                    elements.add(new Goal(e.id(), gt));
+                    elements.add(new Goal(e.id(), gt, e.oclSource()));
                     rels.apply(e.id(), e.rels());
                 }
                 case ElementBodyCS.TaskCS e -> {
-                    elements.add(new Task(e.id()));
+                    elements.add(new Task(e.id(), e.oclSource()));
                     rels.apply(e.id(), e.rels());
                 }
                 case ElementBodyCS.ResourceCS e -> {

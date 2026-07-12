@@ -22,8 +22,8 @@ grammar IStar;
 //
 //  istar ModelName {
 //    role|agent ActorName {
-//      goal     GoalId [: Achieve|Maintain|Avoid] rel*
-//      task     TaskId                            rel*
+//      goal     GoalId [: Achieve|Maintain|Avoid] rel* [ocl {[ raw-OCL ]}]
+//      task     TaskId                            rel* [ocl {[ raw-OCL ]}]
 //      resource ResourceId                        rel*
 //      quality  QualityId                         rel*
 //      obstacle ObstacleId [: Prevention|Restoration|Mitigation] rel*
@@ -35,6 +35,16 @@ grammar IStar;
 //    // actor's boundary the dependency arrow visually attaches to.
 //    depend DependerId['.'DependerElmt] -> goal|task|resource|quality DependumId -> DependeeId['.'DependeeElmt]
 //  }
+//
+//  Optional OCL clauses are captured as raw text. IStar.g4 does not parse OCL
+//  grammar; the body is passed later to USE's OCLCompiler with a shadow
+//  MModel/MSystemState. Prefer the readable block form:
+//
+//      ocl {[
+//        self.someCondition()
+//      ]}
+//
+//  The old single-line form 'ocl: raw ;' is still accepted for compatibility.
 //
 //  rel : '>' relation target
 //    '> Parent'                                      AND-refinement
@@ -55,8 +65,8 @@ actorDef : actorKind IDENT '{' actorBody* '}' ;
 actorKind : 'role' | 'agent' ;
 
 actorBody
-    : 'goal'     IDENT goalType?     rel*  # bodyGoal
-    | 'task'     IDENT                rel*  # bodyTask
+    : 'goal'     IDENT goalType?     rel* oclClause?  # bodyGoal
+    | 'task'     IDENT                rel* oclClause?  # bodyTask
     | 'resource' IDENT                rel*  # bodyResource
     | 'quality'  IDENT                rel*  # bodyQuality
     | 'obstacle' IDENT obstacleType?  rel*  # bodyObstacle
@@ -97,7 +107,22 @@ contribType
     | 'break' # ctBreak
     ;
 
+oclClause : OCL_CLAUSE ;
+
 // ── Lexer ─────────────────────────────────────────────────────────────
+
+OCL_CLAUSE
+    : 'ocl' [ \t\r\n\f]* '{[' .*? ']}'
+    | 'ocl:' (OCL_DQ_STRING | OCL_SQ_STRING | ~[;"'])* ';'
+    ;
+
+fragment OCL_DQ_STRING
+    : '"' ('\\' . | ~["\\\r\n])* '"'
+    ;
+
+fragment OCL_SQ_STRING
+    : '\'' ('\\' . | ~['\\\r\n])* '\''
+    ;
 
 IDENT  : [a-zA-Z_][a-zA-Z0-9_]* ;
 

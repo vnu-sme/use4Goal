@@ -55,9 +55,10 @@ public final class IStarBuildingVisitor extends IStarBaseVisitor<Object> {
             case IStarParser.BodyGoalContext b -> new ElementBodyCS.GoalCS(
                     b.IDENT().getText(),
                     b.goalType() != null ? b.goalType().goalTypeName().getText() : null,
-                    buildRels(b.rel()));
+                    buildRels(b.rel()),
+                    buildOclSource(b.oclClause()));
             case IStarParser.BodyTaskContext b ->
-                    new ElementBodyCS.TaskCS(b.IDENT().getText(), buildRels(b.rel()));
+                    new ElementBodyCS.TaskCS(b.IDENT().getText(), buildRels(b.rel()), buildOclSource(b.oclClause()));
             case IStarParser.BodyResourceContext b ->
                     new ElementBodyCS.ResourceCS(b.IDENT().getText(), buildRels(b.rel()));
             case IStarParser.BodyQualityContext b ->
@@ -72,6 +73,20 @@ public final class IStarBuildingVisitor extends IStarBaseVisitor<Object> {
                     new ElementBodyCS.ParticipatesCS(b.IDENT(0).getText(), b.IDENT(1).getText());
             default -> null;
         };
+    }
+
+    private String buildOclSource(IStarParser.OclClauseContext ctx) {
+        if (ctx == null) return null;
+        String raw = ctx.OCL_CLAUSE().getText();
+        String body;
+        if (raw.startsWith("ocl:")) {
+            body = raw.substring("ocl:".length(), raw.length() - 1).trim();
+        } else {
+            int start = raw.indexOf("{[");
+            int end = raw.lastIndexOf("]}");
+            body = start >= 0 && end >= start ? raw.substring(start + 2, end).trim() : "";
+        }
+        return body.isEmpty() ? null : body;
     }
 
     // ── Inline relations ('>' relation target) ──────────────────────────────

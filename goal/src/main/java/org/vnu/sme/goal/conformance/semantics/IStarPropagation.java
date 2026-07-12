@@ -57,30 +57,48 @@ public final class IStarPropagation {
         return saturate(gm, m.withQuality(id, status));
     }
 
+    /**
+     * Recomputes non-leaf Goal/Task statuses from the current refinement tree, including the
+     * negative case that the operational {@link #saturate} intentionally does not derive:
+     * an AND parent is pending when any child is pending, and an OR parent is pending when no
+     * child is fulfilled but at least one child is pending.
+     */
+    public static IStarMarking closePending(GoalModel gm, IStarMarking m) {
+        Map<String, List<String>> andGroups = new LinkedHashMap<>();
+        Map<String, Set<String>> orGroups = new LinkedHashMap<>();
+        collectRefinements(gm, andGroups, orGroups, new ArrayList<>());
+
+        IStarMarking current = m;
+        boolean changed = true;
+        int steps = 0;
+        while (changed && steps++ < MAX_SATURATION_STEPS) {
+            changed = false;
+
+            for (Map.Entry<String, List<String>> e : andGroups.entrySet()) {
+                GoalTaskStatus status = statusOfAnd(current, e.getValue());
+                if (status != GoalTaskStatus.UNKNOWN && current.goalTaskStatus(e.getKey()) != status) {
+                    current = current.withGoalTask(e.getKey(), status);
+                    changed = true;
+                }
+            }
+
+            for (Map.Entry<String, Set<String>> e : orGroups.entrySet()) {
+                GoalTaskStatus status = statusOfOr(current, e.getValue());
+                if (status != GoalTaskStatus.UNKNOWN && current.goalTaskStatus(e.getKey()) != status) {
+                    current = current.withGoalTask(e.getKey(), status);
+                    changed = true;
+                }
+            }
+        }
+        return current;
+    }
+
     private static IStarMarking saturate(GoalModel gm, IStarMarking m) {
         Map<String, List<String>> andGroups = new LinkedHashMap<>();
         Map<String, Set<String>> orGroups = new LinkedHashMap<>();
         List<Contribution> contributions = new ArrayList<>();
 
-        for (Actor actor : gm.getActors()) {
-            for (Refinement r : actor.refinements()) {
-                switch (r) {
-                    case AndRefinement and -> andGroups
-                            .computeIfAbsent(and.parent(), k -> new ArrayList<>())
-                            .addAll(and.children());
-                    case OrRefinement or -> orGroups
-                            .computeIfAbsent(or.parent(), k -> new LinkedHashSet<>())
-                            .add(or.child());
-                    case ForRefinement forRef -> andGroups
-                            .computeIfAbsent(forRef.parent(), k -> new ArrayList<>())
-                            .add(forRef.child());
-                    case PickRefinement pick -> orGroups
-                            .computeIfAbsent(pick.parent(), k -> new LinkedHashSet<>())
-                            .add(pick.child());
-                }
-            }
-            contributions.addAll(actor.contributions());
-        }
+        collectRefinements(gm, andGroups, orGroups, contributions);
 
         IStarMarking current = m;
         boolean changed = true;
@@ -155,5 +173,53 @@ public final class IStarPropagation {
             }
         }
         return current;
+    }
+
+    private static void collectRefinements(GoalModel gm, Map<String, List<String>> andGroups,
+                                           Map<String, Set<String>> orGroups,
+                                           List<Contribution> contributions) {
+        for (Actor actor : gm.getActors()) {
+            for (Refinement r : actor.refinements()) {
+                switch (r) {
+                    case AndRefinement and -> andGroups
+                            .computeIfAbsent(and.parent(), k -> new ArrayList<>())
+                            .addAll(and.children());
+                    case OrRefinement or -> orGroups
+                            .computeIfAbsent(or.parent(), k -> new LinkedHashSet<>())
+                            .add(or.child());
+                    case ForRefinement forRef -> andGroups
+                            .computeIfAbsent(forRef.parent(), k -> new ArrayList<>())
+                            .add(forRef.child());
+                    case PickRefinement pick -> orGroups
+                            .computeIfAbsent(pick.parent(), k -> new LinkedHashSet<>())
+                            .add(pick.child());
+                }
+            }
+            contributions.addAll(actor.contributions());
+        }
+    }
+
+    private static GoalTaskStatus statusOfAnd(IStarMarking marking, List<String> children) {
+        if (children.isEmpty()) return GoalTaskStatus.UNKNOWN;
+        boolean allFulfilled = true;
+        boolean anyPending = false;
+        for (String child : children) {
+            GoalTaskStatus childStatus = marking.goalTaskStatus(child);
+            if (childStatus != GoalTaskStatus.FULFILLED) allFulfilled = false;
+            if (childStatus == GoalTaskStatus.PENDING) anyPending = true;
+        }
+        if (allFulfilled) return GoalTaskStatus.FULFILLED;
+        return anyPending ? GoalTaskStatus.PENDING : GoalTaskStatus.UNKNOWN;
+    }
+
+    private static GoalTaskStatus statusOfOr(IStarMarking marking, Set<String> children) {
+        if (children.isEmpty()) return GoalTaskStatus.UNKNOWN;
+        boolean anyPending = false;
+        for (String child : children) {
+            GoalTaskStatus childStatus = marking.goalTaskStatus(child);
+            if (childStatus == GoalTaskStatus.FULFILLED) return GoalTaskStatus.FULFILLED;
+            if (childStatus == GoalTaskStatus.PENDING) anyPending = true;
+        }
+        return anyPending ? GoalTaskStatus.PENDING : GoalTaskStatus.UNKNOWN;
     }
 }

@@ -1,41 +1,103 @@
 
 istar MeetingScheduler {
 
+  // OCL guards are written against mtg_shadow.use. self is always bound to an actor
+  // instance -- see doc/istarDesign/istar-scenario-action-architecture.md and the header
+  // comment of mtg_shadow.use for the design rationale.
+  //
+  // SR structure below restores the original design (see doc/drawio/04-istar-metamodel.drawio,
+  // Page-2, and the reference SR diagram this project is implementing): HaveSecretaryCallPP is
+  // back, CollectFromCalendar/QuickScheduling are back under Organizer (their real owner in the
+  // SR diagram), and both 'depend' statements carry their full triple again.
+  //
+  // Context-class resolution rule (no separate declaration, no mapping file):
+  //   - default: the actor block the Goal/Task is declared in.
+  //   - override: the ActorType named in the *nearest* forall/pick ancestor reached by
+  //     walking up the AND/OR chain (not just the element's own edge). This is what lets
+  //     CollectFromCalendar/HavePPCalled stay declared under Organizer (matching the SR
+  //     diagram) while self still resolves to Participant, because their OR-parent
+  //     (TimetableCollected) is itself forall-quantified by Participant.
+  //
+  // KNOWN GAP: the reference diagram parametrizes HaveSecretaryCallPP/CollectConstraintsByPhone
+  // by *both* Secretary and Participant ("(o,s,m,p)" -- which secretary called which
+  // participant). The bridge only resolves one governing ActorType per element; until it
+  // supports two independent dimensions at once, HaveSecretaryCallPP carries no ocl of its
+  // own and is derived purely through the 'depend' below (Secretary's own
+  // CollectConstraintsByPhone fact, not yet split out per participant).
+
   role Initiator {
     goal HaveMeetingOrganized
-    task DecideMeetingDetails               > HaveMeetingOrganized
+    task DecideMeetingDetails > HaveMeetingOrganized ocl {[
+      self.actorMeeting.detailsDecided
+    ]}
     goal HaveSchedulingPerformed            > HaveMeetingOrganized
     goal MeetingAttended                    > HaveMeetingOrganized
-    goal HaveSchedulingPerformedByOrganizer > pick Organizer HaveSchedulingPerformed
-    goal MeetingAttendedByParticipant       > forall Participant MeetingAttended
+    goal HaveSchedulingPerformedByOrganizer > pick Organizer HaveSchedulingPerformed ocl {[
+      self.actorMeeting.detailsDecided
+      and self.actorMeeting.timeChosen
+    ]}
+    goal MeetingAttendedByParticipant > forall Participant MeetingAttended ocl {[
+      self.attendance = #attended
+    ]}
   }
 
   role Organizer {
     goal HaveMeetingScheduled
     goal TimetablesCollected > HaveMeetingScheduled
-    task ChooseTimeAndDate   > HaveMeetingScheduled
+    task ChooseTimeAndDate   > HaveMeetingScheduled ocl {[
+      self.actorMeeting.detailsDecided
+      and Participant.allInstances()
+            ->select(p | p.actorMeeting = self.actorMeeting)
+            ->forAll(p | p.timetable = #collected)
+      and self.actorMeeting.timeChosen
+    ]}
     goal MeetingAnnounced    > HaveMeetingScheduled
 
-    goal TimetableCollected  > forall Participant TimetablesCollected
-    goal HavePPCalled        > or TimetableCollected > make Inclusivity
-    task CollectFromCalendar > or TimetableCollected > make QuickScheduling
+    goal TimetableCollected  > forall Participant TimetablesCollected ocl {[
+      self.timetable = #collected
+    ]}
+    goal HavePPCalled        > or TimetableCollected > make Inclusivity ocl {[
+      not self.hasCalendar
+      and self.timetable = #collected
+      and self.timetableChannel = #phone
+    ]}
+    task CollectFromCalendar > or TimetableCollected > make QuickScheduling ocl {[
+      self.hasCalendar
+      and self.timetable = #collected
+      and self.timetableChannel = #calendar
+    ]}
     goal HaveSecretaryCallPP > pick Secretary HavePPCalled
 
-    task AnnounceMeeting     > forall Participant MeetingAnnounced
+    task AnnounceMeeting     > forall Participant MeetingAnnounced ocl {[
+      self.actorMeeting.timeChosen
+      and self.notified = #sent
+    ]}
 
     quality Inclusivity
     quality QuickScheduling
   }
 
   role Secretary {
-    task CollectConstraintsByPhone
+    task CollectConstraintsByPhone ocl {[
+      Participant.allInstances()
+        ->select(p | p.actorMeeting = self.actorMeeting)
+        ->exists(p |
+            not p.hasCalendar
+            and p.timetable = #collected
+            and p.timetableChannel = #phone
+            and p.actorPerson.phoneContacts->exists(phone | self.knownPhoneContacts->includes(phone))
+        )
+    ]}
   }
 
   role Participant {
-    task Participate
+    task Participate ocl {[
+      self.notified = #sent
+      and self.attendance = #attended
+    ]}
   }
 
-  depend Initiator.HaveSchedulingPerformedByOrganizer -> task ChooseTimeAndDate -> Organizer.ChooseTimeAndDate
+  depend Initiator.HaveSchedulingPerformedByOrganizer -> task ChooseTimeAndDate -> Organizer.HaveMeetingScheduled
   depend Organizer.HaveSecretaryCallPP -> task CollectConstraintsByPhone -> Secretary.CollectConstraintsByPhone
   depend Initiator.MeetingAttendedByParticipant -> task Participate -> Participant.Participate
 }

@@ -13,6 +13,7 @@ import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.ButtonGroup;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
@@ -46,6 +47,10 @@ public final class IStarDiagram extends DiagramView {
     private Map<String, NodeBadge> badges = Collections.emptyMap();
     private Map<String, String> actorLabelOverrides = Collections.emptyMap();
     private Map<String, String> nodeLabelOverrides = Collections.emptyMap();
+    private boolean showQualities = true;
+    private boolean showContributions = true;
+    private boolean showDependencies = true;
+    private boolean showRefinements = true;
 
     public IStarDiagram(PrintWriter log) {
         super(new IStarDiagramOptions(), log);
@@ -141,6 +146,7 @@ public final class IStarDiagram extends DiagramView {
         IStarLayout layout = IStarLayoutBuilder.build(model, mode);
         Font font = Font.getFont("use.gui.view.objectdiagram", getFont());
         for (IStarNode item : layout.nodes.values()) {
+            if (!isNodeVisible(item)) continue;
             IStarDiagramNode node = new IStarDiagramNode(item, getOptions(), font);
             node.setPosition(item.x, item.y);
             node.setExactBounds(item.w, item.h);
@@ -150,6 +156,7 @@ public final class IStarDiagram extends DiagramView {
         wireActorBoundaryDrag();
         wireChildBoundaryFit();
         for (IStarEdge item : layout.edges) {
+            if (!isEdgeVisible(item)) continue;
             PlaceableNode source = nodeMap.get(item.fromId());
             PlaceableNode target = nodeMap.get(item.toId());
             if (source != null && target != null) {
@@ -160,6 +167,20 @@ public final class IStarDiagram extends DiagramView {
         applyLabelOverrides();
         initialize();
         invalidateContent(true);
+    }
+
+    private boolean isNodeVisible(IStarNode node) {
+        if (!showQualities && node.kind == IStarNodeKind.QUALITY) return false;
+        return showDependencies || !node.dependencyMarker;
+    }
+
+    private boolean isEdgeVisible(IStarEdge edge) {
+        if (!showDependencies && edge.kind() == IStarEdgeKind.DEPENDENCY) return false;
+        if (!showContributions && edge.kind() == IStarEdgeKind.CONTRIBUTION) return false;
+        if (!showRefinements && (edge.kind() == IStarEdgeKind.AND_REFINE || edge.kind() == IStarEdgeKind.OR_REFINE)) {
+            return false;
+        }
+        return true;
     }
 
     private void wireActorBoundaryDrag() {
@@ -272,6 +293,8 @@ public final class IStarDiagram extends DiagramView {
         menu.add(getMenuItemShowGrid());
         menu.add(getMenuItemGrayscale());
         menu.addSeparator();
+        addVisibilityMenuItems(menu);
+        menu.addSeparator();
         menu.add(new AbstractAction("Save default") {
             @Override public void actionPerformed(java.awt.event.ActionEvent e) {
                 Path layout = getDefaultLayoutFile();
@@ -294,8 +317,68 @@ public final class IStarDiagram extends DiagramView {
                 }
             });
         }
+        menu.addSeparator();
+        menu.add(new AbstractAction("Specification...") {
+            @Override public void actionPerformed(java.awt.event.ActionEvent e) {
+                openSpecificationWindow();
+            }
+        });
         addLayoutMenuItems(menu);
         return info;
+    }
+
+    private void addVisibilityMenuItems(JPopupMenu menu) {
+        JCheckBoxMenuItem qualities = new JCheckBoxMenuItem("Show softgoals", showQualities);
+        qualities.addActionListener(e -> {
+            showQualities = qualities.isSelected();
+            rebuild();
+            fitAllActorBoundaries();
+        });
+        menu.add(qualities);
+
+        JCheckBoxMenuItem refinements = new JCheckBoxMenuItem("Show refinements", showRefinements);
+        refinements.addActionListener(e -> {
+            showRefinements = refinements.isSelected();
+            rebuild();
+            fitAllActorBoundaries();
+        });
+        menu.add(refinements);
+
+        JCheckBoxMenuItem contributions = new JCheckBoxMenuItem("Show contributions", showContributions);
+        contributions.addActionListener(e -> {
+            showContributions = contributions.isSelected();
+            rebuild();
+            fitAllActorBoundaries();
+        });
+        menu.add(contributions);
+
+        JCheckBoxMenuItem dependencies = new JCheckBoxMenuItem("Show dependencies", showDependencies);
+        dependencies.addActionListener(e -> {
+            showDependencies = dependencies.isSelected();
+            rebuild();
+            fitAllActorBoundaries();
+        });
+        menu.add(dependencies);
+    }
+
+    /** Same content this diagram draws (model/badges/label overrides), as read-only text. */
+    private void openSpecificationWindow() {
+        String text = model == null ? "(no model loaded)"
+                : IStarSpecText.generate(model, badges, actorLabelOverrides, nodeLabelOverrides);
+
+        javax.swing.JTextArea area = new javax.swing.JTextArea(text);
+        area.setFont(new java.awt.Font(java.awt.Font.MONOSPACED, java.awt.Font.PLAIN, 12));
+        area.setEditable(false);
+        area.setBackground(javax.swing.UIManager.getColor("TextArea.background"));
+        area.setCaretPosition(0);
+
+        javax.swing.JFrame frame = new javax.swing.JFrame(
+                "Specification — " + (model == null ? "" : model.getName()));
+        frame.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        frame.getContentPane().add(new javax.swing.JScrollPane(area), java.awt.BorderLayout.CENTER);
+        frame.setSize(720, 560);
+        frame.setLocationByPlatform(true);
+        frame.setVisible(true);
     }
 
     @Override
@@ -371,9 +454,23 @@ public final class IStarDiagram extends DiagramView {
         }
     }
 
-    @Override public void showAll() {}
+    @Override public void showAll() {
+        showQualities = true;
+        showContributions = true;
+        showDependencies = true;
+        showRefinements = true;
+        rebuild();
+        fitAllActorBoundaries();
+    }
 
-    @Override public void hideAll() {}
+    @Override public void hideAll() {
+        showQualities = false;
+        showContributions = false;
+        showDependencies = false;
+        showRefinements = false;
+        rebuild();
+        fitAllActorBoundaries();
+    }
 
     @Override
     public DiagramData getVisibleData() {

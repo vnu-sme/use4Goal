@@ -1,6 +1,6 @@
 grammar IStarScenario;
 
-@header { package org.vnu.sme.goal.istarscenario.parser; }
+@header { package org.vnu.sme.goal.iscn.parser; }
 
 // =====================================================================
 //  i* Scenario — a SOIL-style instance script for an i* 2.0 goal model.
