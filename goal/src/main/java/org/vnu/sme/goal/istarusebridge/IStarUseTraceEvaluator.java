@@ -2,9 +2,18 @@ package org.vnu.sme.goal.istarusebridge;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.tzi.use.uml.mm.MClass;
+import org.tzi.use.uml.ocl.expr.EvalContext;
+import org.tzi.use.uml.ocl.expr.SimpleEvalContext;
+import org.tzi.use.uml.ocl.value.BooleanValue;
+import org.tzi.use.uml.ocl.value.VarBindings;
+import org.tzi.use.uml.sys.MObject;
+import org.tzi.use.uml.sys.MSystemState;
 import org.vnu.sme.goal.conformance.semantics.GoalTaskStatus;
 import org.vnu.sme.goal.conformance.semantics.IStarMarking;
 import org.vnu.sme.goal.conformance.semantics.IStarPropagation;
@@ -26,6 +35,11 @@ import org.vnu.sme.goal.istar.mm.Refinement;
 import org.vnu.sme.goal.istar.mm.Resource;
 import org.vnu.sme.goal.istar.mm.Role;
 import org.vnu.sme.goal.istar.mm.Task;
+import org.vnu.sme.goal.iscn.goalmodelinstance.parser.GoalModelInstanceEvaluation;
+import org.vnu.sme.goal.iscn.goalmodelinstance.parser.GoalModelInstanceTranslator;
+import org.vnu.sme.goal.iscn.mm.IStarScenarioModel;
+import org.vnu.sme.goal.iscn.mm.ScenarioInstance;
+import org.vnu.sme.goal.istarusebridge.IStarOclConstraintCompiler.ConstraintInfo;
 import org.vnu.sme.goal.istarusebridge.IStarUseTraceCompiler.Checkpoint;
 import org.vnu.sme.goal.istarusebridge.IStarUseTraceCompiler.InstanceKey;
 
@@ -49,12 +63,226 @@ import org.vnu.sme.goal.istarusebridge.IStarUseTraceCompiler.InstanceKey;
  */
 public final class IStarUseTraceEvaluator {
 
+    private static final int MAX_DEPENDENCY_STEPS = 10_000;
+
     public record Instantiation(GoalModel instanceModel, IStarMarking instanceMarking,
                                  Map<String, String> actorLabels, Map<String, String> nodeLabels) {}
 
     private IStarUseTraceEvaluator() {}
 
     public static Instantiation evaluate(GoalModel source, Checkpoint checkpoint) {
+        GoalModelInstanceEvaluation evaluation = GoalModelInstanceTranslator.evaluate(source, castFrom(checkpoint));
+        IStarMarking marking = overlayMarking(source, evaluation, checkpoint);
+        return new Instantiation(evaluation.instanceModel(), marking,
+                evaluation.actorLabels(), evaluation.nodeLabels());
+    }
+
+    private static IStarScenarioModel castFrom(Checkpoint checkpoint) {
+        List<ScenarioInstance> instances = new ArrayList<>();
+        Set<String> seen = new LinkedHashSet<>();
+        for (InstanceKey key : checkpoint.markings().keySet()) {
+            String unique = key.actorType() + "\u0000" + key.objectName();
+            if (seen.add(unique)) instances.add(new ScenarioInstance(key.objectName(), key.actorType()));
+        }
+        return new IStarScenarioModel("UseTraceCast", "", instances, List.of());
+    }
+
+    private static IStarMarking overlayMarking(GoalModel source, GoalModelInstanceEvaluation evaluation,
+                                               Checkpoint checkpoint) {
+        Map<String, String> actorTypeByObject = new LinkedHashMap<>();
+        for (InstanceKey key : checkpoint.markings().keySet()) {
+            actorTypeByObject.put(key.objectName(), key.actorType());
+        }
+        Set<String> optionalBranchSources = optionalBranchSources(source);
+
+        IStarMarking marking = IStarMarking.initial(evaluation.instanceModel());
+        for (var entry : evaluation.goalModelInstance().elementInstanceOf().entrySet()) {
+            String occurrenceId = entry.getKey();
+            IntentionalElement sourceElement = entry.getValue();
+            String sourceId = sourceElement.id();
+            List<String> suffix = suffixOf(evaluation.nodeLabels().getOrDefault(occurrenceId, occurrenceId));
+
+            switch (sourceElement) {
+                case Goal g -> {
+                    GoalTaskStatus status = goalTaskStatus(sourceId, suffix, actorTypeByObject, checkpoint,
+                            optionalBranchSources);
+                    if (status != GoalTaskStatus.UNKNOWN) {
+                        marking = IStarPropagation.assignGoalTask(evaluation.instanceModel(), marking,
+                                occurrenceId, status);
+                        marking = saturateDependencies(evaluation.instanceModel(), marking);
+                    }
+                }
+                case Task t -> {
+                    GoalTaskStatus status = goalTaskStatus(sourceId, suffix, actorTypeByObject, checkpoint,
+                            optionalBranchSources);
+                    if (status != GoalTaskStatus.UNKNOWN) {
+                        marking = IStarPropagation.assignGoalTask(evaluation.instanceModel(), marking,
+                                occurrenceId, status);
+                        marking = saturateDependencies(evaluation.instanceModel(), marking);
+                    }
+                }
+                case Quality q -> {
+                    QualityStatus status = qualityStatus(sourceId, suffix, actorTypeByObject, checkpoint);
+                    if (status != QualityStatus.UNKNOWN) {
+                        marking = IStarPropagation.assignQuality(evaluation.instanceModel(), marking,
+                                occurrenceId, status);
+                    }
+                }
+                case Resource r -> { }
+                case Obstacle o -> { }
+            }
+        }
+        return IStarPropagation.closePending(evaluation.instanceModel(),
+                saturateDependencies(evaluation.instanceModel(), marking));
+    }
+
+    private static GoalTaskStatus goalTaskStatus(String sourceId, List<String> suffix,
+                                                 Map<String, String> actorTypeByObject,
+                                                 Checkpoint checkpoint,
+                                                 Set<String> optionalBranchSources) {
+        ConstraintInfo constraint = checkpoint.constraints().get(sourceId);
+        if (constraint != null) {
+            Boolean direct = evalOccurrence(constraint, suffix, actorTypeByObject,
+                    checkpoint.actorClasses(), checkpoint.state());
+            if (direct != null) {
+                if (direct) return GoalTaskStatus.FULFILLED;
+                return optionalBranchSources.contains(sourceId) ? GoalTaskStatus.UNKNOWN : GoalTaskStatus.PENDING;
+            }
+        }
+        for (int i = suffix.size() - 1; i >= 0; i--) {
+            String objectName = suffix.get(i);
+            String actorType = actorTypeByObject.get(objectName);
+            if (actorType == null) continue;
+            IStarMarking marking = checkpoint.markings().get(new InstanceKey(actorType, objectName));
+            if (marking == null) continue;
+            GoalTaskStatus status = marking.goalTaskStatus(sourceId);
+            if (status != GoalTaskStatus.UNKNOWN) return status;
+        }
+        return GoalTaskStatus.UNKNOWN;
+    }
+
+    private static IStarMarking saturateDependencies(GoalModel model, IStarMarking marking) {
+        IStarMarking current = marking;
+        boolean changed = true;
+        int steps = 0;
+        while (changed && steps++ < MAX_DEPENDENCY_STEPS) {
+            changed = false;
+            for (Dependency d : model.getDependencies()) {
+                if (d.dependerElmt() == null) continue;
+                if (current.goalTaskStatus(d.dependerElmt()) == GoalTaskStatus.FULFILLED) continue;
+                if (current.goalTaskStatus(d.dependum()) == GoalTaskStatus.FULFILLED) {
+                    current = IStarPropagation.assignGoalTask(model, current,
+                            d.dependerElmt(), GoalTaskStatus.FULFILLED);
+                    changed = true;
+                }
+            }
+        }
+        return current;
+    }
+
+    private static Set<String> optionalBranchSources(GoalModel source) {
+        Map<String, List<String>> childrenByParent = new LinkedHashMap<>();
+        Set<String> directPickChildren = new LinkedHashSet<>();
+        for (Actor actor : source.getActors()) {
+            for (Refinement r : actor.refinements()) {
+                switch (r) {
+                    case AndRefinement and -> childrenByParent
+                            .computeIfAbsent(and.parent(), ignored -> new ArrayList<>())
+                            .addAll(and.children());
+                    case OrRefinement or -> childrenByParent
+                            .computeIfAbsent(or.parent(), ignored -> new ArrayList<>())
+                            .add(or.child());
+                    case ForRefinement f -> childrenByParent
+                            .computeIfAbsent(f.parent(), ignored -> new ArrayList<>())
+                            .add(f.child());
+                    case PickRefinement p -> {
+                        childrenByParent.computeIfAbsent(p.parent(), ignored -> new ArrayList<>()).add(p.child());
+                        directPickChildren.add(p.child());
+                    }
+                }
+            }
+        }
+
+        Set<String> optional = new LinkedHashSet<>();
+        for (String child : directPickChildren) collectDescendants(child, childrenByParent, optional);
+
+        boolean changed = true;
+        while (changed) {
+            changed = false;
+            for (Dependency d : source.getDependencies()) {
+                if (d.dependerElmt() != null && optional.contains(d.dependerElmt())) {
+                    if (d.dependum() != null && optional.add(d.dependum())) changed = true;
+                    if (d.dependeeElmt() != null && optional.add(d.dependeeElmt())) changed = true;
+                }
+            }
+        }
+        return optional;
+    }
+
+    private static void collectDescendants(String id, Map<String, List<String>> childrenByParent, Set<String> out) {
+        if (!out.add(id)) return;
+        for (String child : childrenByParent.getOrDefault(id, List.of())) {
+            collectDescendants(child, childrenByParent, out);
+        }
+    }
+
+    private static Boolean evalOccurrence(ConstraintInfo constraint, List<String> suffix,
+                                          Map<String, String> actorTypeByObject,
+                                          Map<String, MClass> actorClasses,
+                                          MSystemState state) {
+        Map<String, MObject> contextObjects = new LinkedHashMap<>();
+        for (String objectName : suffix) {
+            String actorType = actorTypeByObject.get(objectName);
+            if (actorType == null) continue;
+            MObject object = state.objectByName(objectName);
+            if (object != null) contextObjects.put(actorType, object);
+        }
+        MObject self = contextObjects.get(constraint.actorType());
+        if (self == null) return null;
+
+        VarBindings vars = new VarBindings();
+        EvalContext ctx = new SimpleEvalContext(state, state, vars);
+        ctx.pushVarBinding("self", self.value());
+        for (var actorClass : actorClasses.entrySet()) {
+            MObject object = contextObjects.get(actorClass.getKey());
+            if (object != null) ctx.pushVarBinding(lowerFirst(actorClass.getKey()), object.value());
+        }
+        var value = constraint.expr().eval(ctx);
+        return value instanceof BooleanValue bv ? bv.isTrue() : null;
+    }
+
+    private static String lowerFirst(String value) {
+        if (value == null || value.isEmpty()) return value;
+        return Character.toLowerCase(value.charAt(0)) + value.substring(1);
+    }
+
+    private static QualityStatus qualityStatus(String sourceId, List<String> suffix,
+                                               Map<String, String> actorTypeByObject,
+                                               Checkpoint checkpoint) {
+        for (int i = suffix.size() - 1; i >= 0; i--) {
+            String objectName = suffix.get(i);
+            String actorType = actorTypeByObject.get(objectName);
+            if (actorType == null) continue;
+            IStarMarking marking = checkpoint.markings().get(new InstanceKey(actorType, objectName));
+            if (marking == null) continue;
+            QualityStatus status = marking.qualityStatus(sourceId);
+            if (status != QualityStatus.UNKNOWN) return status;
+        }
+        return QualityStatus.UNKNOWN;
+    }
+
+    private static List<String> suffixOf(String label) {
+        int open = label.lastIndexOf('[');
+        int close = label.lastIndexOf(']');
+        if (open < 0 || close <= open) return List.of();
+        String raw = label.substring(open + 1, close).trim();
+        if (raw.isEmpty()) return List.of();
+        List<String> out = new ArrayList<>();
+        for (String part : raw.split(",")) out.add(part.trim());
+        return out;
+    }
+
+    public static Instantiation evaluateLegacy(GoalModel source, Checkpoint checkpoint) {
         ContextResolution resolution = ContextResolution.of(source);
 
         Map<String, List<String>> instancesByType = new LinkedHashMap<>();

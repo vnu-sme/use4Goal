@@ -1,0 +1,39 @@
+acl v2.0 GenericCoordinationShadow {
+  entity WorkItem {
+    ready : Boolean;
+    done  : Boolean;
+  }
+
+  abstract role Participant {
+    name : String;
+  }
+
+  role Requester specializes Participant {
+    requestConfirmed : Boolean;
+  }
+
+  role Performer specializes Participant {
+    accepted : Boolean;
+  }
+
+  agent CoordinationService {
+    assigned : Boolean;
+  }
+
+  relationship RequesterDelegatesToPerformer {
+    Requester [*] requesters;
+    Performer [*] performers;
+  }
+
+  group CoordinationCase {
+    opened : Boolean;
+    closed : Boolean;
+
+    Requester           [1..1];
+    Performer           [1..*];
+    CoordinationService [1..1];
+    WorkItem            [1..*];
+  }
+
+  link communication Requester -> Performer intra CoordinationCase;
+}

@@ -1,0 +1,54 @@
+acl v2.0 ConstructionPermitApprovalShadow {
+  enum PermitDecision {pending, approved, denied}
+  enum ReviewStatus {notStarted, checking, completed}
+
+  entity SitePlan {
+    zoningChecked : Boolean;
+    safetyChecked : Boolean;
+  }
+
+  entity PaymentReceipt {
+    feePaid : Boolean;
+  }
+
+  abstract role PermitParty {
+    name : String;
+  }
+
+  role Applicant specializes PermitParty {
+    documentsSubmitted : Boolean;
+  }
+
+  role Inspector specializes PermitParty {
+    visitCompleted : Boolean;
+  }
+
+  role CaseOfficer specializes PermitParty {
+    assessmentDone : Boolean;
+  }
+
+  relationship ApplicantSubmitsPlan {
+    Applicant [1] applicant;
+    SitePlan  [*] submittedPlans;
+  }
+
+  relationship OfficerReviewsPlan {
+    CaseOfficer [*] officers;
+    SitePlan    [*] reviewedPlans;
+  }
+
+  group PermitCase {
+    applicationSubmitted : Boolean;
+    publicNoticePosted   : Boolean;
+    reviewStatus         : ReviewStatus;
+    decision             : PermitDecision;
+
+    Applicant      [1..1];
+    Inspector      [0..*];
+    CaseOfficer    [1..1];
+    SitePlan       [1..*];
+    PaymentReceipt [0..1];
+  }
+
+  link authority CaseOfficer -> Inspector intra PermitCase;
+}

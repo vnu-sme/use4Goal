@@ -29,6 +29,15 @@
                 toolbaritem="i* + USE Scenario Viewer"
                 id="org.vnu.sme.goal.istarusebridge.action.ActionOpenIStarUseScenario">
         </action>
+        <action label="ACL v2.0 Viewer"
+                icon="images/acl.png"
+                class="org.vnu.sme.goal.acl.action.ActionOpenAcl"
+                tooltip="Open an ACL v2.0 multi-agent state model"
+                menu="GoalModel Plugin"
+                menuitem="ACL v2.0 Viewer"
+                toolbaritem="ACL v2.0 Viewer"
+                id="org.vnu.sme.goal.acl.action.ActionOpenAcl">
+        </action>
         <action label="BPMN 2.0 Viewer"
                 icon="images/bpmn2.png"
                 class="org.vnu.sme.goal.bpmn2.action.ActionOpenBpmn2"

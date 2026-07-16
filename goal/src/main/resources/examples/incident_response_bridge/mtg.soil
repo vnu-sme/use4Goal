@@ -1,0 +1,39 @@
+incident1 := new Incident('incident1');
+service1 := new Service('service1');
+evidence1 := new EvidencePacket('evidence1');
+change1 := new ChangeRequest('change1');
+audit1 := new AuditTrail('audit1');
+archive1 := new ArchiveBox('archive1');
+
+insert (incident1, service1) into IncidentService;
+insert (incident1, evidence1) into IncidentEvidence;
+insert (incident1, change1) into IncidentChangeRequest;
+insert (incident1, audit1) into IncidentAuditTrail;
+
+personCoord := new Person('personCoord');
+personAnn := new Person('personAnn');
+personBob := new Person('personBob');
+personTara := new Person('personTara');
+personMinh := new Person('personMinh');
+personAuditor := new Person('personAuditor');
+
+coord := new Coordinator('coord') between (incident1, personCoord);
+ann := new Analyst('ann') between (incident1, personAnn);
+bob := new Analyst('bob') between (incident1, personBob);
+tara := new Technician('tara') between (incident1, personTara);
+minh := new Technician('minh') between (incident1, personMinh);
+audrey := new Auditor('audrey') between (incident1, personAuditor);
+
+incident1.reported := true;
+service1.restored := true;
+evidence1.complete := true;
+change1.deployed := true;
+audit1.signed := true;
+archive1.sealed := true;
+
+coord.triaged := true;
+ann.reportReady := true;
+bob.reportReady := true;
+tara.fixApplied := true;
+minh.fixApplied := false;
+audrey.auditApproved := true;

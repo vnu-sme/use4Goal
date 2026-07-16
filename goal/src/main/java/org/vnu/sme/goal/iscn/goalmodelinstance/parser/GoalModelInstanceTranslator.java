@@ -27,6 +27,7 @@ import org.vnu.sme.goal.istar.mm.PickRefinement;
 import org.vnu.sme.goal.istar.mm.Quality;
 import org.vnu.sme.goal.istar.mm.Refinement;
 import org.vnu.sme.goal.istar.mm.Resource;
+import org.vnu.sme.goal.istar.mm.Role;
 import org.vnu.sme.goal.istar.mm.Task;
 import org.vnu.sme.goal.iscn.mm.AggregateMode;
 import org.vnu.sme.goal.iscn.mm.AggregateResult;
@@ -334,8 +335,13 @@ public final class GoalModelInstanceTranslator {
                 String actorType = e.getValue();
                 String actorId = actorInstanceId(actorType, e.getKey());
                 ActorBucket bucket = bucket(actorId);
-                out.addActor(new Agent(actorId, new ArrayList<>(bucket.elements.values()), bucket.refinements,
-                        bucket.contributions, List.of(), List.of(), List.of(), List.of(), List.of()));
+                Actor sourceActor = actors.get(actorType);
+                Actor actor = sourceActor instanceof Role
+                        ? new Role(actorId, new ArrayList<>(bucket.elements.values()), bucket.refinements,
+                                bucket.contributions, List.of(), List.of(), List.of(), List.of(), List.of())
+                        : new Agent(actorId, new ArrayList<>(bucket.elements.values()), bucket.refinements,
+                                bucket.contributions, List.of(), List.of(), List.of(), List.of(), List.of());
+                out.addActor(actor);
                 for (Dependency d : bucket.dependencies) out.addDependency(d);
             }
             return out;

@@ -38,6 +38,11 @@ public final class IStarOclConstraintCompiler {
     public static Result compile(GoalModel gm, MModel useModel, ContextResolution resolution) {
         List<String> errors = new ArrayList<>();
         Map<String, ConstraintInfo> constraints = new LinkedHashMap<>();
+        Map<String, MClass> actorClasses = new LinkedHashMap<>();
+        for (Actor actor : gm.getActors()) {
+            MClass cls = UseActorClasses.resolve(gm, useModel, actor.name(), errors);
+            if (cls != null) actorClasses.put(actor.name(), cls);
+        }
 
         for (Actor actor : gm.getActors()) {
             for (IntentionalElement e : actor.elements()) {
@@ -54,6 +59,9 @@ public final class IStarOclConstraintCompiler {
                 Expression expr;
                 try {
                     vars.add("self", contextClass, null);
+                    for (var actorClass : actorClasses.entrySet()) {
+                        vars.add(lowerFirst(actorClass.getKey()), actorClass.getValue(), null);
+                    }
                     expr = OCLCompiler.compileExpression(useModel, gte.oclSource(), gte.id(), err, vars);
                 } catch (org.tzi.use.parser.SemanticException ex) {
                     errors.add("ocl '" + gte.id() + "' (self : " + actorType + "): " + ex.getMessage());
@@ -69,5 +77,10 @@ public final class IStarOclConstraintCompiler {
             }
         }
         return new Result(constraints, errors);
+    }
+
+    private static String lowerFirst(String value) {
+        if (value == null || value.isEmpty()) return value;
+        return Character.toLowerCase(value.charAt(0)) + value.substring(1);
     }
 }

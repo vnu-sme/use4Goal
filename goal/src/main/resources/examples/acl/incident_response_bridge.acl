@@ -1,0 +1,79 @@
+acl v2.0 IncidentResponseBridgeShadow {
+  enum Severity {low, medium, high, critical}
+
+  entity Service {
+    restored : Boolean;
+  }
+
+  entity EvidencePacket {
+    complete : Boolean;
+  }
+
+  entity ChangeRequest {
+    deployed : Boolean;
+  }
+
+  entity AuditTrail {
+    signed : Boolean;
+  }
+
+  abstract role ResponseParty {
+    name : String;
+  }
+
+  role Analyst specializes ResponseParty {
+    reportReady : Boolean;
+  }
+
+  role Technician specializes ResponseParty {
+    fixApplied : Boolean;
+  }
+
+  role Auditor specializes ResponseParty {
+    auditApproved : Boolean;
+  }
+
+  role Coordinator specializes ResponseParty {
+    triaged : Boolean;
+  }
+
+  relationship AnalystProducesEvidence {
+    Analyst        [*] analysts;
+    EvidencePacket [*] evidence;
+  }
+
+  relationship TechnicianDeploysChange {
+    Technician    [*] technicians;
+    ChangeRequest [*] changes;
+  }
+
+  relationship AuditorSignsTrail {
+    Auditor    [*] auditors;
+    AuditTrail [*] auditTrails;
+  }
+
+  relationship ChangeRestoresService {
+    ChangeRequest [*] changeRequests;
+    Service       [1] affectedService;
+  }
+
+  group IncidentCase {
+    reported : Boolean;
+    severity : Severity;
+    closed   : Boolean;
+
+    Coordinator    [1..1];
+    Analyst        [1..*];
+    Technician     [1..*];
+    Auditor        [0..1];
+    Service        [1..*];
+    EvidencePacket [0..*];
+    ChangeRequest  [0..*];
+    AuditTrail     [0..*];
+  }
+
+  link authority Coordinator -> Analyst intra IncidentCase;
+  link authority Coordinator -> Technician intra IncidentCase;
+  link communication Analyst -> Technician intra IncidentCase;
+  link compatibility Analyst -> Auditor intra IncidentCase;
+}
