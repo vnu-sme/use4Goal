@@ -9,18 +9,18 @@ grammar Bpmn2;
 //  model ModelName {
 //    pool PoolId "Pool Label" {
 //      lane LaneId "Lane Label" {
-//        start         EventId : none|message|timer|signal|conditional
-//        end           EventId : none|message|error|signal|terminate|compensation
-//        intermediate  EventId : message|timer|signal : catching|throwing
-//        task          TaskId "Task Label"
-//        call-activity CallId
+//        start         EventId : none|message|timer|signal|conditional [ocl {[ raw-OCL ]}]
+//        end           EventId : none|message|error|signal|terminate|compensation [ocl {[ raw-OCL ]}]
+//        intermediate  EventId : message|timer|signal : catching|throwing [ocl {[ raw-OCL ]}]
+//        task          TaskId "Task Label" [ocl {[ raw-OCL ]}]
+//        call-activity CallId [ocl {[ raw-OCL ]}]
 //        subprocess    SubId "Label" {
 //          task ...
 //          flow Src -> Tgt
-//        }
-//        gateway GwId : xor|and|or|event-based
+//        } [ocl {[ raw-OCL ]}]
+//        gateway GwId : xor|and|or|event-based [ocl {[ raw-OCL ]}]
 //      }
-//      flow Src -> Tgt : "condition label"
+//      flow Src -> Tgt : "condition label" [ocl {[ raw-OCL ]}]
 //    }
 //    message MsgId "Message label"
 //    message-flow SrcId -> TgtId : MsgId
@@ -34,20 +34,22 @@ pool : 'pool' IDENT STRING? '{' lane* poolElement* sequenceFlow* '}' ;
 lane : 'lane' IDENT STRING? '{' poolElement* '}' ;
 
 poolElement
-    : 'start'         IDENT (':' eventType)?                                 # elemStart
-    | 'end'           IDENT (':' eventType)?                                 # elemEnd
-    | 'intermediate'  IDENT (':' eventType)? (':' eventDir)?                # elemIntermediate
-    | 'task'          IDENT STRING?                                           # elemTask
-    | 'call-activity' IDENT                                                   # elemCallActivity
-    | 'subprocess'    IDENT STRING? '{' poolElement* sequenceFlow* '}'      # elemSubProcess
-    | 'gateway'       IDENT ':' gwType                                       # elemGateway
+    : 'start'         IDENT (':' eventType)? oclClause?                                # elemStart
+    | 'end'           IDENT (':' eventType)? oclClause?                                # elemEnd
+    | 'intermediate'  IDENT (':' eventType)? (':' eventDir)? oclClause?                # elemIntermediate
+    | 'task'          IDENT STRING? oclClause?                                         # elemTask
+    | 'call-activity' IDENT oclClause?                                                 # elemCallActivity
+    | 'subprocess'    IDENT STRING? '{' poolElement* sequenceFlow* '}' oclClause?      # elemSubProcess
+    | 'gateway'       IDENT ':' gwType oclClause?                                      # elemGateway
     ;
 
-sequenceFlow : 'flow' IDENT '->' IDENT (':' STRING)? ;
+sequenceFlow : 'flow' IDENT '->' IDENT (':' STRING)? oclClause? ;
 
 message : 'message' IDENT STRING? ;
 
 messageFlow : 'message-flow' IDENT '->' IDENT (':' IDENT)? ;
+
+oclClause : OCL_CLAUSE ;
 
 eventType
     : 'none'         # evtNone
@@ -73,6 +75,7 @@ gwType
 
 IDENT  : [a-zA-Z_][a-zA-Z0-9_]* ;
 STRING : '"' (~["\r\n\\] | '\\' .)* '"' ;
+OCL_CLAUSE : 'ocl' [ \t\r\n\f]* '{[' .*? ']}' ;
 
 WS            : [ \t\r\n\f]+ -> skip ;
 LINE_COMMENT  : '//' ~[\r\n]*  -> skip ;

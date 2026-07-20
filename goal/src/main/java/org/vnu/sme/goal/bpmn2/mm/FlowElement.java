@@ -6,4 +6,6 @@ package org.vnu.sme.goal.bpmn2.mm;
  */
 public sealed interface FlowElement permits Event, Activity, Gateway {
     String id();
+
+    default String oclSource() { return null; }
 }

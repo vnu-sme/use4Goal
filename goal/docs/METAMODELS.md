@@ -175,6 +175,40 @@ Role:
 
 - runtime process graph used by GOAL + BPMN verification
 
+### 4.3 BPMN OCL Option 2
+
+Package:
+
+- `org.vnu.sme.goal.bpmn2.ocl`
+
+Main nodes:
+
+- `Bpmn2OclConstraintCompiler`
+- `Bpmn2OclContextMapParser`
+- `Bpmn2OclValidationCompiler`
+- `Bpmn2OclValidationDemoMain`
+- `Bpmn2GoalOclCoverageValidator`
+
+Role:
+
+- stores optional raw OCL clauses on BPMN flow elements and sequence flows
+- compiles those clauses with USE `OCLCompiler`
+- binds `self` through caller-provided BPMN element/flow id to USE class mappings
+- supports goal-achievement checking by making BPMN-side behavioral conditions available
+- has a runnable validation flow for `.bpmn2 + .use + .bpmn2oclmap`
+
+Syntax:
+
+```bpmn2
+task Approve "Approve" ocl {[
+  self.status = #approved
+]}
+
+flow Decide -> Approve : "valid" ocl {[
+  self.valid = true
+]}
+```
+
 ## 5. Semantic Ownership
 
 The semantic owner of each MM is:

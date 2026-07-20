@@ -1,0 +1,18 @@
+# BPMN Option 2 OCL context map.
+#
+# Left side:
+# - BPMN node id for OCL attached to a flow element
+# - sourceId::targetId for OCL attached to a sequence flow
+#
+# Right side:
+# - USE class used as the type of `self` when compiling the OCL expression
+
+context claim_received -> Claim
+context register_claim -> Claim
+context validate_claim -> Claim
+context eligibility_decision -> Claim
+context approve_claim -> Claim
+context reject_claim -> Claim
+context claim_closed -> Claim
+context eligibility_decision::approve_claim -> Claim
+context eligibility_decision::reject_claim -> Claim

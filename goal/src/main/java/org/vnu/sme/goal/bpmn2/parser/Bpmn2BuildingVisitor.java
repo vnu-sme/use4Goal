@@ -79,32 +79,32 @@ public final class Bpmn2BuildingVisitor extends Bpmn2BaseVisitor<Object> {
     @Override
     public Object visitElemStart(Bpmn2Parser.ElemStartContext ctx) {
         String trigger = ctx.eventType() != null ? ctx.eventType().getText() : "none";
-        return new FlowElementCS.StartEventCS(ctx.IDENT().getText(), trigger);
+        return new FlowElementCS.StartEventCS(ctx.IDENT().getText(), trigger, oclSource(ctx.oclClause()));
     }
 
     @Override
     public Object visitElemEnd(Bpmn2Parser.ElemEndContext ctx) {
         String trigger = ctx.eventType() != null ? ctx.eventType().getText() : "none";
-        return new FlowElementCS.EndEventCS(ctx.IDENT().getText(), trigger);
+        return new FlowElementCS.EndEventCS(ctx.IDENT().getText(), trigger, oclSource(ctx.oclClause()));
     }
 
     @Override
     public Object visitElemIntermediate(Bpmn2Parser.ElemIntermediateContext ctx) {
         String trigger   = ctx.eventType() != null ? ctx.eventType().getText() : "none";
         String direction = ctx.eventDir() != null ? ctx.eventDir().getText() : "catching";
-        return new FlowElementCS.IntermediateEventCS(ctx.IDENT().getText(), trigger, direction);
+        return new FlowElementCS.IntermediateEventCS(ctx.IDENT().getText(), trigger, direction, oclSource(ctx.oclClause()));
     }
 
     @Override
     public Object visitElemTask(Bpmn2Parser.ElemTaskContext ctx) {
         String id   = ctx.IDENT().getText();
         String name = ctx.STRING() != null ? stripQuotes(ctx.STRING().getText()) : null;
-        return new FlowElementCS.TaskCS(id, name);
+        return new FlowElementCS.TaskCS(id, name, oclSource(ctx.oclClause()));
     }
 
     @Override
     public Object visitElemCallActivity(Bpmn2Parser.ElemCallActivityContext ctx) {
-        return new FlowElementCS.CallActivityCS(ctx.IDENT().getText());
+        return new FlowElementCS.CallActivityCS(ctx.IDENT().getText(), oclSource(ctx.oclClause()));
     }
 
     @Override
@@ -119,12 +119,12 @@ public final class Bpmn2BuildingVisitor extends Bpmn2BaseVisitor<Object> {
         List<SequenceFlowCS> flows = ctx.sequenceFlow().stream()
                 .map(sf -> (SequenceFlowCS) visitSequenceFlow(sf))
                 .collect(Collectors.toList());
-        return new FlowElementCS.SubProcessCS(id, name, children, flows);
+        return new FlowElementCS.SubProcessCS(id, name, children, flows, oclSource(ctx.oclClause()));
     }
 
     @Override
     public Object visitElemGateway(Bpmn2Parser.ElemGatewayContext ctx) {
-        return new FlowElementCS.GatewayCS(ctx.IDENT().getText(), ctx.gwType().getText());
+        return new FlowElementCS.GatewayCS(ctx.IDENT().getText(), ctx.gwType().getText(), oclSource(ctx.oclClause()));
     }
 
     // ── Flows / messages ──────────────────────────────────────────────────────
@@ -133,7 +133,7 @@ public final class Bpmn2BuildingVisitor extends Bpmn2BaseVisitor<Object> {
     public Object visitSequenceFlow(Bpmn2Parser.SequenceFlowContext ctx) {
         List<org.antlr.v4.runtime.tree.TerminalNode> ids = ctx.IDENT();
         String label = ctx.STRING() != null ? stripQuotes(ctx.STRING().getText()) : null;
-        return new SequenceFlowCS(ids.get(0).getText(), ids.get(1).getText(), label);
+        return new SequenceFlowCS(ids.get(0).getText(), ids.get(1).getText(), label, oclSource(ctx.oclClause()));
     }
 
     @Override
@@ -153,5 +153,14 @@ public final class Bpmn2BuildingVisitor extends Bpmn2BaseVisitor<Object> {
     private static String stripQuotes(String s) {
         if (s == null || s.length() < 2) return s;
         return s.substring(1, s.length() - 1);
+    }
+
+    private static String oclSource(Bpmn2Parser.OclClauseContext ctx) {
+        if (ctx == null) return null;
+        String text = ctx.getText();
+        int start = text.indexOf("{[");
+        int end = text.lastIndexOf("]}");
+        if (start < 0 || end < start) return text;
+        return text.substring(start + 2, end).trim();
     }
 }

@@ -1,0 +1,57 @@
+// BPMN2 Option 2 OCL example.
+//
+// The OCL blocks are domain conditions. They are stored as oclSource in the
+// BPMN runtime model, then compiled later with USE's OCLCompiler when the
+// caller provides a USE context class for each BPMN node/flow.
+
+model ClaimHandlingWithOcl {
+
+  pool ClaimOffice "Claim Office" {
+    lane Intake "Intake" {
+      start claim_received : message ocl {[
+        self.submitted = true
+      ]}
+
+      task register_claim "Register Claim" ocl {[
+        self.registered = true
+      ]}
+    }
+
+    lane Assessor "Assessor" {
+      task validate_claim "Validate Claim" ocl {[
+        self.checked = true
+      ]}
+
+      gateway eligibility_decision : xor ocl {[
+        self.checked = true
+      ]}
+
+      task approve_claim "Approve Claim" ocl {[
+        self.status = #approved
+      ]}
+
+      task reject_claim "Reject Claim" ocl {[
+        self.status = #rejected
+      ]}
+
+      end claim_closed : none ocl {[
+        self.status = #approved or self.status = #rejected
+      ]}
+    }
+
+    flow claim_received -> register_claim
+    flow register_claim -> validate_claim
+    flow validate_claim -> eligibility_decision
+
+    flow eligibility_decision -> approve_claim : "eligible" ocl {[
+      self.eligible = true
+    ]}
+
+    flow eligibility_decision -> reject_claim : "not eligible" ocl {[
+      self.eligible = false
+    ]}
+
+    flow approve_claim -> claim_closed
+    flow reject_claim -> claim_closed
+  }
+}

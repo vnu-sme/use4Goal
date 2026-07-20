@@ -74,13 +74,13 @@ public final class Bpmn2ModelFactory {
 
     private static FlowElement buildFlowElement(FlowElementCS cs) {
         return switch (cs) {
-            case FlowElementCS.StartEventCS e -> new StartEvent(e.id(), EventTrigger.from(e.trigger()));
-            case FlowElementCS.EndEventCS e -> new EndEvent(e.id(), EventTrigger.from(e.trigger()));
+            case FlowElementCS.StartEventCS e -> new StartEvent(e.id(), EventTrigger.from(e.trigger()), e.oclSource());
+            case FlowElementCS.EndEventCS e -> new EndEvent(e.id(), EventTrigger.from(e.trigger()), e.oclSource());
             case FlowElementCS.IntermediateEventCS e -> new IntermediateEvent(
-                    e.id(), EventTrigger.from(e.trigger()), EventDirection.from(e.direction()));
-            case FlowElementCS.TaskCS e -> new Task(e.id(), e.name());
-            case FlowElementCS.CallActivityCS e -> new CallActivity(e.id());
-            case FlowElementCS.GatewayCS e -> new Gateway(e.id(), GatewayKind.from(e.kind()));
+                    e.id(), EventTrigger.from(e.trigger()), EventDirection.from(e.direction()), e.oclSource());
+            case FlowElementCS.TaskCS e -> new Task(e.id(), e.name(), e.oclSource());
+            case FlowElementCS.CallActivityCS e -> new CallActivity(e.id(), e.oclSource());
+            case FlowElementCS.GatewayCS e -> new Gateway(e.id(), GatewayKind.from(e.kind()), e.oclSource());
             case FlowElementCS.SubProcessCS e -> buildSubProcess(e);
         };
     }
@@ -97,7 +97,7 @@ public final class Bpmn2ModelFactory {
                 .map(sf -> resolveSequenceFlow(sf, scope))
                 .collect(Collectors.toList());
 
-        return new SubProcess(cs.id(), cs.name(), children, flows);
+        return new SubProcess(cs.id(), cs.name(), children, flows, cs.oclSource());
     }
 
     private static SequenceFlow resolveSequenceFlow(SequenceFlowCS cs, Map<String, FlowElement> scope) {
@@ -105,6 +105,6 @@ public final class Bpmn2ModelFactory {
         FlowElement target = scope.get(cs.target());
         if (source == null) throw new IllegalStateException("Unknown flow source: " + cs.source());
         if (target == null) throw new IllegalStateException("Unknown flow target: " + cs.target());
-        return new SequenceFlow(source, target, cs.label());
+        return new SequenceFlow(source, target, cs.label(), cs.oclSource());
     }
 }
