@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
-    <diagram id="cbwrPbCV8x3CI2t6ammB" name="Unified Metamodel (reduced)">
-        <mxGraphModel dx="1039" dy="881" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" background="#ffffff" math="0" shadow="0">
+    <diagram id="cbwrPbCV8x3CI2t6ammB" name="page 1">
+        <mxGraphModel dx="1422" dy="1170" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" background="#ffffff" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -14,7 +14,7 @@
                     <mxGeometry x="315" y="-198" width="160" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="um-lane" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Lane&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;margin:3px 0;line-height:14px;&quot;&gt;&amp;nbsp;+ name: String&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;fontColor=#000000;strokeColor=#000000;labelBackgroundColor=none;labelBorderColor=none;" parent="1" vertex="1">
-                    <mxGeometry x="557" y="106" width="160" height="50" as="geometry"/>
+                    <mxGeometry x="492" y="123" width="160" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="um-sequenceflow" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;SequenceFlow&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;margin:3px 0;line-height:14px;&quot;&gt;&amp;nbsp;+ label: String&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;fontColor=#000000;strokeColor=#000000;labelBackgroundColor=none;labelBorderColor=none;" parent="1" vertex="1">
                     <mxGeometry x="299" y="288" width="144" height="119" as="geometry"/>
@@ -239,7 +239,7 @@
                 </mxCell>
                 <mxCell id="um-e-lane-flowelement-role" value="flowElements (partition, not ownership)" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="um-e-lane-flowelement" connectable="0" vertex="1">
                     <mxGeometry relative="1" as="geometry">
-                        <mxPoint x="30" y="-26" as="offset"/>
+                        <mxPoint x="-84" y="12" as="offset"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="um-e-seq-source" style="strokeColor=#000000;startArrow=none;startFill=0;endArrow=open;endFill=1;endSize=10;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="um-activity" target="um-flowelement" edge="1">
@@ -320,7 +320,7 @@
         </mxGraphModel>
     </diagram>
     <diagram id="bpmn2-merged-metamodel" name="Merged Metamodel (v4)">
-        <mxGraphModel dx="1662" dy="1670" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="6959" pageHeight="900" background="#ffffff" math="0" shadow="0">
+        <mxGraphModel dx="1422" dy="1670" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="6959" pageHeight="900" background="#ffffff" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="2" parent="0"/>

@@ -1,0 +1,132 @@
+// BPMN 2.0 Example — E-Store
+// Transcribed from: Groner, G., Asadi, M., Mohabbati, B., Gasevic, D.,
+// Boskovic, M., Silva Parreiras, F. (2014). "Validation of user intentions in
+// process orchestration and choreography." Information Systems, 43, 83-99.
+// Fig. 1b, paired with estore.istar (Fig. 1a).
+//
+// Bracketed [XX] comments below are the paper's own goal-mapping annotations
+// (Fig. 1b), i.e. which intentional element of estore.istar each activity
+// realizes -- kept for traceability even though this dialect has no native
+// mapping/annotation construct.
+//
+// Two inconsistencies from the paper are preserved ON PURPOSE, not fixed,
+// because they are the paper's own running illustration of what its
+// validation approach is supposed to catch:
+//   1. STRONG inconsistency (Sect. 7.2): gw_ship_bill below is XOR, so
+//      Shipment and Send Receipt are mutually exclusive -- but in
+//      estore.istar, ShipAndBill is an AND-decomposition of ShipOrder (which
+//      Shipment realizes) and BillPreparation (which Send Receipt realizes),
+//      i.e. the goal model requires both, the process forbids both.
+//   2. POTENTIAL inconsistency (Sect. 4.1): gw_trust_choice below is OR
+//      (inclusive), matching Axiom 3's "member of a choice fragment... can
+//      be executed, or even both" -- but in estore.istar,
+//      DetermineTrustworthinessOfCustomer is XOR in the paper (written as OR
+//      in that dialect, see its header note) between CheckCreditRate and
+//      CheckIfReturnCustomer, which CreditCardChecking/CustomerRecordsChecking
+//      realize -- the goal model wants exactly one, the process allows both.
+// A third inconsistency (choreography, Sect. 4.2) is preserved by OMISSION:
+// there is deliberately NO message-flow between selectPaymentMethod and
+// askForPaymentMethod, even though estore.istar has
+// 'depend BackStore.CollectPayment -> task SelectPaymentMethod -> Customer'
+// -- exactly the paper's own worked example of a choreography inconsistency
+// (a cross-actor dependency in the goal model with no corresponding message
+// exchange in the process).
+
+model EStore {
+
+  pool StorePool "Store" {
+    lane FrontStoreLane "Front Store" {
+      start start_store : none
+      task  customerIdentification    "Customer Identification"
+      task  askForOrderProcessing     "Ask for Order Processing"
+      task  askForPaymentMethod       "Ask for Payment Method"       // [CP]
+      task  verifyPaymentInformation  "Verify Payment Information"
+    }
+    lane BackStoreLane "Back Store" {
+      gateway gw_customer_type : xor
+      task    customerProfileRetrieve "Customer Profile Retrieve"    // [CPR]
+      gateway gw_trust_choice : or
+      task    creditCardChecking      "Credit Card Checking"         // [CCR]
+      task    customerRecordsChecking "Customer Records Checking"    // [CRC]
+      gateway gw_trust_join : or
+      task    approveOrder            "Approve Order"                // [AO]
+
+      gateway gw_payment_split : and
+      task    fraudDetection          "Fraud Detection"
+      task    creditCard              "Credit Card"                  // [EP]
+      task    debitCard               "Debit Card"                   // [EP]
+      task    moneyOrder              "Money Order"                  // [IPP]
+      gateway gw_payment_join : and
+      task    applyDiscount           "Apply Discount"               // [AD]
+      task    buildAndPackageOrder    "Build and Package Order"      // [BPO]
+
+      gateway gw_ship_bill : xor
+      task    shipment                "Shipment"                     // [SO]
+      task    sendReceipt             "Send Receipt"                 // [BL]
+      end     end_store : none
+    }
+
+    flow start_store              -> customerIdentification
+    flow customerIdentification   -> askForOrderProcessing
+    flow askForOrderProcessing    -> gw_customer_type
+    flow gw_customer_type         -> customerProfileRetrieve : "trusted customer"
+    flow gw_customer_type         -> gw_trust_choice          : "any customer"
+    flow gw_trust_choice          -> creditCardChecking
+    flow gw_trust_choice          -> customerRecordsChecking
+    flow customerProfileRetrieve  -> gw_trust_join
+    flow creditCardChecking       -> gw_trust_join
+    flow customerRecordsChecking  -> gw_trust_join
+    flow gw_trust_join            -> approveOrder
+    flow approveOrder             -> askForPaymentMethod
+    flow askForPaymentMethod      -> verifyPaymentInformation
+    flow verifyPaymentInformation -> gw_payment_split
+    flow gw_payment_split         -> fraudDetection
+    flow gw_payment_split         -> creditCard
+    flow gw_payment_split         -> debitCard
+    flow gw_payment_split         -> moneyOrder
+    flow fraudDetection           -> gw_payment_join
+    flow creditCard               -> gw_payment_join
+    flow debitCard                -> gw_payment_join
+    flow moneyOrder               -> gw_payment_join
+    flow gw_payment_join          -> applyDiscount
+    flow applyDiscount            -> buildAndPackageOrder
+    flow buildAndPackageOrder     -> gw_ship_bill
+    flow gw_ship_bill             -> shipment  : "ship"
+    flow gw_ship_bill             -> sendReceipt : "bill"
+    flow shipment                 -> end_store
+    flow sendReceipt              -> end_store
+  }
+
+  pool CustomerPool "Customer" {
+    start   start_customer : none
+    task    sendCredentialInformation "Send Credential Information"
+    task    submitTheOrder            "Submit the Order"
+    task    selectPaymentMethod       "Select Payment Method"
+    gateway gw_receive : and
+    task    receiveItems              "Receive Items"
+    task    receiveReceipt            "Receive Receipt"
+    end     end_customer : none
+
+    flow start_customer           -> sendCredentialInformation
+    flow sendCredentialInformation -> submitTheOrder
+    flow submitTheOrder           -> selectPaymentMethod
+    flow selectPaymentMethod      -> gw_receive
+    flow gw_receive               -> receiveItems
+    flow gw_receive               -> receiveReceipt
+    flow receiveItems             -> end_customer
+    flow receiveReceipt           -> end_customer
+  }
+
+  message CredentialMsg "Credential information"
+  message OrderMsg      "Order submission"
+  message ReceiptMsg    "Receipt"
+  message ItemsMsg      "Shipped items"
+
+  message-flow sendCredentialInformation -> customerIdentification  : CredentialMsg
+  message-flow submitTheOrder            -> askForOrderProcessing   : OrderMsg
+  message-flow sendReceipt               -> receiveReceipt          : ReceiptMsg
+  message-flow shipment                  -> receiveItems            : ItemsMsg
+  // Deliberately omitted: selectPaymentMethod -> askForPaymentMethod
+  // (see header note -- this is the paper's choreography-inconsistency
+  // example, not a mistake).
+}

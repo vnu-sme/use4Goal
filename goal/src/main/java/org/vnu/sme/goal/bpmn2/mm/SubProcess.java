@@ -11,20 +11,41 @@ public final class SubProcess implements Activity {
 
     private final String              id;
     private final String              name;
+    private final List<ActivityConstraint> constraints;
+    private final List<ActivityEffect> effects;
     private final List<FlowElement>   flowElements;
     private final List<SequenceFlow>  sequenceFlows;
 
     public SubProcess(String id, String name,
                        List<FlowElement> flowElements,
                        List<SequenceFlow> sequenceFlows) {
+        this(id, name, List.of(), flowElements, sequenceFlows);
+    }
+
+    public SubProcess(String id, String name,
+                       List<ActivityConstraint> constraints,
+                       List<FlowElement> flowElements,
+                       List<SequenceFlow> sequenceFlows) {
+        this(id, name, constraints, List.of(), flowElements, sequenceFlows);
+    }
+
+    public SubProcess(String id, String name,
+                       List<ActivityConstraint> constraints,
+                       List<ActivityEffect> effects,
+                       List<FlowElement> flowElements,
+                       List<SequenceFlow> sequenceFlows) {
         this.id            = id;
         this.name          = name;
+        this.constraints   = List.copyOf(constraints);
+        this.effects       = List.copyOf(effects);
         this.flowElements  = List.copyOf(flowElements);
         this.sequenceFlows = List.copyOf(sequenceFlows);
     }
 
     @Override public String             id()            { return id; }
     public               String             name()          { return name; }
+    @Override public     List<ActivityConstraint> constraints() { return constraints; }
+    @Override public     List<ActivityEffect> effects() { return effects; }
     public               List<FlowElement>  flowElements()  { return flowElements; }
     public               List<SequenceFlow> sequenceFlows() { return sequenceFlows; }
 }

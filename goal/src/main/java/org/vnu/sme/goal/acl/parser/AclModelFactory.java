@@ -70,6 +70,7 @@ public final class AclModelFactory {
         Set<String> endpointTypes = new LinkedHashSet<>();
         model.entities().forEach(e -> endpointTypes.add(e.name()));
         model.actors().forEach(a -> endpointTypes.add(a.name()));
+        model.groups().forEach(g -> endpointTypes.add(g.name()));
 
         for (AclActor actor : model.actors()) {
             if (actor.specializes() == null) continue;

@@ -10,248 +10,199 @@
         <showrolenames>true</showrolenames>
         <showgrid>false</showgrid>
     </diagramOptions>
-    <node height="368.0" id="Initiator" sizeCalculated="false"
-        type="IStarNode" width="182.0">
-        <name>Initiator</name>
+    <node height="114.0" id="Journal" sizeCalculated="false"
+        type="AclNode" width="220.0">
+        <name>Journal</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>24.0</x>
-            <y>30.0</y>
+            <x>36.0</x>
+            <y>36.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="36.0" id="HaveMeetingOrganized" sizeCalculated="false"
-        type="IStarNode" width="126.0">
-        <name>HaveMeetingOrganized</name>
+    <node height="96.0" id="Section" sizeCalculated="false"
+        type="AclNode" width="220.0">
+        <name>Section</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>52.0</x>
-            <y>80.0</y>
+            <x>36.0</x>
+            <y>172.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="44.0" id="DecideMeetingDetails" sizeCalculated="false"
-        type="IStarNode" width="108.0">
-        <name>DecideMeetingDetails</name>
+    <node height="78.0" id="Issue" sizeCalculated="false" type="AclNode" width="220.0">
+        <name>Issue</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>61.0</x>
-            <y>128.0</y>
+            <x>36.0</x>
+            <y>290.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="36.0" id="HaveSchedulingPerformed"
-        sizeCalculated="false" type="IStarNode" width="126.0">
-        <name>HaveSchedulingPerformed</name>
+    <node height="114.0" id="Submission" sizeCalculated="false"
+        type="AclNode" width="220.0">
+        <name>Submission</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>52.0</x>
-            <y>184.0</y>
+            <x>36.0</x>
+            <y>390.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="36.0" id="MeetingAttended" sizeCalculated="false"
-        type="IStarNode" width="126.0">
-        <name>MeetingAttended</name>
+    <node height="96.0" id="ReviewRound" sizeCalculated="false"
+        type="AclNode" width="220.0">
+        <name>ReviewRound</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>52.0</x>
-            <y>232.0</y>
+            <x>36.0</x>
+            <y>526.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="36.0" id="HaveSchedulingPerformedByOrganizer"
-        sizeCalculated="false" type="IStarNode" width="126.0">
-        <name>HaveSchedulingPerformedByOrganizer</name>
+    <node height="114.0" id="PublishedArticle" sizeCalculated="false"
+        type="AclNode" width="220.0">
+        <name>PublishedArticle</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>52.0</x>
-            <y>280.0</y>
+            <x>36.0</x>
+            <y>644.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="36.0" id="MeetingAttendedByParticipant"
-        sizeCalculated="false" type="IStarNode" width="126.0">
-        <name>MeetingAttendedByParticipant</name>
+    <node height="132.0" id="ArticleFile" sizeCalculated="false"
+        type="AclNode" width="220.0">
+        <name>ArticleFile</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>52.0</x>
-            <y>328.0</y>
+            <x>36.0</x>
+            <y>780.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="644.0" id="Organizer" sizeCalculated="false"
-        type="IStarNode" width="182.0">
-        <name>Organizer</name>
+    <node height="78.0" id="Subscription" sizeCalculated="false"
+        type="AclNode" width="220.0">
+        <name>Subscription</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>250.0</x>
-            <y>30.0</y>
+            <x>36.0</x>
+            <y>934.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="36.0" id="HaveMeetingScheduled" sizeCalculated="false"
-        type="IStarNode" width="126.0">
-        <name>HaveMeetingScheduled</name>
+    <node height="78.0" id="Role" sizeCalculated="false" type="AclNode" width="220.0">
+        <name>Role</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>278.0</x>
-            <y>80.0</y>
+            <x>36.0</x>
+            <y>1034.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="36.0" id="TimetablesCollected" sizeCalculated="false"
-        type="IStarNode" width="126.0">
-        <name>TimetablesCollected</name>
+    <node height="96.0" id="EditAssignment" sizeCalculated="false"
+        type="AclNode" width="220.0">
+        <name>EditAssignment</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>278.0</x>
-            <y>128.0</y>
+            <x>36.0</x>
+            <y>1134.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="44.0" id="ChooseTimeAndDate" sizeCalculated="false"
-        type="IStarNode" width="108.0">
-        <name>ChooseTimeAndDate</name>
+    <node height="132.0" id="ReviewAssignment" sizeCalculated="false"
+        type="AclNode" width="220.0">
+        <name>ReviewAssignment</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>287.0</x>
-            <y>176.0</y>
+            <x>36.0</x>
+            <y>1252.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="36.0" id="MeetingAnnounced" sizeCalculated="false"
-        type="IStarNode" width="126.0">
-        <name>MeetingAnnounced</name>
+    <node height="132.0" id="User" sizeCalculated="false" type="AclNode" width="220.0">
+        <name>User</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>278.0</x>
-            <y>232.0</y>
+            <x>904.0</x>
+            <y>751.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="36.0" id="TimetableCollected" sizeCalculated="false"
-        type="IStarNode" width="126.0">
-        <name>TimetableCollected</name>
+    <node height="60.0" id="JournalRole" sizeCalculated="false"
+        type="AclNode" width="220.0">
+        <name>JournalRole</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>278.0</x>
-            <y>280.0</y>
+            <x>1625.0</x>
+            <y>44.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="36.0" id="HavePPCalled" sizeCalculated="false"
-        type="IStarNode" width="126.0">
-        <name>HavePPCalled</name>
+    <node height="60.0" id="Admin" sizeCalculated="false" type="AclNode" width="220.0">
+        <name>Admin</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>278.0</x>
-            <y>328.0</y>
+            <x>871.0</x>
+            <y>273.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="44.0" id="CollectFromCalendar" sizeCalculated="false"
-        type="IStarNode" width="108.0">
-        <name>CollectFromCalendar</name>
+    <node height="60.0" id="Viewer" sizeCalculated="false"
+        type="AclNode" width="220.0">
+        <name>Viewer</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>287.0</x>
-            <y>376.0</y>
+            <x>461.0</x>
+            <y>302.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="36.0" id="HaveSecretaryCallPP" sizeCalculated="false"
-        type="IStarNode" width="126.0">
-        <name>HaveSecretaryCallPP</name>
+    <node height="96.0" id="SectionEditor" sizeCalculated="false"
+        type="AclNode" width="220.0">
+        <name>SectionEditor</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>278.0</x>
-            <y>432.0</y>
+            <x>1529.0</x>
+            <y>453.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="44.0" id="AnnounceMeeting" sizeCalculated="false"
-        type="IStarNode" width="108.0">
-        <name>AnnounceMeeting</name>
+    <node height="78.0" id="GroupUser" sizeCalculated="false"
+        type="AclNode" width="220.0">
+        <name>GroupUser</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>287.0</x>
-            <y>480.0</y>
+            <x>1176.0</x>
+            <y>533.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="46.0" id="Inclusivity" sizeCalculated="false"
-        type="IStarNode" width="118.0">
-        <name>Inclusivity</name>
+    <node height="78.0" id="group:SubmissionGroup"
+        sizeCalculated="false" type="AclNode" width="220.0">
+        <name>group:SubmissionGroup</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>282.0</x>
-            <y>536.0</y>
+            <x>1091.0</x>
+            <y>372.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="46.0" id="QuickScheduling" sizeCalculated="false"
-        type="IStarNode" width="118.0">
-        <name>QuickScheduling</name>
+    <node height="96.0" id="group:SectionGroup" sizeCalculated="false"
+        type="AclNode" width="220.0">
+        <name>group:SectionGroup</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>282.0</x>
-            <y>594.0</y>
+            <x>1350.0</x>
+            <y>240.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="128.0" id="Secretary" sizeCalculated="false"
-        type="IStarNode" width="164.0">
-        <name>Secretary</name>
+    <node height="60.0" id="group:IssueGroup" sizeCalculated="false"
+        type="AclNode" width="220.0">
+        <name>group:IssueGroup</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>476.0</x>
-            <y>30.0</y>
+            <x>477.0</x>
+            <y>103.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="44.0" id="CollectConstraintsByPhone"
-        sizeCalculated="false" type="IStarNode" width="108.0">
-        <name>CollectConstraintsByPhone</name>
+    <node height="132.0" id="group:JournalGroup" sizeCalculated="false"
+        type="AclNode" width="220.0">
+        <name>group:JournalGroup</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>504.0</x>
-            <y>80.0</y>
+            <x>812.0</x>
+            <y>40.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="128.0" id="Participant" sizeCalculated="false"
-        type="IStarNode" width="164.0">
-        <name>Participant</name>
-        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>684.0</x>
-            <y>30.0</y>
-        </strategy>
-        <hidden>false</hidden>
-    </node>
-    <node height="44.0" id="Participate" sizeCalculated="false"
-        type="IStarNode" width="108.0">
-        <name>Participate</name>
-        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>712.0</x>
-            <y>80.0</y>
-        </strategy>
-        <hidden>false</hidden>
-    </node>
-    <node height="44.0" id="dependum:15:ChooseTimeAndDate"
-        sizeCalculated="false" type="IStarNode" width="108.0">
-        <name>dependum:15:ChooseTimeAndDate</name>
-        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>174.0</x>
-            <y>176.0</y>
-        </strategy>
-        <hidden>false</hidden>
-    </node>
-    <node height="44.0" id="dependum:17:CollectConstraintsByPhone"
-        sizeCalculated="false" type="IStarNode" width="108.0">
-        <name>dependum:17:CollectConstraintsByPhone</name>
-        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>395.0</x>
-            <y>254.0</y>
-        </strategy>
-        <hidden>false</hidden>
-    </node>
-    <node height="44.0" id="dependum:19:Participate"
-        sizeCalculated="false" type="IStarNode" width="108.0">
-        <name>dependum:19:Participate</name>
-        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>386.0</x>
-            <y>202.0</y>
-        </strategy>
-        <hidden>false</hidden>
-    </node>
-    <edge type="IStarEdge">
-        <source>AnnounceMeeting</source>
-        <target>MeetingAnnounced</target>
-        <name>and_refine</name>
+    <edge type="AclEdge">
+        <source>group:JournalGroup</source>
+        <target>Admin</target>
+        <name>group_member</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::AND_REFINE::AnnounceMeeting::MeetingAnnounced::WayPoint::0"
+                id="acl::GROUP_MEMBER::group:JournalGroup::Admin::1..*::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -264,7 +215,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::AND_REFINE::AnnounceMeeting::MeetingAnnounced::WayPoint::1"
+                id="acl::GROUP_MEMBER::group:JournalGroup::Admin::1..*::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -279,14 +230,14 @@
         </waypoints>
         <hidden>false</hidden>
     </edge>
-    <edge type="IStarEdge">
-        <source>ChooseTimeAndDate</source>
-        <target>HaveMeetingScheduled</target>
-        <name>and_refine</name>
+    <edge type="AclEdge">
+        <source>group:JournalGroup</source>
+        <target>Viewer</target>
+        <name>group_member</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::AND_REFINE::ChooseTimeAndDate::HaveMeetingScheduled::WayPoint::0"
+                id="acl::GROUP_MEMBER::group:JournalGroup::Viewer::0..*::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -299,7 +250,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::AND_REFINE::ChooseTimeAndDate::HaveMeetingScheduled::WayPoint::1"
+                id="acl::GROUP_MEMBER::group:JournalGroup::Viewer::0..*::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -314,14 +265,14 @@
         </waypoints>
         <hidden>false</hidden>
     </edge>
-    <edge type="IStarEdge">
-        <source>DecideMeetingDetails</source>
-        <target>HaveMeetingOrganized</target>
-        <name>and_refine</name>
+    <edge type="AclEdge">
+        <source>group:SectionGroup</source>
+        <target>SectionEditor</target>
+        <name>group_member</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::AND_REFINE::DecideMeetingDetails::HaveMeetingOrganized::WayPoint::0"
+                id="acl::GROUP_MEMBER::group:SectionGroup::SectionEditor::1..*::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -334,7 +285,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::AND_REFINE::DecideMeetingDetails::HaveMeetingOrganized::WayPoint::1"
+                id="acl::GROUP_MEMBER::group:SectionGroup::SectionEditor::1..*::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -349,14 +300,14 @@
         </waypoints>
         <hidden>false</hidden>
     </edge>
-    <edge type="IStarEdge">
-        <source>HaveSchedulingPerformed</source>
-        <target>HaveMeetingOrganized</target>
-        <name>and_refine</name>
+    <edge type="AclEdge">
+        <source>group:SubmissionGroup</source>
+        <target>GroupUser</target>
+        <name>group_member</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::AND_REFINE::HaveSchedulingPerformed::HaveMeetingOrganized::WayPoint::0"
+                id="acl::GROUP_MEMBER::group:SubmissionGroup::GroupUser::0..*::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -369,7 +320,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::AND_REFINE::HaveSchedulingPerformed::HaveMeetingOrganized::WayPoint::1"
+                id="acl::GROUP_MEMBER::group:SubmissionGroup::GroupUser::0..*::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -384,14 +335,14 @@
         </waypoints>
         <hidden>false</hidden>
     </edge>
-    <edge type="IStarEdge">
-        <source>MeetingAnnounced</source>
-        <target>HaveMeetingScheduled</target>
-        <name>and_refine</name>
+    <edge type="AclEdge">
+        <source>Issue</source>
+        <target>PublishedArticle</target>
+        <name>part_of</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::AND_REFINE::MeetingAnnounced::HaveMeetingScheduled::WayPoint::0"
+                id="acl::PART_OF::Issue::PublishedArticle::IssueHasPublishedArticles::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -404,7 +355,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::AND_REFINE::MeetingAnnounced::HaveMeetingScheduled::WayPoint::1"
+                id="acl::PART_OF::Issue::PublishedArticle::IssueHasPublishedArticles::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -419,14 +370,14 @@
         </waypoints>
         <hidden>false</hidden>
     </edge>
-    <edge type="IStarEdge">
-        <source>MeetingAttended</source>
-        <target>HaveMeetingOrganized</target>
-        <name>and_refine</name>
+    <edge type="AclEdge">
+        <source>Journal</source>
+        <target>Issue</target>
+        <name>part_of</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::AND_REFINE::MeetingAttended::HaveMeetingOrganized::WayPoint::0"
+                id="acl::PART_OF::Journal::Issue::JournalHasIssues::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -439,7 +390,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::AND_REFINE::MeetingAttended::HaveMeetingOrganized::WayPoint::1"
+                id="acl::PART_OF::Journal::Issue::JournalHasIssues::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -454,14 +405,14 @@
         </waypoints>
         <hidden>false</hidden>
     </edge>
-    <edge type="IStarEdge">
-        <source>MeetingAttendedByParticipant</source>
-        <target>MeetingAttended</target>
-        <name>and_refine</name>
+    <edge type="AclEdge">
+        <source>Journal</source>
+        <target>Section</target>
+        <name>part_of</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::AND_REFINE::MeetingAttendedByParticipant::MeetingAttended::WayPoint::0"
+                id="acl::PART_OF::Journal::Section::JournalHasSections::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -474,7 +425,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::AND_REFINE::MeetingAttendedByParticipant::MeetingAttended::WayPoint::1"
+                id="acl::PART_OF::Journal::Section::JournalHasSections::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -489,14 +440,14 @@
         </waypoints>
         <hidden>false</hidden>
     </edge>
-    <edge type="IStarEdge">
-        <source>TimetableCollected</source>
-        <target>TimetablesCollected</target>
-        <name>and_refine</name>
+    <edge type="AclEdge">
+        <source>Journal</source>
+        <target>Subscription</target>
+        <name>part_of</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::AND_REFINE::TimetableCollected::TimetablesCollected::WayPoint::0"
+                id="acl::PART_OF::Journal::Subscription::JournalHasSubscriptions::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -509,7 +460,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::AND_REFINE::TimetableCollected::TimetablesCollected::WayPoint::1"
+                id="acl::PART_OF::Journal::Subscription::JournalHasSubscriptions::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -524,14 +475,14 @@
         </waypoints>
         <hidden>false</hidden>
     </edge>
-    <edge type="IStarEdge">
-        <source>TimetablesCollected</source>
-        <target>HaveMeetingScheduled</target>
-        <name>and_refine</name>
+    <edge type="AclEdge">
+        <source>ReviewRound</source>
+        <target>ReviewAssignment</target>
+        <name>part_of</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::AND_REFINE::TimetablesCollected::HaveMeetingScheduled::WayPoint::0"
+                id="acl::PART_OF::ReviewRound::ReviewAssignment::ReviewRoundHasReviewAssignments::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -544,7 +495,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::AND_REFINE::TimetablesCollected::HaveMeetingScheduled::WayPoint::1"
+                id="acl::PART_OF::ReviewRound::ReviewAssignment::ReviewRoundHasReviewAssignments::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -559,14 +510,14 @@
         </waypoints>
         <hidden>false</hidden>
     </edge>
-    <edge type="IStarEdge">
-        <source>CollectFromCalendar</source>
-        <target>QuickScheduling</target>
-        <name>contribution</name>
+    <edge type="AclEdge">
+        <source>Section</source>
+        <target>Submission</target>
+        <name>part_of</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::CONTRIBUTION::CollectFromCalendar::QuickScheduling::WayPoint::0"
+                id="acl::PART_OF::Section::Submission::SectionReceivesSubmissions::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -579,7 +530,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::CONTRIBUTION::CollectFromCalendar::QuickScheduling::WayPoint::1"
+                id="acl::PART_OF::Section::Submission::SectionReceivesSubmissions::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -594,14 +545,14 @@
         </waypoints>
         <hidden>false</hidden>
     </edge>
-    <edge type="IStarEdge">
-        <source>HavePPCalled</source>
-        <target>Inclusivity</target>
-        <name>contribution</name>
+    <edge type="AclEdge">
+        <source>Submission</source>
+        <target>ArticleFile</target>
+        <name>part_of</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::CONTRIBUTION::HavePPCalled::Inclusivity::WayPoint::0"
+                id="acl::PART_OF::Submission::ArticleFile::SubmissionHasFiles::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -614,7 +565,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::CONTRIBUTION::HavePPCalled::Inclusivity::WayPoint::1"
+                id="acl::PART_OF::Submission::ArticleFile::SubmissionHasFiles::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -629,14 +580,14 @@
         </waypoints>
         <hidden>false</hidden>
     </edge>
-    <edge type="IStarEdge">
-        <source>HaveSchedulingPerformedByOrganizer</source>
-        <target>dependum:15:ChooseTimeAndDate</target>
-        <name>dependency</name>
+    <edge type="AclEdge">
+        <source>Submission</source>
+        <target>ReviewRound</target>
+        <name>part_of</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::DEPENDENCY::HaveSchedulingPerformedByOrganizer::dependum:15:ChooseTimeAndDate::WayPoint::0"
+                id="acl::PART_OF::Submission::ReviewRound::SubmissionHasReviewRounds::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -649,7 +600,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::DEPENDENCY::HaveSchedulingPerformedByOrganizer::dependum:15:ChooseTimeAndDate::WayPoint::1"
+                id="acl::PART_OF::Submission::ReviewRound::SubmissionHasReviewRounds::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -664,14 +615,14 @@
         </waypoints>
         <hidden>false</hidden>
     </edge>
-    <edge type="IStarEdge">
-        <source>HaveSecretaryCallPP</source>
-        <target>dependum:17:CollectConstraintsByPhone</target>
-        <name>dependency</name>
+    <edge type="AclEdge">
+        <source>EditAssignment</source>
+        <target>Submission</target>
+        <name>relationship</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::DEPENDENCY::HaveSecretaryCallPP::dependum:17:CollectConstraintsByPhone::WayPoint::0"
+                id="acl::RELATIONSHIP::EditAssignment::Submission::EditAssignmentForSubmission::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -684,7 +635,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::DEPENDENCY::HaveSecretaryCallPP::dependum:17:CollectConstraintsByPhone::WayPoint::1"
+                id="acl::RELATIONSHIP::EditAssignment::Submission::EditAssignmentForSubmission::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -699,14 +650,14 @@
         </waypoints>
         <hidden>false</hidden>
     </edge>
-    <edge type="IStarEdge">
-        <source>MeetingAttendedByParticipant</source>
-        <target>dependum:19:Participate</target>
-        <name>dependency</name>
+    <edge type="AclEdge">
+        <source>GroupUser</source>
+        <target>ReviewAssignment</target>
+        <name>relationship</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::DEPENDENCY::MeetingAttendedByParticipant::dependum:19:Participate::WayPoint::0"
+                id="acl::RELATIONSHIP::GroupUser::ReviewAssignment::GroupUserHandlesReviewAssignment::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -719,7 +670,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::DEPENDENCY::MeetingAttendedByParticipant::dependum:19:Participate::WayPoint::1"
+                id="acl::RELATIONSHIP::GroupUser::ReviewAssignment::GroupUserHandlesReviewAssignment::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -734,14 +685,14 @@
         </waypoints>
         <hidden>false</hidden>
     </edge>
-    <edge type="IStarEdge">
-        <source>dependum:15:ChooseTimeAndDate</source>
-        <target>HaveMeetingScheduled</target>
-        <name>dependency</name>
+    <edge type="AclEdge">
+        <source>PublishedArticle</source>
+        <target>ArticleFile</target>
+        <name>relationship</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::DEPENDENCY::dependum:15:ChooseTimeAndDate::HaveMeetingScheduled::WayPoint::0"
+                id="acl::RELATIONSHIP::PublishedArticle::ArticleFile::PublishedArticleUsesFile::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -754,7 +705,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::DEPENDENCY::dependum:15:ChooseTimeAndDate::HaveMeetingScheduled::WayPoint::1"
+                id="acl::RELATIONSHIP::PublishedArticle::ArticleFile::PublishedArticleUsesFile::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -769,14 +720,14 @@
         </waypoints>
         <hidden>false</hidden>
     </edge>
-    <edge type="IStarEdge">
-        <source>dependum:17:CollectConstraintsByPhone</source>
-        <target>CollectConstraintsByPhone</target>
-        <name>dependency</name>
+    <edge type="AclEdge">
+        <source>SectionEditor</source>
+        <target>Section</target>
+        <name>relationship</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::DEPENDENCY::dependum:17:CollectConstraintsByPhone::CollectConstraintsByPhone::WayPoint::0"
+                id="acl::RELATIONSHIP::SectionEditor::Section::SectionEditorManagesSection::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -789,7 +740,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::DEPENDENCY::dependum:17:CollectConstraintsByPhone::CollectConstraintsByPhone::WayPoint::1"
+                id="acl::RELATIONSHIP::SectionEditor::Section::SectionEditorManagesSection::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -804,14 +755,14 @@
         </waypoints>
         <hidden>false</hidden>
     </edge>
-    <edge type="IStarEdge">
-        <source>dependum:19:Participate</source>
-        <target>Participate</target>
-        <name>dependency</name>
+    <edge type="AclEdge">
+        <source>User</source>
+        <target>Admin</target>
+        <name>relationship</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::DEPENDENCY::dependum:19:Participate::Participate::WayPoint::0"
+                id="acl::RELATIONSHIP::User::Admin::UserActsAsAdmin::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -824,7 +775,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::DEPENDENCY::dependum:19:Participate::Participate::WayPoint::1"
+                id="acl::RELATIONSHIP::User::Admin::UserActsAsAdmin::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -839,14 +790,14 @@
         </waypoints>
         <hidden>false</hidden>
     </edge>
-    <edge type="IStarEdge">
-        <source>CollectFromCalendar</source>
-        <target>TimetableCollected</target>
-        <name>or_refine</name>
+    <edge type="AclEdge">
+        <source>User</source>
+        <target>EditAssignment</target>
+        <name>relationship</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::OR_REFINE::CollectFromCalendar::TimetableCollected::WayPoint::0"
+                id="acl::RELATIONSHIP::User::EditAssignment::UserHasEditAssignment::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -859,7 +810,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::OR_REFINE::CollectFromCalendar::TimetableCollected::WayPoint::1"
+                id="acl::RELATIONSHIP::User::EditAssignment::UserHasEditAssignment::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -874,14 +825,14 @@
         </waypoints>
         <hidden>false</hidden>
     </edge>
-    <edge type="IStarEdge">
-        <source>HavePPCalled</source>
-        <target>TimetableCollected</target>
-        <name>or_refine</name>
+    <edge type="AclEdge">
+        <source>User</source>
+        <target>GroupUser</target>
+        <name>relationship</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::OR_REFINE::HavePPCalled::TimetableCollected::WayPoint::0"
+                id="acl::RELATIONSHIP::User::GroupUser::UserActsAsGroupUser::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -894,7 +845,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::OR_REFINE::HavePPCalled::TimetableCollected::WayPoint::1"
+                id="acl::RELATIONSHIP::User::GroupUser::UserActsAsGroupUser::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -909,14 +860,14 @@
         </waypoints>
         <hidden>false</hidden>
     </edge>
-    <edge type="IStarEdge">
-        <source>HaveSchedulingPerformedByOrganizer</source>
-        <target>HaveSchedulingPerformed</target>
-        <name>or_refine</name>
+    <edge type="AclEdge">
+        <source>User</source>
+        <target>ReviewAssignment</target>
+        <name>relationship</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::OR_REFINE::HaveSchedulingPerformedByOrganizer::HaveSchedulingPerformed::WayPoint::0"
+                id="acl::RELATIONSHIP::User::ReviewAssignment::UserHasReviewAssignment::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -929,7 +880,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::OR_REFINE::HaveSchedulingPerformedByOrganizer::HaveSchedulingPerformed::WayPoint::1"
+                id="acl::RELATIONSHIP::User::ReviewAssignment::UserHasReviewAssignment::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -944,14 +895,14 @@
         </waypoints>
         <hidden>false</hidden>
     </edge>
-    <edge type="IStarEdge">
-        <source>HaveSecretaryCallPP</source>
-        <target>HavePPCalled</target>
-        <name>or_refine</name>
+    <edge type="AclEdge">
+        <source>User</source>
+        <target>Role</target>
+        <name>relationship</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::OR_REFINE::HaveSecretaryCallPP::HavePPCalled::WayPoint::0"
+                id="acl::RELATIONSHIP::User::Role::UserHasRoleLabel::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -964,7 +915,287 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::OR_REFINE::HaveSecretaryCallPP::HavePPCalled::WayPoint::1"
+                id="acl::RELATIONSHIP::User::Role::UserHasRoleLabel::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AclEdge">
+        <source>User</source>
+        <target>SectionEditor</target>
+        <name>relationship</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="acl::RELATIONSHIP::User::SectionEditor::UserActsAsSectionEditor::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="acl::RELATIONSHIP::User::SectionEditor::UserActsAsSectionEditor::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AclEdge">
+        <source>User</source>
+        <target>Submission</target>
+        <name>relationship</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="acl::RELATIONSHIP::User::Submission::UserAuthorsSubmission::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="acl::RELATIONSHIP::User::Submission::UserAuthorsSubmission::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AclEdge">
+        <source>User</source>
+        <target>Subscription</target>
+        <name>relationship</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="acl::RELATIONSHIP::User::Subscription::UserHoldsSubscription::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="acl::RELATIONSHIP::User::Subscription::UserHoldsSubscription::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AclEdge">
+        <source>User</source>
+        <target>Viewer</target>
+        <name>relationship</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="acl::RELATIONSHIP::User::Viewer::UserActsAsViewer::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="acl::RELATIONSHIP::User::Viewer::UserActsAsViewer::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AclEdge">
+        <source>Admin</source>
+        <target>JournalRole</target>
+        <name>specializes</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="acl::SPECIALIZES::Admin::JournalRole::specializes::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="acl::SPECIALIZES::Admin::JournalRole::specializes::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AclEdge">
+        <source>GroupUser</source>
+        <target>JournalRole</target>
+        <name>specializes</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="acl::SPECIALIZES::GroupUser::JournalRole::specializes::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="acl::SPECIALIZES::GroupUser::JournalRole::specializes::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AclEdge">
+        <source>SectionEditor</source>
+        <target>JournalRole</target>
+        <name>specializes</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="acl::SPECIALIZES::SectionEditor::JournalRole::specializes::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="acl::SPECIALIZES::SectionEditor::JournalRole::specializes::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AclEdge">
+        <source>Viewer</source>
+        <target>JournalRole</target>
+        <name>specializes</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="acl::SPECIALIZES::Viewer::JournalRole::specializes::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="acl::SPECIALIZES::Viewer::JournalRole::specializes::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>

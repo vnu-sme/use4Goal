@@ -4,11 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.prefs.Preferences;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -30,65 +26,51 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.tzi.use.gui.main.MainWindow;
 import org.tzi.use.main.Session;
-import org.vnu.sme.goal.bpmn2.mm.Bpmn2Model;
-import org.vnu.sme.goal.bpmn2.mm.FlowElement;
-import org.vnu.sme.goal.bpmn2.parser.Bpmn2Compiler;
 import org.vnu.sme.goal.bpmn2.view.Bpmn2View;
-import org.vnu.sme.goal.conformance.mapping.ConformanceMapping;
-import org.vnu.sme.goal.conformance.mapping.ConformanceMappingParser;
-import org.vnu.sme.goal.conformance.semantics.Bpmn2LtsBuilder;
-import org.vnu.sme.goal.conformance.semantics.ComplianceChecker;
-import org.vnu.sme.goal.conformance.semantics.ComplianceResult;
-import org.vnu.sme.goal.conformance.semantics.IllFormedProcessException;
-import org.vnu.sme.goal.conformance.semantics.ProductLts;
-import org.vnu.sme.goal.istar.mm.GoalModel;
-import org.vnu.sme.goal.istar.mm.Quality;
-import org.vnu.sme.goal.istar.mm.IntentionalElement;
-import org.vnu.sme.goal.istar.parser.IStarCompiler;
+import org.vnu.sme.goal.conformance.AclBpmnIStarConformanceChecker;
 import org.vnu.sme.goal.istar.view.IStarView;
 
 /**
- * Plugin form for the i* / BPMN2 conformance checker designed in
- * doc/paper/conformance-istar-bpmn2.md — takes an .istar file, a .bpmn2 file and a .map
- * mapping file, shows both diagrams side by side (reusing the existing {@link IStarView} /
- * {@link Bpmn2View}), and runs {@link ComplianceChecker} to report weak/strong compliance
- * with a counterexample trace on failure.
+ * Four-input conformance UI:
+ * ACL + initial SOIL + i* goals + BPMN2/OCL proposed solution.
  */
 public final class ConformanceForm extends JDialog {
 
     private static final Preferences PREFS = Preferences.userNodeForPackage(ConformanceForm.class);
-    private static final String PREF_ISTAR = "conformance.istarFile";
-    private static final String PREF_BPMN2 = "conformance.bpmn2File";
-    private static final String PREF_MAP = "conformance.mapFile";
+    private static final String PREF_ACL = "conformance4.aclFile";
+    private static final String PREF_SOIL = "conformance4.soilFile";
+    private static final String PREF_ISTAR = "conformance4.istarFile";
+    private static final String PREF_BPMN2 = "conformance4.bpmn2File";
 
     private static final Color C_OK = new Color(0, 120, 0);
-    private static final Color C_WARN = new Color(160, 120, 0);
     private static final Color C_ERR = new Color(160, 0, 0);
 
+    @SuppressWarnings("unused")
     private final Session session;
+    @SuppressWarnings("unused")
     private final MainWindow mainWindow;
 
+    private JTextField aclField;
+    private JTextField soilField;
     private JTextField istarField;
     private JTextField bpmn2Field;
-    private JTextField mapField;
     private JTextArea resultArea;
     private JLabel statusLabel;
     private IStarView istarView;
     private Bpmn2View bpmn2View;
 
     public ConformanceForm(Session session, MainWindow mainWindow) {
-        super(mainWindow, "i* / BPMN2 Conformance Checker", false);
+        super(mainWindow, "ACL / SOIL / i* / BPMN2 Conformance Checker", false);
         this.session = session;
         this.mainWindow = mainWindow;
         buildUI();
+        aclField.setText(PREFS.get(PREF_ACL, ""));
+        soilField.setText(PREFS.get(PREF_SOIL, ""));
         istarField.setText(PREFS.get(PREF_ISTAR, ""));
         bpmn2Field.setText(PREFS.get(PREF_BPMN2, ""));
-        mapField.setText(PREFS.get(PREF_MAP, ""));
         setSize(1400, 900);
         setLocationRelativeTo(mainWindow);
     }
-
-    // ── UI ────────────────────────────────────────────────────────────────────
 
     private void buildUI() {
         setLayout(new BorderLayout(4, 4));
@@ -104,29 +86,32 @@ public final class ConformanceForm extends JDialog {
                 new MatteBorder(0, 0, 1, 0, UIManager.getColor("Separator.foreground")),
                 new EmptyBorder(2, 4, 2, 4)));
 
-        istarField = new JTextField(34);
-        bpmn2Field = new JTextField(34);
-        mapField = new JTextField(34);
+        aclField = new JTextField(42);
+        soilField = new JTextField(42);
+        istarField = new JTextField(42);
+        bpmn2Field = new JTextField(42);
 
-        p.add(fileRow("i*  (.istar):", istarField, "iStar 2.0 (*.istar)", "istar"));
-        p.add(fileRow("BPMN2 (.bpmn2):", bpmn2Field, "BPMN 2.0 (*.bpmn2)", "bpmn2"));
-        p.add(fileRow("Mapping (.map):", mapField, "Conformance mapping (*.map)", "map"));
+        p.add(fileRow("ACL structure (.acl):", aclField, "ACL (*.acl)", "acl"));
+        p.add(fileRow("Initial state (.soil):", soilField, "SOIL (*.soil)", "soil"));
+        p.add(fileRow("i* goals (.istar):", istarField, "iStar 2.0 (*.istar)", "istar"));
+        p.add(fileRow("BPMN2 solution (.bpmn2):", bpmn2Field, "BPMN 2.0 (*.bpmn2)", "bpmn2"));
 
         JPanel runRow = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 6, 6));
-        JButton run = new JButton("Check Conformance");
+        JButton run = new JButton("Check 4-Input Conformance");
         run.setFont(run.getFont().deriveFont(Font.BOLD));
         run.addActionListener(e -> doCheck());
         runRow.add(run);
         p.add(runRow);
-
         return p;
     }
 
     private JPanel fileRow(String label, JTextField field, String filterDesc, String ext) {
         JPanel row = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 6, 2));
-        row.add(new JLabel(label));
+        JLabel l = new JLabel(label);
+        l.setPreferredSize(new java.awt.Dimension(150, l.getPreferredSize().height));
+        row.add(l);
         row.add(field);
-        JButton browse = new JButton("Browse…");
+        JButton browse = new JButton("Browse...");
         browse.addActionListener(e -> chooseFile(field, filterDesc, ext));
         row.add(browse);
         return row;
@@ -147,9 +132,9 @@ public final class ConformanceForm extends JDialog {
         bpmn2View = new Bpmn2View();
 
         JScrollPane left = new JScrollPane(istarView);
-        left.setBorder(new TitledBorder(new EtchedBorder(), "i* Strategic Rationale Diagram"));
+        left.setBorder(new TitledBorder(new EtchedBorder(), "i* Goal Model"));
         JScrollPane right = new JScrollPane(bpmn2View);
-        right.setBorder(new TitledBorder(new EtchedBorder(), "BPMN 2.0 Collaboration Diagram"));
+        right.setBorder(new TitledBorder(new EtchedBorder(), "BPMN2 Solution Model"));
 
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, left, right);
         split.setResizeWeight(0.5);
@@ -175,82 +160,51 @@ public final class ConformanceForm extends JDialog {
         return p;
     }
 
-    // ── Actions ───────────────────────────────────────────────────────────────
-
     private void doCheck() {
+        String aclPath = aclField.getText().trim();
+        String soilPath = soilField.getText().trim();
         String istarPath = istarField.getText().trim();
         String bpmnPath = bpmn2Field.getText().trim();
-        String mapPath = mapField.getText().trim();
         resultArea.setText("");
 
-        if (istarPath.isEmpty() || bpmnPath.isEmpty() || mapPath.isEmpty()) {
-            status("Please select all 3 files (.istar, .bpmn2, .map).", C_ERR);
+        if (aclPath.isEmpty() || soilPath.isEmpty() || istarPath.isEmpty() || bpmnPath.isEmpty()) {
+            status("Please select all 4 files (.acl, .soil, .istar, .bpmn2).", C_ERR);
             return;
         }
 
         try {
-            IStarCompiler.Result ir = IStarCompiler.compile(Path.of(istarPath));
-            if (!ir.ok()) {
-                appendResult("i* parse errors:\n" + String.join("\n", ir.errors()));
-                status("i* parse FAILED.", C_ERR);
+            AclBpmnIStarConformanceChecker.Result result =
+                    AclBpmnIStarConformanceChecker.check(
+                            Path.of(aclPath), Path.of(soilPath), Path.of(istarPath), Path.of(bpmnPath));
+
+            if (!result.ok()) {
+                result.errors().forEach(this::appendResult);
+                status("Conformance check failed before verdict.", C_ERR);
                 return;
             }
-            GoalModel gm = ir.model();
-            istarView.setModel(gm);
 
-            Bpmn2Compiler.Result br = Bpmn2Compiler.compile(Path.of(bpmnPath));
-            if (!br.ok()) {
-                appendResult("BPMN2 parse errors:\n" + String.join("\n", br.errors()));
-                status("BPMN2 parse FAILED.", C_ERR);
-                return;
-            }
-            Bpmn2Model pm = br.model();
-            bpmn2View.setModel(pm);
+            istarView.setModel(result.goalModel());
+            bpmn2View.setModel(result.bpmnModel());
 
-            ConformanceMapping map = ConformanceMappingParser.parse(Path.of(mapPath));
-            List<String> warnings = map.validate(gm, pm);
-            for (String w : warnings) appendResult("[warn] " + w);
+            appendResult("Generated USE : " + result.generatedUse());
+            appendResult("Execution SOIL: " + result.executionSoil());
+            appendResult("Checkpoints   : " + result.checkpoints());
+            appendResult("BPMN OCL      : " + (result.bpmnFailures().isEmpty() ? "PASS" : "FAIL"));
+            result.bpmnFailures().forEach(f -> appendResult("  - " + f));
+            appendResult("i* root goals : " + (result.goalFailures().isEmpty() ? "PASS" : "FAIL"));
+            result.goalFailures().forEach(f -> appendResult("  - " + f));
+            appendResult("Verdict       : " + (result.conformant() ? "CONFORMANT" : "NOT CONFORMANT"));
 
-            Bpmn2LtsBuilder.validateWellFormed(pm);
-
-            ProductLts lts = new ProductLts(gm, pm, map);
-            Set<String> qualityIds = new LinkedHashSet<>();
-            for (IntentionalElement e : gm.allElements().values()) {
-                if (e instanceof Quality q) qualityIds.add(q.id());
-            }
-
-            ComplianceResult result = ComplianceChecker.check(lts, qualityIds);
-
-            appendResult("");
-            appendResult("Verdict : " + result.verdict());
-            appendResult("Weak    : " + result.weak());
-            appendResult("Stable  : " + result.stable());
-            appendResult("Message : " + result.message());
-            if (!result.counterexampleTrace().isEmpty()) {
-                appendResult("Counterexample trace:");
-                for (FlowElement n : result.counterexampleTrace()) {
-                    appendResult("  -> " + n.id());
-                }
-            }
-
+            PREFS.put(PREF_ACL, aclPath);
+            PREFS.put(PREF_SOIL, soilPath);
             PREFS.put(PREF_ISTAR, istarPath);
             PREFS.put(PREF_BPMN2, bpmnPath);
-            PREFS.put(PREF_MAP, mapPath);
 
-            status(result.verdict().toString(), switch (result.verdict()) {
-                case NON_COMPLIANT -> C_ERR;
-                case WEAK_COMPLIANT -> C_WARN;
-                case STRONG_COMPLIANT -> C_OK;
-            });
-        } catch (IllFormedProcessException ex) {
-            appendResult("Process model is not well-formed: " + ex.getMessage());
-            status("BPMN2 not well-formed.", C_ERR);
-        } catch (IllegalArgumentException ex) {
-            appendResult("Mapping file error: " + ex.getMessage());
-            status("Mapping parse FAILED.", C_ERR);
-        } catch (IOException ex) {
-            appendResult("IO error: " + ex.getMessage());
-            status("IO error reading a file.", C_ERR);
+            status(result.conformant() ? "CONFORMANT" : "NOT CONFORMANT",
+                    result.conformant() ? C_OK : C_ERR);
+        } catch (Exception ex) {
+            appendResult("Error: " + ex.getMessage());
+            status("Conformance check crashed.", C_ERR);
         }
     }
 

@@ -78,8 +78,8 @@ public final class Bpmn2ModelFactory {
             case FlowElementCS.EndEventCS e -> new EndEvent(e.id(), EventTrigger.from(e.trigger()));
             case FlowElementCS.IntermediateEventCS e -> new IntermediateEvent(
                     e.id(), EventTrigger.from(e.trigger()), EventDirection.from(e.direction()));
-            case FlowElementCS.TaskCS e -> new Task(e.id(), e.name());
-            case FlowElementCS.CallActivityCS e -> new CallActivity(e.id());
+            case FlowElementCS.TaskCS e -> new Task(e.id(), e.name(), constraints(e.constraints()), effects(e.effects()));
+            case FlowElementCS.CallActivityCS e -> new CallActivity(e.id(), constraints(e.constraints()), effects(e.effects()));
             case FlowElementCS.GatewayCS e -> new Gateway(e.id(), GatewayKind.from(e.kind()));
             case FlowElementCS.SubProcessCS e -> buildSubProcess(e);
         };
@@ -97,7 +97,7 @@ public final class Bpmn2ModelFactory {
                 .map(sf -> resolveSequenceFlow(sf, scope))
                 .collect(Collectors.toList());
 
-        return new SubProcess(cs.id(), cs.name(), children, flows);
+        return new SubProcess(cs.id(), cs.name(), constraints(cs.constraints()), effects(cs.effects()), children, flows);
     }
 
     private static SequenceFlow resolveSequenceFlow(SequenceFlowCS cs, Map<String, FlowElement> scope) {
@@ -106,5 +106,21 @@ public final class Bpmn2ModelFactory {
         if (source == null) throw new IllegalStateException("Unknown flow source: " + cs.source());
         if (target == null) throw new IllegalStateException("Unknown flow target: " + cs.target());
         return new SequenceFlow(source, target, cs.label());
+    }
+
+    private static List<ActivityConstraint> constraints(List<ActivityConstraintCS> constraints) {
+        return constraints.stream()
+                .map(c -> new ActivityConstraint(
+                        c.kind() == ActivityConstraintCS.Kind.PRE
+                                ? ActivityConstraint.Kind.PRE
+                                : ActivityConstraint.Kind.POST,
+                        c.oclBody()))
+                .collect(Collectors.toList());
+    }
+
+    private static List<ActivityEffect> effects(List<ActivityEffectCS> effects) {
+        return effects.stream()
+                .map(e -> new ActivityEffect(e.soilBody()))
+                .collect(Collectors.toList());
     }
 }

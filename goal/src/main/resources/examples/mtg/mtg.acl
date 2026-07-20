@@ -4,6 +4,12 @@ acl v2.0 MeetingSchedulerShadow {
   enum NotificationStatus {notSent, sent}
   enum AttendanceStatus   {unknown, attended, absent}
 
+  entity Person
+
+  entity PhoneContact {
+    number : String;
+  }
+
   abstract role MeetingParty {
     name : String;
   }
@@ -19,12 +25,17 @@ acl v2.0 MeetingSchedulerShadow {
     attendance       : AttendanceStatus;
   }
 
-  relationship SecretaryKnowsParticipantPhone {
-    Secretary   [*] secretariesKnowingPhone;
-    Participant [*] participantsReachableByPhone;
+  relationship PersonPhoneContacts {
+    Person       [1] phoneOwner;
+    PhoneContact [*] phoneContacts;
   }
 
-  group MeetingUnit {
+  relationship SecretaryKnowsPhoneContact {
+    Secretary    [*] secretariesKnowingContact;
+    PhoneContact [*] knownPhoneContacts;
+  }
+
+  group Meeting {
     detailsDecided : Boolean;
     timeChosen     : Boolean;
 
@@ -34,7 +45,7 @@ acl v2.0 MeetingSchedulerShadow {
     Participant  [2..*];
   }
 
-  link authority     Organizer -> Secretary   intra MeetingUnit;
-  link compatibility Initiator -> Participant intra MeetingUnit;
-  link compatibility Organizer -> Secretary   intra MeetingUnit;
+  link authority     Organizer -> Secretary   intra Meeting;
+  link compatibility Initiator -> Participant intra Meeting;
+  link compatibility Organizer -> Secretary   intra Meeting;
 }

@@ -19,11 +19,13 @@ public sealed interface FlowElementCS {
     /** intermediate <id> : <trigger> : catching|throwing */
     record IntermediateEventCS(String id, String trigger, String direction) implements FlowElementCS {}
 
-    /** task <id> "<name>" */
-    record TaskCS(String id, String name) implements FlowElementCS {}
+    /** task <id> "<name>" pre/post ocl {[ ... ]} */
+    record TaskCS(String id, String name, List<ActivityConstraintCS> constraints,
+                  List<ActivityEffectCS> effects) implements FlowElementCS {}
 
-    /** call-activity <id> */
-    record CallActivityCS(String id) implements FlowElementCS {}
+    /** call-activity <id> pre/post ocl {[ ... ]} */
+    record CallActivityCS(String id, List<ActivityConstraintCS> constraints,
+                          List<ActivityEffectCS> effects) implements FlowElementCS {}
 
     /** gateway <id> : xor|and|or|event-based */
     record GatewayCS(String id, String kind) implements FlowElementCS {}
@@ -32,6 +34,8 @@ public sealed interface FlowElementCS {
     record SubProcessCS(
             String                id,
             String                name,          // nullable
+            List<ActivityConstraintCS> constraints,
+            List<ActivityEffectCS> effects,
             List<FlowElementCS>   flowElements,
             List<SequenceFlowCS>  sequenceFlows
     ) implements FlowElementCS {}

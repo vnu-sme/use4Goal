@@ -99,12 +99,14 @@ public final class Bpmn2BuildingVisitor extends Bpmn2BaseVisitor<Object> {
     public Object visitElemTask(Bpmn2Parser.ElemTaskContext ctx) {
         String id   = ctx.IDENT().getText();
         String name = ctx.STRING() != null ? stripQuotes(ctx.STRING().getText()) : null;
-        return new FlowElementCS.TaskCS(id, name);
+        return new FlowElementCS.TaskCS(id, name,
+                constraints(ctx.activityBehavior()), effects(ctx.activityBehavior()));
     }
 
     @Override
     public Object visitElemCallActivity(Bpmn2Parser.ElemCallActivityContext ctx) {
-        return new FlowElementCS.CallActivityCS(ctx.IDENT().getText());
+        return new FlowElementCS.CallActivityCS(ctx.IDENT().getText(),
+                constraints(ctx.activityBehavior()), effects(ctx.activityBehavior()));
     }
 
     @Override
@@ -119,7 +121,8 @@ public final class Bpmn2BuildingVisitor extends Bpmn2BaseVisitor<Object> {
         List<SequenceFlowCS> flows = ctx.sequenceFlow().stream()
                 .map(sf -> (SequenceFlowCS) visitSequenceFlow(sf))
                 .collect(Collectors.toList());
-        return new FlowElementCS.SubProcessCS(id, name, children, flows);
+        return new FlowElementCS.SubProcessCS(id, name,
+                constraints(ctx.activityBehavior()), effects(ctx.activityBehavior()), children, flows);
     }
 
     @Override
@@ -153,5 +156,41 @@ public final class Bpmn2BuildingVisitor extends Bpmn2BaseVisitor<Object> {
     private static String stripQuotes(String s) {
         if (s == null || s.length() < 2) return s;
         return s.substring(1, s.length() - 1);
+    }
+
+    private static List<ActivityConstraintCS> constraints(List<Bpmn2Parser.ActivityBehaviorContext> contexts) {
+        return contexts.stream()
+                .filter(ctx -> ctx.activityConstraint() != null)
+                .map(ctx -> ctx.activityConstraint())
+                .map(ctx -> new ActivityConstraintCS(
+                        "pre".equals(ctx.getStart().getText())
+                                ? ActivityConstraintCS.Kind.PRE
+                                : ActivityConstraintCS.Kind.POST,
+                        oclBody(ctx.oclClause().getText())))
+                .collect(Collectors.toList());
+    }
+
+    private static List<ActivityEffectCS> effects(List<Bpmn2Parser.ActivityBehaviorContext> contexts) {
+        return contexts.stream()
+                .filter(ctx -> ctx.activityEffect() != null)
+                .map(ctx -> new ActivityEffectCS(soilBody(ctx.activityEffect().soilClause().getText())))
+                .collect(Collectors.toList());
+    }
+
+    private static String oclBody(String raw) {
+        return clauseBody(raw);
+    }
+
+    private static String soilBody(String raw) {
+        return clauseBody(raw);
+    }
+
+    private static String clauseBody(String raw) {
+        int start = raw.indexOf("{[");
+        int end = raw.lastIndexOf("]}");
+        if (start >= 0 && end >= start + 2) {
+            return raw.substring(start + 2, end).strip();
+        }
+        return raw;
     }
 }

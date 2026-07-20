@@ -1,6 +1,6 @@
--- One concrete execution over mtg_shadow.use, played against mtg.istar's OCL guards.
--- Each line below is one IStarUseTraceCompiler checkpoint (state-based, not
--- event-accumulation: a later line can just as well move a goal back to Pending).
+-- Initial object state for the Meeting Scheduler case study.
+-- Process execution is not encoded here. BPMN is responsible for deciding which
+-- activities run and how the state should evolve through their pre/post OCL.
 
 meeting1 := new Meeting('meeting1');
 meeting1.detailsDecided := false;
@@ -66,34 +66,3 @@ insert (personChloe, chloePhone) into PersonPhoneContacts;
 insert (alex, nayaPhone) into SecretaryKnowsPhoneContact;
 insert (hung, baoPhone) into SecretaryKnowsPhoneContact;
 insert (hung, chloePhone) into SecretaryKnowsPhoneContact;
-
-meeting1.detailsDecided := true;
-
-xing.timetableChannel := #calendar;
-xing.timetable := #collected;
-
-amr.timetableChannel := #calendar;
-amr.timetable := #collected;
-
-naya.timetableChannel := #phone;
-naya.timetable := #collected;
-
-bao.timetableChannel := #phone;
-bao.timetable := #collected;
-
-chloe.timetableChannel := #phone;
-chloe.timetable := #collected;
-
-meeting1.timeChosen := true;
-
-xing.notified := #sent;
-amr.notified := #sent;
-naya.notified := #sent;
-bao.notified := #sent;
-chloe.notified := #sent;
-
-xing.attendance := #attended;
-amr.attendance := #attended;
-naya.attendance := #attended;
-bao.attendance := #attended;
-chloe.attendance := #unknown;
