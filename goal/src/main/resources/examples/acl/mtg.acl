@@ -1,40 +1,118 @@
-acl v2.0 MeetingSchedulerShadow {
-  enum TimetableStatus    {notRequested, requested, collected}
-  enum TimetableChannel   {none, calendar, phone}
-  enum NotificationStatus {notSent, sent}
-  enum AttendanceStatus   {unknown, attended, absent}
+acl v2.0 MeetingScheduler {
 
+  enum AvailabilityStatus {
+    notRequested,
+    requested,
+    collected
+  }
+
+  enum AvailabilityChannel {
+    none,
+    calendar,
+    phone
+  }
+
+  enum NotificationStatus {
+    notSent,
+    sent
+  }
+
+  enum AttendanceStatus {
+    unknown,
+    attended,
+    absent
+  }
+
+  enum MeetingStatus {
+    preparing,
+    scheduled,
+    completed,
+    cancelled
+  }
+
+  enum ProposedDateStatus {
+    pending,
+    accepted,
+    rejected
+  }
+
+  enum AgreementStatus {
+    pending,
+    reached,
+    rejected
+  }
+
+  /*
+   * Role cha dùng để khai báo các thuộc tính chung.
+   * Không được thêm trực tiếp vào group.
+   */
   abstract role MeetingParty {
-    name : String;
+    attribute name  : String required;
+    attribute email : String;
+    attribute phone : String;
   }
 
-  role Initiator   specializes MeetingParty
-  role Organizer   specializes MeetingParty
-  role Secretary   specializes MeetingParty
-  role Participant specializes MeetingParty {
-    hasCalendar      : Boolean;
-    timetable        : TimetableStatus;
-    timetableChannel : TimetableChannel;
-    notified         : NotificationStatus;
-    attendance       : AttendanceStatus;
+  role MeetingInitiator extends MeetingParty;
+
+  role MeetingScheduler extends MeetingParty;
+
+  role Participant extends MeetingParty {
+    attribute hasCalendar        : Boolean required mutable default false;
+    attribute availabilityStatus : AvailabilityStatus required mutable default notRequested;
+    attribute availabilityChannel: AvailabilityChannel required mutable default none;
+    attribute notificationStatus : NotificationStatus required mutable default notSent;
+    attribute attendanceStatus   : AttendanceStatus required mutable default unknown;
   }
 
-  relationship SecretaryKnowsParticipantPhone {
-    Secretary   [*] secretariesKnowingPhone;
-    Participant [*] participantsReachableByPhone;
+  /*
+   * Đối tượng nghiệp vụ trung tâm của quá trình scheduling.
+   */
+  entity Meeting {
+    attribute title          : String required;
+    attribute detailsDecided : Boolean required mutable default false;
+    attribute selectedDate   : String mutable;
+    attribute status         : MeetingStatus required mutable default preparing;
   }
 
-  group MeetingUnit {
-    detailsDecided : Boolean;
-    timeChosen     : Boolean;
-
-    Initiator    [1..1];
-    Organizer    [1..1];
-    Secretary    [0..1];
-    Participant  [2..*];
+  /*
+   * Resource "Proposed Date" trong mô hình i*.
+   */
+  entity ProposedDate {
+    attribute value  : String required;
+    attribute status : ProposedDateStatus required mutable default pending;
   }
 
-  link authority     Organizer -> Secretary   intra MeetingUnit;
-  link compatibility Initiator -> Participant intra MeetingUnit;
-  link compatibility Organizer -> Secretary   intra MeetingUnit;
+  /*
+   * Resource "Agreement" trong mô hình i*.
+   */
+  entity Agreement {
+    attribute status : AgreementStatus required mutable default pending;
+  }
+
+  group MeetingSchedulingUnit {
+
+    role MeetingInitiator [1..1];
+    role MeetingScheduler [1..1];
+    role Participant      [2..*];
+
+    entity Meeting      [1..1];
+    entity ProposedDate [0..*];
+    entity Agreement    [0..1];
+
+    link communication MeetingInitiator <-> MeetingScheduler
+      scope intra-group;
+
+    link communication MeetingScheduler <-> Participant
+      scope intra-group;
+
+    link communication MeetingInitiator <-> Participant
+      scope intra-group;
+
+    compatibility MeetingInitiator <-> Participant
+      scope intra-group;
+
+    relation CreatesMeeting creates MeetingInitiator -> Meeting
+      scope intra-group;
+    cardinality role Participant [2..*];
+  }
 }

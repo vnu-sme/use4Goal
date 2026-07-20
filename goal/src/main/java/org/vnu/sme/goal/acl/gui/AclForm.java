@@ -2,10 +2,12 @@ package org.vnu.sme.goal.acl.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 import javax.swing.JButton;
@@ -16,6 +18,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -41,7 +45,7 @@ public final class AclForm extends JDialog {
     private JButton openMenuButton;
 
     public AclForm(Session session, MainWindow mainWindow) {
-        super(mainWindow, "Open ACL v2.0", false);
+        super(mainWindow, "Open ACL", false);
         this.session = session;
         this.mainWindow = mainWindow;
         buildUI();
@@ -114,8 +118,7 @@ public final class AclForm extends JDialog {
         try {
             AclCompiler.Result result = AclCompiler.compile(Path.of(path));
             if (!result.ok()) {
-                JOptionPane.showMessageDialog(this, String.join("\n", result.errors()),
-                        "ACL v2.0 Errors", JOptionPane.ERROR_MESSAGE);
+                showErrors(result.errors());
                 status("Load failed.", C_ERR);
                 return;
             }
@@ -133,6 +136,16 @@ public final class AclForm extends JDialog {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "ACL I/O Error", JOptionPane.ERROR_MESSAGE);
             status("I/O error.", C_ERR);
         }
+    }
+
+    private void showErrors(List<String> errors) {
+        JTextArea text = new JTextArea(String.join(System.lineSeparator(), errors));
+        text.setEditable(false);
+        text.setCaretPosition(0);
+        JScrollPane scroll = new JScrollPane(text);
+        scroll.setPreferredSize(new Dimension(850, Math.min(520, 80 + errors.size() * 22)));
+        JOptionPane.showMessageDialog(this, scroll, "ACL Errors (" + errors.size() + ")",
+                JOptionPane.ERROR_MESSAGE);
     }
 
     private void showOpenMenu() {

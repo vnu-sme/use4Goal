@@ -9,7 +9,9 @@ import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Area;
 import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 
 import org.tzi.use.gui.views.diagrams.ToolTipProvider;
 import org.tzi.use.gui.views.diagrams.elements.PlaceableNode;
@@ -17,7 +19,10 @@ import org.tzi.use.gui.views.diagrams.elements.PlaceableNode;
 public final class AclDiagramNode extends PlaceableNode implements ToolTipProvider {
     private static final int H_PAD = 10;
     private static final int V_PAD = 5;
-    private static final int HEADER_EXTRA = 18;
+    private static final int ROLE_HEADER = 40;
+    private static final int ENTITY_HEADER = 48;
+    private static final int GROUP_TAB_WIDTH = 30;
+    private static final int GROUP_TAB_HEIGHT = 11;
 
     private final AclNode node;
     private final AclDiagramOptions opt;
@@ -31,9 +36,9 @@ public final class AclDiagramNode extends PlaceableNode implements ToolTipProvid
         setTextColor(opt.getNODE_LABEL_COLOR());
         setFont(font);
         setMinWidth(Math.max(90, node.w));
-        setMinHeight(Math.max(50, node.h));
+        setMinHeight(Math.max(42, node.h));
         setRequiredWidth(node.id, Math.max(90, node.w));
-        setRequiredHeight(node.id, Math.max(50, node.h));
+        setRequiredHeight(node.id, Math.max(42, node.h));
     }
 
     public AclNode node() {
@@ -61,51 +66,87 @@ public final class AclDiagramNode extends PlaceableNode implements ToolTipProvid
     }
 
     @Override
-    protected void onDraw(Graphics2D g) {
-        Graphics2D g2 = (Graphics2D) g.create();
+    protected void onDraw(Graphics2D graphics) {
+        Graphics2D g = (Graphics2D) graphics.create();
         Shape shape = shape();
-        g2.setColor(isSelected() ? getBackColorSelected() : fillColor());
-        g2.fill(shape);
+        g.setColor(isSelected() ? getBackColorSelected() : fillColor());
+        g.fill(shape);
+        g.setColor(getFrameColor());
+        g.setStroke(new BasicStroke(1.4f));
+        g.draw(shape);
 
-        g2.setColor(getTextColor());
-        g2.setFont(getFont().deriveFont(Font.PLAIN, 10f));
-        FontMetrics kindFm = g2.getFontMetrics();
-        g2.drawString(node.subtitle, (float) getX() + H_PAD, (float) getY() + V_PAD + kindFm.getAscent());
+        switch (node.kind) {
+            case ROLE -> drawRole(g);
+            case GROUP -> drawGroup(g);
+            case ENTITY -> drawEntity(g);
+        }
+        g.dispose();
+    }
 
-        Font nameFont = getFont().deriveFont(node.subtitle.startsWith("abstract") ? Font.ITALIC : Font.BOLD, 13f);
-        g2.setFont(nameFont);
-        FontMetrics nameFm = g2.getFontMetrics();
-        drawCentered(g2, node.label, new Rectangle2D.Double(getX() + H_PAD, getY() + 18, getWidth() - H_PAD * 2,
-                nameFm.getHeight() + V_PAD));
+    private void drawRole(Graphics2D g) {
+        Font nameFont = getFont().deriveFont(isAbstractRole() ? Font.BOLD | Font.ITALIC : Font.BOLD, 13f);
+        g.setColor(getTextColor());
+        g.setFont(nameFont);
+        drawCentered(g, node.label, new Rectangle2D.Double(
+                getX() + 22, getY() + V_PAD, getWidth() - 44, ROLE_HEADER - V_PAD * 2));
 
-        g2.setFont(getFont().deriveFont(Font.PLAIN, 11f));
-        FontMetrics detailFm = g2.getFontMetrics();
-        int dividerY = (int) getY() + headerHeight(g2);
-        g2.setColor(borderColor());
-        g2.setStroke(stroke());
-        g2.draw(new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight()));
-        g2.draw(new Line2D.Double(getX(), dividerY, getX() + getWidth(), dividerY));
+        if (node.details.isEmpty()) return;
+        g.setColor(getFrameColor());
+        g.draw(new Line2D.Double(getX() + 18, getY() + ROLE_HEADER,
+                getX() + getWidth() - 18, getY() + ROLE_HEADER));
+        drawDetails(g, ROLE_HEADER, 22);
+    }
 
-        g2.setColor(getTextColor());
-        int y = dividerY + V_PAD + detailFm.getAscent();
+    private void drawGroup(Graphics2D g) {
+        g.setColor(getTextColor());
+        g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
+        drawCentered(g, node.label, new Rectangle2D.Double(
+                getX() + H_PAD, getY() + GROUP_TAB_HEIGHT,
+                getWidth() - H_PAD * 2, getHeight() - GROUP_TAB_HEIGHT));
+    }
+
+    private void drawEntity(Graphics2D g) {
+        g.setColor(getTextColor());
+        g.setFont(getFont().deriveFont(Font.PLAIN, 10f));
+        g.drawString("«entity»", (float) getX() + H_PAD,
+                (float) getY() + V_PAD + g.getFontMetrics().getAscent());
+
+        g.setFont(getFont().deriveFont(Font.BOLD, 13f));
+        drawCentered(g, node.label, new Rectangle2D.Double(
+                getX() + H_PAD, getY() + 16, getWidth() - H_PAD * 2, 26));
+
+        g.setColor(getFrameColor());
+        g.draw(new Line2D.Double(getX(), getY() + ENTITY_HEADER,
+                getX() + getWidth(), getY() + ENTITY_HEADER));
+        drawDetails(g, ENTITY_HEADER, H_PAD);
+    }
+
+    private void drawDetails(Graphics2D g, int headerHeight, int horizontalPadding) {
+        g.setColor(getTextColor());
+        g.setFont(getFont().deriveFont(Font.PLAIN, 11f));
+        FontMetrics metrics = g.getFontMetrics();
+        int y = (int) getY() + headerHeight + V_PAD + metrics.getAscent();
         for (String detail : node.details) {
             if (y > getY() + getHeight() - V_PAD) break;
-            g2.drawString(clip(detail, detailFm, (int) getWidth() - H_PAD * 2), (float) getX() + H_PAD, y);
-            y += detailFm.getHeight();
+            g.drawString(clip(detail, metrics, (int) getWidth() - horizontalPadding * 2),
+                    (float) getX() + horizontalPadding, y);
+            y += metrics.getHeight();
         }
-        g2.dispose();
     }
 
     @Override
     protected void doCalculateSize(Graphics2D g) {
-        FontMetrics nameFm = g.getFontMetrics(getFont().deriveFont(Font.BOLD, 13f));
-        FontMetrics detailFm = g.getFontMetrics(getFont().deriveFont(Font.PLAIN, 11f));
-        int width = nameFm.stringWidth(node.label) + H_PAD * 2;
-        width = Math.max(width, g.getFontMetrics(getFont().deriveFont(Font.PLAIN, 10f)).stringWidth(node.subtitle) + H_PAD * 2);
+        FontMetrics nameMetrics = g.getFontMetrics(getFont().deriveFont(Font.BOLD, 13f));
+        FontMetrics detailMetrics = g.getFontMetrics(getFont().deriveFont(Font.PLAIN, 11f));
+        int width = nameMetrics.stringWidth(node.label) + H_PAD * 4;
         for (String detail : node.details) {
-            width = Math.max(width, detailFm.stringWidth(detail) + H_PAD * 2);
+            width = Math.max(width, detailMetrics.stringWidth(detail) + H_PAD * 4);
         }
-        int height = headerHeight(g) + Math.max(detailFm.getHeight(), node.details.size() * detailFm.getHeight()) + V_PAD * 2;
+        int height = switch (node.kind) {
+            case ROLE -> ROLE_HEADER + (node.details.isEmpty() ? 0 : node.details.size() * detailMetrics.getHeight() + 10);
+            case GROUP -> 62;
+            case ENTITY -> ENTITY_HEADER + Math.max(1, node.details.size()) * detailMetrics.getHeight() + 10;
+        };
         setCalculatedBounds(Math.max(node.w, width), Math.max(node.h, height));
     }
 
@@ -120,52 +161,53 @@ public final class AclDiagramNode extends PlaceableNode implements ToolTipProvid
     }
 
     private Shape shape() {
-        return new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
+        return switch (node.kind) {
+            case ROLE -> {
+                double arc = Math.min(56.0, getHeight());
+                yield new RoundRectangle2D.Double(getX(), getY(), getWidth(), getHeight(), arc, arc);
+            }
+            case GROUP -> groupShape();
+            case ENTITY -> new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
+        };
+    }
+
+    private Shape groupShape() {
+        Path2D path = new Path2D.Double();
+        path.moveTo(getX(), getY());
+        path.lineTo(getX() + GROUP_TAB_WIDTH, getY());
+        path.lineTo(getX() + GROUP_TAB_WIDTH, getY() + GROUP_TAB_HEIGHT);
+        path.lineTo(getX() + getWidth(), getY() + GROUP_TAB_HEIGHT);
+        path.lineTo(getX() + getWidth(), getY() + getHeight());
+        path.lineTo(getX(), getY() + getHeight());
+        path.closePath();
+        return path;
     }
 
     private Color fillColor() {
         return switch (node.kind) {
             case ENTITY -> opt.getColor(AclDiagramOptions.ENTITY_FILL);
             case ROLE -> opt.getColor(AclDiagramOptions.ROLE_FILL);
-            case AGENT -> opt.getColor(AclDiagramOptions.AGENT_FILL);
             case GROUP -> opt.getColor(AclDiagramOptions.GROUP_FILL);
         };
     }
 
-    private Color borderColor() {
-        return switch (node.kind) {
-            case GROUP -> new Color(154, 119, 34);
-            default -> getFrameColor();
-        };
-    }
-
-    private BasicStroke stroke() {
-        if (node.subtitle.startsWith("abstract") || node.kind == AclNodeKind.GROUP) {
-            return new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
-                    10f, new float[] {7f, 4f}, 0f);
-        }
-        return new BasicStroke(1.5f);
-    }
-
-    private int headerHeight(Graphics2D g) {
-        FontMetrics kindFm = g.getFontMetrics(getFont().deriveFont(Font.PLAIN, 10f));
-        FontMetrics nameFm = g.getFontMetrics(getFont().deriveFont(Font.BOLD, 13f));
-        return V_PAD * 2 + kindFm.getHeight() + nameFm.getHeight() + HEADER_EXTRA;
+    private boolean isAbstractRole() {
+        return node.subtitle.startsWith("abstract");
     }
 
     private static void drawCentered(Graphics2D g, String text, Rectangle2D bounds) {
-        FontMetrics fm = g.getFontMetrics();
-        String clipped = clip(text, fm, (int) bounds.getWidth());
-        float x = (float) (bounds.getX() + (bounds.getWidth() - fm.stringWidth(clipped)) / 2.0);
-        float y = (float) (bounds.getY() + (bounds.getHeight() - fm.getHeight()) / 2.0 + fm.getAscent());
+        FontMetrics metrics = g.getFontMetrics();
+        String clipped = clip(text, metrics, (int) bounds.getWidth());
+        float x = (float) (bounds.getX() + (bounds.getWidth() - metrics.stringWidth(clipped)) / 2.0);
+        float y = (float) (bounds.getY() + (bounds.getHeight() - metrics.getHeight()) / 2.0 + metrics.getAscent());
         g.drawString(clipped, x, y);
     }
 
-    private static String clip(String text, FontMetrics fm, int width) {
-        if (fm.stringWidth(text) <= width) return text;
+    private static String clip(String text, FontMetrics metrics, int width) {
+        if (metrics.stringWidth(text) <= width) return text;
         String ellipsis = "...";
-        int n = text.length();
-        while (n > 0 && fm.stringWidth(text.substring(0, n) + ellipsis) > width) n--;
-        return n <= 0 ? ellipsis : text.substring(0, n) + ellipsis;
+        int length = text.length();
+        while (length > 0 && metrics.stringWidth(text.substring(0, length) + ellipsis) > width) length--;
+        return length <= 0 ? ellipsis : text.substring(0, length) + ellipsis;
     }
 }

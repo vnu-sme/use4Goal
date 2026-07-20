@@ -1,123 +1,125 @@
 package org.vnu.sme.goal.acl.view;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.vnu.sme.goal.acl.mm.AclActor;
 import org.vnu.sme.goal.acl.mm.AclAttribute;
-import org.vnu.sme.goal.acl.mm.AclEndpoint;
-import org.vnu.sme.goal.acl.mm.AclEntity;
+import org.vnu.sme.goal.acl.mm.AclCardinality;
+import org.vnu.sme.goal.acl.mm.AclCompatibility;
 import org.vnu.sme.goal.acl.mm.AclGroup;
+import org.vnu.sme.goal.acl.mm.AclLink;
 import org.vnu.sme.goal.acl.mm.AclModel;
-import org.vnu.sme.goal.acl.mm.AclRelation;
+import org.vnu.sme.goal.acl.mm.AclRoleEntityRelation;
 
 public final class AclSpecText {
+    private static final String INDENT = "    ";
 
     private AclSpecText() {}
 
     public static String render(AclModel model) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("ACL ").append(model.version()).append(" ").append(model.name()).append("\n");
+        StringBuilder out = new StringBuilder();
+        out.append("acl ").append(model.version()).append(' ').append(model.name()).append(" {\n");
 
-        section(sb, "Enums");
-        if (model.enums().isEmpty()) {
-            none(sb);
-        } else {
-            model.enums().forEach(e -> sb.append("  enum ").append(e.name()).append(" {")
-                    .append(String.join(", ", e.literals())).append("}\n"));
-        }
+        model.enums().forEach(value -> {
+            out.append('\n').append(INDENT).append("enum ").append(value.name()).append(" {\n");
+            for (int index = 0; index < value.literals().size(); index++) {
+                out.append(INDENT.repeat(2)).append(value.literals().get(index));
+                if (index + 1 < value.literals().size()) out.append(',');
+                out.append('\n');
+            }
+            out.append(INDENT).append("}\n");
+        });
 
-        section(sb, "Entities");
-        if (model.entities().isEmpty()) {
-            none(sb);
-        } else {
-            model.entities().forEach(e -> writeTypedBlock(sb, "entity", e.name(), null, e.attributes()));
-        }
+        model.roles().forEach(role -> {
+            out.append('\n').append(INDENT).append(role.isAbstract() ? "abstract role " : "role ")
+                    .append(role.name());
+            if (!role.parentRoles().isEmpty()) out.append(" extends ").append(String.join(", ", role.parentRoles()));
+            if (role.attributes().isEmpty()) {
+                out.append(";\n");
+            } else {
+                out.append(" {\n");
+                role.attributes().forEach(attribute -> renderAttribute(out, attribute, 2));
+                out.append(INDENT).append("}\n");
+            }
+        });
 
-        section(sb, "Actors");
-        if (model.actors().isEmpty()) {
-            none(sb);
-        } else {
-            model.actors().forEach(a -> writeActor(sb, a));
-        }
+        model.entities().forEach(entity -> {
+            out.append('\n').append(INDENT).append("entity ").append(entity.name());
+            if (entity.attributes().isEmpty()) {
+                out.append(";\n");
+            } else {
+                out.append(" {\n");
+                entity.attributes().forEach(attribute -> renderAttribute(out, attribute, 2));
+                out.append(INDENT).append("}\n");
+            }
+        });
 
-        section(sb, "Relations");
-        if (model.relations().isEmpty()) {
-            none(sb);
-        } else {
-            model.relations().forEach(r -> writeRelation(sb, r));
-        }
-
-        section(sb, "Groups");
-        if (model.groups().isEmpty()) {
-            none(sb);
-        } else {
-            model.groups().forEach(g -> writeGroup(sb, g));
-        }
-
-        section(sb, "Links");
-        if (model.links().isEmpty()) {
-            none(sb);
-        } else {
-            model.links().forEach(l -> {
-                sb.append("  link ").append(l.kind()).append(" ")
-                        .append(l.sourceRole()).append(" -> ").append(l.targetRole());
-                if (l.scopeKind() != null) sb.append(" ").append(l.scopeKind()).append(" ").append(l.scopeGroup());
-                sb.append("\n");
-            });
-        }
-
-        section(sb, "Invariants");
-        if (model.invariants().isEmpty()) {
-            none(sb);
-        } else {
-            model.invariants().forEach(i -> sb.append("  invariant ").append(i.name())
-                    .append(" context ").append(i.contextType()).append("\n")
-                    .append(indent(i.oclBody(), 4)).append("\n"));
-        }
-        return sb.toString();
+        out.append('\n');
+        renderRootGroup(out, model.rootGroup());
+        out.append("}\n");
+        return out.toString();
     }
 
-    private static void writeActor(StringBuilder sb, AclActor actor) {
-        String keyword = actor.isAbstract() ? "abstract " + actor.kind() : actor.kind();
-        writeTypedBlock(sb, keyword, actor.name(), actor.specializes(), actor.attributes());
+    private static void renderAttribute(StringBuilder out, AclAttribute attribute, int depth) {
+        out.append(INDENT.repeat(depth)).append("attribute ").append(attribute.name()).append(" : ")
+                .append(attribute.type().sourceName());
+        if (attribute.required()) out.append(" required");
+        if (attribute.mutable()) out.append(" mutable");
+        attribute.defaultValue().ifPresent(value -> out.append(" default ").append(value));
+        out.append(";\n");
     }
 
-    private static void writeTypedBlock(StringBuilder sb, String keyword, String name, String specializes,
-                                        List<AclAttribute> attributes) {
-        sb.append("  ").append(keyword).append(" ").append(name);
-        if (specializes != null) sb.append(" specializes ").append(specializes);
-        sb.append("\n");
-        attributes.forEach(a -> sb.append("    ").append(a.name()).append(" : ").append(a.type()).append("\n"));
+    private static void renderRootGroup(StringBuilder out, AclGroup group) {
+        out.append(INDENT).append("group ").append(group.name()).append(" {\n");
+        renderGroupBody(out, group, 2);
+        out.append(INDENT).append("}\n");
     }
 
-    private static void writeRelation(StringBuilder sb, AclRelation relation) {
-        sb.append("  ").append(relation.kind()).append(" ").append(relation.name()).append("\n");
-        relation.endpoints().forEach(e -> sb.append("    ").append(endpoint(e)).append("\n"));
+    private static void renderSubgroup(StringBuilder out, AclGroup group, AclCardinality cardinality, int depth) {
+        out.append(INDENT.repeat(depth)).append("subgroup ").append(group.name()).append(' ')
+                .append(cardinality(cardinality)).append(" {\n");
+        renderGroupBody(out, group, depth + 1);
+        out.append(INDENT.repeat(depth)).append("}\n");
     }
 
-    private static String endpoint(AclEndpoint endpoint) {
-        return endpoint.type() + " [" + endpoint.multiplicity() + "] " + endpoint.roleName();
+    private static void renderGroupBody(StringBuilder out, AclGroup group, int depth) {
+        group.roles().forEach(value -> out.append(INDENT.repeat(depth)).append("role ")
+                .append(value.roleName()).append(' ').append(cardinality(value.cardinality())).append(";\n"));
+        group.entities().forEach(value -> out.append(INDENT.repeat(depth)).append("entity ")
+                .append(value.entityName()).append(' ').append(cardinality(value.cardinality())).append(";\n"));
+
+        group.links().forEach(value -> renderLink(out, value, depth));
+        group.compatibilities().forEach(value -> renderCompatibility(out, value, depth));
+        group.roleEntityRelations().forEach(value -> renderRoleEntityRelation(out, value, depth));
+        group.subgroups().forEach(value -> renderSubgroup(out, value.group(), value.cardinality(), depth));
+        group.cardinalityConstraints().forEach(value -> out.append(INDENT.repeat(depth)).append("cardinality ")
+                .append(value.targetKind().sourceName()).append(' ').append(value.targetName()).append(' ')
+                .append(cardinality(value.cardinality())).append(";\n"));
     }
 
-    private static void writeGroup(StringBuilder sb, AclGroup group) {
-        sb.append("  group ").append(group.name());
-        if (group.specializes() != null) sb.append(" specializes ").append(group.specializes());
-        sb.append("\n");
-        group.attributes().forEach(a -> sb.append("    ").append(a.name()).append(" : ").append(a.type()).append("\n"));
-        group.members().forEach(m -> sb.append("    ").append(m.type()).append(" [").append(m.multiplicity()).append("]\n"));
+    private static void renderLink(StringBuilder out, AclLink link, int depth) {
+        out.append(INDENT.repeat(depth)).append("link ").append(link.type().sourceName()).append(' ')
+                .append(link.fromRole()).append(" -> ").append(link.toRole()).append('\n')
+                .append(INDENT.repeat(depth + 1)).append("scope ").append(link.scope().sourceName()).append('\n')
+                .append(INDENT.repeat(depth + 1)).append("extends-subgroups ").append(link.extendsSubgroups()).append('\n')
+                .append(INDENT.repeat(depth + 1)).append("bidirectional ").append(link.bidirectional()).append(";\n");
     }
 
-    private static void section(StringBuilder sb, String title) {
-        sb.append("\n").append(title).append("\n");
+    private static void renderCompatibility(StringBuilder out, AclCompatibility compatibility, int depth) {
+        String arrow = compatibility.bidirectional() ? " <-> " : " -> ";
+        out.append(INDENT.repeat(depth)).append("compatibility ").append(compatibility.fromRole())
+                .append(arrow).append(compatibility.toRole()).append('\n')
+                .append(INDENT.repeat(depth + 1)).append("scope ").append(compatibility.scope().sourceName()).append('\n')
+                .append(INDENT.repeat(depth + 1)).append("extends-subgroups ")
+                .append(compatibility.extendsSubgroups()).append(";\n");
     }
 
-    private static void none(StringBuilder sb) {
-        sb.append("  (none)\n");
+    private static void renderRoleEntityRelation(StringBuilder out, AclRoleEntityRelation relation, int depth) {
+        out.append(INDENT.repeat(depth)).append("relation ").append(relation.name()).append(' ')
+                .append(relation.type().sourceName()).append(' ').append(relation.sourceRole().name()).append(" -> ")
+                .append(relation.targetEntity().name()).append(" scope ").append(relation.scope().sourceName())
+                .append(" extends-subgroups ").append(relation.extendsSubgroups()).append(";\n");
     }
 
-    private static String indent(String text, int spaces) {
-        String prefix = " ".repeat(spaces);
-        return text.lines().map(line -> prefix + line).collect(Collectors.joining(System.lineSeparator()));
+    private static String cardinality(AclCardinality cardinality) {
+        String max = cardinality.max().isPresent() ? Integer.toString(cardinality.max().getAsInt()) : "*";
+        return "[" + cardinality.min() + ".." + max + "]";
     }
 }

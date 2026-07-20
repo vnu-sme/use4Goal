@@ -1,23 +1,21 @@
 package org.vnu.sme.goal.acl.ast;
 
 import java.util.List;
+import java.util.Objects;
 
-public record AclModelCS(String version,
-                         String name,
+public record AclModelCS(String version, String name,
                          List<AclEnumCS> enums,
+                         List<AclRoleCS> roles,
                          List<AclEntityCS> entities,
-                         List<AclActorCS> actors,
-                         List<AclRelationCS> relations,
                          List<AclGroupCS> groups,
-                         List<AclLinkCS> links,
-                         List<AclInvariantCS> invariants) {
+                         AclSourceLocationCS location) {
     public AclModelCS {
+        Objects.requireNonNull(version, "version");
+        Objects.requireNonNull(name, "name");
         enums = List.copyOf(enums);
+        roles = List.copyOf(roles);
         entities = List.copyOf(entities);
-        actors = List.copyOf(actors);
-        relations = List.copyOf(relations);
         groups = List.copyOf(groups);
-        links = List.copyOf(links);
-        invariants = List.copyOf(invariants);
+        Objects.requireNonNull(location, "location");
     }
 }

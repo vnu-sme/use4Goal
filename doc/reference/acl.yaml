@@ -1,0 +1,386 @@
+metamodel:
+  name: ACLStructuralMetamodel
+  rootClass: StructuralSpecification
+  basis: MOISE Structural Specification
+  description: >
+    Unified structural metamodel containing the complete MOISE
+    Structural Specification plus ACL extensions for entities,
+    attributes and role-entity relations.
+
+valueTypes:
+
+  DataType:
+    description: >
+      Either a primitive type or a reference to an EnumDefinition.
+
+  IntegerOrUnlimited:
+    description: >
+      A non-negative integer or the literal unlimited.
+
+enumerations:
+
+  PrimitiveType:
+    values:
+      - String
+      - Integer
+      - Real
+      - Boolean
+
+  Scope:
+    values:
+      - intra-group
+      - inter-group
+
+  LinkType:
+    values:
+      - authority
+      - communication
+      - acquaintance
+
+  RoleEntityRelationType:
+    values:
+      - creates
+      - reads
+      - writes
+      - uses
+      - owns
+      - provides
+      - consumes
+      - participates-in
+
+classes:
+
+  StructuralSpecification:
+    attributes:
+      id:
+        type: String
+        required: true
+
+    contains:
+      enums:
+        type: EnumDefinition
+        multiplicity: "0..*"
+
+      roles:
+        type: RoleDefinition
+        multiplicity: "1..*"
+
+      entities:
+        type: EntityDefinition
+        multiplicity: "0..*"
+
+      inheritances:
+        type: RoleInheritance
+        multiplicity: "0..*"
+
+      rootGroup:
+        type: GroupSpecification
+        multiplicity: "1"
+
+  EnumDefinition:
+    attributes:
+      id:
+        type: String
+        required: true
+
+      literals:
+        type: String
+        multiplicity: "1..*"
+
+  RoleDefinition:
+    extends:
+      - CardinalityTarget
+
+    attributes:
+      id:
+        type: String
+        required: true
+
+      isAbstract:
+        type: Boolean
+        default: false
+
+    contains:
+      attributes:
+        type: AttributeDefinition
+        multiplicity: "0..*"
+
+  EntityDefinition:
+    extends:
+      - CardinalityTarget
+
+    attributes:
+      id:
+        type: String
+        required: true
+
+    contains:
+      attributes:
+        type: AttributeDefinition
+        multiplicity: "0..*"
+
+  AttributeDefinition:
+    attributes:
+      name:
+        type: String
+        required: true
+
+      type:
+        type: DataType
+        required: true
+
+      required:
+        type: Boolean
+        default: false
+
+      mutable:
+        type: Boolean
+        default: false
+
+      defaultValue:
+        type: Any
+        nullable: true
+
+  RoleInheritance:
+    references:
+      child:
+        type: RoleDefinition
+        multiplicity: "1"
+
+      parent:
+        type: RoleDefinition
+        multiplicity: "1"
+
+  GroupSpecification:
+    attributes:
+      id:
+        type: String
+        required: true
+
+    contains:
+      roles:
+        type: GroupRole
+        multiplicity: "0..*"
+
+      entities:
+        type: GroupEntity
+        multiplicity: "0..*"
+
+      subgroups:
+        type: SubGroup
+        multiplicity: "0..*"
+
+      roleRelations:
+        type: RoleRelation
+        multiplicity: "0..*"
+
+      roleEntityRelations:
+        type: RoleEntityRelation
+        multiplicity: "0..*"
+
+      cardinalityConstraints:
+        type: CardinalityConstraint
+        multiplicity: "0..*"
+
+  Cardinality:
+    attributes:
+      min:
+        type: Integer
+        default: 0
+
+      max:
+        type: IntegerOrUnlimited
+        default: unlimited
+
+  GroupRole:
+    contains:
+      cardinality:
+        type: Cardinality
+        multiplicity: "1"
+
+    references:
+      role:
+        type: RoleDefinition
+        multiplicity: "1"
+
+  GroupEntity:
+    contains:
+      cardinality:
+        type: Cardinality
+        multiplicity: "1"
+
+    references:
+      entity:
+        type: EntityDefinition
+        multiplicity: "1"
+
+  SubGroup:
+    extends:
+      - CardinalityTarget
+
+    contains:
+      cardinality:
+        type: Cardinality
+        multiplicity: "1"
+
+      childGroup:
+        type: GroupSpecification
+        multiplicity: "1"
+
+  RoleRelation:
+    abstract: true
+
+    attributes:
+      scope:
+        type: Scope
+        required: true
+
+      extendsSubgroups:
+        type: Boolean
+        default: false
+
+      bidirectional:
+        type: Boolean
+        default: false
+
+    references:
+      source:
+        type: RoleDefinition
+        multiplicity: "1"
+
+      target:
+        type: RoleDefinition
+        multiplicity: "1"
+
+  Link:
+    extends:
+      - RoleRelation
+
+    attributes:
+      type:
+        type: LinkType
+        required: true
+
+  Compatibility:
+    extends:
+      - RoleRelation
+
+  RoleEntityRelation:
+    attributes:
+      name:
+        type: String
+        required: true
+
+      type:
+        type: RoleEntityRelationType
+        required: true
+
+      scope:
+        type: Scope
+        required: true
+
+      extendsSubgroups:
+        type: Boolean
+        default: false
+
+    references:
+      sourceRole:
+        type: RoleDefinition
+        multiplicity: "1"
+
+      targetEntity:
+        type: EntityDefinition
+        multiplicity: "1"
+
+  CardinalityConstraint:
+    contains:
+      cardinality:
+        type: Cardinality
+        multiplicity: "1"
+
+    references:
+      target:
+        type: CardinalityTarget
+        multiplicity: "1"
+
+  CardinalityTarget:
+    abstract: true
+
+invariants:
+
+  - id: unique-top-level-identifiers
+    description: >
+      RoleDefinition, EntityDefinition, EnumDefinition and the root
+      GroupSpecification must have unique identifiers within a
+      StructuralSpecification.
+
+  - id: unique-enum-literals
+    description: >
+      Enum literals must be unique inside their EnumDefinition.
+
+  - id: unique-owner-attributes
+    description: >
+      Attribute names must be unique within their owning
+      RoleDefinition or EntityDefinition.
+
+  - id: valid-default-value
+    description: >
+      AttributeDefinition.defaultValue must be compatible with
+      AttributeDefinition.type.
+
+  - id: inheritance-no-self-reference
+    expression: RoleInheritance.child != RoleInheritance.parent
+
+  - id: inheritance-no-cycles
+    description: >
+      The directed graph formed by RoleInheritance relationships
+      must be acyclic.
+
+  - id: abstract-role-not-enacted
+    description: >
+      A RoleDefinition with isAbstract=true must not be referenced
+      by GroupRole.
+
+  - id: cardinality-non-negative
+    expression: Cardinality.min >= 0
+
+  - id: cardinality-valid-range
+    expression: >
+      Cardinality.max == unlimited or
+      Cardinality.max >= Cardinality.min
+
+  - id: unique-group-role
+    description: >
+      A GroupSpecification must not contain multiple GroupRole
+      objects referencing the same RoleDefinition.
+
+  - id: unique-group-entity
+    description: >
+      A GroupSpecification must not contain multiple GroupEntity
+      objects referencing the same EntityDefinition.
+
+  - id: unique-subgroup-id
+    description: >
+      Direct child groups of the same GroupSpecification must have
+      unique identifiers.
+
+  - id: unique-role-entity-relation-name
+    description: >
+      RoleEntityRelation.name must be unique within its owning
+      GroupSpecification.
+
+  - id: valid-role-relation-scope
+    description: >
+      The source and target roles of a RoleRelation must be reachable
+      from the scope of its owning GroupSpecification.
+
+  - id: valid-role-entity-relation-scope
+    description: >
+      The sourceRole and targetEntity of a RoleEntityRelation must be
+      reachable from the scope of its owning GroupSpecification.
+
+  - id: valid-cardinality-target
+    description: >
+      CardinalityConstraint.target must be a RoleDefinition,
+      EntityDefinition or SubGroup reachable from the owning
+      GroupSpecification.

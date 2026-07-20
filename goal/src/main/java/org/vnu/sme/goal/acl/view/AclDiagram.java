@@ -1,5 +1,6 @@
 package org.vnu.sme.goal.acl.view;
 
+import java.awt.Dimension;
 import java.awt.Font;
 import java.io.PrintWriter;
 import java.nio.file.Path;
@@ -69,7 +70,6 @@ public final class AclDiagram extends DiagramView {
     public void setModel(AclModel model) {
         this.model = model;
         rebuild();
-        if (model != null) loadDefaultLayout();
     }
 
     private void rebuild() {
@@ -80,6 +80,7 @@ public final class AclDiagram extends DiagramView {
             return;
         }
         AclLayout layout = AclLayoutBuilder.build(model);
+        setPreferredSize(new Dimension(layout.width, layout.height));
         Font font = Font.getFont("use.gui.view.objectdiagram", getFont());
         for (AclNode item : layout.nodes.values()) {
             AclDiagramNode node = new AclDiagramNode(item, getOptions(), font);
@@ -97,6 +98,8 @@ public final class AclDiagram extends DiagramView {
         }
         initialize();
         invalidateContent(true);
+        revalidate();
+        repaint();
     }
 
     @Override

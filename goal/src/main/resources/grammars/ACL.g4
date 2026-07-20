@@ -1,82 +1,172 @@
 grammar ACL;
 
-@header { package org.vnu.sme.goal.acl.parser; }
+@parser::header { package org.vnu.sme.goal.acl.parser; }
+@lexer::header { package org.vnu.sme.goal.acl.parser; }
 
-model : 'acl' VERSION? IDENT '{' decl* '}' EOF ;
+model
+    : 'acl' VERSION IDENT '{' topLevelDecl* '}' EOF
+    ;
 
-decl
+topLevelDecl
     : enumDecl
+    | roleDecl
     | entityDecl
-    | actorDecl
-    | relationshipDecl
-    | partOfDecl
     | groupDecl
-    | linkDecl
-    | invariantDecl
     ;
 
-enumDecl : 'enum' IDENT '{' IDENT (',' IDENT)* '}' ;
-
-entityDecl : 'entity' IDENT attributeBlock? ;
-
-actorDecl : actorKind IDENT specializes? attributeBlock? ;
-
-actorKind
-    : 'agent'
-    | 'role'
-    | 'abstract' 'role'
+enumDecl
+    : 'enum' IDENT '{' IDENT (',' IDENT)* ','? '}'
     ;
 
-specializes : 'specializes' IDENT ;
-
-attributeBlock : '{' attribute* '}' ;
-
-attribute : IDENT ':' typeRef ';' ;
-
-typeRef : IDENT ;
-
-relationshipDecl : 'relationship' IDENT endpointBlock ;
-
-partOfDecl : 'partOf' IDENT endpointBlock ;
-
-endpointBlock : '{' endpoint+ '}' ;
-
-endpoint : IDENT multiplicity IDENT ';' ;
-
-groupDecl : 'group' IDENT specializes? '{' groupItem* '}' ;
-
-groupItem
-    : attribute
-    | groupMember
+roleDecl
+    : 'abstract'? 'role' IDENT extendsClause? (';' | attributeBlock)
     ;
 
-groupMember : IDENT multiplicity ';' ;
+entityDecl
+    : 'entity' IDENT (';' | attributeBlock)
+    ;
 
-linkDecl : 'link' linkKind IDENT '->' IDENT linkScope? ';' ;
+extendsClause
+    : ('extends' | 'specializes') IDENT (',' IDENT)*
+    ;
 
-linkKind
-    : 'authority'
-    | 'communication'
-    | 'acquaintance'
-    | 'compatibility'
+attributeBlock
+    : '{' attributeDecl* '}'
+    ;
+
+attributeDecl
+    : 'attribute'? IDENT ':' IDENT attributeModifier* defaultClause? ';'
+    ;
+
+attributeModifier
+    : 'required'
+    | 'mutable'
+    ;
+
+defaultClause
+    : 'default' defaultValue
+    ;
+
+defaultValue
+    : STRING_LITERAL
+    | INT
+    | SIGNED_NUMBER
+    | BOOLEAN
     | IDENT
     ;
 
-linkScope : ('intra' | 'inter') IDENT ;
+groupDecl
+    : 'group' IDENT '{' groupItem* '}'
+    ;
 
-invariantDecl : 'invariant' IDENT 'context' IDENT oclClause ;
+groupItem
+    : roleMembership
+    | entityMembership
+    | subgroupMembership
+    | linkDecl
+    | compatibilityDecl
+    | roleEntityRelationDecl
+    | cardinalityConstraint
+    ;
 
-multiplicity : '[' bound ('..' bound)? ']' ;
+roleMembership
+    : 'role' IDENT cardinality ';'
+    ;
 
-bound : INT | '*' ;
+entityMembership
+    : 'entity' IDENT cardinality ';'
+    ;
 
-oclClause : OCL_CLAUSE ;
+subgroupMembership
+    : 'subgroup' IDENT cardinality '{' groupItem* '}'
+    ;
 
-OCL_CLAUSE : 'ocl' [ \t\r\n\f]* '{[' .*? ']}' ;
-VERSION    : 'v' [0-9]+ '.' [0-9]+ ;
-IDENT      : [a-zA-Z_][a-zA-Z0-9_]* ;
-INT        : [0-9]+ ;
+linkDecl
+    : 'link' linkType IDENT linkArrow IDENT linkOption* ';'
+    ;
+
+linkType
+    : IDENT
+    | 'authority'
+    | 'communication'
+    | 'acquaintance'
+    ;
+
+linkArrow
+    : '->'
+    | '<->'
+    ;
+
+linkOption
+    : 'scope' scopeValue
+    | 'extends-subgroups' BOOLEAN
+    | 'bidirectional' BOOLEAN
+    ;
+
+scopeValue
+    : IDENT
+    | 'intra-group'
+    | 'inter-group'
+    ;
+
+compatibilityDecl
+    : 'compatibility' IDENT linkArrow IDENT compatibilityOption* ';'
+    ;
+
+compatibilityOption
+    : 'scope' scopeValue
+    | 'extends-subgroups' BOOLEAN
+    | 'bidirectional' BOOLEAN
+    ;
+
+// ACL extension: a dedicated Role -> Entity relation.  The optional first
+// identifier is a stable relation name; when omitted the factory derives one
+// from the relation type and endpoints.
+roleEntityRelationDecl
+    : ('relation' | 'role-entity' | 'entity-link')
+      (relationType IDENT '->' IDENT
+       | IDENT relationType IDENT '->' IDENT)
+      relationOption* ';'
+    ;
+
+relationType
+    : 'creates'
+    | 'reads'
+    | 'writes'
+    | 'uses'
+    | 'owns'
+    | 'provides'
+    | 'consumes'
+    | 'participates-in'
+    ;
+
+relationOption
+    : 'scope' scopeValue
+    | 'extends-subgroups' BOOLEAN
+    ;
+
+cardinalityConstraint
+    : 'cardinality' targetKind IDENT cardinality ';'
+    ;
+
+targetKind
+    : IDENT
+    | 'role'
+    | 'entity'
+    | 'subgroup'
+    ;
+
+cardinality
+    : '[' INT '..' (INT | '*') ']'
+    ;
+
+VERSION        : 'v' [0-9]+ '.' [0-9]+ ;
+BOOLEAN        : 'true' | 'false' ;
+INT            : [0-9]+ ;
+SIGNED_NUMBER  : '-'? [0-9]+ ('.' [0-9]+)? ;
+STRING_LITERAL : '"' ('\\' . | ~["\\\r\n])* '"' ;
+IDENT          : [a-zA-Z_] [a-zA-Z0-9_]* ;
 
 WS            : [ \t\r\n\f]+ -> skip ;
-LINE_COMMENT  : '//' ~[\r\n]*  -> skip ;
-BLOCK_COMMENT : '/*' .*? '*/'  -> skip ;
+LINE_COMMENT  : '//' ~[\r\n]* -> skip ;
+BLOCK_COMMENT : '/*' .*? '*/' -> skip ;

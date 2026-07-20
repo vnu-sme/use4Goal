@@ -1,0 +1,426 @@
+<mxfile host="65bd71144e">
+    <diagram id="fydrBiRob1NL9DjTBzej" name="Page-1">
+        <mxGraphModel grid="0" page="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="1650" pageHeight="819" background="#ffffff" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="4" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Group&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;+ type: GoalType&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;fontColor=#000000;strokeColor=#000000;labelBackgroundColor=none;labelBorderColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="260.97" y="161" width="140" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Role&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;height:2px;&quot;&gt;&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;fillStyle=auto;gradientColor=default;labelBackgroundColor=none;labelBorderColor=none;strokeColor=#000000;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="265.97" y="325" width="130" height="66" as="geometry"/>
+                </mxCell>
+                <mxCell id="31" value="" style="strokeColor=#000000;endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="4" target="64" edge="1">
+                    <mxGeometry width="160" relative="1" as="geometry">
+                        <mxPoint x="520.97" y="141" as="sourcePoint"/>
+                        <mxPoint x="243.95514851485154" y="272" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="64" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;MoiseModel&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;height:2px;&quot;&gt;&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;labelBackgroundColor=none;labelBorderColor=none;strokeColor=#000000;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="45" y="213" width="139" height="44" as="geometry"/>
+                </mxCell>
+                <mxCell id="65" value="" style="strokeColor=#000000;endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="6" target="4" edge="1">
+                    <mxGeometry width="160" relative="1" as="geometry">
+                        <mxPoint x="380.5672881355932" y="285" as="sourcePoint"/>
+                        <mxPoint x="268.9993220338982" y="351" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="66" value="" style="strokeColor=#000000;endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;edgeStyle=orthogonalEdgeStyle;" parent="1" source="4" target="4" edge="1">
+                    <mxGeometry width="160" relative="1" as="geometry">
+                        <mxPoint x="354.5672881355932" y="239" as="sourcePoint"/>
+                        <mxPoint x="242.99932203389818" y="305" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="331" y="115"/>
+                            <mxPoint x="473" y="115"/>
+                            <mxPoint x="473" y="169"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="68" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Entity&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;fontColor=#000000;strokeColor=#000000;labelBackgroundColor=none;labelBorderColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="461" y="278.5" width="131" height="61" as="geometry"/>
+                </mxCell>
+                <mxCell id="69" value="" style="strokeColor=#000000;endArrow=diamondThin;endFill=0;endSize=24;html=1;rounded=0;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;edgeStyle=orthogonalEdgeStyle;" parent="1" source="68" target="4" edge="1">
+                    <mxGeometry width="160" relative="1" as="geometry">
+                        <mxPoint x="394" y="256" as="sourcePoint"/>
+                        <mxPoint x="463.97" y="263.9999999999999" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="536" y="264"/>
+                            <mxPoint x="366" y="264"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="70" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Link&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;+ linkType&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;fontColor=#000000;strokeColor=#000000;labelBackgroundColor=none;labelBorderColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="222.00000000000003" y="599" width="131" height="61" as="geometry"/>
+                </mxCell>
+                <mxCell id="72" value="" style="strokeColor=#000000;endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;edgeStyle=orthogonalEdgeStyle;" parent="1" source="6" target="6" edge="1">
+                    <mxGeometry width="160" relative="1" as="geometry">
+                        <mxPoint x="345.9950622406639" y="563.9999999999999" as="sourcePoint"/>
+                        <mxPoint x="212" y="566" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="489" y="374"/>
+                            <mxPoint x="489" y="450"/>
+                            <mxPoint x="339" y="450"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="73" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;LinkType&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp; Com&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;&amp;nbsp;&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;&amp;nbsp;&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp; Acq&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;&amp;nbsp;&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;&amp;nbsp;&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp; Aut&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;&amp;nbsp;&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp; &amp;nbsp;&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;Compat&amp;nbsp;&amp;nbsp;&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;labelBackgroundColor=none;labelBorderColor=none;strokeColor=#000000;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="58" y="510" width="80" height="89" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="acl-metamodel-page-2" name="Page-2 (ACL Metamodel)">
+        <mxGraphModel dx="1822" dy="1170" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1600" pageHeight="900" background="#ffffff" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="am2-model" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;AclModel&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;+ version: String&lt;br&gt;&amp;nbsp;+ name: String&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;fontColor=#000000;strokeColor=#000000;labelBackgroundColor=none;labelBorderColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="626" y="-110" width="170" height="74" as="geometry"/>
+                </mxCell>
+                <mxCell id="am2-enum" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;AclEnum&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;+ name: String&lt;br&gt;&amp;nbsp;+ literals: List&amp;lt;String&amp;gt;&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;fontColor=#000000;strokeColor=#000000;labelBackgroundColor=none;labelBorderColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="-261" y="122" width="170" height="74" as="geometry"/>
+                </mxCell>
+                <mxCell id="am2-entity" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;AclEntity&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;+ name: String&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;fontColor=#000000;strokeColor=#000000;labelBackgroundColor=none;labelBorderColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="9" y="294" width="150" height="54" as="geometry"/>
+                </mxCell>
+                <mxCell id="am2-actor" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;AclActor&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;+ kind: ActorKind&lt;br&gt;&amp;nbsp;+ isAbstract: Boolean&lt;br&gt;&amp;nbsp;+ name: String&lt;br&gt;&amp;nbsp;+ specializes: String&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;fontColor=#000000;strokeColor=#000000;labelBackgroundColor=none;labelBorderColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="232" y="294" width="190" height="114" as="geometry"/>
+                </mxCell>
+                <mxCell id="am2-relation" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;AclRelation&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;+ kind: RelationKind&lt;br&gt;&amp;nbsp;+ name: String&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;fontColor=#000000;strokeColor=#000000;labelBackgroundColor=none;labelBorderColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="1020" y="361" width="170" height="74" as="geometry"/>
+                </mxCell>
+                <mxCell id="am2-group" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;AclGroup&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;+ name: String&lt;br&gt;&amp;nbsp;+ specializes: String&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;fontColor=#000000;strokeColor=#000000;labelBackgroundColor=none;labelBorderColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="456" y="408" width="170" height="74" as="geometry"/>
+                </mxCell>
+                <mxCell id="am2-link" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;AclLink&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;+ kind: LinkKind&lt;br&gt;&amp;nbsp;+ sourceRole: String&lt;br&gt;&amp;nbsp;+ targetRole: String&lt;br&gt;&amp;nbsp;+ scopeKind: String&lt;br&gt;&amp;nbsp;+ scopeGroup: String&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;fontColor=#000000;strokeColor=#000000;labelBackgroundColor=none;labelBorderColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="1070" y="170" width="200" height="134" as="geometry"/>
+                </mxCell>
+                <mxCell id="am2-invariant" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;AclInvariant&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;+ name: String&lt;br&gt;&amp;nbsp;+ contextType: String&lt;br&gt;&amp;nbsp;+ oclBody: String&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;fontColor=#000000;strokeColor=#000000;labelBackgroundColor=none;labelBorderColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="1320" y="200" width="200" height="94" as="geometry"/>
+                </mxCell>
+                <mxCell id="am2-attribute" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;AclAttribute&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;+ name: String&lt;br&gt;&amp;nbsp;+ type: String&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#f5f5f5;fontColor=#000000;strokeColor=#666666;labelBackgroundColor=none;labelBorderColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="609" width="189" height="178" as="geometry"/>
+                </mxCell>
+                <mxCell id="am2-endpoint" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;AclEndpoint&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;+ type: String&lt;br&gt;&amp;nbsp;+ multiplicity: String&lt;br&gt;&amp;nbsp;+ roleName: String&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#f5f5f5;fontColor=#000000;strokeColor=#666666;labelBackgroundColor=none;labelBorderColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="810" y="528" width="190" height="94" as="geometry"/>
+                </mxCell>
+                <mxCell id="am2-groupmember" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;AclGroupMember&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;+ type: String&lt;br&gt;&amp;nbsp;+ multiplicity: String&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#f5f5f5;fontColor=#000000;strokeColor=#666666;labelBackgroundColor=none;labelBorderColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="900" y="400" width="180" height="74" as="geometry"/>
+                </mxCell>
+                <mxCell id="am2-actorkind" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;&amp;#171;enumeration&amp;#187;&lt;/b&gt;&lt;br/&gt;&lt;b&gt;ActorKind&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;margin:3px 0;line-height:14px;&quot;&gt;&amp;nbsp;agent&lt;/div&gt;&lt;div style=&quot;margin:3px 0;line-height:14px;&quot;&gt;&amp;nbsp;role&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;fontColor=#000000;strokeColor=#000000;labelBackgroundColor=none;labelBorderColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="329" y="538" width="150" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="am2-relationkind" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;&amp;#171;enumeration&amp;#187;&lt;/b&gt;&lt;br/&gt;&lt;b&gt;RelationKind&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;margin:3px 0;line-height:14px;&quot;&gt;&amp;nbsp;relationship&lt;/div&gt;&lt;div style=&quot;margin:3px 0;line-height:14px;&quot;&gt;&amp;nbsp;partOf&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;fontColor=#000000;strokeColor=#000000;labelBackgroundColor=none;labelBorderColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="732" y="681" width="170" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="am2-linkkind" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;&amp;#171;enumeration&amp;#187;&lt;/b&gt;&lt;br/&gt;&lt;b&gt;LinkKind&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;margin:3px 0;line-height:14px;&quot;&gt;&amp;nbsp;authority&lt;/div&gt;&lt;div style=&quot;margin:3px 0;line-height:14px;&quot;&gt;&amp;nbsp;communication&lt;/div&gt;&lt;div style=&quot;margin:3px 0;line-height:14px;&quot;&gt;&amp;nbsp;acquaintance&lt;/div&gt;&lt;div style=&quot;margin:3px 0;line-height:14px;&quot;&gt;&amp;nbsp;compatibility&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;fontColor=#000000;strokeColor=#000000;labelBackgroundColor=none;labelBorderColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="1070" y="620" width="200" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="am2-e-model-enum" style="strokeColor=#000000;endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="am2-enum" target="am2-model" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="-185" y="-93"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-model-enum-m" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-model-enum" connectable="0" vertex="1">
+                    <mxGeometry x="0.82" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-model-enum-n" value="enums" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-model-enum" connectable="0" vertex="1">
+                    <mxGeometry x="0.3" relative="1" as="geometry">
+                        <mxPoint y="-10" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-model-entity" style="strokeColor=#000000;endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="am2-entity" target="am2-model" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="122" y="150"/>
+                            <mxPoint x="124" y="150"/>
+                            <mxPoint x="124" y="-73"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-model-entity-m" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-model-entity" connectable="0" vertex="1">
+                    <mxGeometry x="0.82" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-model-entity-n" value="entities" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-model-entity" connectable="0" vertex="1">
+                    <mxGeometry x="0.3" relative="1" as="geometry">
+                        <mxPoint y="-10" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-model-actor" style="strokeColor=#000000;endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="am2-actor" target="am2-model" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="327" y="-59"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-model-actor-m" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-model-actor" connectable="0" vertex="1">
+                    <mxGeometry x="0.82" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-model-actor-n" value="actors" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-model-actor" connectable="0" vertex="1">
+                    <mxGeometry x="0.3" relative="1" as="geometry">
+                        <mxPoint y="-10" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-model-relation" style="strokeColor=#000000;endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="am2-relation" target="am2-model" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="735" y="150"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-model-relation-m" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-model-relation" connectable="0" vertex="1">
+                    <mxGeometry x="0.82" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-model-relation-n" value="relations" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-model-relation" connectable="0" vertex="1">
+                    <mxGeometry x="0.3" relative="1" as="geometry">
+                        <mxPoint y="-10" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-model-group" style="strokeColor=#000000;endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="am2-group" target="am2-model" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="945" y="150"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-model-group-m" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-model-group" connectable="0" vertex="1">
+                    <mxGeometry x="0.82" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-model-group-n" value="groups" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-model-group" connectable="0" vertex="1">
+                    <mxGeometry x="0.3" relative="1" as="geometry">
+                        <mxPoint y="-10" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-model-link" style="strokeColor=#000000;endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="am2-link" target="am2-model" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1170" y="130"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-model-link-m" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-model-link" connectable="0" vertex="1">
+                    <mxGeometry x="0.82" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-model-link-n" value="links" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-model-link" connectable="0" vertex="1">
+                    <mxGeometry x="0.3" relative="1" as="geometry">
+                        <mxPoint y="-10" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-model-invariant" style="strokeColor=#000000;endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="am2-invariant" target="am2-model" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1420" y="150"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-model-invariant-m" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-model-invariant" connectable="0" vertex="1">
+                    <mxGeometry x="0.82" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-model-invariant-n" value="invariants" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-model-invariant" connectable="0" vertex="1">
+                    <mxGeometry x="0.3" relative="1" as="geometry">
+                        <mxPoint y="-10" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-entity-attr" style="strokeColor=#000000;endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="am2-attribute" target="am2-entity" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="84" y="599"/>
+                            <mxPoint x="84" y="599"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-entity-attr-m" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-entity-attr" connectable="0" vertex="1">
+                    <mxGeometry x="0.82" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-entity-attr-n" value="attributes" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-entity-attr" connectable="0" vertex="1">
+                    <mxGeometry x="0.3" relative="1" as="geometry">
+                        <mxPoint y="-10" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-actor-attr" style="strokeColor=#000000;endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="am2-attribute" target="am2-actor" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="252" y="620"/>
+                            <mxPoint x="252" y="483"/>
+                            <mxPoint x="327" y="483"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-actor-attr-m" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-actor-attr" connectable="0" vertex="1">
+                    <mxGeometry x="0.82" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-actor-attr-n" value="attributes" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-actor-attr" connectable="0" vertex="1">
+                    <mxGeometry x="0.3" relative="1" as="geometry">
+                        <mxPoint y="-10" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-group-attr" style="strokeColor=#000000;endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="am2-attribute" target="am2-group" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="304" y="762"/>
+                            <mxPoint x="592" y="762"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-group-attr-m" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-group-attr" connectable="0" vertex="1">
+                    <mxGeometry x="0.82" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-group-attr-n" value="attributes" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-group-attr" connectable="0" vertex="1">
+                    <mxGeometry x="0.3" relative="1" as="geometry">
+                        <mxPoint y="-10" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-group-member" style="strokeColor=#000000;endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="am2-groupmember" target="am2-group" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="945" y="330"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-group-member-m" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-group-member" connectable="0" vertex="1">
+                    <mxGeometry x="0.82" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-group-member-n" value="members" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-group-member" connectable="0" vertex="1">
+                    <mxGeometry x="0.3" relative="1" as="geometry">
+                        <mxPoint y="-10" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-relation-endpoint" style="strokeColor=#000000;endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="am2-endpoint" target="am2-relation" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="735" y="330"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-relation-endpoint-m" value="2..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-relation-endpoint" connectable="0" vertex="1">
+                    <mxGeometry x="0.82" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-relation-endpoint-n" value="endpoints" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-relation-endpoint" connectable="0" vertex="1">
+                    <mxGeometry x="0.3" relative="1" as="geometry">
+                        <mxPoint y="-10" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-actor-spec" style="strokeColor=#000000;edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="am2-actor" target="am2-actor" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="378" y="200"/>
+                            <mxPoint x="489" y="200"/>
+                            <mxPoint x="489" y="351"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-actor-spec-l" value="specializes" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-actor-spec" connectable="0" vertex="1">
+                    <mxGeometry x="0.1" relative="1" as="geometry">
+                        <mxPoint y="-8" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-actor-spec-m1" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-actor-spec" connectable="0" vertex="1">
+                    <mxGeometry x="-0.9" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-actor-spec-m2" value="0..1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-actor-spec" connectable="0" vertex="1">
+                    <mxGeometry x="0.9" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-group-spec" style="strokeColor=#000000;edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="am2-group" target="am2-group" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="575" y="220"/>
+                            <mxPoint x="861" y="220"/>
+                            <mxPoint x="861" y="303"/>
+                            <mxPoint x="864" y="303"/>
+                            <mxPoint x="864" y="445"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-group-spec-l" value="specializes" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-group-spec" connectable="0" vertex="1">
+                    <mxGeometry x="0.1" relative="1" as="geometry">
+                        <mxPoint y="-8" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-group-spec-m1" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-group-spec" connectable="0" vertex="1">
+                    <mxGeometry x="-0.9" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-group-spec-m2" value="0..1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-group-spec" connectable="0" vertex="1">
+                    <mxGeometry x="0.9" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-actor-kind" style="strokeColor=#000000;edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="am2-actor" target="am2-actorkind" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="361" y="441"/>
+                            <mxPoint x="428" y="441"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-actor-kind-l" value="kind" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-actor-kind" connectable="0" vertex="1">
+                    <mxGeometry x="0.5" relative="1" as="geometry">
+                        <mxPoint y="-8" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-actor-kind-m" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-actor-kind" connectable="0" vertex="1">
+                    <mxGeometry x="0.85" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-relation-kind" style="strokeColor=#000000;edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="am2-relation" target="am2-relationkind" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="am2-e-relation-kind-l" value="kind" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-relation-kind" connectable="0" vertex="1">
+                    <mxGeometry x="0.5" relative="1" as="geometry">
+                        <mxPoint y="-8" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-relation-kind-m" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-relation-kind" connectable="0" vertex="1">
+                    <mxGeometry x="0.85" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-link-kind" style="strokeColor=#000000;edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="am2-link" target="am2-linkkind" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="am2-e-link-kind-l" value="kind" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-link-kind" connectable="0" vertex="1">
+                    <mxGeometry x="0.5" relative="1" as="geometry">
+                        <mxPoint y="-8" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="am2-e-link-kind-m" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="am2-e-link-kind" connectable="0" vertex="1">
+                    <mxGeometry x="0.85" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
