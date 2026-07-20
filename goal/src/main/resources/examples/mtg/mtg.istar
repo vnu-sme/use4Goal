@@ -79,14 +79,11 @@ istar MeetingScheduler {
 
   role Secretary {
     task CollectConstraintsByPhone ocl {[
-      Participant.allInstances()
-        ->select(p | p.actorMeeting = self.actorMeeting)
-        ->exists(p |
-            not p.hasCalendar
-            and p.timetable = #collected
-            and p.timetableChannel = #phone
-            and p.actorPerson.phoneContacts->exists(phone | self.knownPhoneContacts->includes(phone))
-        )
+      participant.actorMeeting = self.actorMeeting
+      and not participant.hasCalendar
+      and participant.timetable = #collected
+      and participant.timetableChannel = #phone
+      and participant.actorPerson.phoneContacts->exists(phone | self.knownPhoneContacts->includes(phone))
     ]}
   }
 

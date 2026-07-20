@@ -1,0 +1,912 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<diagram_Layout version="13">
+    <diagramOptions>
+        <autolayout>false</autolayout>
+        <antialiasing>true</antialiasing>
+        <showassocnames>false</showassocnames>
+        <showattributes>true</showattributes>
+        <showmultiplicities>false</showmultiplicities>
+        <showoperations>false</showoperations>
+        <showrolenames>true</showrolenames>
+        <showgrid>false</showgrid>
+    </diagramOptions>
+    <node height="560.0" id="Coordinator__coord" sizeCalculated="false"
+        type="IStarNode" width="764.0">
+        <name>Coordinator__coord</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>58.0</x>
+            <y>56.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="36.0" id="IncidentHandled__coord"
+        sizeCalculated="false" type="IStarNode" width="126.0">
+        <name>IncidentHandled__coord</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>154.0</x>
+            <y>126.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="44.0" id="TriageIncident__coord"
+        sizeCalculated="false" type="IStarNode" width="108.0">
+        <name>TriageIncident__coord</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>361.0</x>
+            <y>134.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="36.0" id="EvidenceCollected__coord"
+        sizeCalculated="false" type="IStarNode" width="126.0">
+        <name>EvidenceCollected__coord</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>403.0</x>
+            <y>205.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="36.0" id="EvidenceReviewed__coord__ann"
+        sizeCalculated="false" type="IStarNode" width="126.0">
+        <name>EvidenceReviewed__coord__ann</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>646.0</x>
+            <y>174.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="36.0" id="EvidenceReviewed__coord__bob"
+        sizeCalculated="false" type="IStarNode" width="126.0">
+        <name>EvidenceReviewed__coord__bob</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>668.0</x>
+            <y>269.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="36.0" id="RemediationDone__coord"
+        sizeCalculated="false" type="IStarNode" width="126.0">
+        <name>RemediationDone__coord</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>88.0</x>
+            <y>327.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="36.0" id="ServiceRestored__coord__tara"
+        sizeCalculated="false" type="IStarNode" width="126.0">
+        <name>ServiceRestored__coord__tara</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>325.0</x>
+            <y>434.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="36.0" id="ServiceRestored__coord__minh"
+        sizeCalculated="false" type="IStarNode" width="126.0">
+        <name>ServiceRestored__coord__minh</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>86.0</x>
+            <y>457.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="36.0" id="ClosureDone__coord" sizeCalculated="false"
+        type="IStarNode" width="126.0">
+        <name>ClosureDone__coord</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>402.0</x>
+            <y>325.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="36.0" id="ClosureApproved__coord__audrey"
+        sizeCalculated="false" type="IStarNode" width="126.0">
+        <name>ClosureApproved__coord__audrey</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>640.0</x>
+            <y>347.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="162.0" id="Analyst__ann" sizeCalculated="false"
+        type="IStarNode" width="164.0">
+        <name>Analyst__ann</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1128.0</x>
+            <y>70.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="44.0" id="AnalyzeEvidence__coord__ann"
+        sizeCalculated="false" type="IStarNode" width="108.0">
+        <name>AnalyzeEvidence__coord__ann</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1156.0</x>
+            <y>160.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="162.0" id="Analyst__bob" sizeCalculated="false"
+        type="IStarNode" width="164.0">
+        <name>Analyst__bob</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1336.0</x>
+            <y>70.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="44.0" id="AnalyzeEvidence__coord__bob"
+        sizeCalculated="false" type="IStarNode" width="108.0">
+        <name>AnalyzeEvidence__coord__bob</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1364.0</x>
+            <y>160.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="153.0" id="Technician__tara" sizeCalculated="false"
+        type="IStarNode" width="180.0">
+        <name>Technician__tara</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1376.0</x>
+            <y>493.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="44.0" id="RepairService__coord__tara"
+        sizeCalculated="false" type="IStarNode" width="108.0">
+        <name>RepairService__coord__tara</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1404.0</x>
+            <y>574.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="128.0" id="Technician__minh" sizeCalculated="false"
+        type="IStarNode" width="180.0">
+        <name>Technician__minh</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>990.0</x>
+            <y>558.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="44.0" id="RepairService__coord__minh"
+        sizeCalculated="false" type="IStarNode" width="108.0">
+        <name>RepairService__coord__minh</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1018.0</x>
+            <y>608.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="128.0" id="Auditor__audrey" sizeCalculated="false"
+        type="IStarNode" width="172.0">
+        <name>Auditor__audrey</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1448.0</x>
+            <y>299.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="44.0" id="AuditClosure__coord__audrey"
+        sizeCalculated="false" type="IStarNode" width="108.0">
+        <name>AuditClosure__coord__audrey</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1476.0</x>
+            <y>349.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="44.0" id="dependum:9:AnalyzeEvidence__coord__ann"
+        sizeCalculated="false" type="IStarNode" width="108.0">
+        <name>dependum:9:AnalyzeEvidence__coord__ann</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>910.0</x>
+            <y>115.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="44.0" id="dependum:11:AnalyzeEvidence__coord__bob"
+        sizeCalculated="false" type="IStarNode" width="108.0">
+        <name>dependum:11:AnalyzeEvidence__coord__bob</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>908.0</x>
+            <y>262.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="44.0" id="dependum:13:RepairService__coord__tara"
+        sizeCalculated="false" type="IStarNode" width="108.0">
+        <name>dependum:13:RepairService__coord__tara</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>984.0</x>
+            <y>415.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="44.0" id="dependum:15:RepairService__coord__minh"
+        sizeCalculated="false" type="IStarNode" width="108.0">
+        <name>dependum:15:RepairService__coord__minh</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>672.0</x>
+            <y>508.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="44.0" id="dependum:17:AuditClosure__coord__audrey"
+        sizeCalculated="false" type="IStarNode" width="108.0">
+        <name>dependum:17:AuditClosure__coord__audrey</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1196.0</x>
+            <y>324.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <edge type="IStarEdge">
+        <source>ClosureDone__coord</source>
+        <target>IncidentHandled__coord</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::ClosureDone__coord::IncidentHandled__coord::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::ClosureDone__coord::IncidentHandled__coord::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>EvidenceCollected__coord</source>
+        <target>IncidentHandled__coord</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::EvidenceCollected__coord::IncidentHandled__coord::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::EvidenceCollected__coord::IncidentHandled__coord::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>EvidenceReviewed__coord__ann</source>
+        <target>EvidenceCollected__coord</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::EvidenceReviewed__coord__ann::EvidenceCollected__coord::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::EvidenceReviewed__coord__ann::EvidenceCollected__coord::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>EvidenceReviewed__coord__bob</source>
+        <target>EvidenceCollected__coord</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::EvidenceReviewed__coord__bob::EvidenceCollected__coord::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::EvidenceReviewed__coord__bob::EvidenceCollected__coord::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>RemediationDone__coord</source>
+        <target>IncidentHandled__coord</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::RemediationDone__coord::IncidentHandled__coord::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::RemediationDone__coord::IncidentHandled__coord::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>TriageIncident__coord</source>
+        <target>IncidentHandled__coord</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::TriageIncident__coord::IncidentHandled__coord::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::TriageIncident__coord::IncidentHandled__coord::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ClosureApproved__coord__audrey</source>
+        <target>dependum:17:AuditClosure__coord__audrey</target>
+        <name>dependency</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::DEPENDENCY::ClosureApproved__coord__audrey::dependum:17:AuditClosure__coord__audrey::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::DEPENDENCY::ClosureApproved__coord__audrey::dependum:17:AuditClosure__coord__audrey::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>EvidenceReviewed__coord__ann</source>
+        <target>dependum:9:AnalyzeEvidence__coord__ann</target>
+        <name>dependency</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::DEPENDENCY::EvidenceReviewed__coord__ann::dependum:9:AnalyzeEvidence__coord__ann::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::DEPENDENCY::EvidenceReviewed__coord__ann::dependum:9:AnalyzeEvidence__coord__ann::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>EvidenceReviewed__coord__bob</source>
+        <target>dependum:11:AnalyzeEvidence__coord__bob</target>
+        <name>dependency</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::DEPENDENCY::EvidenceReviewed__coord__bob::dependum:11:AnalyzeEvidence__coord__bob::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::DEPENDENCY::EvidenceReviewed__coord__bob::dependum:11:AnalyzeEvidence__coord__bob::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ServiceRestored__coord__minh</source>
+        <target>dependum:15:RepairService__coord__minh</target>
+        <name>dependency</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::DEPENDENCY::ServiceRestored__coord__minh::dependum:15:RepairService__coord__minh::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::DEPENDENCY::ServiceRestored__coord__minh::dependum:15:RepairService__coord__minh::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ServiceRestored__coord__tara</source>
+        <target>dependum:13:RepairService__coord__tara</target>
+        <name>dependency</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::DEPENDENCY::ServiceRestored__coord__tara::dependum:13:RepairService__coord__tara::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::DEPENDENCY::ServiceRestored__coord__tara::dependum:13:RepairService__coord__tara::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>dependum:11:AnalyzeEvidence__coord__bob</source>
+        <target>AnalyzeEvidence__coord__bob</target>
+        <name>dependency</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:11:AnalyzeEvidence__coord__bob::AnalyzeEvidence__coord__bob::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:11:AnalyzeEvidence__coord__bob::AnalyzeEvidence__coord__bob::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>dependum:13:RepairService__coord__tara</source>
+        <target>RepairService__coord__tara</target>
+        <name>dependency</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:13:RepairService__coord__tara::RepairService__coord__tara::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:13:RepairService__coord__tara::RepairService__coord__tara::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>dependum:15:RepairService__coord__minh</source>
+        <target>RepairService__coord__minh</target>
+        <name>dependency</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:15:RepairService__coord__minh::RepairService__coord__minh::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:15:RepairService__coord__minh::RepairService__coord__minh::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>dependum:17:AuditClosure__coord__audrey</source>
+        <target>AuditClosure__coord__audrey</target>
+        <name>dependency</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:17:AuditClosure__coord__audrey::AuditClosure__coord__audrey::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:17:AuditClosure__coord__audrey::AuditClosure__coord__audrey::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>dependum:9:AnalyzeEvidence__coord__ann</source>
+        <target>AnalyzeEvidence__coord__ann</target>
+        <name>dependency</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:9:AnalyzeEvidence__coord__ann::AnalyzeEvidence__coord__ann::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:9:AnalyzeEvidence__coord__ann::AnalyzeEvidence__coord__ann::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ClosureApproved__coord__audrey</source>
+        <target>ClosureDone__coord</target>
+        <name>or_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::OR_REFINE::ClosureApproved__coord__audrey::ClosureDone__coord::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::OR_REFINE::ClosureApproved__coord__audrey::ClosureDone__coord::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ServiceRestored__coord__minh</source>
+        <target>RemediationDone__coord</target>
+        <name>or_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::OR_REFINE::ServiceRestored__coord__minh::RemediationDone__coord::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::OR_REFINE::ServiceRestored__coord__minh::RemediationDone__coord::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ServiceRestored__coord__tara</source>
+        <target>RemediationDone__coord</target>
+        <name>or_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::OR_REFINE::ServiceRestored__coord__tara::RemediationDone__coord::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::OR_REFINE::ServiceRestored__coord__tara::RemediationDone__coord::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+</diagram_Layout>

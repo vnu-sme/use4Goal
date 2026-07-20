@@ -1,0 +1,256 @@
+// ACL v2.0 specification for the OJS (Open Journal System) class diagram.
+//
+// Mapping notes (translation decisions from the UML class diagram):
+// - Classes with organizational/behavioral identity (played by a person)
+//   are mapped to agent/role actors: User (agent), Admin/Viewer/
+//   SectionEditor/GroupUser (role, all specializing abstract role
+//   JournalRole).
+// - Pure data/concept classes are mapped to entity.
+// - Organization is a nested Moise group hierarchy, not a single flat
+//   group: JournalGroup {Admin, Viewer, SectionGroup*} -> SectionGroup
+//   {SectionEditor, SubmissionGroup*} -> SubmissionGroup {GroupUser}. This
+//   requires AclModelFactory to accept a group name as a valid group-member
+//   type (previously only entity/actor names were accepted); that engine
+//   gap is now fixed (see AclModelFactory.java, endpointTypes).
+// - UML operations (login(), submit(), addReviewer(), notifyAuthor(), ...)
+//   have NO ACL equivalent -- ACL has no method/operation syntax -- so all
+//   of them are dropped; only attributes survive the translation.
+// - DateTime attributes (dateNotified/dateAssigned/dateDue) have no ACL
+//   primitive equivalent (only String/Integer/Real/Boolean exist); mapped
+//   to String.
+// - "abstract" (Submission.abstract) collides with the ACL keyword used in
+//   "abstract role", so the field is renamed to Submission.summary.
+// - Whole-part associations from the diagram (Journal->Section/Issue/
+//   Subscription, Section->Submission, Submission->ArticleFile/ReviewRound,
+//   Issue->PublishedArticle, ReviewRound->ReviewAssignment) use partOf;
+//   plain associations use relationship.
+// - EditAssignment/ReviewAssignment were UML association classes (they
+//   carry their own attributes on the User<->Submission/ReviewRound link).
+//   ACL relationships cannot carry attributes, so both stay entity and are
+//   wired back to User/Submission/ReviewRound via ordinary relationship/
+//   partOf declarations instead of a single attributed association.
+// - No Moise link (authority/communication/acquaintance/compatibility) is
+//   declared: the source diagram is a plain OOAD class diagram and gives no
+//   basis for inferring organizational link semantics.
+
+acl v2.0 OJS {
+
+  enum RecommendationType { accept, decline, requestRevisions, reject }
+  enum EditorDecisionType { accept, requestRevisions, reject }
+
+  entity Journal {
+    journalID   : Integer;
+    title       : String;
+    description : String;
+  }
+
+  entity Section {
+    sectionID : Integer;
+    title     : String;
+  }
+
+  entity Issue {
+    volume : Integer;
+  }
+
+  entity Submission {
+    submissionID : Integer;
+    title        : String;
+    summary      : String;
+  }
+
+  entity ReviewRound {
+    roundNumber    : Integer;
+    editorDecision : EditorDecisionType;
+  }
+
+  entity PublishedArticle {
+    publishedID : Integer;
+    DOI         : String;
+    pageNumbers : String;
+  }
+
+  entity ArticleFile {
+    fileID   : Integer;
+    fileName : String;
+    filePath : String;
+    fileType : String;
+  }
+
+  entity Subscription {
+    subscriberId : Integer;
+  }
+
+  // RBAC-style role label from the source diagram (User [*]--[*] Role).
+  // Kept as an entity: distinct from ACL's own `role` actor kind below.
+  // Field renamed role -> roleName: `role` is an ACL keyword, illegal as an
+  // attribute identifier even inside an unrelated entity.
+  entity Role {
+    roleName : String;
+  }
+
+  entity EditAssignment {
+    editorID     : Integer;
+    dateNotified : String;
+  }
+
+  entity ReviewAssignment {
+    reviewID       : Integer;
+    dateAssigned   : String;
+    dateDue        : String;
+    recommendation : RecommendationType;
+  }
+
+  agent User {
+    userID   : Integer;
+    username : String;
+    email    : String;
+    fullName : String;
+  }
+
+  abstract role JournalRole
+
+  role Admin specializes JournalRole
+
+  role Viewer specializes JournalRole
+
+  role SectionEditor specializes JournalRole {
+    sectionEditorID : Integer;
+    isActive        : Boolean;
+  }
+
+  role GroupUser specializes JournalRole {
+    title : String;
+  }
+
+  // Organizational (Moise) hierarchy: JournalGroup contains SectionGroup(s),
+  // each SectionGroup contains SubmissionGroup(s). Named with a "Group"
+  // suffix because ACL keeps entity/actor/group names in one shared
+  // namespace -- "Journal"/"Section"/"Submission" are already taken by the
+  // entities below.
+  group SubmissionGroup {
+    GroupUser [0..*];
+  }
+
+  group SectionGroup {
+    SectionEditor   [1..*];
+    SubmissionGroup [0..*];
+  }
+
+  group IssueGroup {
+    // No roles were specified for the Issue level -- left empty on purpose;
+    // tell me what belongs here if it needs its own members.
+  }
+
+  group JournalGroup {
+    Admin        [1..*];
+    Viewer       [0..*];
+    SectionGroup [1..*];
+    IssueGroup   [0..*];
+  }
+
+  partOf JournalHasSections {
+    Journal [1] journal;
+    Section [*] sections;
+  }
+
+  partOf JournalHasIssues {
+    Journal [1] journal;
+    Issue   [*] issues;
+  }
+
+  partOf JournalHasSubscriptions {
+    Journal      [1] journal;
+    Subscription [*] subscriptions;
+  }
+
+  relationship UserHoldsSubscription {
+    User         [1] subscriber;
+    Subscription [*] subscriptions;
+  }
+
+  relationship UserHasRoleLabel {
+    User [*] users;
+    Role [*] roles;
+  }
+
+  relationship UserActsAsAdmin {
+    User  [1] user;
+    Admin [*] adminships;
+  }
+
+  relationship UserActsAsViewer {
+    User   [1] user;
+    Viewer [*] viewerships;
+  }
+
+  relationship UserActsAsSectionEditor {
+    User          [1] user;
+    SectionEditor [*] sectionEditorships;
+  }
+
+  relationship SectionEditorManagesSection {
+    SectionEditor [*] editors;
+    Section       [*] sections;
+  }
+
+  partOf SectionReceivesSubmissions {
+    Section    [1] section;
+    Submission [*] submissions;
+  }
+
+  relationship UserAuthorsSubmission {
+    User       [1] author;
+    Submission [*] submissions;
+  }
+
+  partOf SubmissionHasFiles {
+    Submission  [1] submission;
+    ArticleFile [*] files;
+  }
+
+  relationship PublishedArticleUsesFile {
+    PublishedArticle [0..1] publishedArticle;
+    ArticleFile      [1]    file;
+  }
+
+  partOf IssueHasPublishedArticles {
+    Issue            [1] issue;
+    PublishedArticle [*] articles;
+  }
+
+  relationship UserHasEditAssignment {
+    User           [1] editor;
+    EditAssignment [*] assignments;
+  }
+
+  relationship EditAssignmentForSubmission {
+    EditAssignment [*] assignments;
+    Submission     [1] submission;
+  }
+
+  relationship UserHasReviewAssignment {
+    User             [1] reviewer;
+    ReviewAssignment [*] assignments;
+  }
+
+  relationship GroupUserHandlesReviewAssignment {
+    GroupUser        [*] groupUsers;
+    ReviewAssignment [*] assignments;
+  }
+
+  partOf SubmissionHasReviewRounds {
+    Submission  [1] submission;
+    ReviewRound [*] rounds;
+  }
+
+  partOf ReviewRoundHasReviewAssignments {
+    ReviewRound      [1] round;
+    ReviewAssignment [*] assignments;
+  }
+
+  relationship UserActsAsGroupUser {
+    User      [1] user;
+    GroupUser [*] memberships;
+  }
+}

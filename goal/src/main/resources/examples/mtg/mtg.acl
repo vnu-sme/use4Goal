@@ -1,0 +1,51 @@
+acl v2.0 MeetingSchedulerShadow {
+  enum TimetableStatus    {notRequested, requested, collected}
+  enum TimetableChannel   {none, calendar, phone}
+  enum NotificationStatus {notSent, sent}
+  enum AttendanceStatus   {unknown, attended, absent}
+
+  entity Person
+
+  entity PhoneContact {
+    number : String;
+  }
+
+  abstract role MeetingParty {
+    name : String;
+  }
+
+  role Initiator   specializes MeetingParty
+  role Organizer   specializes MeetingParty
+  role Secretary   specializes MeetingParty
+  role Participant specializes MeetingParty {
+    hasCalendar      : Boolean;
+    timetable        : TimetableStatus;
+    timetableChannel : TimetableChannel;
+    notified         : NotificationStatus;
+    attendance       : AttendanceStatus;
+  }
+
+  relationship PersonPhoneContacts {
+    Person       [1] phoneOwner;
+    PhoneContact [*] phoneContacts;
+  }
+
+  relationship SecretaryKnowsPhoneContact {
+    Secretary    [*] secretariesKnowingContact;
+    PhoneContact [*] knownPhoneContacts;
+  }
+
+  group Meeting {
+    detailsDecided : Boolean;
+    timeChosen     : Boolean;
+
+    Initiator    [1..1];
+    Organizer    [1..1];
+    Secretary    [0..1];
+    Participant  [2..*];
+  }
+
+  link authority     Organizer -> Secretary   intra Meeting;
+  link compatibility Initiator -> Participant intra Meeting;
+  link compatibility Organizer -> Secretary   intra Meeting;
+}

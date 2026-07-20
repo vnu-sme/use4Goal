@@ -73,7 +73,7 @@ public final class IStarUseTraceView {
         switch (status) {
             case FULFILLED -> badges.put(id, new NodeBadge(C_FULFILLED, "F", "Fulfilled"));
             case PENDING -> badges.put(id, new NodeBadge(C_PENDING, "P", "Pending"));
-            case UNKNOWN -> badges.put(id, new NodeBadge(C_UNKNOWN, "?", "Unknown"));
+            case UNKNOWN -> badges.put(id, new NodeBadge(C_UNKNOWN, "?", "Unknown / branch not used"));
         }
     }
 

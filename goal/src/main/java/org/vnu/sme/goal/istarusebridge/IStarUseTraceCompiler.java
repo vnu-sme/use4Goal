@@ -6,9 +6,12 @@ import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.tzi.use.parser.soil.SoilCompiler;
 import org.tzi.use.parser.use.USECompiler;
@@ -59,11 +62,16 @@ import org.vnu.sme.goal.istarusebridge.IStarOclConstraintCompiler.ConstraintInfo
  */
 public final class IStarUseTraceCompiler {
 
+    private static final Pattern NEW_NAMED_OBJECT =
+            Pattern.compile(".*:=\\s*new\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*\\(\\s*'([^']+)'\\s*\\).*");
+
     public record InstanceKey(String actorType, String objectName) {
         @Override public String toString() { return actorType + "#" + objectName; }
     }
 
-    public record Checkpoint(int index, String soilLine, Map<InstanceKey, IStarMarking> markings) {}
+    public record Checkpoint(int index, String soilLine, Map<InstanceKey, IStarMarking> markings,
+                             MSystemState state, Map<String, ConstraintInfo> constraints,
+                             Map<String, MClass> actorClasses) {}
 
     public record Result(GoalModel model, MModel useModel, List<Checkpoint> checkpoints, List<String> errors) {
         public boolean ok() { return errors.isEmpty(); }
@@ -112,6 +120,7 @@ public final class IStarUseTraceCompiler {
         }
 
         List<Checkpoint> checkpoints = new ArrayList<>();
+        Map<String, Integer> objectOrder = new LinkedHashMap<>();
         int idx = 0;
         for (String line : soilLines) {
             idx++;
@@ -125,14 +134,16 @@ public final class IStarUseTraceCompiler {
             }
             try {
                 stmt.execute(new SoilEvaluationContext(system), new StatementEvaluationResult(stmt));
+                rememberCreatedObjectOrder(line, objectOrder);
             } catch (Exception ex) {
                 errors.add("soil line " + idx + " '" + line + "': " + ex);
                 break;
             }
 
             Map<InstanceKey, IStarMarking> markings =
-                    computeCheckpoint(gm, resolution, constraints, actorClasses, system.state());
-            checkpoints.add(new Checkpoint(idx, line, markings));
+                    computeCheckpoint(gm, resolution, constraints, actorClasses, system.state(), objectOrder);
+            checkpoints.add(new Checkpoint(idx, line, markings,
+                    new MSystemState("checkpoint#" + idx, system.state()), constraints, actorClasses));
         }
 
         return new Result(gm, useModel, checkpoints, errors);
@@ -140,12 +151,14 @@ public final class IStarUseTraceCompiler {
 
     private static Map<InstanceKey, IStarMarking> computeCheckpoint(
             GoalModel gm, ContextResolution resolution, Map<String, ConstraintInfo> constraints,
-            Map<String, MClass> actorClasses, MSystemState state) {
+            Map<String, MClass> actorClasses, MSystemState state, Map<String, Integer> objectOrder) {
 
         Map<InstanceKey, IStarMarking> markings = new LinkedHashMap<>();
         Map<String, List<MObject>> instancesByActorType = new LinkedHashMap<>();
         for (var e : actorClasses.entrySet()) {
             List<MObject> objs = new ArrayList<>(state.objectsOfClass(e.getValue()));
+            objs.sort(Comparator.comparingInt((MObject o) -> objectOrder.getOrDefault(o.name(), Integer.MAX_VALUE))
+                    .thenComparing(MObject::name));
             instancesByActorType.put(e.getKey(), objs);
             for (MObject o : objs) {
                 markings.put(new InstanceKey(e.getKey(), o.name()), IStarMarking.initial(gm));
@@ -186,6 +199,12 @@ public final class IStarUseTraceCompiler {
         broadcastSingletonActorFacts(gm, resolution, markings, instancesByActorType);
         markings.replaceAll((key, marking) -> IStarPropagation.closePending(gm, marking));
         return markings;
+    }
+
+    private static void rememberCreatedObjectOrder(String soilLine, Map<String, Integer> objectOrder) {
+        Matcher matcher = NEW_NAMED_OBJECT.matcher(soilLine);
+        if (!matcher.matches()) return;
+        objectOrder.putIfAbsent(matcher.group(2), objectOrder.size());
     }
 
     /**
@@ -235,7 +254,11 @@ public final class IStarUseTraceCompiler {
         VarBindings vars = new VarBindings();
         EvalContext ctx = new SimpleEvalContext(state, state, vars);
         ctx.pushVarBinding("self", self.value());
-        var v = c.expr().eval(ctx);
-        return v instanceof BooleanValue bv && bv.isTrue();
+        try {
+            var v = c.expr().eval(ctx);
+            return v instanceof BooleanValue bv && bv.isTrue();
+        } catch (RuntimeException ex) {
+            return false;
+        }
     }
 }

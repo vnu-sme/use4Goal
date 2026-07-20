@@ -9,24 +9,104 @@ model MeetingScheduler {
     lane Initiator "Initiator" {
       start start_meeting : none
       task  decideMeetingDetails "Decide Meeting Details"
+        do soil {[
+          meeting1.detailsDecided := true;
+        ]}
+        post ocl {[
+          Meeting.allInstances()->exists(m | m.detailsDecided)
+        ]}
     }
 
     lane Organizer "Organizer" {
       gateway gw_collect      : xor
       task    checkCalendar        "Check Participant Calendar"
+        pre ocl {[
+          Meeting.allInstances()->exists(m | m.detailsDecided)
+        ]}
+        do soil {[
+          xing.timetableChannel := #calendar;
+          xing.timetable := #collected;
+          amr.timetableChannel := #calendar;
+          amr.timetable := #collected;
+        ]}
+        post ocl {[
+          Participant.allInstances()
+            ->select(p | p.hasCalendar)
+            ->forAll(p | p.timetable = #collected and p.timetableChannel = #calendar)
+        ]}
       task    requestSecretaryCall "Request Secretary Call"
+        pre ocl {[
+          Meeting.allInstances()->exists(m | m.detailsDecided)
+          and Participant.allInstances()->exists(p | not p.hasCalendar)
+        ]}
+        do soil {[
+          naya.timetable := #requested;
+          bao.timetable := #requested;
+          chloe.timetable := #requested;
+        ]}
       gateway gw_collect_join : xor
       task    chooseTimeAndDate    "Choose Time And Date"
+        pre ocl {[
+          Participant.allInstances()->forAll(p | p.timetable = #collected)
+        ]}
+        do soil {[
+          meeting1.timeChosen := true;
+        ]}
+        post ocl {[
+          Meeting.allInstances()->exists(m | m.timeChosen)
+        ]}
       task    announceMeeting      "Announce Meeting"
+        pre ocl {[
+          Meeting.allInstances()->exists(m | m.timeChosen)
+        ]}
+        do soil {[
+          xing.notified := #sent;
+          amr.notified := #sent;
+          naya.notified := #sent;
+          bao.notified := #sent;
+          chloe.notified := #sent;
+        ]}
+        post ocl {[
+          Participant.allInstances()->forAll(p | p.notified = #sent)
+        ]}
       end     end_meeting : none
     }
 
     lane Secretary "Secretary" {
       task collectConstraintsByPhone "Collect Constraints By Phone"
+        pre ocl {[
+          Participant.allInstances()->exists(p | not p.hasCalendar)
+        ]}
+        do soil {[
+          naya.timetableChannel := #phone;
+          naya.timetable := #collected;
+          bao.timetableChannel := #phone;
+          bao.timetable := #collected;
+          chloe.timetableChannel := #phone;
+          chloe.timetable := #collected;
+        ]}
+        post ocl {[
+          Participant.allInstances()
+            ->select(p | not p.hasCalendar)
+            ->forAll(p | p.timetable = #collected and p.timetableChannel = #phone)
+        ]}
     }
 
     lane Participant "Participant" {
       task participate "Participate"
+        pre ocl {[
+          Participant.allInstances()->forAll(p | p.notified = #sent)
+        ]}
+        do soil {[
+          xing.attendance := #attended;
+          amr.attendance := #attended;
+          naya.attendance := #attended;
+          bao.attendance := #attended;
+          chloe.attendance := #attended;
+        ]}
+        post ocl {[
+          Participant.allInstances()->forAll(p | p.attendance = #attended)
+        ]}
     }
 
     flow start_meeting -> decideMeetingDetails

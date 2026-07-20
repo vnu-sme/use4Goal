@@ -1,99 +1,68 @@
--- One concrete execution over mtg_shadow.use, played against mtg.istar's OCL guards.
--- Each line below is one IStarUseTraceCompiler checkpoint (state-based, not
--- event-accumulation: a later line can just as well move a goal back to Pending).
+-- Initial object state for the Meeting Scheduler case study.
+-- Process execution is not encoded here. BPMN is responsible for deciding which
+-- activities run and how the state should evolve through their pre/post OCL.
 
 meeting1 := new Meeting('meeting1');
 meeting1.detailsDecided := false;
 meeting1.timeChosen := false;
 
-abdul := new Person('abdul');
-matilda := new Person('matilda');
-alex := new Person('alex');
-hung := new Person('hung');
-xing := new Person('xing');
-amr := new Person('amr');
-naya := new Person('naya');
-bao := new Person('bao');
-chloe := new Person('chloe');
+personAbdul := new Person('personAbdul');
+personMatilda := new Person('personMatilda');
+personAlex := new Person('personAlex');
+personHung := new Person('personHung');
+personXing := new Person('personXing');
+personAmr := new Person('personAmr');
+personNaya := new Person('personNaya');
+personBao := new Person('personBao');
+personChloe := new Person('personChloe');
 
-init1 := new Initiator('init1') between (meeting1, abdul);
-org1 := new Organizer('org1') between (meeting1, matilda);
-sec1 := new Secretary('sec1') between (meeting1, alex);
-sec2 := new Secretary('sec2') between (meeting1, hung);
+abdul := new Initiator('abdul') between (meeting1, personAbdul);
+matilda := new Organizer('matilda') between (meeting1, personMatilda);
+alex := new Secretary('alex') between (meeting1, personAlex);
+hung := new Secretary('hung') between (meeting1, personHung);
 
-px := new Participant('px') between (meeting1, xing);
-pa := new Participant('pa') between (meeting1, amr);
-pn := new Participant('pn') between (meeting1, naya);
-pb := new Participant('pb') between (meeting1, bao);
-pc := new Participant('pc') between (meeting1, chloe);
+xing := new Participant('xing') between (meeting1, personXing);
+amr := new Participant('amr') between (meeting1, personAmr);
+naya := new Participant('naya') between (meeting1, personNaya);
+bao := new Participant('bao') between (meeting1, personBao);
+chloe := new Participant('chloe') between (meeting1, personChloe);
 
-px.hasCalendar := true;
-pa.hasCalendar := true;
-pn.hasCalendar := false;
-pb.hasCalendar := false;
-pc.hasCalendar := false;
+xing.hasCalendar := true;
+amr.hasCalendar := true;
+naya.hasCalendar := false;
+bao.hasCalendar := false;
+chloe.hasCalendar := false;
 
-px.timetable := #notRequested;
-pa.timetable := #notRequested;
-pn.timetable := #notRequested;
-pb.timetable := #notRequested;
-pc.timetable := #notRequested;
+xing.timetable := #notRequested;
+amr.timetable := #notRequested;
+naya.timetable := #notRequested;
+bao.timetable := #notRequested;
+chloe.timetable := #notRequested;
 
-px.timetableChannel := #none;
-pa.timetableChannel := #none;
-pn.timetableChannel := #none;
-pb.timetableChannel := #none;
-pc.timetableChannel := #none;
+xing.timetableChannel := #none;
+amr.timetableChannel := #none;
+naya.timetableChannel := #none;
+bao.timetableChannel := #none;
+chloe.timetableChannel := #none;
 
-px.notified := #notSent;
-pa.notified := #notSent;
-pn.notified := #notSent;
-pb.notified := #notSent;
-pc.notified := #notSent;
+xing.notified := #notSent;
+amr.notified := #notSent;
+naya.notified := #notSent;
+bao.notified := #notSent;
+chloe.notified := #notSent;
 
-px.attendance := #unknown;
-pa.attendance := #unknown;
-pn.attendance := #unknown;
-pb.attendance := #unknown;
-pc.attendance := #unknown;
+xing.attendance := #unknown;
+amr.attendance := #unknown;
+naya.attendance := #unknown;
+bao.attendance := #unknown;
+chloe.attendance := #unknown;
 
 nayaPhone := new PhoneContact('nayaPhone');
 baoPhone := new PhoneContact('baoPhone');
 chloePhone := new PhoneContact('chloePhone');
-insert (naya, nayaPhone) into PersonPhoneContacts;
-insert (bao, baoPhone) into PersonPhoneContacts;
-insert (chloe, chloePhone) into PersonPhoneContacts;
-insert (sec1, nayaPhone) into SecretaryKnowsPhoneContact;
-insert (sec2, baoPhone) into SecretaryKnowsPhoneContact;
-insert (sec2, chloePhone) into SecretaryKnowsPhoneContact;
-
-meeting1.detailsDecided := true;
-
-px.timetableChannel := #calendar;
-px.timetable := #collected;
-
-pa.timetableChannel := #calendar;
-pa.timetable := #collected;
-
-pn.timetableChannel := #phone;
-pn.timetable := #collected;
-
-pb.timetableChannel := #phone;
-pb.timetable := #collected;
-
-pc.timetableChannel := #phone;
-pc.timetable := #collected;
-
-meeting1.timeChosen := true;
-
-px.notified := #sent;
-pa.notified := #sent;
-pn.notified := #sent;
-pb.notified := #sent;
-pc.notified := #sent;
-
-px.attendance := #attended;
-pa.attendance := #attended;
-pn.attendance := #attended;
-pb.attendance := #attended;
-pc.attendance := #unknown;
+insert (personNaya, nayaPhone) into PersonPhoneContacts;
+insert (personBao, baoPhone) into PersonPhoneContacts;
+insert (personChloe, chloePhone) into PersonPhoneContacts;
+insert (alex, nayaPhone) into SecretaryKnowsPhoneContact;
+insert (hung, baoPhone) into SecretaryKnowsPhoneContact;
+insert (hung, chloePhone) into SecretaryKnowsPhoneContact;

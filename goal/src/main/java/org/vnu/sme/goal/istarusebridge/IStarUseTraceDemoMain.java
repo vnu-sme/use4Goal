@@ -7,8 +7,7 @@ import org.vnu.sme.goal.conformance.semantics.GoalTaskStatus;
 import org.vnu.sme.goal.istarusebridge.view.IStarUseTraceView;
 
 /**
- * Runnable end-to-end demonstration of the .istar + .use + .soil bridge, using
- * goal/src/main/resources/examples/mtg/{mtg.istar,mtg_shadow.use,mtg.soil}.
+ * Runnable end-to-end demonstration of the .istar + .use + .soil bridge.
  *
  * <p>Run (after {@code mvn -pl goal compile}), from the repository root:
  * <pre>
@@ -19,11 +18,26 @@ import org.vnu.sme.goal.istarusebridge.view.IStarUseTraceView;
 public final class IStarUseTraceDemoMain {
 
     public static void main(String[] args) throws Exception {
-        Path dir = Path.of(args.length > 0 ? args[0] : "goal/src/main/resources/examples/mtg");
         boolean printSpec = List.of(args).contains("--spec");
+        List<String> positional = List.of(args).stream()
+                .filter(a -> !a.equals("--spec"))
+                .toList();
 
-        IStarUseTraceCompiler.Result result = IStarUseTraceCompiler.compile(
-                dir.resolve("mtg.istar"), dir.resolve("mtg_shadow.use"), dir.resolve("mtg.soil"));
+        Path istarFile;
+        Path useFile;
+        Path soilFile;
+        if (positional.size() == 3) {
+            istarFile = Path.of(positional.get(0));
+            useFile = Path.of(positional.get(1));
+            soilFile = Path.of(positional.get(2));
+        } else {
+            Path dir = Path.of(positional.size() > 0 ? positional.get(0) : "goal/src/main/resources/examples/mtg");
+            istarFile = dir.resolve("mtg.istar");
+            useFile = dir.resolve("mtg_shadow.use");
+            soilFile = dir.resolve("mtg.soil");
+        }
+
+        IStarUseTraceCompiler.Result result = IStarUseTraceCompiler.compile(istarFile, useFile, soilFile);
 
         if (!result.ok()) {
             result.errors().forEach(System.err::println);

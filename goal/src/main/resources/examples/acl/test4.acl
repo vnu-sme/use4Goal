@@ -1,0 +1,43 @@
+acl v2.0 DocumentReviewShadow {
+  entity Document {
+    complete : Boolean;
+  }
+
+  entity Attachment {
+    scanned : Boolean;
+  }
+
+  abstract role ReviewParty {
+    name : String;
+  }
+
+  role Author specializes ReviewParty {
+    submitted : Boolean;
+  }
+
+  role Reviewer specializes ReviewParty {
+    approved : Boolean;
+  }
+
+  partOf DocumentAttachments {
+    Document   [1] document;
+    Attachment [*] attachments;
+  }
+
+  relationship ReviewerReadsDocument {
+    Reviewer [*] reviewers;
+    Document [*] documents;
+  }
+
+  group ReviewCase {
+    reviewStarted : Boolean;
+    reviewClosed  : Boolean;
+
+    Author     [1..1];
+    Reviewer   [1..*];
+    Document   [1..1];
+    Attachment [0..*];
+  }
+
+  link communication Author -> Reviewer intra ReviewCase;
+}

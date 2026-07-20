@@ -1,0 +1,33 @@
+acl v2.0 SimpleDelegationShadow {
+  entity Ticket {
+    open : Boolean;
+    done : Boolean;
+  }
+
+  abstract role Worker {
+    name : String;
+  }
+
+  role Requester specializes Worker {
+    acceptedResult : Boolean;
+  }
+
+  role Assignee specializes Worker {
+    acceptedTicket : Boolean;
+  }
+
+  relationship RequesterAssignsTicket {
+    Requester [1] requester;
+    Assignee  [*] assignees;
+  }
+
+  group TicketCase {
+    prioritySet : Boolean;
+
+    Requester [1..1];
+    Assignee  [1..*];
+    Ticket    [1..1];
+  }
+
+  link communication Requester -> Assignee intra TicketCase;
+}
