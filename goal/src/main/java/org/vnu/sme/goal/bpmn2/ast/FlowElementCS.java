@@ -10,30 +10,37 @@ import java.util.List;
  */
 public sealed interface FlowElementCS {
 
-    /** start <id> : <trigger> [ocl {[ ... ]}] */
-    record StartEventCS(String id, String trigger, String oclSource) implements FlowElementCS {}
+    /** start &lt;id&gt; { name/trigger/pre/post properties } */
+    record StartEventCS(String id, String name, String trigger,
+                        List<ActivityConstraintCS> constraints) implements FlowElementCS {}
 
-    /** end <id> : <trigger> [ocl {[ ... ]}] */
-    record EndEventCS(String id, String trigger, String oclSource) implements FlowElementCS {}
+    /** end &lt;id&gt; { name/trigger/pre/post properties } */
+    record EndEventCS(String id, String name, String trigger,
+                      List<ActivityConstraintCS> constraints) implements FlowElementCS {}
 
-    /** intermediate <id> : <trigger> : catching|throwing [ocl {[ ... ]}] */
-    record IntermediateEventCS(String id, String trigger, String direction, String oclSource) implements FlowElementCS {}
+    /** intermediate &lt;id&gt; { name/trigger/direction/pre/post properties } */
+    record IntermediateEventCS(String id, String name, String trigger, String direction,
+                               List<ActivityConstraintCS> constraints) implements FlowElementCS {}
 
-    /** task <id> "<name>" [ocl {[ ... ]}] */
-    record TaskCS(String id, String name, String oclSource) implements FlowElementCS {}
+    /** task &lt;id&gt; { optional name/pre/post properties } */
+    record TaskCS(String id, String name, List<ActivityConstraintCS> constraints,
+                  String effectSource) implements FlowElementCS {}
 
-    /** call-activity <id> [ocl {[ ... ]}] */
-    record CallActivityCS(String id, String oclSource) implements FlowElementCS {}
+    /** call-activity &lt;id&gt; { optional name/pre/post properties } */
+    record CallActivityCS(String id, String name,
+                          List<ActivityConstraintCS> constraints, String effectSource) implements FlowElementCS {}
 
-    /** gateway <id> : xor|and|or|event-based [ocl {[ ... ]}] */
-    record GatewayCS(String id, String kind, String oclSource) implements FlowElementCS {}
+    /** gateway &lt;id&gt; { optional name, required type, optional pre/post } */
+    record GatewayCS(String id, String name, String kind,
+                     List<ActivityConstraintCS> constraints) implements FlowElementCS {}
 
-    /** subprocess <id> "<name>" { ... } */
+    /** subprocess &lt;id&gt; { name/pre/post and nested process content } */
     record SubProcessCS(
             String                id,
             String                name,          // nullable
+            List<ActivityConstraintCS> constraints,
+            String                effectSource,
             List<FlowElementCS>   flowElements,
-            List<SequenceFlowCS>  sequenceFlows,
-            String                oclSource      // nullable
+            List<SequenceFlowCS>  sequenceFlows
     ) implements FlowElementCS {}
 }

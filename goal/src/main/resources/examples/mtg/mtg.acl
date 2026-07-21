@@ -1,23 +1,33 @@
-acl v2.0 MeetingSchedulerShadow {
-  enum TimetableStatus    {notRequested, requested, collected}
-  enum TimetableChannel   {none, calendar, phone}
-  enum NotificationStatus {notSent, sent}
-  enum AttendanceStatus   {unknown, attended, absent}
+// Migrated to the Class/Relationship-based ACL grammar. Behavioral role links
+// from the old language have no structural equivalent and were removed:
+// - link authority Organizer -> Secretary: authority/communication/
+//   acquaintance links were removed from ACL (behavioral, not structural).
+// Structural relations involving an Entity are represented explicitly by
+// association, aggregation, or composition declarations.
 
-  entity Person
+acl v2.0 MeetingSchedulerShadow {
+  enum TimetableStatus    { notRequested, requested, collected }
+  enum TimetableChannel   { none, calendar, phone }
+  enum NotificationStatus { notSent, sent }
+  enum AttendanceStatus   { unknown, attended, absent }
 
   entity PhoneContact {
     number : String;
+  }
+
+  entity Meeting {
+    detailsDecided : Boolean;
+    timeChosen     : Boolean;
   }
 
   abstract role MeetingParty {
     name : String;
   }
 
-  role Initiator   specializes MeetingParty
-  role Organizer   specializes MeetingParty
-  role Secretary   specializes MeetingParty
-  role Participant specializes MeetingParty {
+  role Initiator   extends MeetingParty;
+  role Organizer   extends MeetingParty;
+  role Secretary   extends MeetingParty;
+  role Participant extends MeetingParty {
     hasCalendar      : Boolean;
     timetable        : TimetableStatus;
     timetableChannel : TimetableChannel;
@@ -25,27 +35,34 @@ acl v2.0 MeetingSchedulerShadow {
     attendance       : AttendanceStatus;
   }
 
-  relationship PersonPhoneContacts {
-    Person       [1] phoneOwner;
-    PhoneContact [*] phoneContacts;
+  group MeetingUnit {
+    role Initiator    [1..1];
+    role Organizer    [1..1];
+    role Secretary    [0..1];
+    role Participant  [2..*];
+
+    compatibility Initiator <-> Participant
+      scope intra-group
+      type compatible;
+
+    compatibility Organizer <-> Secretary
+      scope intra-group
+      type compatible;
+
   }
 
-  relationship SecretaryKnowsPhoneContact {
-    Secretary    [*] secretariesKnowingContact;
-    PhoneContact [*] knownPhoneContacts;
+  association know {
+    MeetingParty [1];
+    PhoneContact [*];
   }
 
-  group Meeting {
-    detailsDecided : Boolean;
-    timeChosen     : Boolean;
-
-    Initiator    [1..1];
-    Organizer    [1..1];
-    Secretary    [0..1];
-    Participant  [2..*];
+  association meetingUnitMeetings {
+    MeetingUnit [1];
+    Meeting [*];
   }
 
-  link authority     Organizer -> Secretary   intra Meeting;
-  link compatibility Initiator -> Participant intra Meeting;
-  link compatibility Organizer -> Secretary   intra Meeting;
+  composition phoneContacts {
+    MeetingParty [1];
+    PhoneContact [*];
+  }
 }

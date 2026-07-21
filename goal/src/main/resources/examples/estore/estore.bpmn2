@@ -34,44 +34,33 @@
 
 model EStore {
 
-  pool StorePool "Store" {
-    lane FrontStoreLane "Front Store" {
-      start start_store : none
-      task  customerIdentification    "Customer Identification"
-      task  askForOrderProcessing     "Ask for Order Processing"
-      task  askForPaymentMethod       "Ask for Payment Method"       // [CP]
-      task  verifyPaymentInformation  "Verify Payment Information"
-    }
-    lane BackStoreLane "Back Store" {
-      gateway gw_customer_type : xor
-      task    customerProfileRetrieve "Customer Profile Retrieve"    // [CPR]
-      gateway gw_trust_choice : or
-      task    creditCardChecking      "Credit Card Checking"         // [CCR]
-      task    customerRecordsChecking "Customer Records Checking"    // [CRC]
-      gateway gw_trust_join : or
-      task    approveOrder            "Approve Order"                // [AO]
+  pool StorePool {
+    name "Store"
+    lane FrontStoreLane {
+      name "Front Store"
+      start start_store { trigger none }      task customerIdentification { name "Customer Identification" }      task askForOrderProcessing { name "Ask for Order Processing" }      task askForPaymentMethod { name "Ask for Payment Method" }
+      task verifyPaymentInformation { name "Verify Payment Information" }    }
+    lane BackStoreLane {
+      name "Back Store"
+      gateway gw_customer_type { type xor }      task customerProfileRetrieve { name "Customer Profile Retrieve" }
+      gateway gw_trust_choice { type or }      task creditCardChecking { name "Credit Card Checking" }
+      task customerRecordsChecking { name "Customer Records Checking" }
+      gateway gw_trust_join { type or }      task approveOrder { name "Approve Order" }
 
-      gateway gw_payment_split : and
-      task    fraudDetection          "Fraud Detection"
-      task    creditCard              "Credit Card"                  // [EP]
-      task    debitCard               "Debit Card"                   // [EP]
-      task    moneyOrder              "Money Order"                  // [IPP]
-      gateway gw_payment_join : and
-      task    applyDiscount           "Apply Discount"               // [AD]
-      task    buildAndPackageOrder    "Build and Package Order"      // [BPO]
+      gateway gw_payment_split { type and }      task fraudDetection { name "Fraud Detection" }      task creditCard { name "Credit Card" }
+      task debitCard { name "Debit Card" }
+      task moneyOrder { name "Money Order" }
+      gateway gw_payment_join { type and }      task applyDiscount { name "Apply Discount" }
+      task buildAndPackageOrder { name "Build and Package Order" }
 
-      gateway gw_ship_bill : xor
-      task    shipment                "Shipment"                     // [SO]
-      task    sendReceipt             "Send Receipt"                 // [BL]
-      end     end_store : none
-    }
+      gateway gw_ship_bill { type xor }      task shipment { name "Shipment" }
+      task sendReceipt { name "Send Receipt" }
+      end end_store { trigger none }    }
 
     flow start_store              -> customerIdentification
     flow customerIdentification   -> askForOrderProcessing
     flow askForOrderProcessing    -> gw_customer_type
-    flow gw_customer_type         -> customerProfileRetrieve : "trusted customer"
-    flow gw_customer_type         -> gw_trust_choice          : "any customer"
-    flow gw_trust_choice          -> creditCardChecking
+    flow gw_customer_type -> customerProfileRetrieve { name "trusted customer" }    flow gw_customer_type -> gw_trust_choice { name "any customer" }    flow gw_trust_choice          -> creditCardChecking
     flow gw_trust_choice          -> customerRecordsChecking
     flow customerProfileRetrieve  -> gw_trust_join
     flow creditCardChecking       -> gw_trust_join
@@ -91,22 +80,13 @@ model EStore {
     flow gw_payment_join          -> applyDiscount
     flow applyDiscount            -> buildAndPackageOrder
     flow buildAndPackageOrder     -> gw_ship_bill
-    flow gw_ship_bill             -> shipment  : "ship"
-    flow gw_ship_bill             -> sendReceipt : "bill"
-    flow shipment                 -> end_store
+    flow gw_ship_bill -> shipment { name "ship" }    flow gw_ship_bill -> sendReceipt { name "bill" }    flow shipment                 -> end_store
     flow sendReceipt              -> end_store
   }
 
-  pool CustomerPool "Customer" {
-    start   start_customer : none
-    task    sendCredentialInformation "Send Credential Information"
-    task    submitTheOrder            "Submit the Order"
-    task    selectPaymentMethod       "Select Payment Method"
-    gateway gw_receive : and
-    task    receiveItems              "Receive Items"
-    task    receiveReceipt            "Receive Receipt"
-    end     end_customer : none
-
+  pool CustomerPool {
+    name "Customer"
+    start start_customer { trigger none }    task sendCredentialInformation { name "Send Credential Information" }    task submitTheOrder { name "Submit the Order" }    task selectPaymentMethod { name "Select Payment Method" }    gateway gw_receive { type and }    task receiveItems { name "Receive Items" }    task receiveReceipt { name "Receive Receipt" }    end end_customer { trigger none }
     flow start_customer           -> sendCredentialInformation
     flow sendCredentialInformation -> submitTheOrder
     flow submitTheOrder           -> selectPaymentMethod
@@ -117,16 +97,8 @@ model EStore {
     flow receiveReceipt           -> end_customer
   }
 
-  message CredentialMsg "Credential information"
-  message OrderMsg      "Order submission"
-  message ReceiptMsg    "Receipt"
-  message ItemsMsg      "Shipped items"
-
-  message-flow sendCredentialInformation -> customerIdentification  : CredentialMsg
-  message-flow submitTheOrder            -> askForOrderProcessing   : OrderMsg
-  message-flow sendReceipt               -> receiveReceipt          : ReceiptMsg
-  message-flow shipment                  -> receiveItems            : ItemsMsg
-  // Deliberately omitted: selectPaymentMethod -> askForPaymentMethod
+  message CredentialMsg { name "Credential information" }  message OrderMsg { name "Order submission" }  message ReceiptMsg { name "Receipt" }  message ItemsMsg { name "Shipped items" }
+  message-flow sendCredentialInformation -> customerIdentification { message CredentialMsg }  message-flow submitTheOrder -> askForOrderProcessing { message OrderMsg }  message-flow sendReceipt -> receiveReceipt { message ReceiptMsg }  message-flow shipment -> receiveItems { message ItemsMsg }  // Deliberately omitted: selectPaymentMethod -> askForPaymentMethod
   // (see header note -- this is the paper's choreography-inconsistency
   // example, not a mistake).
 }

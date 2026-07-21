@@ -191,7 +191,8 @@ Main nodes:
 
 Role:
 
-- stores optional raw OCL clauses on BPMN flow elements and sequence flows
+- stores explicit Boolean `pre`/`post` predicates on BPMN elements and
+  `guard` predicates on sequence flows
 - compiles those clauses with USE `OCLCompiler`
 - binds `self` through caller-provided BPMN element/flow id to USE class mappings
 - supports goal-achievement checking by making BPMN-side behavioral conditions available
@@ -200,13 +201,15 @@ Role:
 Syntax:
 
 ```bpmn2
-task Approve "Approve" ocl {[
-  self.status = #approved
-]}
+task Approve {
+  name "Approve"
+  post {[ self.status = #approved ]}
+}
 
-flow Decide -> Approve : "valid" ocl {[
-  self.valid = true
-]}
+flow Decide -> Approve {
+  name "valid"
+  guard {[ self.valid = true ]}
+}
 ```
 
 ## 5. Semantic Ownership

@@ -99,19 +99,11 @@ acl v2.0 MeetingScheduler {
     entity ProposedDate [0..*];
     entity Agreement    [0..1];
 
-    link communication MeetingInitiator <-> MeetingScheduler
-      scope intra-group;
-
-    link communication MeetingScheduler <-> Participant
-      scope intra-group;
-
-    link communication MeetingInitiator <-> Participant
-      scope intra-group;
-
     compatibility MeetingInitiator <-> Participant
-      scope intra-group;
+      scope intra-group
+      type compatible;
 
-    relation CreatesMeeting creates MeetingInitiator -> Meeting
+    relation CreatesMeeting owns MeetingInitiator -> Meeting
       scope intra-group;
     cardinality role Participant [2..*];
   }

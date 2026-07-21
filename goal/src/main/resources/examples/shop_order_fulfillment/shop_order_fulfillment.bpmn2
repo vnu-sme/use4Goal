@@ -2,16 +2,13 @@
 // Transcribed from example/Data/shop/bpmn.bpmn (real bpmn.io-exported BPMN XML).
 // Simple linear process, no gateways: start -> Pick Items -> Pack Items -> Ship Items -> end.
 
-collaboration ShopOrderFulfillment {
+model ShopOrderFulfillment {
 
-  pool WarehouseProcess "Warehouse Process" {
-    lane main_lane "Main" {
-      start start1 : none
-      task  pickItems "Pick Items"
-      task  packItems "Pack Items"
-      task  shipItems "Ship Items"
-      end   end1 : none
-    }
+  pool WarehouseProcess {
+    name "Warehouse Process"
+    lane main_lane {
+      name "Main"
+      start start1 { trigger none }      task pickItems { name "Pick Items" }      task packItems { name "Pack Items" }      task shipItems { name "Ship Items" }      end end1 { trigger none }    }
 
     flow start1  -> pickItems
     flow pickItems -> packItems

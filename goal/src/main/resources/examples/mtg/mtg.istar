@@ -27,16 +27,19 @@ istar MeetingScheduler {
 
   role Initiator {
     goal HaveMeetingOrganized
-    task DecideMeetingDetails > HaveMeetingOrganized ocl {[
-      self.actorMeeting.detailsDecided
+    task DecideMeetingDetails > HaveMeetingOrganized
+    pre {[
+      Meeting.allInstances()->exists(m | not m.detailsDecided)
+    ]}
+    post {[
+      Meeting.allInstances()->exists(m | m.detailsDecided)
     ]}
     goal HaveSchedulingPerformed            > HaveMeetingOrganized
     goal MeetingAttended                    > HaveMeetingOrganized
-    goal HaveSchedulingPerformedByOrganizer > pick Organizer HaveSchedulingPerformed ocl {[
-      self.actorMeeting.detailsDecided
-      and self.actorMeeting.timeChosen
+    goal HaveSchedulingPerformedByOrganizer > pick Organizer HaveSchedulingPerformed post {[
+      Meeting.allInstances()->exists(m | m.detailsDecided and m.timeChosen)
     ]}
-    goal MeetingAttendedByParticipant > forall Participant MeetingAttended ocl {[
+    goal MeetingAttendedByParticipant > forall Participant MeetingAttended post {[
       self.attendance = #attended
     ]}
   }
@@ -44,33 +47,41 @@ istar MeetingScheduler {
   role Organizer {
     goal HaveMeetingScheduled
     goal TimetablesCollected > HaveMeetingScheduled
-    task ChooseTimeAndDate   > HaveMeetingScheduled ocl {[
-      self.actorMeeting.detailsDecided
-      and Participant.allInstances()
-            ->select(p | p.actorMeeting = self.actorMeeting)
-            ->forAll(p | p.timetable = #collected)
-      and self.actorMeeting.timeChosen
+    task ChooseTimeAndDate   > HaveMeetingScheduled
+    pre {[
+      Meeting.allInstances()->exists(m | m.detailsDecided)
+      and Participant.allInstances()->forAll(p | p.timetable = #collected)
+    ]}
+    post {[
+      Meeting.allInstances()->exists(m | m.timeChosen)
     ]}
     goal MeetingAnnounced    > HaveMeetingScheduled
 
-    goal TimetableCollected  > forall Participant TimetablesCollected ocl {[
+    goal TimetableCollected  > forall Participant TimetablesCollected post {[
       self.timetable = #collected
     ]}
-    goal HavePPCalled        > or TimetableCollected > make Inclusivity ocl {[
+    goal HavePPCalled        > or TimetableCollected > make Inclusivity post {[
       not self.hasCalendar
       and self.timetable = #collected
       and self.timetableChannel = #phone
     ]}
-    task CollectFromCalendar > or TimetableCollected > make QuickScheduling ocl {[
+    task CollectFromCalendar > or TimetableCollected > make QuickScheduling
+    pre {[
+      self.hasCalendar and self.timetable <> #collected
+    ]}
+    post {[
       self.hasCalendar
       and self.timetable = #collected
       and self.timetableChannel = #calendar
     ]}
     goal HaveSecretaryCallPP > pick Secretary HavePPCalled
 
-    task AnnounceMeeting     > forall Participant MeetingAnnounced ocl {[
-      self.actorMeeting.timeChosen
-      and self.notified = #sent
+    task AnnounceMeeting     > forall Participant MeetingAnnounced
+    pre {[
+      Meeting.allInstances()->exists(m | m.timeChosen)
+    ]}
+    post {[
+      self.notified = #sent
     ]}
 
     quality Inclusivity
@@ -78,19 +89,23 @@ istar MeetingScheduler {
   }
 
   role Secretary {
-    task CollectConstraintsByPhone ocl {[
-      participant.actorMeeting = self.actorMeeting
-      and not participant.hasCalendar
-      and participant.timetable = #collected
-      and participant.timetableChannel = #phone
-      and participant.actorPerson.phoneContacts->exists(phone | self.knownPhoneContacts->includes(phone))
+    task CollectConstraintsByPhone
+    pre {[
+      Participant.allInstances()->exists(p | not p.hasCalendar and p.timetable <> #collected)
+    ]}
+    post {[
+      Participant.allInstances()->select(p | not p.hasCalendar)
+        ->forAll(p | p.timetable = #collected and p.timetableChannel = #phone)
     ]}
   }
 
   role Participant {
-    task Participate ocl {[
+    task Participate
+    pre {[
       self.notified = #sent
-      and self.attendance = #attended
+    ]}
+    post {[
+      self.attendance = #attended
     ]}
   }
 

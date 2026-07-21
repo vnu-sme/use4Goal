@@ -29,7 +29,7 @@ import org.w3c.dom.Element;
 
 @SuppressWarnings("serial")
 public final class AclDiagram extends DiagramView {
-    private final Map<String, AclDiagramNode> nodeMap = new LinkedHashMap<>();
+    private final Map<String, PlaceableNode> nodeMap = new LinkedHashMap<>();
     private final DiagramInputHandling inputHandling;
     private AclModel model;
     private Path sourceFile;
@@ -83,7 +83,13 @@ public final class AclDiagram extends DiagramView {
         setPreferredSize(new Dimension(layout.width, layout.height));
         Font font = Font.getFont("use.gui.view.objectdiagram", getFont());
         for (AclNode item : layout.nodes.values()) {
-            AclDiagramNode node = new AclDiagramNode(item, getOptions(), font);
+            PlaceableNode node;
+            if (item.kind == AclNodeKind.ENTITY) {
+                var entity = model.findEntity(item.label).orElseThrow();
+                node = new AclEntityNode(entity, getOptions());
+            } else {
+                node = new AclDiagramNode(item, getOptions(), font);
+            }
             node.setPosition(item.x, item.y);
             node.setExactBounds(item.w, item.h);
             nodeMap.put(item.id, node);
@@ -132,7 +138,7 @@ public final class AclDiagram extends DiagramView {
 
     @Override
     public void storePlacementInfos(PersistHelper helper, Element rootElement) {
-        for (AclDiagramNode node : nodeMap.values()) {
+        for (PlaceableNode node : nodeMap.values()) {
             node.storePlacementInfo(helper, rootElement, false);
         }
         for (EdgeBase edge : fGraph.getEdges()) {
@@ -148,7 +154,7 @@ public final class AclDiagram extends DiagramView {
             ap.selectXPath("./node");
             while (ap.evalXPath() != -1) {
                 String name = helper.getElementStringValue("name");
-                AclDiagramNode node = nodeMap.get(name);
+                PlaceableNode node = nodeMap.get(name);
                 if (node != null) {
                     node.restorePlacementInfo(helper, version);
                     invalidateNode(node);

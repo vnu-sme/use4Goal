@@ -25,7 +25,6 @@ import org.vnu.sme.goal.acl.parser.AclCompiler;
 import org.vnu.sme.goal.acl.use.AclUseTranslator;
 import org.vnu.sme.goal.bpmn2.mm.Activity;
 import org.vnu.sme.goal.bpmn2.mm.ActivityConstraint;
-import org.vnu.sme.goal.bpmn2.mm.ActivityEffect;
 import org.vnu.sme.goal.bpmn2.mm.Bpmn2Model;
 import org.vnu.sme.goal.bpmn2.mm.EndEvent;
 import org.vnu.sme.goal.bpmn2.mm.FlowElement;
@@ -48,7 +47,7 @@ import org.vnu.sme.goal.istarusebridge.IStarUseTraceCompiler.Checkpoint;
 
 public final class AclBpmnIStarConformanceChecker {
 
-    private record ExecutionPlan(String soil, List<ActivityStep> steps) {}
+    private record ExecutionPlan(String soil, List<ActivityStep> steps, int initialCheckpoint) {}
     private record ActivityStep(Activity activity, int preCheckpoint, int postCheckpoint) {}
 
     public record Result(Path generatedUse,
@@ -56,11 +55,13 @@ public final class AclBpmnIStarConformanceChecker {
                          GoalModel goalModel,
                          Bpmn2Model bpmnModel,
                          int checkpoints,
+                         List<String> aclFailures,
                          List<String> bpmnFailures,
                          List<String> goalFailures,
                          List<String> errors) {
         public boolean ok() { return errors.isEmpty(); }
-        public boolean conformant() { return ok() && bpmnFailures.isEmpty() && goalFailures.isEmpty(); }
+        public boolean conformant() { return ok() && aclFailures.isEmpty()
+                && bpmnFailures.isEmpty() && goalFailures.isEmpty(); }
     }
 
     private AclBpmnIStarConformanceChecker() {}
@@ -86,38 +87,62 @@ public final class AclBpmnIStarConformanceChecker {
         if (trace.checkpoints().isEmpty()) return failure(errors, "SOIL", List.of("no checkpoints were produced"));
 
         Checkpoint finalCheckpoint = trace.checkpoints().get(trace.checkpoints().size() - 1);
+        List<String> aclFailures = evaluateAclInvariants(plan, trace.checkpoints());
         List<String> bpmnFailures = evaluateBpmnOcl(plan, trace.useModel(), trace.checkpoints());
         List<String> goalFailures = evaluateRootGoals(trace.model(), finalCheckpoint);
 
         return new Result(generatedUse, executionSoil, trace.model(), bpmn.model(), trace.checkpoints().size(),
-                bpmnFailures, goalFailures, List.of());
+                aclFailures, bpmnFailures, goalFailures, List.of());
     }
 
     private static Result failure(List<String> errors, String stage, List<String> stageErrors) {
         errors.add(stage + " failed:");
         stageErrors.forEach(e -> errors.add("  - " + e));
-        return new Result(null, null, null, null, 0, List.of(), List.of(), List.copyOf(errors));
+        return new Result(null, null, null, null, 0, List.of(), List.of(), List.of(), List.copyOf(errors));
     }
 
     private static ExecutionPlan executionPlan(String initialSoil, Bpmn2Model bpmnModel) {
         List<ActivityStep> steps = new ArrayList<>();
         StringBuilder out = new StringBuilder();
         out.append(initialSoil.stripTrailing()).append("\n\n");
-        out.append("-- Generated BPMN execution effects.\n");
+        out.append("-- Generic BPMN effects follow; snapshot object names are not embedded in them.\n");
         int checkpoint = countSoilStatements(initialSoil);
+        int initialCheckpoint = checkpoint;
         for (Activity activity : executionOrder(bpmnModel)) {
-            if (activity.effects().isEmpty()) continue;
-            int pre = checkpoint;
-            out.append("-- activity ").append(activity.id()).append("\n");
-            for (ActivityEffect effect : activity.effects()) {
-                String body = effect.soilBody().strip();
-                out.append(body).append("\n");
-                checkpoint += countSoilStatements(body);
+            int preCheckpoint = checkpoint;
+            String effect = activity.effectSource();
+            if (effect != null && !effect.isBlank()) {
+                // IStarUseTraceCompiler consumes one SOIL statement per physical line.
+                String oneStatement = effect.replaceAll("\\s+", " ").strip();
+                out.append("-- effect of ").append(activity.id()).append("\n")
+                        .append(oneStatement).append("\n");
+                checkpoint++;
             }
-            steps.add(new ActivityStep(activity, pre, checkpoint));
-            out.append("\n");
+            steps.add(new ActivityStep(activity, preCheckpoint, checkpoint));
         }
-        return new ExecutionPlan(out.toString(), List.copyOf(steps));
+        return new ExecutionPlan(out.toString(), List.copyOf(steps), initialCheckpoint);
+    }
+
+    private static List<String> evaluateAclInvariants(ExecutionPlan plan, List<Checkpoint> checkpoints) {
+        Set<Integer> selected = new LinkedHashSet<>();
+        selected.add(plan.initialCheckpoint());
+        plan.steps().forEach(step -> selected.add(step.postCheckpoint()));
+        List<String> failures = new ArrayList<>();
+        for (int number : selected) {
+            if (number <= 0 || number > checkpoints.size()) {
+                failures.add("ACL state check cannot use missing checkpoint " + number);
+                continue;
+            }
+            StringWriter output = new StringWriter();
+            boolean valid = checkpoints.get(number - 1).state().check(
+                    new PrintWriter(output), false, true, true, List.of());
+            if (!valid) {
+                failures.add("earliest invalid checkpoint " + number + " violates ACL/USE constraints:\n"
+                        + output.toString().strip());
+                break;
+            }
+        }
+        return failures;
     }
 
     private static int countSoilStatements(String soil) {

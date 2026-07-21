@@ -1,251 +1,114 @@
-# BPMN2 OCL Option 2
+# BPMN state predicates and execution
 
-This document describes the implemented Option 2 approach: OCL is embedded in
-BPMN process elements as behavioral/domain conditions. It is not used as a
-complete BPMN metamodel invariant language.
+The BPMN dialect describes Boolean state conditions only. It contains no SOIL
+and performs no domain-state mutation.
 
-## 1. Purpose
+## Friendly syntax
 
-Option 2 answers this question:
-
-```text
-Can BPMN execution points carry domain OCL conditions that can later be compared
-with mapped i-star/goal OCL conditions?
-```
-
-The implemented answer is yes. BPMN flow elements and sequence flows may now
-carry raw OCL clauses. The clauses are preserved through parsing, stored in the
-runtime BPMN metamodel, and compiled against a USE domain model when the caller
-provides the USE context class for each BPMN element.
-
-## 2. Supported Syntax
-
-Every BPMN flow element accepts an optional OCL block:
+Names and conditions are explicit properties inside a block. All properties
+are optional except the `type` of a gateway.
 
 ```bpmn2
-task approveClaim "Approve Claim" ocl {[
-  self.status = #approved
-]}
+task registerClaim {
+  name "Register claim"
+  pre {[
+    self.submitted
+  ]}
+  post {[
+    self.registered
+  ]}
+}
 
-gateway decide : xor ocl {[
-  self.isComplete = true
-]}
+gateway decision {
+  name "Eligibility decision"
+  type xor
+}
+
+flow decision -> approve {
+  name "eligible"
+  guard {[
+    self.eligible
+  ]}
+}
 ```
 
-Sequence flows also accept OCL. This is the natural place for branch guards:
+- Missing `name` means the element ID is used as its technical identity.
+- Missing `pre` means the activity can start whenever a token reaches it.
+- Missing `post` means completion needs no resulting-state assertion.
+- Multiple `pre` or `post` clauses are combined with logical AND.
+- Missing `guard` means the sequence flow is unconditional.
+
+`pre`, `post`, and `guard` contain Boolean OCL. The parser preserves their OCL
+body and USE's `OCLCompiler` compiles it later against the mapped domain class.
+
+## Gateway execution
+
+Branch conditions belong to outgoing sequence flows, not to the gateway:
 
 ```bpmn2
-flow decide -> approveClaim : "valid" ocl {[
-  self.valid = true
-]}
+gateway route {
+  type xor
+}
 
-flow decide -> rejectClaim : "invalid" ocl {[
-  self.valid = false
-]}
+flow route -> accepted {
+  guard {[ self.valid ]}
+}
+flow route -> rejected {
+  guard {[ not self.valid ]}
+}
 ```
 
-The parser captures only the raw text inside `ocl {[ ... ]}`. It does not parse
-OCL with ANTLR. Compilation is delegated to USE's existing `OCLCompiler`.
+For an XOR gateway, flows are checked in declaration order and the first true
+guard is chosen. This gives deterministic “first satisfied branch wins”
+semantics. If no branch is true, execution stops with an error. AND/OR routing
+accepts every outgoing flow whose guard is true.
 
-Full sample:
+## Execution boundary
 
-```text
-goal/src/main/resources/examples/bpmn_ocl/claim_handling_ocl.bpmn2
+`Bpmn2ExecutionEngine` is a token executor for one BPMN process. The intended
+cycle is:
+
+1. `start(state)` checks start-event conditions and routes the initial token.
+2. `begin(activityId, beforeState)` verifies that the activity is enabled and
+   all of its preconditions are true.
+3. An external adapter performs the real action and produces a new USE state.
+4. `complete(step, afterState)` verifies all postconditions and routes the token.
+5. Gateways evaluate guards against the current state automatically.
+
+```java
+var engine = new Bpmn2ExecutionEngine(process);
+engine.start(oclEvaluatorFor(currentState));
+
+var step = engine.begin("registerClaim", oclEvaluatorFor(currentState));
+currentState = actionAdapter.execute(step.elementId(), currentState);
+engine.complete(step, oclEvaluatorFor(currentState));
 ```
 
-## 3. Implemented Flow
+The action adapter may call an application service, a REST API, a human-task
+handler, or a simulator. It is deliberately outside BPMN, so the process model
+states what must be true without prescribing how state is changed.
 
-The implementation follows the existing project architecture:
+## Compilation pipeline
 
 ```text
-.bpmn2 text
+.bpmn2
   -> Bpmn2.g4
   -> Bpmn2BuildingVisitor
-  -> bpmn2.ast CS records
+  -> AST records
   -> Bpmn2ModelFactory
-  -> bpmn2.mm runtime objects
+  -> runtime model
   -> Bpmn2OclConstraintCompiler
   -> USE OCLCompiler
 ```
 
-Step by step:
-
-1. `Bpmn2.g4` recognizes optional `ocl {[ ... ]}` clauses on `poolElement` and
-   `sequenceFlow`.
-2. `Bpmn2BuildingVisitor` strips the delimiters and stores the raw body in the
-   AST/CS layer.
-3. `FlowElementCS` and `SequenceFlowCS` carry `oclSource`.
-4. `Bpmn2ModelFactory` copies `oclSource` into the runtime metamodel.
-5. Runtime BPMN classes expose the text through `oclSource()`.
-6. `Bpmn2OclConstraintCompiler.compile(...)` compiles each clause with USE.
-7. `Bpmn2GoalOclCoverageValidator` checks whether mapped i-star/goal elements
-   that have OCL are realized by BPMN nodes that also have BPMN OCL.
-
-The compiler is wired into an end-to-end service:
-
-```text
-Bpmn2OclValidationCompiler
-  -> Bpmn2Compiler
-  -> USECompiler
-  -> Bpmn2OclContextMapParser
-  -> Bpmn2OclConstraintCompiler
-```
-
-There is also a runnable demo:
-
-```text
-Bpmn2OclValidationDemoMain
-```
-
-## 4. Runtime Metamodel Changes
-
-The following runtime objects can now carry OCL:
-
-```text
-FlowElement
-  StartEvent
-  EndEvent
-  IntermediateEvent
-  Task
-  CallActivity
-  SubProcess
-  Gateway
-
-SequenceFlow
-```
-
-`FlowElement` has a default method:
-
-```java
-String oclSource()
-```
-
-The default returns `null`. Concrete classes override it when they store an OCL
-clause. `SequenceFlow` has its own `oclSource()` method.
-
-Existing constructors are preserved. New overloaded constructors accept
-`oclSource`, so existing Java code that creates BPMN elements still compiles.
-
-## 5. OCL Compilation
-
-The compiler class is:
-
-```text
-org.vnu.sme.goal.bpmn2.ocl.Bpmn2OclConstraintCompiler
-```
-
-It compiles BPMN OCL against a USE `MModel`:
-
-```java
-Bpmn2OclConstraintCompiler.Result result =
-    Bpmn2OclConstraintCompiler.compile(bpmnModel, useModel, contextTypes);
-```
-
-`contextTypes` maps BPMN OCL owners to USE class names:
-
-```text
-approveClaim         -> Claim
-decide::approveClaim -> Claim
-```
-
-For flow elements, the key is the BPMN element id.
-
-For sequence flows, the key is:
-
-```text
-sourceId::targetId
-```
-
-During compilation, `self` is bound to the mapped USE class.
-
-The context map file format is line-oriented:
-
-```text
-context <bpmnElementId> -> <UseClassName>
-context <sourceId>::<targetId> -> <UseClassName>
-```
-
-Example file:
-
-```text
-goal/src/main/resources/examples/bpmn_ocl/claim_handling.bpmn2oclmap
-```
-
-Example context mapping for the sample file:
-
-```text
-claim_received                  -> Claim
-register_claim                  -> Claim
-validate_claim                  -> Claim
-eligibility_decision            -> Claim
-approve_claim                   -> Claim
-reject_claim                    -> Claim
-claim_closed                    -> Claim
-eligibility_decision::approve_claim -> Claim
-eligibility_decision::reject_claim  -> Claim
-```
-
-## 6. Running the Wired Compiler
-
-Sample inputs:
+Context-map keys use the element ID for `pre`/`post` and
+`sourceId::targetId` for a flow guard. See:
 
 ```text
 goal/src/main/resources/examples/bpmn_ocl/claim_handling_ocl.bpmn2
-goal/src/main/resources/examples/bpmn_ocl/claim_handling.use
 goal/src/main/resources/examples/bpmn_ocl/claim_handling.bpmn2oclmap
 ```
 
-Run from the repository root after compilation:
-
-```bash
-mvn -pl goal "-Dexec.mainClass=org.vnu.sme.goal.bpmn2.ocl.Bpmn2OclValidationDemoMain" "-Dexec.classpathScope=compile" org.codehaus.mojo:exec-maven-plugin:3.5.0:java
-```
-
-Expected output:
-
-```text
-BPMN OCL validation OK
-Compiled constraints: 9
-  claim_received [node, self : Claim]
-  register_claim [node, self : Claim]
-  validate_claim [node, self : Claim]
-  eligibility_decision [node, self : Claim]
-  approve_claim [node, self : Claim]
-  reject_claim [node, self : Claim]
-  claim_closed [node, self : Claim]
-  eligibility_decision::approve_claim [sequenceFlow, self : Claim]
-  eligibility_decision::reject_claim [sequenceFlow, self : Claim]
-```
-
-## 7. Goal Achievement Position
-
-This implementation does not yet prove goal achievement by itself. It provides
-the BPMN-side OCL data needed for that proof.
-
-The intended goal-achievement flow is:
-
-```text
-i-star/goal element has OCL
-  -> conformance mapping maps it to a BPMN node
-  -> BPMN node/flow has OCL
-  -> USE compiles both OCL expressions
-  -> execution/path checker compares BPMN effects/guards with the goal condition
-```
-
-Useful verdicts for the next layer:
-
-```text
-MAY_ACHIEVE   at least one complete BPMN path satisfies the goal OCL
-MUST_ACHIEVE  every complete BPMN path satisfies the goal OCL
-VIOLATES      some complete path contradicts the goal OCL
-UNKNOWN       mapping or OCL information is missing
-```
-
-## 8. Difference From Option 1
-
-Option 1 would express BPMN structural validity as OCL over the BPMN metamodel,
-for example "every process has a start event" or "a gateway is a split or join".
-
-Option 2 expresses domain conditions at BPMN execution points, for example "this
-task establishes `claim.status = #approved`". That is the required foundation
-for checking whether a BPMN process can achieve a business goal.
+This executor currently handles a single process token graph. Full BPMN join
+synchronization, nested subprocess lifecycle, persistence, retries, and human
+task assignment remain concerns for a production workflow runtime.

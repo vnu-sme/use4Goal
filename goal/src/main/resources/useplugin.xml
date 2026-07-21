@@ -38,6 +38,24 @@
                 toolbaritem="ACL v2.0 Viewer"
                 id="org.vnu.sme.goal.acl.action.ActionOpenAcl">
         </action>
+        <action label="Export ACL to USE"
+                icon="images/acl.png"
+                class="org.vnu.sme.goal.acl.action.ActionExportAclToUse"
+                tooltip="Validate an ACL specification and export a USE class model (.use)"
+                menu="GoalModel Plugin"
+                menuitem="Export ACL to USE"
+                toolbaritem="Export ACL to USE"
+                id="org.vnu.sme.goal.acl.action.ActionExportAclToUse">
+        </action>
+        <action label="AOL Viewer"
+                icon="images/acl.png"
+                class="org.vnu.sme.goal.aol.action.ActionOpenAol"
+                tooltip="Validate and view an AOL object snapshot (.aol) against its ACL structural specification"
+                menu="GoalModel Plugin"
+                menuitem="AOL Viewer"
+                toolbaritem="AOL Viewer"
+                id="org.vnu.sme.goal.aol.action.ActionOpenAol">
+        </action>
         <action label="BPMN 2.0 Viewer"
                 icon="images/bpmn2.png"
                 class="org.vnu.sme.goal.bpmn2.action.ActionOpenBpmn2"

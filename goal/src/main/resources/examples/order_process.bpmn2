@@ -2,50 +2,32 @@
 // Two pools: Customer and Supplier
 // Demonstrates: pools, lanes, events, gateways, message flows
 
-collaboration OrderFulfilment {
+model OrderFulfilment {
 
-  pool Customer "Customer" {
-    lane order_lane "Order Management" {
-      start  start1 : none
-      task   placeOrder "Place Order"
-      gateway gw_approved : xor
-      task   makePayment "Make Payment"
-      task   receiveGoods "Receive Goods"
-      end    end_ok : none
-      end    end_rejected : none
-    }
+  pool Customer {
+    name "Customer"
+    lane order_lane {
+      name "Order Management"
+      start start1 { trigger none }      task placeOrder { name "Place Order" }      gateway gw_approved { type xor }      task makePayment { name "Make Payment" }      task receiveGoods { name "Receive Goods" }      end end_ok { trigger none }      end end_rejected { trigger none }    }
     flow start1 -> placeOrder
     flow placeOrder -> gw_approved
-    flow gw_approved -> makePayment : "approved"
-    flow gw_approved -> end_rejected : "rejected"
-    flow makePayment -> receiveGoods
+    flow gw_approved -> makePayment { name "approved" }    flow gw_approved -> end_rejected { name "rejected" }    flow makePayment -> receiveGoods
     flow receiveGoods -> end_ok
   }
 
-  pool Supplier "Supplier" {
-    lane process_lane "Order Processing" {
-      start  start2 : message
-      gateway gw_stock : xor
-      task   processOrder "Process Order"
-      task   shipGoods "Ship Goods"
-      end    end_ship : none
-    }
-    lane fulfil_lane "Fulfilment" {
-      task   checkInventory "Check Inventory"
-      task   rejectOrder "Reject Order"
-      end    end_reject : none
-    }
+  pool Supplier {
+    name "Supplier"
+    lane process_lane {
+      name "Order Processing"
+      start start2 { trigger message }      gateway gw_stock { type xor }      task processOrder { name "Process Order" }      task shipGoods { name "Ship Goods" }      end end_ship { trigger none }    }
+    lane fulfil_lane {
+      name "Fulfilment"
+      task checkInventory { name "Check Inventory" }      task rejectOrder { name "Reject Order" }      end end_reject { trigger none }    }
     flow start2 -> checkInventory
     flow checkInventory -> gw_stock
-    flow gw_stock -> processOrder : "in stock"
-    flow gw_stock -> rejectOrder  : "out of stock"
-    flow processOrder -> shipGoods
+    flow gw_stock -> processOrder { name "in stock" }    flow gw_stock -> rejectOrder { name "out of stock" }    flow processOrder -> shipGoods
     flow shipGoods -> end_ship
     flow rejectOrder -> end_reject
   }
 
-  message-flow placeOrder -> start2 : "Order Request"
-  message-flow gw_approved -> placeOrder : "Approval Notification"
-  message-flow shipGoods -> receiveGoods : "Shipment Notification"
-  message-flow rejectOrder -> gw_approved : "Rejection Notice"
-}
+  message-flow placeOrder -> start2  message-flow gw_approved -> placeOrder  message-flow shipGoods -> receiveGoods  message-flow rejectOrder -> gw_approved}

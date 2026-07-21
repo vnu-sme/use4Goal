@@ -3,7 +3,6 @@ package org.vnu.sme.goal.istarusebridge;
 import java.util.List;
 
 import org.tzi.use.uml.mm.MClass;
-import org.tzi.use.uml.mm.MClassifier;
 import org.tzi.use.uml.mm.MModel;
 import org.vnu.sme.goal.istar.mm.Actor;
 import org.vnu.sme.goal.istar.mm.Agent;
@@ -11,10 +10,9 @@ import org.vnu.sme.goal.istar.mm.GoalModel;
 
 /**
  * Naming convention that replaces a separate istar&lt;-&gt;.use mapping file: every .istar
- * actor type T must have a same-named .use class, and that class must descend from the
- * .use marker associationclass matching T's declared actorKind (role -&gt; Role,
- * agent -&gt; Agent). "Is this class an Actor or a plain Entity" is answered by UML
- * generalization, checkable here, not by a side file.
+ * actor type T must have a same-named .use class. The USE file generated from ACL preserves
+ * ACL Role classes directly, so no synthetic Role superclass is required. The ACL/iStar
+ * conformance phase is responsible for proving that the same-named classifier is an ACL Role.
  */
 public final class UseActorClasses {
 
@@ -27,11 +25,11 @@ public final class UseActorClasses {
             errors.add("no .use class named '" + actorTypeName + "' for the actor type declared in .istar");
             return null;
         }
-        String expectedRoot = (actor instanceof Agent) ? "Agent" : "Role";
-        boolean descends = cls.allParents().stream().map(MClassifier::name).anyMatch(expectedRoot::equals);
-        if (!descends) {
-            errors.add(".use class '" + actorTypeName + "' does not descend from '" + expectedRoot
-                    + "' (required for istar actor kind '" + (actor instanceof Agent ? "agent" : "role") + "')");
+        // A declared iStar Agent still maps naturally to Agent (or one of its subclasses).
+        // A declared iStar Role maps directly to the same-named ACL Role class.
+        if (actor instanceof Agent && !cls.name().equals("Agent")
+                && cls.allParents().stream().noneMatch(parent -> parent.name().equals("Agent"))) {
+            errors.add(".use class '" + actorTypeName + "' is not Agent or a subclass of Agent");
             return null;
         }
         return cls;

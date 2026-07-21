@@ -64,6 +64,8 @@ public final class IStarUseTraceCompiler {
 
     private static final Pattern NEW_NAMED_OBJECT =
             Pattern.compile(".*:=\\s*new\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*\\(\\s*'([^']+)'\\s*\\).*");
+    private static final Pattern SHELL_CREATE =
+            Pattern.compile("!create\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*:\\s*([A-Za-z_][A-Za-z0-9_]*)");
 
     public record InstanceKey(String actorType, String objectName) {
         @Override public String toString() { return actorType + "#" + objectName; }
@@ -122,8 +124,9 @@ public final class IStarUseTraceCompiler {
         List<Checkpoint> checkpoints = new ArrayList<>();
         Map<String, Integer> objectOrder = new LinkedHashMap<>();
         int idx = 0;
-        for (String line : soilLines) {
+        for (String shellLine : soilLines) {
             idx++;
+            String line = normalizeShellSoil(shellLine);
             StringWriter stmtErr = new StringWriter();
             MStatement stmt = SoilCompiler.compileStatement(
                     useModel, system.state(), system.getVariableEnvironment(),
@@ -147,6 +150,16 @@ public final class IStarUseTraceCompiler {
         }
 
         return new Result(gm, useModel, checkpoints, errors);
+    }
+
+    /** Accept the same !create/!set/!insert command file that USE's `read` command accepts. */
+    private static String normalizeShellSoil(String line) {
+        Matcher create = SHELL_CREATE.matcher(line);
+        if (create.matches()) {
+            return create.group(1) + " := new " + create.group(2) + "('" + create.group(1) + "')";
+        }
+        if (line.startsWith("!set ")) return line.substring("!set ".length()).stripLeading();
+        return line.startsWith("!") ? line.substring(1).stripLeading() : line;
     }
 
     private static Map<InstanceKey, IStarMarking> computeCheckpoint(

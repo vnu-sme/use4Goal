@@ -8,24 +8,13 @@
 // performPenetrationTest has two outgoing flows directly (no gateway node), matching the
 // source XML exactly (it draws the branch without an explicit gateway symbol there too).
 
-collaboration SecurityCompliance {
+model SecurityCompliance {
 
-  pool SecurityComplianceProcess "Security Compliance Process" {
-    lane main_lane "Main" {
-      start   start1 : none
-      gateway gw_split : and
-      task    updateEncryptionStandards "Update Encryption Standards"
-      task    reviseAccessControls      "Revise Access Control"
-      gateway gw_join   : and
-      gateway gw_choice : xor
-      task    deployOneTrust  "Deploy One Trust"
-      task    deployDataGrail "Deploy Data Grail"
-      gateway gw_merge  : xor
-      task    performPenetrationTest "Perform Penetration Test"
-      task    flagSuspiciousActivity "Flag Suspicious Activity"
-      task    applyVulnerabilityTest "Apply Vulnerability Test"
-      end     end1 : none
-    }
+  pool SecurityComplianceProcess {
+    name "Security Compliance Process"
+    lane main_lane {
+      name "Main"
+      start start1 { trigger none }      gateway gw_split { type and }      task updateEncryptionStandards { name "Update Encryption Standards" }      task reviseAccessControls { name "Revise Access Control" }      gateway gw_join { type and }      gateway gw_choice { type xor }      task deployOneTrust { name "Deploy One Trust" }      task deployDataGrail { name "Deploy Data Grail" }      gateway gw_merge { type xor }      task performPenetrationTest { name "Perform Penetration Test" }      task flagSuspiciousActivity { name "Flag Suspicious Activity" }      task applyVulnerabilityTest { name "Apply Vulnerability Test" }      end end1 { trigger none }    }
 
     flow start1 -> gw_split
     flow gw_split -> updateEncryptionStandards

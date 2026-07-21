@@ -3,187 +3,88 @@ package org.vnu.sme.goal.acl.parser;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.vnu.sme.goal.acl.ast.AclAttributeCS;
-import org.vnu.sme.goal.acl.ast.AclCardinalityCS;
-import org.vnu.sme.goal.acl.ast.AclCardinalityConstraintCS;
-import org.vnu.sme.goal.acl.ast.AclCompatibilityCS;
-import org.vnu.sme.goal.acl.ast.AclEntityCS;
-import org.vnu.sme.goal.acl.ast.AclEntityMembershipCS;
-import org.vnu.sme.goal.acl.ast.AclEnumCS;
-import org.vnu.sme.goal.acl.ast.AclGroupCS;
-import org.vnu.sme.goal.acl.ast.AclLinkCS;
-import org.vnu.sme.goal.acl.ast.AclLinkOptionCS;
-import org.vnu.sme.goal.acl.ast.AclModelCS;
-import org.vnu.sme.goal.acl.ast.AclRoleCS;
-import org.vnu.sme.goal.acl.ast.AclRoleEntityRelationCS;
-import org.vnu.sme.goal.acl.ast.AclRoleMembershipCS;
-import org.vnu.sme.goal.acl.ast.AclSourceLocationCS;
-import org.vnu.sme.goal.acl.ast.AclSubgroupMembershipCS;
+import org.vnu.sme.goal.acl.ast.*;
 
 public final class AclBuildingVisitor extends ACLBaseVisitor<AclModelCS> {
-
-    @Override
-    public AclModelCS visitModel(ACLParser.ModelContext ctx) {
-        List<AclEnumCS> enums = new ArrayList<>();
-        List<AclRoleCS> roles = new ArrayList<>();
-        List<AclEntityCS> entities = new ArrayList<>();
-        List<AclGroupCS> groups = new ArrayList<>();
-
-        for (ACLParser.TopLevelDeclContext declaration : ctx.topLevelDecl()) {
-            if (declaration.enumDecl() != null) enums.add(buildEnum(declaration.enumDecl()));
-            else if (declaration.roleDecl() != null) roles.add(buildRole(declaration.roleDecl()));
-            else if (declaration.entityDecl() != null) entities.add(buildEntity(declaration.entityDecl()));
-            else if (declaration.groupDecl() != null) groups.add(buildGroup(declaration.groupDecl()));
+    @Override public AclModelCS visitModel(ACLParser.ModelContext ctx) {
+        List<AclEnumCS> enums = new ArrayList<>(); List<AclEntityCS> entities = new ArrayList<>();
+        List<AclRoleCS> roles = new ArrayList<>(); List<AclRelationCS> relations = new ArrayList<>();
+        List<AclGroupCS> groups = new ArrayList<>(); List<AclCompatibilityCS> compatibilities = new ArrayList<>();
+        for (var d : ctx.topLevelDecl()) {
+            if (d.enumDecl() != null) enums.add(enumValue(d.enumDecl()));
+            else if (d.entityDecl() != null) entities.add(entity(d.entityDecl()));
+            else if (d.roleDecl() != null) roles.add(role(d.roleDecl()));
+            else if (d.entityRelationDecl() != null) relations.add(relation(d.entityRelationDecl()));
+            else if (d.compatibilityDecl() != null) compatibilities.add(compatibility(d.compatibilityDecl()));
+            else if (d.groupDecl() != null) { GroupBuild b = group(d.groupDecl()); groups.add(b.group()); groups.addAll(b.nested()); compatibilities.addAll(b.compatibilities()); }
         }
-
-        return new AclModelCS(ctx.VERSION().getText(), ctx.IDENT().getText(), enums, roles, entities,
-                groups, location(ctx));
+        return new AclModelCS(ctx.VERSION().getText(), ctx.IDENT().getText(), enums, entities,
+                roles, relations, groups, compatibilities, location(ctx));
     }
 
-    private static AclEnumCS buildEnum(ACLParser.EnumDeclContext ctx) {
-        List<String> identifiers = ctx.IDENT().stream().map(TerminalNode::getText).toList();
-        return new AclEnumCS(identifiers.get(0), identifiers.subList(1, identifiers.size()), location(ctx));
+    private static AclEnumCS enumValue(ACLParser.EnumDeclContext c) {
+        List<String> ids = c.IDENT().stream().map(TerminalNode::getText).toList();
+        return new AclEnumCS(ids.get(0), ids.subList(1, ids.size()), location(c));
     }
-
-    private static AclRoleCS buildRole(ACLParser.RoleDeclContext ctx) {
-        List<String> parents = ctx.extendsClause() == null
-                ? List.of()
-                : ctx.extendsClause().IDENT().stream().map(TerminalNode::getText).toList();
-        return new AclRoleCS(ctx.IDENT().getText(), ctx.getStart().getText().equals("abstract"), parents,
-                attributes(ctx.attributeBlock()), location(ctx));
+    private static AclEntityCS entity(ACLParser.EntityDeclContext c) {
+        return new AclEntityCS(c.IDENT().getText(), parent(c.specializesClause()), attrs(c.attributeBlock()), location(c));
     }
-
-    private static AclEntityCS buildEntity(ACLParser.EntityDeclContext ctx) {
-        return new AclEntityCS(ctx.IDENT().getText(), attributes(ctx.attributeBlock()), location(ctx));
+    private static AclRoleCS role(ACLParser.RoleDeclContext c) {
+        return new AclRoleCS(c.IDENT().getText(), c.getStart().getText().equals("abstract"),
+                parent(c.specializesClause()).stream().toList(), attrs(c.attributeBlock()), location(c));
     }
-
-    private static List<AclAttributeCS> attributes(ACLParser.AttributeBlockContext block) {
-        if (block == null) return List.of();
-        return block.attributeDecl().stream().map(AclBuildingVisitor::buildAttribute).toList();
+    private static AclRelationCS relation(ACLParser.EntityRelationDeclContext c) {
+        List<AclEndpointCS> ends = c.endpointDecl().stream().map(e -> new AclEndpointCS(
+                e.IDENT(0).getText(), cardinality(e.cardinality()), location(e))).toList();
+        return new AclRelationCS(c.relationKind().getText(), c.IDENT().getText(), ends, location(c));
     }
-
-    private static AclAttributeCS buildAttribute(ACLParser.AttributeDeclContext ctx) {
-        boolean required = ctx.attributeModifier().stream().anyMatch(modifier -> modifier.getText().equals("required"));
-        boolean mutable = ctx.attributeModifier().stream().anyMatch(modifier -> modifier.getText().equals("mutable"));
-        Optional<String> defaultValue = ctx.defaultClause() == null
-                ? Optional.empty()
-                : Optional.of(ctx.defaultClause().defaultValue().getText());
-        return new AclAttributeCS(ctx.IDENT(0).getText(), ctx.IDENT(1).getText(), required, mutable,
-                defaultValue, location(ctx));
+    private static GroupBuild group(ACLParser.GroupDeclContext c) {
+        return group(c.IDENT().getText(), c.groupItem(), location(c));
     }
-
-    private static AclGroupCS buildGroup(ACLParser.GroupDeclContext ctx) {
-        return buildGroup(ctx.IDENT().getText(), ctx.groupItem(), location(ctx));
-    }
-
-    private static AclGroupCS buildGroup(String name, List<ACLParser.GroupItemContext> items,
-                                         AclSourceLocationCS sourceLocation) {
-        List<AclRoleMembershipCS> roles = new ArrayList<>();
-        List<AclEntityMembershipCS> entities = new ArrayList<>();
-        List<AclSubgroupMembershipCS> subgroups = new ArrayList<>();
-        List<AclLinkCS> links = new ArrayList<>();
-        List<AclCompatibilityCS> compatibilities = new ArrayList<>();
-        List<AclRoleEntityRelationCS> roleEntityRelations = new ArrayList<>();
-        List<AclCardinalityConstraintCS> constraints = new ArrayList<>();
-
-        for (ACLParser.GroupItemContext item : items) {
-            if (item.roleMembership() != null) {
-                var membership = item.roleMembership();
-                roles.add(new AclRoleMembershipCS(membership.IDENT().getText(),
-                        buildCardinality(membership.cardinality()), location(membership)));
-            } else if (item.entityMembership() != null) {
-                var membership = item.entityMembership();
-                entities.add(new AclEntityMembershipCS(membership.IDENT().getText(),
-                        buildCardinality(membership.cardinality()), location(membership)));
-            } else if (item.subgroupMembership() != null) {
-                var membership = item.subgroupMembership();
-                AclGroupCS subgroup = buildGroup(membership.IDENT().getText(), membership.groupItem(),
-                        location(membership));
-                subgroups.add(new AclSubgroupMembershipCS(subgroup, buildCardinality(membership.cardinality()),
-                        location(membership)));
-            } else if (item.linkDecl() != null) {
-                links.add(buildLink(item.linkDecl()));
-            } else if (item.compatibilityDecl() != null) {
-                compatibilities.add(buildCompatibility(item.compatibilityDecl()));
-            } else if (item.roleEntityRelationDecl() != null) {
-                roleEntityRelations.add(buildRoleEntityRelation(item.roleEntityRelationDecl()));
-            } else if (item.cardinalityConstraint() != null) {
-                constraints.add(buildConstraint(item.cardinalityConstraint()));
-            }
+    private static GroupBuild group(String name, List<ACLParser.GroupItemContext> items, AclSourceLocationCS loc) {
+        List<AclAttributeCS> attributes = new ArrayList<>(); List<AclGroupMemberCS> members = new ArrayList<>();
+        List<AclCompatibilityCS> compatibilities = new ArrayList<>(); List<AclGroupCS> nested = new ArrayList<>();
+        for (var item : items) {
+            if (item.attributeDecl() != null) attributes.add(attribute(item.attributeDecl()));
+            else if (item.groupMemberDecl() != null) { var m=item.groupMemberDecl(); members.add(new AclGroupMemberCS(m.IDENT().getText(), cardinality(m.cardinality()), location(m))); }
+            else if (item.legacyTypedMemberDecl() != null) { var m=item.legacyTypedMemberDecl(); members.add(new AclGroupMemberCS(m.IDENT().getText(), cardinality(m.cardinality()), location(m))); }
+            else if (item.compatibilityDecl() != null) compatibilities.add(compatibility(item.compatibilityDecl()));
+            else if (item.legacySubgroupDecl() != null) { var m=item.legacySubgroupDecl(); members.add(new AclGroupMemberCS(m.IDENT().getText(), cardinality(m.cardinality()), location(m))); GroupBuild child=group(m.IDENT().getText(),m.groupItem(),location(m)); nested.add(child.group()); nested.addAll(child.nested()); compatibilities.addAll(child.compatibilities()); }
         }
-        return new AclGroupCS(name, roles, entities, subgroups, links, compatibilities, roleEntityRelations, constraints,
-                sourceLocation);
+        return new GroupBuild(new AclGroupCS(name, attributes, members, List.of(), loc), nested, compatibilities);
     }
-
-    private static AclLinkCS buildLink(ACLParser.LinkDeclContext ctx) {
-        return new AclLinkCS(ctx.IDENT(0).getText(), ctx.IDENT(1).getText(), ctx.linkType().getText(),
-                ctx.linkArrow().getText().equals("<->"),
-                ctx.linkOption().stream().map(AclBuildingVisitor::buildOption).toList(), location(ctx));
-    }
-
-    private static AclCompatibilityCS buildCompatibility(ACLParser.CompatibilityDeclContext ctx) {
-        return new AclCompatibilityCS(ctx.IDENT(0).getText(), ctx.IDENT(1).getText(),
-                ctx.linkArrow().getText().equals("<->"),
-                ctx.compatibilityOption().stream().map(AclBuildingVisitor::buildOption).toList(), location(ctx));
-    }
-
-    private static AclLinkOptionCS buildOption(ACLParser.LinkOptionContext ctx) {
-        if (ctx.scopeValue() != null) return new AclLinkOptionCS.ScopeCS(ctx.scopeValue().getText(), location(ctx));
-        boolean value = Boolean.parseBoolean(ctx.BOOLEAN().getText());
-        if (ctx.getStart().getText().equals("extends-subgroups")) {
-            return new AclLinkOptionCS.ExtendsSubgroupsCS(value, location(ctx));
-        }
-        return new AclLinkOptionCS.BidirectionalCS(value, location(ctx));
-    }
-
-    private static AclLinkOptionCS buildOption(ACLParser.CompatibilityOptionContext ctx) {
-        if (ctx.scopeValue() != null) return new AclLinkOptionCS.ScopeCS(ctx.scopeValue().getText(), location(ctx));
-        boolean value = Boolean.parseBoolean(ctx.BOOLEAN().getText());
-        if (ctx.getStart().getText().equals("extends-subgroups")) {
-            return new AclLinkOptionCS.ExtendsSubgroupsCS(value, location(ctx));
-        }
-        return new AclLinkOptionCS.BidirectionalCS(value, location(ctx));
-    }
-
-    private static AclRoleEntityRelationCS buildRoleEntityRelation(ACLParser.RoleEntityRelationDeclContext ctx) {
-        List<TerminalNode> ids = ctx.IDENT();
-        String name;
-        String source;
-        String target;
-        if (ids.size() == 2) {
-            source = ids.get(0).getText();
-            target = ids.get(1).getText();
-            name = ctx.relationType().getText() + "_" + source + "_" + target;
-        } else {
-            name = ids.get(0).getText();
-            source = ids.get(1).getText();
-            target = ids.get(2).getText();
-        }
+    private static AclCompatibilityCS compatibility(ACLParser.CompatibilityDeclContext c) {
         List<AclLinkOptionCS> options = new ArrayList<>();
-        for (ACLParser.RelationOptionContext option : ctx.relationOption()) {
-            if (option.scopeValue() != null) options.add(new AclLinkOptionCS.ScopeCS(option.scopeValue().getText(), location(option)));
-            else options.add(new AclLinkOptionCS.ExtendsSubgroupsCS(Boolean.parseBoolean(option.BOOLEAN().getText()), location(option)));
+        for (var option : c.compatibilityOption()) {
+            String text = option.getText();
+            if (text.startsWith("scope")) options.add(new AclLinkOptionCS.ScopeCS(
+                    text.substring("scope".length()), location(option)));
+            else if (text.startsWith("extends-subgroups")) options.add(new AclLinkOptionCS.ExtendsSubgroupsCS(
+                    Boolean.parseBoolean(text.substring("extends-subgroups".length())), location(option)));
+            else if (text.startsWith("bidirectional")) options.add(new AclLinkOptionCS.BidirectionalCS(
+                    Boolean.parseBoolean(text.substring("bidirectional".length())), location(option)));
+            else if (text.startsWith("type")) options.add(new AclLinkOptionCS.TypeCS(
+                    text.substring("type".length()), location(option)));
         }
-        return new AclRoleEntityRelationCS(name, source, target, ctx.relationType().getText(), options, location(ctx));
+        return new AclCompatibilityCS(c.IDENT(0).getText(), c.IDENT(1).getText(),
+                c.linkArrow().getText().equals("<->"), options, location(c));
     }
-
-    private static AclCardinalityConstraintCS buildConstraint(ACLParser.CardinalityConstraintContext ctx) {
-        return new AclCardinalityConstraintCS(ctx.targetKind().getText(), ctx.IDENT().getText(),
-                buildCardinality(ctx.cardinality()), location(ctx));
+    private static List<AclAttributeCS> attrs(ACLParser.AttributeBlockContext b) { return b==null?List.of():b.attributeDecl().stream().map(AclBuildingVisitor::attribute).toList(); }
+    private static AclAttributeCS attribute(ACLParser.AttributeDeclContext c) {
+        boolean req=c.attributeModifier().stream().anyMatch(x->x.getText().equals("required"));
+        boolean mut=c.attributeModifier().stream().anyMatch(x->x.getText().equals("mutable"));
+        Optional<String> def=c.defaultClause()==null?Optional.empty():Optional.of(c.defaultClause().defaultValue().getText());
+        return new AclAttributeCS(c.IDENT(0).getText(),c.IDENT(1).getText(),req,mut,def,location(c));
     }
-
-    private static AclCardinalityCS buildCardinality(ACLParser.CardinalityContext ctx) {
-        List<TerminalNode> integers = ctx.INT();
-        Optional<String> max = ctx.getText().contains("*")
-                ? Optional.empty()
-                : Optional.of(integers.get(1).getText());
-        return new AclCardinalityCS(integers.get(0).getText(), max, location(ctx));
+    private static Optional<String> parent(ACLParser.SpecializesClauseContext c) { return c==null?Optional.empty():Optional.of(c.IDENT().getText()); }
+    private static AclCardinalityCS cardinality(ACLParser.CardinalityContext c) {
+        if(c.getText().equals("[*]")) return new AclCardinalityCS("0",Optional.empty(),location(c));
+        List<TerminalNode> ints=c.INT(); String min=ints.get(0).getText();
+        if(!c.getText().contains("..")) return new AclCardinalityCS(min,Optional.of(min),location(c));
+        return new AclCardinalityCS(min,c.getText().contains("*")?Optional.empty():Optional.of(ints.get(1).getText()),location(c));
     }
-
-    private static AclSourceLocationCS location(ParserRuleContext ctx) {
-        return new AclSourceLocationCS(ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
-    }
+    private static AclSourceLocationCS location(ParserRuleContext c) { return new AclSourceLocationCS(c.getStart().getLine(),c.getStart().getCharPositionInLine()); }
+    private record GroupBuild(AclGroupCS group,List<AclGroupCS> nested,List<AclCompatibilityCS> compatibilities){}
 }

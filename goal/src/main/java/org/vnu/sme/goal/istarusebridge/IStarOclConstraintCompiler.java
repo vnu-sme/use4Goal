@@ -53,6 +53,13 @@ public final class IStarOclConstraintCompiler {
                 MClass contextClass = UseActorClasses.resolve(gm, useModel, actorType, errors);
                 if (contextClass == null) continue;
 
+                int preIndex = 1;
+                for (var pre : gte.preconditions()) {
+                    String label = gte.id() + "::pre#" + preIndex++;
+                    compileForValidation(useModel, pre.oclBody(), label, actorType,
+                            contextClass, actorClasses, errors);
+                }
+
                 StringWriter sw = new StringWriter();
                 PrintWriter err = new PrintWriter(sw);
                 Symtable vars = new Symtable();
@@ -77,6 +84,24 @@ public final class IStarOclConstraintCompiler {
             }
         }
         return new Result(constraints, errors);
+    }
+
+    private static void compileForValidation(MModel useModel, String source, String label, String actorType,
+            MClass contextClass, Map<String, MClass> actorClasses, List<String> errors) {
+        StringWriter sw = new StringWriter();
+        PrintWriter err = new PrintWriter(sw);
+        Symtable vars = new Symtable();
+        try {
+            vars.add("self", contextClass, null);
+            for (var actorClass : actorClasses.entrySet()) {
+                vars.add(lowerFirst(actorClass.getKey()), actorClass.getValue(), null);
+            }
+            Expression expr = OCLCompiler.compileExpression(useModel, source, label, err, vars);
+            err.flush();
+            if (expr == null) errors.add("ocl '" + label + "' (self : " + actorType + "): " + sw);
+        } catch (org.tzi.use.parser.SemanticException ex) {
+            errors.add("ocl '" + label + "' (self : " + actorType + "): " + ex.getMessage());
+        }
     }
 
     private static String lowerFirst(String value) {

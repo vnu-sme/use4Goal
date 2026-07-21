@@ -13,6 +13,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.event.InternalFrameAdapter;
@@ -23,11 +24,13 @@ import org.tzi.use.gui.main.ViewFrame;
 import org.tzi.use.gui.views.PrintableView;
 import org.tzi.use.gui.views.View;
 import org.vnu.sme.goal.istar.mm.GoalModel;
+import org.vnu.sme.goal.gui.DiagramModelBrowser;
 
 @SuppressWarnings("serial")
 public final class IStarView extends JPanel implements View, PrintableView {
     private final MainWindow mainWindow;
     private final IStarDiagram diagram;
+    private final JPanel modelContent = new JPanel(new BorderLayout());
     private final Placement placement;
     private Path sourceFile;
     private GoalModel model;
@@ -51,7 +54,8 @@ public final class IStarView extends JPanel implements View, PrintableView {
             diagram.setSwitchAction(placement == Placement.USE_DESKTOP ? "Open popup" : "Open in USE",
                     placement == Placement.USE_DESKTOP ? this::switchToPopupWindow : this::switchToUseDesktop);
         }
-        add(new JScrollPane(diagram), BorderLayout.CENTER);
+        modelContent.add(new JScrollPane(diagram), BorderLayout.CENTER);
+        add(modelContent, BorderLayout.CENTER);
     }
 
     public static void openUseDesktop(MainWindow mainWindow, GoalModel model, Path sourceFile) {
@@ -132,6 +136,19 @@ public final class IStarView extends JPanel implements View, PrintableView {
     public void setModel(GoalModel model) {
         this.model = model;
         diagram.setModel(model);
+        modelContent.removeAll();
+        if (model == null) {
+            modelContent.add(new JScrollPane(diagram), BorderLayout.CENTER);
+        } else {
+            JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+                    DiagramModelBrowser.forIStar(model), new JScrollPane(diagram));
+            split.setDividerLocation(270);
+            split.setResizeWeight(0.22);
+            split.setOneTouchExpandable(true);
+            modelContent.add(split, BorderLayout.CENTER);
+        }
+        modelContent.revalidate();
+        modelContent.repaint();
     }
 
     public void setNodeBadges(Map<String, NodeBadge> badges) {

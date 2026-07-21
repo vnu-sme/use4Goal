@@ -6,25 +6,13 @@
 // Flow (verified against the source XML's sourceRef/targetRef pairs):
 //   start -> e6 -> AND-split(e2, e3) -> AND-join -> e4 -> e5 -> e7 -> XOR-split(e8 | e1) -> end
 
-collaboration GenericExample {
+model GenericExample {
 
-  pool GenericProcess "Generic Process" {
-    lane main_lane "Main" {
-      start   start1 : none
-      task    e6 "T6"
-      gateway gw_split : and
-      task    e2 "T2"
-      task    e3 "T3"
-      gateway gw_join  : and
-      task    e4 "T4"
-      task    e5 "T5"
-      task    e7 "T7"
-      gateway gw_choice : xor
-      task    e8 "T8"
-      task    e1 "T1"
-      end     end1 : none
-      end     end2 : none
-    }
+  pool GenericProcess {
+    name "Generic Process"
+    lane main_lane {
+      name "Main"
+      start start1 { trigger none }      task e6 { name "T6" }      gateway gw_split { type and }      task e2 { name "T2" }      task e3 { name "T3" }      gateway gw_join { type and }      task e4 { name "T4" }      task e5 { name "T5" }      task e7 { name "T7" }      gateway gw_choice { type xor }      task e8 { name "T8" }      task e1 { name "T1" }      end end1 { trigger none }      end end2 { trigger none }    }
 
     flow start1 -> e6
     flow e6 -> gw_split

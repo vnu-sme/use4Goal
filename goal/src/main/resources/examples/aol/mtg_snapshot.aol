@@ -1,0 +1,45 @@
+// Valid object snapshot for ../mtg/mtg.acl.
+// Each play statement is one concrete (Agent, Role, Group) occurrence.
+
+aol v1.0 MeetingSchedulerSnapshot for "../mtg/mtg.acl" {
+  agent alice, bob, carol, dave, erin;
+
+  group MeetingUnit as meetingUnit1 {
+    play Initiator as initiator1 by alice;
+    play Organizer as organizer1 by bob;
+    play Secretary as secretary1 by erin;
+
+    play Participant as participant1 by carol {
+      hasCalendar = true;
+      timetable = collected;
+      timetableChannel = calendar;
+      notified = sent;
+      attendance = attended;
+    }
+
+    play Participant as participant2 by dave {
+      hasCalendar = false;
+      timetable = requested;
+      timetableChannel = phone;
+      notified = notSent;
+      attendance = unknown;
+    }
+
+    entity Meeting as meeting1 {
+      detailsDecided = true;
+      timeChosen = false;
+    }
+  }
+
+  // PhoneContact is not a member of MeetingUnit -- mtg.acl relates it to the abstract role
+  // MeetingParty directly ("association know" / "composition phoneContacts"), so it is
+  // declared here at the top level, independent of any group instance, and wired to the
+  // Participant plays above via 'link'.
+  entity PhoneContact as carolPhone { number = "090-111-2222"; }
+  entity PhoneContact as davePhone  { number = "090-333-4444"; }
+
+  link know: participant1 -> carolPhone;
+  link phoneContacts: participant1 -> carolPhone;
+  link know: participant2 -> davePhone;
+  link phoneContacts: participant2 -> davePhone;
+}

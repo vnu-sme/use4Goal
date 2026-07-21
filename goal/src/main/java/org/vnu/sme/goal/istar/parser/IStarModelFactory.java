@@ -78,11 +78,11 @@ public final class IStarModelFactory {
             switch (item) {
                 case ElementBodyCS.GoalCS e -> {
                     GoalType gt = e.goalType() != null ? GoalType.from(e.goalType()) : null;
-                    elements.add(new Goal(e.id(), gt, e.oclSource()));
+                    elements.add(new Goal(e.id(), gt, constraints(e.constraints())));
                     rels.apply(e.id(), e.rels());
                 }
                 case ElementBodyCS.TaskCS e -> {
-                    elements.add(new Task(e.id(), e.oclSource()));
+                    elements.add(new Task(e.id(), constraints(e.constraints())));
                     rels.apply(e.id(), e.rels());
                 }
                 case ElementBodyCS.ResourceCS e -> {
@@ -119,5 +119,12 @@ public final class IStarModelFactory {
                     neededBys, obstructions, resolutions, assocs);
             default -> throw new IllegalArgumentException("Unknown actor kind: " + cs.kind());
         };
+    }
+
+    private static List<IStarOclConstraint> constraints(List<IStarOclConstraintCS> values) {
+        return values.stream().map(value -> new IStarOclConstraint(
+                value.kind() == IStarOclConstraintCS.Kind.PRE
+                        ? IStarOclConstraint.Kind.PRE : IStarOclConstraint.Kind.POST,
+                value.oclBody())).toList();
     }
 }

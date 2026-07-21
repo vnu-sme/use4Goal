@@ -30,6 +30,8 @@ public final class AclBpmnIStarConformanceMain {
         System.out.println("Generated USE : " + result.generatedUse());
         System.out.println("Execution SOIL: " + result.executionSoil());
         System.out.println("Checkpoints   : " + result.checkpoints());
+        System.out.println("ACL invariants: " + (result.aclFailures().isEmpty() ? "PASS" : "FAIL"));
+        result.aclFailures().forEach(f -> System.out.println("  - " + f));
         System.out.println("BPMN OCL      : " + (result.bpmnFailures().isEmpty() ? "PASS" : "FAIL"));
         result.bpmnFailures().forEach(f -> System.out.println("  - " + f));
         System.out.println("i* root goals : " + (result.goalFailures().isEmpty() ? "PASS" : "FAIL"));

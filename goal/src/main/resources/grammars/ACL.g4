@@ -3,161 +3,76 @@ grammar ACL;
 @parser::header { package org.vnu.sme.goal.acl.parser; }
 @lexer::header { package org.vnu.sme.goal.acl.parser; }
 
-model
-    : 'acl' VERSION IDENT '{' topLevelDecl* '}' EOF
-    ;
+model : 'acl' VERSION IDENT '{' topLevelDecl* '}' EOF ;
 
 topLevelDecl
     : enumDecl
-    | roleDecl
     | entityDecl
+    | roleDecl
     | groupDecl
-    ;
-
-enumDecl
-    : 'enum' IDENT '{' IDENT (',' IDENT)* ','? '}'
-    ;
-
-roleDecl
-    : 'abstract'? 'role' IDENT extendsClause? (';' | attributeBlock)
-    ;
-
-entityDecl
-    : 'entity' IDENT (';' | attributeBlock)
-    ;
-
-extendsClause
-    : ('extends' | 'specializes') IDENT (',' IDENT)*
-    ;
-
-attributeBlock
-    : '{' attributeDecl* '}'
-    ;
-
-attributeDecl
-    : 'attribute'? IDENT ':' IDENT attributeModifier* defaultClause? ';'
-    ;
-
-attributeModifier
-    : 'required'
-    | 'mutable'
-    ;
-
-defaultClause
-    : 'default' defaultValue
-    ;
-
-defaultValue
-    : STRING_LITERAL
-    | INT
-    | SIGNED_NUMBER
-    | BOOLEAN
-    | IDENT
-    ;
-
-groupDecl
-    : 'group' IDENT '{' groupItem* '}'
-    ;
-
-groupItem
-    : roleMembership
-    | entityMembership
-    | subgroupMembership
-    | linkDecl
+    | entityRelationDecl
     | compatibilityDecl
-    | roleEntityRelationDecl
-    | cardinalityConstraint
     ;
 
-roleMembership
-    : 'role' IDENT cardinality ';'
-    ;
+enumDecl : 'enum' IDENT '{' IDENT (',' IDENT)* ','? '}' ;
 
-entityMembership
-    : 'entity' IDENT cardinality ';'
-    ;
+entityDecl : 'entity' IDENT specializesClause? (';' | attributeBlock) ;
+roleDecl : 'abstract'? 'role' IDENT specializesClause? (';' | attributeBlock)? ;
+specializesClause : ('specializes' | 'extends') IDENT ;
 
-subgroupMembership
-    : 'subgroup' IDENT cardinality '{' groupItem* '}'
-    ;
+attributeBlock : '{' attributeDecl* '}' ;
+attributeDecl : 'attribute'? IDENT ':' IDENT attributeModifier* defaultClause? ';' ;
+attributeModifier : 'required' | 'mutable' ;
+defaultClause : 'default' defaultValue ;
+defaultValue : STRING_LITERAL | INT | SIGNED_NUMBER | BOOLEAN | IDENT ;
 
-linkDecl
-    : 'link' linkType IDENT linkArrow IDENT linkOption* ';'
+// Group -> Role/Group members become Owner relations. Group -> Entity members
+// become Entity composition relations, because Owner never targets Entity.
+groupDecl : 'group' IDENT '{' groupItem* '}' ;
+groupItem
+    : attributeDecl
+    | groupMemberDecl
+    | legacyTypedMemberDecl
+    | legacySubgroupDecl
+    | compatibilityDecl
     ;
+groupMemberDecl : IDENT cardinality ';' ;
+legacyTypedMemberDecl : ('role' | 'entity') IDENT cardinality ';' ;
+legacySubgroupDecl : 'subgroup' IDENT cardinality '{' groupItem* '}' ;
 
-linkType
-    : IDENT
-    | 'authority'
-    | 'communication'
-    | 'acquaintance'
+// relationship and partOf remain accepted aliases for association and
+// composition so existing ACL v2 files can be migrated without ambiguity.
+entityRelationDecl : relationKind IDENT '{' endpointDecl endpointDecl '}' ;
+relationKind
+    : 'association'
+    | 'aggregation'
+    | 'composition'
+    | 'relationship'
+    | 'partOf'
     ;
-
-linkArrow
-    : '->'
-    | '<->'
-    ;
-
-linkOption
-    : 'scope' scopeValue
-    | 'extends-subgroups' BOOLEAN
-    | 'bidirectional' BOOLEAN
-    ;
-
-scopeValue
-    : IDENT
-    | 'intra-group'
-    | 'inter-group'
-    ;
+// MemberEnd carries only its classifier and multiplicity. ACL does not expose
+// a UML association-end role name in the concrete syntax.
+endpointDecl : IDENT cardinality IDENT? ';' ; // trailing IDENT: legacy input, ignored
 
 compatibilityDecl
     : 'compatibility' IDENT linkArrow IDENT compatibilityOption* ';'
+    | 'link' 'compatibility' IDENT linkArrow IDENT linkScope? ';'
     ;
-
+linkArrow : '->' | '<->' ;
+linkScope : ('intra' | 'inter') IDENT ;
 compatibilityOption
     : 'scope' scopeValue
     | 'extends-subgroups' BOOLEAN
     | 'bidirectional' BOOLEAN
+    | 'type' compatibilityType
     ;
-
-// ACL extension: a dedicated Role -> Entity relation.  The optional first
-// identifier is a stable relation name; when omitted the factory derives one
-// from the relation type and endpoints.
-roleEntityRelationDecl
-    : ('relation' | 'role-entity' | 'entity-link')
-      (relationType IDENT '->' IDENT
-       | IDENT relationType IDENT '->' IDENT)
-      relationOption* ';'
-    ;
-
-relationType
-    : 'creates'
-    | 'reads'
-    | 'writes'
-    | 'uses'
-    | 'owns'
-    | 'provides'
-    | 'consumes'
-    | 'participates-in'
-    ;
-
-relationOption
-    : 'scope' scopeValue
-    | 'extends-subgroups' BOOLEAN
-    ;
-
-cardinalityConstraint
-    : 'cardinality' targetKind IDENT cardinality ';'
-    ;
-
-targetKind
-    : IDENT
-    | 'role'
-    | 'entity'
-    | 'subgroup'
-    ;
+compatibilityType : 'compatible' | 'incompatible' ;
+scopeValue : IDENT | 'intra-group' | 'inter-group' ;
 
 cardinality
-    : '[' INT '..' (INT | '*') ']'
+    : '[' INT ']'
+    | '[' INT '..' (INT | '*') ']'
+    | '[' '*' ']'
     ;
 
 VERSION        : 'v' [0-9]+ '.' [0-9]+ ;
@@ -166,7 +81,6 @@ INT            : [0-9]+ ;
 SIGNED_NUMBER  : '-'? [0-9]+ ('.' [0-9]+)? ;
 STRING_LITERAL : '"' ('\\' . | ~["\\\r\n])* '"' ;
 IDENT          : [a-zA-Z_] [a-zA-Z0-9_]* ;
-
 WS            : [ \t\r\n\f]+ -> skip ;
 LINE_COMMENT  : '//' ~[\r\n]* -> skip ;
 BLOCK_COMMENT : '/*' .*? '*/' -> skip ;

@@ -62,8 +62,12 @@ public final class Bpmn2OclConstraintCompiler {
     private static void compileFlowElements(List<FlowElement> elements, MModel useModel,
             Map<String, String> contextTypes, Map<String, ConstraintInfo> constraints, List<String> errors) {
         for (FlowElement element : elements) {
-            compileOne(element.id(), "node", element.id(), element.oclSource(), useModel,
-                    contextTypes, constraints, errors);
+            int index = 1;
+            for (var condition : element.constraints()) {
+                String id = element.id() + "::" + condition.kind().name().toLowerCase() + "#" + index++;
+                compileOne(id, "node-" + condition.kind().name().toLowerCase(), element.id(),
+                        condition.oclBody(), useModel, contextTypes, constraints, errors);
+            }
             if (element instanceof SubProcess sp) {
                 compileFlowElements(sp.flowElements(), useModel, contextTypes, constraints, errors);
                 compileSequenceFlows(sp.sequenceFlows(), useModel, contextTypes, constraints, errors);
@@ -75,7 +79,8 @@ public final class Bpmn2OclConstraintCompiler {
             Map<String, String> contextTypes, Map<String, ConstraintInfo> constraints, List<String> errors) {
         for (SequenceFlow flow : flows) {
             String id = sequenceFlowId(flow);
-            compileOne(id, "sequenceFlow", id, flow.oclSource(), useModel, contextTypes, constraints, errors);
+            compileOne(id, "sequenceFlow-guard", id, flow.guardSource(), useModel,
+                    contextTypes, constraints, errors);
         }
     }
 
@@ -89,6 +94,7 @@ public final class Bpmn2OclConstraintCompiler {
         if (oclSource == null || oclSource.isBlank()) return;
 
         String contextType = contextTypes.get(constraintId);
+        if (contextType == null) contextType = contextTypes.get(ownerId);
         if (contextType == null || contextType.isBlank()) {
             errors.add("bpmn ocl '" + constraintId + "': missing USE context type mapping");
             return;

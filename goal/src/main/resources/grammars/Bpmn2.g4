@@ -2,81 +2,49 @@ grammar Bpmn2;
 
 @header { package org.vnu.sme.goal.bpmn2.parser; }
 
-// =====================================================================
-//  BPMN 2.0 Model Language (Process + Collaboration, hợp nhất)
-//  Khớp 1-1 với doc/05-bpmn2-metamodel.drawio (Unified Metamodel).
-//
-//  model ModelName {
-//    pool PoolId "Pool Label" {
-//      lane LaneId "Lane Label" {
-//        start         EventId : none|message|timer|signal|conditional [ocl {[ raw-OCL ]}]
-//        end           EventId : none|message|error|signal|terminate|compensation [ocl {[ raw-OCL ]}]
-//        intermediate  EventId : message|timer|signal : catching|throwing [ocl {[ raw-OCL ]}]
-//        task          TaskId "Task Label" [ocl {[ raw-OCL ]}]
-//        call-activity CallId [ocl {[ raw-OCL ]}]
-//        subprocess    SubId "Label" {
-//          task ...
-//          flow Src -> Tgt
-//        } [ocl {[ raw-OCL ]}]
-//        gateway GwId : xor|and|or|event-based [ocl {[ raw-OCL ]}]
-//      }
-//      flow Src -> Tgt : "condition label" [ocl {[ raw-OCL ]}]
-//    }
-//    message MsgId "Message label"
-//    message-flow SrcId -> TgtId : MsgId
-//  }
-// =====================================================================
-
+// State-oriented BPMN concrete syntax. BPMN declares boolean state
+// predicates only; state mutation belongs to an external execution adapter.
 model : 'model' IDENT '{' pool+ message* messageFlow* '}' EOF ;
 
-pool : 'pool' IDENT STRING? '{' lane* poolElement* sequenceFlow* '}' ;
-
-lane : 'lane' IDENT STRING? '{' poolElement* '}' ;
+pool : 'pool' IDENT '{' nameProperty? lane* poolElement* sequenceFlow* '}' ;
+lane : 'lane' IDENT '{' nameProperty? poolElement* '}' ;
 
 poolElement
-    : 'start'         IDENT (':' eventType)? oclClause?                                # elemStart
-    | 'end'           IDENT (':' eventType)? oclClause?                                # elemEnd
-    | 'intermediate'  IDENT (':' eventType)? (':' eventDir)? oclClause?                # elemIntermediate
-    | 'task'          IDENT STRING? oclClause?                                         # elemTask
-    | 'call-activity' IDENT oclClause?                                                 # elemCallActivity
-    | 'subprocess'    IDENT STRING? '{' poolElement* sequenceFlow* '}' oclClause?      # elemSubProcess
-    | 'gateway'       IDENT ':' gwType oclClause?                                      # elemGateway
+    : 'start' IDENT '{' nameProperty? triggerProperty? stateCondition* '}'                    # elemStart
+    | 'end' IDENT '{' nameProperty? triggerProperty? stateCondition* '}'                      # elemEnd
+    | 'intermediate' IDENT '{' nameProperty? triggerProperty? directionProperty? stateCondition* '}' # elemIntermediate
+    | 'task' IDENT '{' nameProperty? stateCondition* effectProperty? '}'                       # elemTask
+    | 'call-activity' IDENT '{' nameProperty? stateCondition* effectProperty? '}'              # elemCallActivity
+    | 'subprocess' IDENT '{' nameProperty? stateCondition* effectProperty? poolElement* sequenceFlow* '}' # elemSubProcess
+    | 'gateway' IDENT '{' nameProperty? typeProperty stateCondition* '}'                      # elemGateway
     ;
 
-sequenceFlow : 'flow' IDENT '->' IDENT (':' STRING)? oclClause? ;
+sequenceFlow : 'flow' IDENT '->' IDENT flowBody? ;
+flowBody : '{' nameProperty? guardProperty? '}' ;
 
-message : 'message' IDENT STRING? ;
+message : 'message' IDENT ('{' nameProperty? '}')? ;
+messageFlow : 'message-flow' IDENT '->' IDENT ('{' messageProperty? '}')? ;
 
-messageFlow : 'message-flow' IDENT '->' IDENT (':' IDENT)? ;
-
-oclClause : OCL_CLAUSE ;
+nameProperty : 'name' STRING ;
+triggerProperty : 'trigger' eventType ;
+directionProperty : 'direction' eventDir ;
+typeProperty : 'type' gwType ;
+messageProperty : 'message' IDENT ;
+stateCondition : ('pre' | 'post') stateClause ;
+effectProperty : 'effect' stateClause ;
+guardProperty : 'guard' stateClause ;
+stateClause : STATE_CLAUSE ;
 
 eventType
-    : 'none'         # evtNone
-    | 'message'      # evtMessage
-    | 'timer'        # evtTimer
-    | 'error'        # evtError
-    | 'signal'       # evtSignal
-    | 'terminate'    # evtTerminate
-    | 'compensation' # evtCompensation
-    | 'conditional'  # evtConditional
+    : 'none' | 'message' | 'timer' | 'error' | 'signal'
+    | 'terminate' | 'compensation' | 'conditional'
     ;
-
 eventDir : 'catching' | 'throwing' ;
-
-gwType
-    : 'xor'          # gwXor
-    | 'and'          # gwAnd
-    | 'or'           # gwOr
-    | 'event-based'  # gwEventBased
-    ;
-
-// ── Lexer ─────────────────────────────────────────────────────────────
+gwType : 'xor' | 'and' | 'or' | 'event-based' ;
 
 IDENT  : [a-zA-Z_][a-zA-Z0-9_]* ;
 STRING : '"' (~["\r\n\\] | '\\' .)* '"' ;
-OCL_CLAUSE : 'ocl' [ \t\r\n\f]* '{[' .*? ']}' ;
-
+STATE_CLAUSE : '{[' .*? ']}' ;
 WS            : [ \t\r\n\f]+ -> skip ;
 LINE_COMMENT  : '//' ~[\r\n]*  -> skip ;
 BLOCK_COMMENT : '/*' .*? '*/'  -> skip ;

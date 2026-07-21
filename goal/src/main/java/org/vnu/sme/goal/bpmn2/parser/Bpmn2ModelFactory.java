@@ -74,13 +74,18 @@ public final class Bpmn2ModelFactory {
 
     private static FlowElement buildFlowElement(FlowElementCS cs) {
         return switch (cs) {
-            case FlowElementCS.StartEventCS e -> new StartEvent(e.id(), EventTrigger.from(e.trigger()), e.oclSource());
-            case FlowElementCS.EndEventCS e -> new EndEvent(e.id(), EventTrigger.from(e.trigger()), e.oclSource());
+            case FlowElementCS.StartEventCS e -> new StartEvent(e.id(), e.name(), EventTrigger.from(e.trigger()),
+                    constraints(e.constraints()));
+            case FlowElementCS.EndEventCS e -> new EndEvent(e.id(), e.name(), EventTrigger.from(e.trigger()),
+                    constraints(e.constraints()));
             case FlowElementCS.IntermediateEventCS e -> new IntermediateEvent(
-                    e.id(), EventTrigger.from(e.trigger()), EventDirection.from(e.direction()), e.oclSource());
-            case FlowElementCS.TaskCS e -> new Task(e.id(), e.name(), e.oclSource());
-            case FlowElementCS.CallActivityCS e -> new CallActivity(e.id(), e.oclSource());
-            case FlowElementCS.GatewayCS e -> new Gateway(e.id(), GatewayKind.from(e.kind()), e.oclSource());
+                    e.id(), e.name(), EventTrigger.from(e.trigger()), EventDirection.from(e.direction()),
+                    constraints(e.constraints()));
+            case FlowElementCS.TaskCS e -> new Task(e.id(), e.name(), constraints(e.constraints()), e.effectSource());
+            case FlowElementCS.CallActivityCS e -> new CallActivity(e.id(), e.name(), constraints(e.constraints()),
+                    e.effectSource());
+            case FlowElementCS.GatewayCS e -> new Gateway(e.id(), e.name(), GatewayKind.from(e.kind()),
+                    constraints(e.constraints()));
             case FlowElementCS.SubProcessCS e -> buildSubProcess(e);
         };
     }
@@ -97,7 +102,7 @@ public final class Bpmn2ModelFactory {
                 .map(sf -> resolveSequenceFlow(sf, scope))
                 .collect(Collectors.toList());
 
-        return new SubProcess(cs.id(), cs.name(), children, flows, cs.oclSource());
+        return new SubProcess(cs.id(), cs.name(), constraints(cs.constraints()), cs.effectSource(), children, flows);
     }
 
     private static SequenceFlow resolveSequenceFlow(SequenceFlowCS cs, Map<String, FlowElement> scope) {
@@ -105,6 +110,17 @@ public final class Bpmn2ModelFactory {
         FlowElement target = scope.get(cs.target());
         if (source == null) throw new IllegalStateException("Unknown flow source: " + cs.source());
         if (target == null) throw new IllegalStateException("Unknown flow target: " + cs.target());
-        return new SequenceFlow(source, target, cs.label(), cs.oclSource());
+        return new SequenceFlow(source, target, cs.label(), cs.guardSource());
     }
+
+    private static List<ActivityConstraint> constraints(List<ActivityConstraintCS> constraints) {
+        return constraints.stream()
+                .map(value -> new ActivityConstraint(
+                        value.kind() == ActivityConstraintCS.Kind.PRE
+                                ? ActivityConstraint.Kind.PRE
+                                : ActivityConstraint.Kind.POST,
+                        value.oclBody()))
+                .toList();
+    }
+
 }

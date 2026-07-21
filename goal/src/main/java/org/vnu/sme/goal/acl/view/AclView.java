@@ -12,6 +12,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
@@ -22,12 +23,14 @@ import org.tzi.use.gui.main.ViewFrame;
 import org.tzi.use.gui.views.PrintableView;
 import org.tzi.use.gui.views.View;
 import org.vnu.sme.goal.acl.mm.AclModel;
+import org.vnu.sme.goal.gui.DiagramModelBrowser;
 
 @SuppressWarnings("serial")
 public final class AclView extends JPanel implements View, PrintableView {
     private final MainWindow mainWindow;
     private final Placement placement;
     private final AclDiagram diagram;
+    private final JPanel diagramContent = new JPanel(new BorderLayout());
     private final JTextArea specArea = new JTextArea();
     private Path sourceFile;
     private AclModel model;
@@ -46,7 +49,8 @@ public final class AclView extends JPanel implements View, PrintableView {
         specArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 
         JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("Diagram", new JScrollPane(diagram));
+        diagramContent.add(new JScrollPane(diagram), BorderLayout.CENTER);
+        tabs.addTab("Diagram", diagramContent);
         tabs.addTab("Specification", new JScrollPane(specArea));
         add(tabs, BorderLayout.CENTER);
     }
@@ -73,6 +77,19 @@ public final class AclView extends JPanel implements View, PrintableView {
     public void setModel(AclModel model) {
         this.model = model;
         diagram.setModel(model);
+        diagramContent.removeAll();
+        if (model == null) {
+            diagramContent.add(new JScrollPane(diagram), BorderLayout.CENTER);
+        } else {
+            JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+                    DiagramModelBrowser.forAcl(model), new JScrollPane(diagram));
+            split.setDividerLocation(280);
+            split.setResizeWeight(0.23);
+            split.setOneTouchExpandable(true);
+            diagramContent.add(split, BorderLayout.CENTER);
+        }
+        diagramContent.revalidate();
+        diagramContent.repaint();
         specArea.setText(model == null ? "" : AclSpecText.render(model));
         specArea.setCaretPosition(0);
     }

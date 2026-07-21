@@ -21,6 +21,8 @@ public final class AclDiagramNode extends PlaceableNode implements ToolTipProvid
     private static final int V_PAD = 5;
     private static final int ROLE_HEADER = 40;
     private static final int ENTITY_HEADER = 48;
+    private static final int GROUP_HEADER = 38;
+    private static final int ENUM_HEADER = 48;
     private static final int GROUP_TAB_WIDTH = 30;
     private static final int GROUP_TAB_HEIGHT = 11;
 
@@ -79,11 +81,13 @@ public final class AclDiagramNode extends PlaceableNode implements ToolTipProvid
             case ROLE -> drawRole(g);
             case GROUP -> drawGroup(g);
             case ENTITY -> drawEntity(g);
+            case ENUM -> drawEnum(g);
         }
         g.dispose();
     }
 
     private void drawRole(Graphics2D g) {
+        drawRoleIcon(g);
         Font nameFont = getFont().deriveFont(isAbstractRole() ? Font.BOLD | Font.ITALIC : Font.BOLD, 13f);
         g.setColor(getTextColor());
         g.setFont(nameFont);
@@ -97,12 +101,29 @@ public final class AclDiagramNode extends PlaceableNode implements ToolTipProvid
         drawDetails(g, ROLE_HEADER, 22);
     }
 
+    /** Small person icon in the header; the rest of the Role component stays compact. */
+    private void drawRoleIcon(Graphics2D g) {
+        double x = getX() + 14, y = getY() + 10;
+        g.setColor(getFrameColor());
+        g.setStroke(new BasicStroke(1.3f));
+        g.draw(new java.awt.geom.Ellipse2D.Double(x - 3, y, 6, 6));
+        g.draw(new Line2D.Double(x, y + 6, x, y + 17));
+        g.draw(new Line2D.Double(x - 6, y + 10, x + 6, y + 10));
+        g.draw(new Line2D.Double(x, y + 17, x - 5, y + 23));
+        g.draw(new Line2D.Double(x, y + 17, x + 5, y + 23));
+    }
+
     private void drawGroup(Graphics2D g) {
         g.setColor(getTextColor());
-        g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
+        g.setFont(getFont().deriveFont(Font.BOLD, 13f));
         drawCentered(g, node.label, new Rectangle2D.Double(
                 getX() + H_PAD, getY() + GROUP_TAB_HEIGHT,
-                getWidth() - H_PAD * 2, getHeight() - GROUP_TAB_HEIGHT));
+                getWidth() - H_PAD * 2, GROUP_HEADER - GROUP_TAB_HEIGHT));
+
+        g.setColor(getFrameColor());
+        g.draw(new Line2D.Double(getX(), getY() + GROUP_HEADER,
+                getX() + getWidth(), getY() + GROUP_HEADER));
+        drawDetails(g, GROUP_HEADER, H_PAD);
     }
 
     private void drawEntity(Graphics2D g) {
@@ -119,6 +140,20 @@ public final class AclDiagramNode extends PlaceableNode implements ToolTipProvid
         g.draw(new Line2D.Double(getX(), getY() + ENTITY_HEADER,
                 getX() + getWidth(), getY() + ENTITY_HEADER));
         drawDetails(g, ENTITY_HEADER, H_PAD);
+    }
+
+    private void drawEnum(Graphics2D g) {
+        g.setColor(getTextColor());
+        g.setFont(getFont().deriveFont(Font.PLAIN, 10f));
+        g.drawString("«enumeration»", (float) getX() + H_PAD,
+                (float) getY() + V_PAD + g.getFontMetrics().getAscent());
+        g.setFont(getFont().deriveFont(Font.BOLD, 13f));
+        drawCentered(g, node.label, new Rectangle2D.Double(
+                getX() + H_PAD, getY() + 16, getWidth() - H_PAD * 2, 26));
+        g.setColor(getFrameColor());
+        g.draw(new Line2D.Double(getX(), getY() + ENUM_HEADER,
+                getX() + getWidth(), getY() + ENUM_HEADER));
+        drawDetails(g, ENUM_HEADER, H_PAD);
     }
 
     private void drawDetails(Graphics2D g, int headerHeight, int horizontalPadding) {
@@ -144,8 +179,10 @@ public final class AclDiagramNode extends PlaceableNode implements ToolTipProvid
         }
         int height = switch (node.kind) {
             case ROLE -> ROLE_HEADER + (node.details.isEmpty() ? 0 : node.details.size() * detailMetrics.getHeight() + 10);
-            case GROUP -> 62;
+            case GROUP -> GROUP_HEADER
+                    + Math.max(1, node.details.size()) * detailMetrics.getHeight() + 10;
             case ENTITY -> ENTITY_HEADER + Math.max(1, node.details.size()) * detailMetrics.getHeight() + 10;
+            case ENUM -> ENUM_HEADER + Math.max(1, node.details.size()) * detailMetrics.getHeight() + 10;
         };
         setCalculatedBounds(Math.max(node.w, width), Math.max(node.h, height));
     }
@@ -168,6 +205,7 @@ public final class AclDiagramNode extends PlaceableNode implements ToolTipProvid
             }
             case GROUP -> groupShape();
             case ENTITY -> new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
+            case ENUM -> new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
         };
     }
 
@@ -188,6 +226,7 @@ public final class AclDiagramNode extends PlaceableNode implements ToolTipProvid
             case ENTITY -> opt.getColor(AclDiagramOptions.ENTITY_FILL);
             case ROLE -> opt.getColor(AclDiagramOptions.ROLE_FILL);
             case GROUP -> opt.getColor(AclDiagramOptions.GROUP_FILL);
+            case ENUM -> opt.getColor(AclDiagramOptions.ENUM_FILL);
         };
     }
 

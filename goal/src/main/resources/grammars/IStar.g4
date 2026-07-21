@@ -65,8 +65,8 @@ actorDef : actorKind IDENT '{' actorBody* '}' ;
 actorKind : 'role' | 'agent' ;
 
 actorBody
-    : 'goal'     IDENT goalType?     rel* oclClause?  # bodyGoal
-    | 'task'     IDENT                rel* oclClause?  # bodyTask
+    : 'goal'     IDENT goalType?     rel* oclCondition*  # bodyGoal
+    | 'task'     IDENT                rel* oclCondition*  # bodyTask
     | 'resource' IDENT                rel*  # bodyResource
     | 'quality'  IDENT                rel*  # bodyQuality
     | 'obstacle' IDENT obstacleType?  rel*  # bodyObstacle
@@ -107,7 +107,10 @@ contribType
     | 'break' # ctBreak
     ;
 
-oclClause : OCL_CLAUSE ;
+oclCondition
+    : ('pre' | 'post') OCL_BLOCK
+    | OCL_CLAUSE
+    ;
 
 // ── Lexer ─────────────────────────────────────────────────────────────
 
@@ -115,6 +118,8 @@ OCL_CLAUSE
     : 'ocl' [ \t\r\n\f]* '{[' .*? ']}'
     | 'ocl:' (OCL_DQ_STRING | OCL_SQ_STRING | ~[;"'])* ';'
     ;
+
+OCL_BLOCK : '{[' .*? ']}' ;
 
 fragment OCL_DQ_STRING
     : '"' ('\\' . | ~["\\\r\n])* '"'

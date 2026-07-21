@@ -1,68 +1,58 @@
--- Initial object state for the Meeting Scheduler case study.
--- Process execution is not encoded here. BPMN is responsible for deciding which
--- activities run and how the state should evolve through their pre/post OCL.
+-- Snapshot for mtg_shadow.use.
+-- Alice holds the compatible Initiator + Participant pair in one MeetingUnit.
+-- Bob holds the compatible Organizer + Secretary pair in the same MeetingUnit.
 
-meeting1 := new Meeting('meeting1');
-meeting1.detailsDecided := false;
-meeting1.timeChosen := false;
+!create architectureReview : MeetingUnit
+!create reviewMeeting : Meeting
+!set reviewMeeting.detailsDecided := true
+!set reviewMeeting.timeChosen := false
+!insert (architectureReview, reviewMeeting) into meetingUnitMeetings
 
-personAbdul := new Person('personAbdul');
-personMatilda := new Person('personMatilda');
-personAlex := new Person('personAlex');
-personHung := new Person('personHung');
-personXing := new Person('personXing');
-personAmr := new Person('personAmr');
-personNaya := new Person('personNaya');
-personBao := new Person('personBao');
-personChloe := new Person('personChloe');
+!create alice : Agent
+!create bob : Agent
+!create carol : Agent
 
-abdul := new Initiator('abdul') between (meeting1, personAbdul);
-matilda := new Organizer('matilda') between (meeting1, personMatilda);
-alex := new Secretary('alex') between (meeting1, personAlex);
-hung := new Secretary('hung') between (meeting1, personHung);
+!create initiatorAlice : Initiator
+!set initiatorAlice.name := 'Alice as initiator'
+!insert (alice, initiatorAlice) into Agent_plays_Initiator
+!insert (architectureReview, initiatorAlice) into Initiator_in_MeetingUnit
 
-xing := new Participant('xing') between (meeting1, personXing);
-amr := new Participant('amr') between (meeting1, personAmr);
-naya := new Participant('naya') between (meeting1, personNaya);
-bao := new Participant('bao') between (meeting1, personBao);
-chloe := new Participant('chloe') between (meeting1, personChloe);
+!create organizerBob : Organizer
+!set organizerBob.name := 'Bob as organizer'
+!insert (bob, organizerBob) into Agent_plays_Organizer
+!insert (architectureReview, organizerBob) into Organizer_in_MeetingUnit
 
-xing.hasCalendar := true;
-amr.hasCalendar := true;
-naya.hasCalendar := false;
-bao.hasCalendar := false;
-chloe.hasCalendar := false;
+!create secretaryBob : Secretary
+!set secretaryBob.name := 'Bob as secretary'
+!insert (bob, secretaryBob) into Agent_plays_Secretary
+!insert (architectureReview, secretaryBob) into Secretary_in_MeetingUnit
 
-xing.timetable := #notRequested;
-amr.timetable := #notRequested;
-naya.timetable := #notRequested;
-bao.timetable := #notRequested;
-chloe.timetable := #notRequested;
+!create participantAlice : Participant
+!set participantAlice.name := 'Alice as participant'
+!set participantAlice.hasCalendar := true
+!set participantAlice.timetable := #collected
+!set participantAlice.timetableChannel := #calendar
+!set participantAlice.notified := #sent
+!set participantAlice.attendance := #attended
+!insert (alice, participantAlice) into Agent_plays_Participant
+!insert (architectureReview, participantAlice) into Participant_in_MeetingUnit
 
-xing.timetableChannel := #none;
-amr.timetableChannel := #none;
-naya.timetableChannel := #none;
-bao.timetableChannel := #none;
-chloe.timetableChannel := #none;
+!create participantCarol : Participant
+!set participantCarol.name := 'Carol as participant'
+!set participantCarol.hasCalendar := false
+!set participantCarol.timetable := #requested
+!set participantCarol.timetableChannel := #phone
+!set participantCarol.notified := #notSent
+!set participantCarol.attendance := #unknown
+!insert (carol, participantCarol) into Agent_plays_Participant
+!insert (architectureReview, participantCarol) into Participant_in_MeetingUnit
 
-xing.notified := #notSent;
-amr.notified := #notSent;
-naya.notified := #notSent;
-bao.notified := #notSent;
-chloe.notified := #notSent;
+!create alicePhone : PhoneContact
+!set alicePhone.number := '+84-900-111-222'
+!insert (participantAlice, alicePhone) into phoneContacts
+!insert (secretaryBob, alicePhone) into know
 
-xing.attendance := #unknown;
-amr.attendance := #unknown;
-naya.attendance := #unknown;
-bao.attendance := #unknown;
-chloe.attendance := #unknown;
-
-nayaPhone := new PhoneContact('nayaPhone');
-baoPhone := new PhoneContact('baoPhone');
-chloePhone := new PhoneContact('chloePhone');
-insert (personNaya, nayaPhone) into PersonPhoneContacts;
-insert (personBao, baoPhone) into PersonPhoneContacts;
-insert (personChloe, chloePhone) into PersonPhoneContacts;
-insert (alex, nayaPhone) into SecretaryKnowsPhoneContact;
-insert (hung, baoPhone) into SecretaryKnowsPhoneContact;
-insert (hung, chloePhone) into SecretaryKnowsPhoneContact;
+!create carolPhone : PhoneContact
+!set carolPhone.number := '+84-900-333-444'
+!insert (participantCarol, carolPhone) into phoneContacts
+!insert (secretaryBob, carolPhone) into know

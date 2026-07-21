@@ -5,5 +5,5 @@ public record SequenceFlowCS(
         String source,
         String target,
         String label,      // nullable
-        String oclSource   // nullable
+        String guardSource // nullable boolean OCL
 ) {}

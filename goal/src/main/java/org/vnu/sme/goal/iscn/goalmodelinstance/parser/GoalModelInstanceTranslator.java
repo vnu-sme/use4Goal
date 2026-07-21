@@ -527,8 +527,8 @@ public final class GoalModelInstanceTranslator {
 
     private static IntentionalElement copyElement(IntentionalElement elem, String id) {
         return switch (elem) {
-            case Goal g -> new Goal(id, g.goalType(), g.oclSource());
-            case Task t -> new Task(id, t.oclSource());
+            case Goal g -> new Goal(id, g.goalType(), g.constraints());
+            case Task t -> new Task(id, t.constraints());
             case Resource r -> new Resource(id);
             case Quality q -> new Quality(id);
             case Obstacle o -> new Obstacle(id, o.type());

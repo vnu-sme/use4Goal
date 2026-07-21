@@ -1,37 +1,19 @@
--- USE/OCL structural shadow model for mtg.istar.
---
--- Design rule: every i* actor type is a first-class .use class, not a naming
--- convention on top of a generic Person. Each concrete actor role is an
--- associationclass linking the two things that make an actor instance
--- concrete: WHICH Meeting, and WHICH Person plays that role in it. This is
--- deliberate:
---   - self in a Task/Goal's OCL clause is always bound to an Actor instance,
---     never to Meeting directly. Because an Actor *is* an associationclass
---     over Meeting, self already knows exactly which Meeting it belongs to
---     via its own association end (self.organizedMeeting, self.participatingMeeting,
---     ...) -- no ambiguity even with several Meetings live at once.
---   - Role/Agent give i*'s own actorKind (role | agent) a real UML type, so
---     "is this class an Actor or a plain Entity" is answered by generalization,
---     not by a side mapping file.
---
--- Meeting and PhoneContact are plain Entities: they do not inherit Role/Agent.
+-- Generated from ACL. Regenerate instead of editing this file.
+-- ACL classes/generalizations map directly to USE classes/generalizations.
+-- Agent--Role and Role--Group are ordinary associations; no association classes are generated.
+-- Compatibility is translated into 'inv NoConflict_<R1>_<R2>' invariants on the Agent class.
 
 model MeetingSchedulerShadow
 
-enum TimetableStatus    {notRequested, requested, collected}
-enum TimetableChannel   {none, calendar, phone}
+enum TimetableStatus {notRequested, requested, collected}
+
+enum TimetableChannel {none, calendar, phone}
+
 enum NotificationStatus {notSent, sent}
-enum AttendanceStatus   {unknown, attended, absent}
 
-class Person
-attributes
-  name : String
-end
+enum AttendanceStatus {unknown, attended, absent}
 
-class Meeting
-attributes
-  detailsDecided : Boolean
-  timeChosen     : Boolean
+class Agent
 end
 
 class PhoneContact
@@ -39,46 +21,112 @@ attributes
   number : String
 end
 
-composition PersonPhoneContacts between
-  Person       [1] role phoneOwner
-  PhoneContact [*] role phoneContacts
-end
-
--- Actor-kind roots, mirroring IStar.g4's actorKind : 'role' | 'agent'. Both
--- must themselves be associationclass, not class: USE rejects a plain class
--- as the superclass of an associationclass ("invalid inheritance relation
--- between meta elements"), so the marker root has to be the same meta-kind
--- as what inherits from it. Both carry the (Meeting, Person) ends every
--- concrete actor needs -- self.actorMeeting/self.actorPerson are inherited,
--- not redeclared, by every subclass below.
-abstract associationclass Role between
-  Meeting [*] role actorMeeting
-  Person  [*] role actorPerson
-end
-
-abstract associationclass Agent between
-  Meeting [*] role agentMeeting
-  Person  [*] role agentPerson
-end
-
-associationclass Initiator < Role end
-
-associationclass Organizer < Role end
-
-associationclass Secretary < Role end
-
-associationclass Participant < Role
+class Meeting
 attributes
-  hasCalendar      : Boolean
-  timetable        : TimetableStatus
-  timetableChannel : TimetableChannel
-  notified         : NotificationStatus
-  attendance       : AttendanceStatus
+  detailsDecided : Boolean
+  timeChosen : Boolean
 end
 
--- Structural knowledge: a secretary knows how to call a participant only if
--- linked to one of that participant's phone contacts.
-association SecretaryKnowsPhoneContact between
-  Secretary    [*] role secretariesKnowingContact
-  PhoneContact [*] role knownPhoneContacts
+abstract class MeetingParty
+attributes
+  name : String
 end
+
+class Initiator < MeetingParty
+end
+
+class Organizer < MeetingParty
+end
+
+class Secretary < MeetingParty
+end
+
+class Participant < MeetingParty
+attributes
+  hasCalendar : Boolean
+  timetable : TimetableStatus
+  timetableChannel : TimetableChannel
+  notified : NotificationStatus
+  attendance : AttendanceStatus
+end
+
+class MeetingUnit
+end
+
+association know between
+  MeetingParty[1] role source_know
+  PhoneContact[0..*] role target_know
+end
+
+association meetingUnitMeetings between
+  MeetingUnit[1] role source_meetingUnitMeetings
+  Meeting[0..*] role target_meetingUnitMeetings
+end
+
+composition phoneContacts between
+  MeetingParty[1] role source_phoneContacts
+  PhoneContact[0..*] role target_phoneContacts
+end
+
+association Agent_plays_Initiator between
+  Agent[1] role source_Agent_plays_Initiator
+  Initiator[0..*] role target_Agent_plays_Initiator
+end
+
+association Initiator_in_MeetingUnit between
+  MeetingUnit[1] role source_Initiator_in_MeetingUnit
+  Initiator[1] role target_Initiator_in_MeetingUnit
+end
+
+association Agent_plays_Organizer between
+  Agent[1] role source_Agent_plays_Organizer
+  Organizer[0..*] role target_Agent_plays_Organizer
+end
+
+association Organizer_in_MeetingUnit between
+  MeetingUnit[1] role source_Organizer_in_MeetingUnit
+  Organizer[1] role target_Organizer_in_MeetingUnit
+end
+
+association Agent_plays_Secretary between
+  Agent[1] role source_Agent_plays_Secretary
+  Secretary[0..*] role target_Agent_plays_Secretary
+end
+
+association Secretary_in_MeetingUnit between
+  MeetingUnit[1] role source_Secretary_in_MeetingUnit
+  Secretary[0..1] role target_Secretary_in_MeetingUnit
+end
+
+association Agent_plays_Participant between
+  Agent[1] role source_Agent_plays_Participant
+  Participant[0..*] role target_Agent_plays_Participant
+end
+
+association Participant_in_MeetingUnit between
+  MeetingUnit[1] role source_Participant_in_MeetingUnit
+  Participant[2..*] role target_Participant_in_MeetingUnit
+end
+
+constraints
+
+context Agent inv NoConflict_Initiator_Organizer:
+  self.target_Agent_plays_Initiator->forAll(r1 : Initiator |
+    self.target_Agent_plays_Organizer->forAll(r2 : Organizer |
+      not (r1.source_Initiator_in_MeetingUnit = r2.source_Organizer_in_MeetingUnit)))
+
+context Agent inv NoConflict_Initiator_Secretary:
+  self.target_Agent_plays_Initiator->forAll(r1 : Initiator |
+    self.target_Agent_plays_Secretary->forAll(r2 : Secretary |
+      not (r1.source_Initiator_in_MeetingUnit = r2.source_Secretary_in_MeetingUnit)))
+
+context Agent inv NoConflict_Organizer_Participant:
+  self.target_Agent_plays_Organizer->forAll(r1 : Organizer |
+    self.target_Agent_plays_Participant->forAll(r2 : Participant |
+      not (r1.source_Organizer_in_MeetingUnit = r2.source_Participant_in_MeetingUnit)))
+
+context Agent inv NoConflict_Secretary_Participant:
+  self.target_Agent_plays_Secretary->forAll(r1 : Secretary |
+    self.target_Agent_plays_Participant->forAll(r2 : Participant |
+      not (r1.source_Secretary_in_MeetingUnit = r2.source_Participant_in_MeetingUnit)))
+

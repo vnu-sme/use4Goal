@@ -22,7 +22,7 @@
                 <mxCell id="MOperation" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;MOperation&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;name : String&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;resultType : Type&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;isConstructor : Boolean&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;labelBackgroundColor=none;labelBorderColor=none;strokeColor=#000000;fontColor=#000000;" parent="1" vertex="1">
                     <mxGeometry y="667" width="210" height="90" as="geometry"/>
                 </mxCell>
-                <mxCell id="MParameter" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Parameter&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;name : String&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;type : Type&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;labelBackgroundColor=none;labelBorderColor=none;strokeColor=#000000;fontColor=#000000;" vertex="1" parent="1">
+                <mxCell id="MParameter" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Parameter&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;name : String&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;type : Type&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;labelBackgroundColor=none;labelBorderColor=none;strokeColor=#000000;fontColor=#000000;" parent="1" vertex="1">
                     <mxGeometry x="236" y="821" width="170" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="MAssociationEnd" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;MAssociationEnd&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;rolename : String&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;aggregationKind : AggregationKind&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;isOrdered : Boolean&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;isNavigable : Boolean&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;labelBackgroundColor=none;labelBorderColor=none;strokeColor=#000000;fontColor=#000000;" parent="1" vertex="1">
@@ -35,18 +35,18 @@
                     <mxGeometry x="-10" y="407" width="210" height="70" as="geometry"/>
                 </mxCell>
                 <mxCell id="MGeneralization" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;MGeneralization&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;div style=&quot;height:2px;&quot;&gt;&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;labelBackgroundColor=none;labelBorderColor=none;strokeColor=#000000;fontColor=#000000;" parent="1" vertex="1">
-                    <mxGeometry x="248" y="364" width="190" height="40" as="geometry"/>
+                    <mxGeometry x="259" y="390" width="190" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="MClassInvariant" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;MClassInvariant&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;name : String&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&amp;nbsp;bodyExpression : Expression&lt;/div&gt;" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=#FFFFFF;labelBackgroundColor=none;labelBorderColor=none;strokeColor=#000000;fontColor=#000000;" parent="1" vertex="1">
                     <mxGeometry x="904" y="166" width="210" height="70" as="geometry"/>
                 </mxCell>
-                <mxCell id="N1" value="Conceptually an AssociationClass is both&#10;a Class and an Association.&#10;&#10;In the Java code this is NOT multiple&#10;inheritance (impossible in Java): MAssociationClassImpl&#10;extends only MClassifierImpl and DELEGATES to a&#10;private MClassImpl + MAssociationImpl pair." style="shape=note;whiteSpace=wrap;html=0;fillColor=#fff9c4;strokeColor=#999999;fontColor=#333333;size=14;align=left;verticalAlign=top;spacing=6;fontSize=11;" vertex="1" parent="1">
+                <mxCell id="N1" value="Conceptually an AssociationClass is both&#10;a Class and an Association.&#10;&#10;In the Java code this is NOT multiple&#10;inheritance (impossible in Java): MAssociationClassImpl&#10;extends only MClassifierImpl and DELEGATES to a&#10;private MClassImpl + MAssociationImpl pair." style="shape=note;whiteSpace=wrap;html=0;fillColor=#fff9c4;strokeColor=#999999;fontColor=#333333;size=14;align=left;verticalAlign=top;spacing=6;fontSize=11;" parent="1" vertex="1">
                     <mxGeometry x="1181" y="725" width="280" height="120" as="geometry"/>
                 </mxCell>
                 <mxCell id="g3" style="strokeColor=#000000;endArrow=block;endSize=16;endFill=0;html=1;rounded=0;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="MDataType" target="MClassifier" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="N2" value="In the reference UML metamodel, DataType is&#10;normally a leaf (Enumeration / PrimitiveType) with&#10;no attributes or operations of its own.&#10;&#10;USE deliberately goes further: a dataType CAN declare&#10;an 'operations' section (constructor + methods), e.g.&#10;examples/Documentation/Datatypes/Currency.use ':&#10;  dataType Amount operations Amount(amount:Real, ...)&#10;Its attributes come from that constructor's parameters,&#10;not from a separate 'attributes' section.&#10;Left off the main diagram to match standard semantics." style="shape=note;whiteSpace=wrap;html=0;fillColor=#fff9c4;strokeColor=#999999;fontColor=#333333;size=14;align=left;verticalAlign=top;spacing=6;fontSize=11;" vertex="1" parent="1">
+                <mxCell id="N2" value="In the reference UML metamodel, DataType is&#10;normally a leaf (Enumeration / PrimitiveType) with&#10;no attributes or operations of its own.&#10;&#10;USE deliberately goes further: a dataType CAN declare&#10;an 'operations' section (constructor + methods), e.g.&#10;examples/Documentation/Datatypes/Currency.use ':&#10;  dataType Amount operations Amount(amount:Real, ...)&#10;Its attributes come from that constructor's parameters,&#10;not from a separate 'attributes' section.&#10;Left off the main diagram to match standard semantics." style="shape=note;whiteSpace=wrap;html=0;fillColor=#fff9c4;strokeColor=#999999;fontColor=#333333;size=14;align=left;verticalAlign=top;spacing=6;fontSize=11;" parent="1" vertex="1">
                     <mxGeometry x="990" y="770" width="300" height="170" as="geometry"/>
                 </mxCell>
                 <mxCell id="g4" style="strokeColor=#000000;endArrow=block;endSize=16;endFill=0;html=1;rounded=0;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="MAssociation" target="MClassifier" edge="1">
@@ -90,36 +90,36 @@
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="c7a" style="strokeColor=#000000;endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" edge="1" parent="1" source="MAttribute" target="MClass">
+                <mxCell id="c7a" style="strokeColor=#000000;endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="MAttribute" target="MClass" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="c7a-l0" value="attributes  0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" connectable="0" vertex="1" parent="c7a">
+                <mxCell id="c7a-l0" value="attributes  0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="c7a" connectable="0" vertex="1">
                     <mxGeometry x="-0.7" relative="1" as="geometry">
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="c7a-l1" value="owner  1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" connectable="0" vertex="1" parent="c7a">
+                <mxCell id="c7a-l1" value="owner  1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="c7a" connectable="0" vertex="1">
                     <mxGeometry x="0.7" relative="1" as="geometry">
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="c8a" style="strokeColor=#000000;endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" edge="1" parent="1" source="MOperation" target="MClass">
+                <mxCell id="c8a" style="strokeColor=#000000;endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="MOperation" target="MClass" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="c8a-l0" value="operations  0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" connectable="0" vertex="1" parent="c8a">
+                <mxCell id="c8a-l0" value="operations  0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="c8a" connectable="0" vertex="1">
                     <mxGeometry x="-0.7" relative="1" as="geometry">
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="c8a-l1" value="owner  1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" connectable="0" vertex="1" parent="c8a">
+                <mxCell id="c8a-l1" value="owner  1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="c8a" connectable="0" vertex="1">
                     <mxGeometry x="0.7" relative="1" as="geometry">
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="c8c" style="strokeColor=#000000;endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" edge="1" parent="1" source="MParameter" target="MOperation">
+                <mxCell id="c8c" style="strokeColor=#000000;endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="MParameter" target="MOperation" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="c8c-l0" value="parameters  0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" connectable="0" vertex="1" parent="c8c">
+                <mxCell id="c8c-l0" value="parameters  0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="c8c" connectable="0" vertex="1">
                     <mxGeometry x="-0.6" relative="1" as="geometry">
                         <mxPoint as="offset"/>
                     </mxGeometry>
@@ -159,7 +159,11 @@
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="a3" style="strokeColor=#000000;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="MGeneralization" target="MClassifier" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="429" y="371"/>
+                        </Array>
+                    </mxGeometry>
                 </mxCell>
                 <mxCell id="a3-l0" value="child  1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="a3" connectable="0" vertex="1">
                     <mxGeometry x="-0.7" relative="1" as="geometry">
@@ -167,7 +171,11 @@
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="a4" style="strokeColor=#000000;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="MGeneralization" target="MClassifier" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="452" y="414"/>
+                        </Array>
+                    </mxGeometry>
                 </mxCell>
                 <mxCell id="a4-l0" value="parent  1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="a4" connectable="0" vertex="1">
                     <mxGeometry x="0.7" relative="1" as="geometry">
@@ -182,22 +190,22 @@
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="2" value="" style="strokeColor=#000000;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;endArrow=none;startArrow=none;" edge="1" parent="1" source="MClassifier" target="MClass">
+                <mxCell id="2" value="" style="strokeColor=#000000;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;endArrow=none;startArrow=none;" parent="1" source="MClassifier" target="MClass" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="1052.0668151447662" y="-35" as="sourcePoint"/>
                         <mxPoint x="779.6748329621382" y="329" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="g13" style="strokeColor=#000000;endArrow=block;endSize=16;endFill=0;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" edge="1" parent="1" source="MClassInvariant">
+                <mxCell id="g13" style="strokeColor=#000000;endArrow=block;endSize=16;endFill=0;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="MClassInvariant" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="g14" style="strokeColor=#000000;endArrow=block;endSize=16;endFill=0;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" edge="1" parent="1" source="MPrePostCondition">
+                <mxCell id="g14" style="strokeColor=#000000;endArrow=block;endSize=16;endFill=0;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="MPrePostCondition" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="g15" style="strokeColor=#000000;endArrow=block;endSize=16;endFill=0;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" edge="1" parent="1" source="MAssociationEnd">
+                <mxCell id="g15" style="strokeColor=#000000;endArrow=block;endSize=16;endFill=0;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="MAssociationEnd" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="nlink" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;rounded=0;labelBackgroundColor=none;labelBorderColor=none;" edge="1" parent="1" source="N1" target="MAssociationClass">
+                <mxCell id="nlink" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;rounded=0;labelBackgroundColor=none;labelBorderColor=none;" parent="1" source="N1" target="MAssociationClass" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="a1" style="strokeColor=#000000;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;" parent="1" source="MAssociationEnd" target="MClass" edge="1">
@@ -213,10 +221,10 @@
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="nlink2" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;rounded=0;labelBackgroundColor=none;labelBorderColor=none;" edge="1" parent="1" source="N2" target="MDataType">
+                <mxCell id="nlink2" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;rounded=0;labelBackgroundColor=none;labelBorderColor=none;" parent="1" source="N2" target="MDataType" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="5" value="" style="strokeColor=#000000;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;endArrow=none;" edge="1" parent="1" source="MClassInvariant" target="MClassifier">
+                <mxCell id="5" value="" style="strokeColor=#000000;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=none;labelBorderColor=none;fontColor=#000000;endArrow=none;" parent="1" source="MClassInvariant" target="MClassifier" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="689.9203980099501" y="98" as="sourcePoint"/>
                         <mxPoint x="679.0009950248755" y="452" as="targetPoint"/>

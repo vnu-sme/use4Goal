@@ -7,29 +7,16 @@
 // justification for the exclusion — a plausible compliance defect, useful as a
 // non-compliant counterpart to air_passenger_rights.bpmn2 for testing the conformance checker.
 
-collaboration AirPassengerRightsClaimFail {
+model AirPassengerRightsClaimFail {
 
-  pool AirlineClaimProcess "Airline Claim Process" {
-    lane assessment_lane "Delay Assessment" {
-      start   start1 : none
-      gateway gw_split      : and
-      task    retrieveBookingTime   "Retrieve Arrival Time From Booking"
-      task    retrieveDoorOpenTime  "Retrieve Door Open Time"
-      gateway gw_join       : and
-      task    calculateDelay "Calculate Delay At Arrival"
-      gateway gw_afterCalc  : xor
-      task    retrieveInternalSystemsInfo "Retrieve Info From Internal Systems"
-      gateway gw_afterInfo  : xor
-      task    registerJudgementCriteria "Register Judgement Criteria And Type Of EC"
-      gateway gw_afterRegister : xor
-      task    recordJustificationExclusionA "Record justification for exclusion (A)"
-    }
-    lane decision_lane "Compensation Decision" {
-      task approveCompensation "Approve Compensation"
-      task denyCompensation    "Deny Compensation"
-      task documentAndSaveFileCase "Document And Save File Case"
-      end  end1 : none
-    }
+  pool AirlineClaimProcess {
+    name "Airline Claim Process"
+    lane assessment_lane {
+      name "Delay Assessment"
+      start start1 { trigger none }      gateway gw_split { type and }      task retrieveBookingTime { name "Retrieve Arrival Time From Booking" }      task retrieveDoorOpenTime { name "Retrieve Door Open Time" }      gateway gw_join { type and }      task calculateDelay { name "Calculate Delay At Arrival" }      gateway gw_afterCalc { type xor }      task retrieveInternalSystemsInfo { name "Retrieve Info From Internal Systems" }      gateway gw_afterInfo { type xor }      task registerJudgementCriteria { name "Register Judgement Criteria And Type Of EC" }      gateway gw_afterRegister { type xor }      task recordJustificationExclusionA { name "Record justification for exclusion (A)" }    }
+    lane decision_lane {
+      name "Compensation Decision"
+      task approveCompensation { name "Approve Compensation" }      task denyCompensation { name "Deny Compensation" }      task documentAndSaveFileCase { name "Document And Save File Case" }      end end1 { trigger none }    }
 
     flow start1 -> gw_split
     flow gw_split -> retrieveBookingTime
@@ -41,12 +28,10 @@ collaboration AirPassengerRightsClaimFail {
 
     flow gw_afterCalc -> retrieveInternalSystemsInfo
     // DEFECT: skips recordJustificationExclusionB entirely — goes straight to Approve.
-    flow gw_afterCalc -> approveCompensation : "extraordinary circumstance branch (no justification recorded)"
-
+    flow gw_afterCalc -> approveCompensation { name "extraordinary circumstance branch (no justification recorded)" }
     flow retrieveInternalSystemsInfo -> gw_afterInfo
     flow gw_afterInfo -> registerJudgementCriteria
-    flow gw_afterInfo -> recordJustificationExclusionA : "extraordinary circumstance branch"
-
+    flow gw_afterInfo -> recordJustificationExclusionA { name "extraordinary circumstance branch" }
     flow registerJudgementCriteria -> gw_afterRegister
     flow gw_afterRegister -> denyCompensation
     flow gw_afterRegister -> approveCompensation

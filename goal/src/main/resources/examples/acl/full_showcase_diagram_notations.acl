@@ -24,20 +24,11 @@ acl v2.0 Showcase {
       role Employee [1..*];
     }
 
-    link authority Manager -> Employee
-      scope intra-group;
-
-    link communication Manager <-> Employee
-      scope intra-group;
-
-    link acquaintance Manager <-> Employee
-      scope inter-group
-      extends-subgroups true;
-
     compatibility Manager <-> Employee
-      scope intra-group;
+      scope intra-group
+      type compatible;
 
-    relation Assign creates Manager -> Task
+    relation Assign owns Manager -> Task
       scope intra-group;
 
     cardinality role Employee [2..10];

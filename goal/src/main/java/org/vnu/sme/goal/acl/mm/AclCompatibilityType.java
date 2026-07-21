@@ -3,14 +3,13 @@ package org.vnu.sme.goal.acl.mm;
 import java.util.Arrays;
 import java.util.Optional;
 
-public enum AclLinkType {
-    AUTHORITY("authority"),
-    COMMUNICATION("communication"),
-    ACQUAINTANCE("acquaintance");
+public enum AclCompatibilityType {
+    COMPATIBLE("compatible"),
+    INCOMPATIBLE("incompatible");
 
     private final String sourceName;
 
-    AclLinkType(String sourceName) {
+    AclCompatibilityType(String sourceName) {
         this.sourceName = sourceName;
     }
 
@@ -18,7 +17,7 @@ public enum AclLinkType {
         return sourceName;
     }
 
-    public static Optional<AclLinkType> fromSource(String source) {
+    public static Optional<AclCompatibilityType> fromSource(String source) {
         return Arrays.stream(values()).filter(value -> value.sourceName.equals(source)).findFirst();
     }
 }

@@ -56,9 +56,10 @@ public final class IStarBuildingVisitor extends IStarBaseVisitor<Object> {
                     b.IDENT().getText(),
                     b.goalType() != null ? b.goalType().goalTypeName().getText() : null,
                     buildRels(b.rel()),
-                    buildOclSource(b.oclClause()));
+                    buildOclConstraints(b.oclCondition()));
             case IStarParser.BodyTaskContext b ->
-                    new ElementBodyCS.TaskCS(b.IDENT().getText(), buildRels(b.rel()), buildOclSource(b.oclClause()));
+                    new ElementBodyCS.TaskCS(b.IDENT().getText(), buildRels(b.rel()),
+                            buildOclConstraints(b.oclCondition()));
             case IStarParser.BodyResourceContext b ->
                     new ElementBodyCS.ResourceCS(b.IDENT().getText(), buildRels(b.rel()));
             case IStarParser.BodyQualityContext b ->
@@ -75,9 +76,21 @@ public final class IStarBuildingVisitor extends IStarBaseVisitor<Object> {
         };
     }
 
-    private String buildOclSource(IStarParser.OclClauseContext ctx) {
-        if (ctx == null) return null;
-        String raw = ctx.OCL_CLAUSE().getText();
+    private List<IStarOclConstraintCS> buildOclConstraints(List<IStarParser.OclConditionContext> contexts) {
+        List<IStarOclConstraintCS> result = new ArrayList<>();
+        for (IStarParser.OclConditionContext ctx : contexts) {
+            boolean legacy = ctx.OCL_CLAUSE() != null;
+            String raw = legacy ? ctx.OCL_CLAUSE().getText() : ctx.OCL_BLOCK().getText();
+            String body = extractOclBody(raw);
+            if (body == null) continue;
+            IStarOclConstraintCS.Kind kind = !legacy && "pre".equals(ctx.getStart().getText())
+                    ? IStarOclConstraintCS.Kind.PRE : IStarOclConstraintCS.Kind.POST;
+            result.add(new IStarOclConstraintCS(kind, body));
+        }
+        return result;
+    }
+
+    private String extractOclBody(String raw) {
         String body;
         if (raw.startsWith("ocl:")) {
             body = raw.substring("ocl:".length(), raw.length() - 1).trim();

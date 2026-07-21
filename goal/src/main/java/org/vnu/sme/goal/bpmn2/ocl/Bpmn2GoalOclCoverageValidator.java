@@ -34,9 +34,9 @@ public final class Bpmn2GoalOclCoverageValidator {
 
             FlowElement bpmnElement = bpmnModel.findFlowElement(m.bpmnNodeId()).orElse(null);
             if (bpmnElement == null) continue;
-            if (bpmnElement.oclSource() == null || bpmnElement.oclSource().isBlank()) {
+            if (bpmnElement.postconditions().isEmpty()) {
                 warnings.add("map: i* element '" + m.istarElementId() + "' has OCL but BPMN node '"
-                        + m.bpmnNodeId() + "' has no BPMN OCL clause");
+                        + m.bpmnNodeId() + "' has no BPMN postcondition");
             }
         }
 

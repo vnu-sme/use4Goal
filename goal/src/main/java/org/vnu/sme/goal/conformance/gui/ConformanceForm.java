@@ -27,7 +27,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.tzi.use.gui.main.MainWindow;
 import org.tzi.use.main.Session;
 import org.vnu.sme.goal.bpmn2.view.Bpmn2View;
-import org.vnu.sme.goal.conformance.AclBpmnIStarConformanceChecker;
+import org.vnu.sme.goal.conformance.action.ActionCheckConformance;
 import org.vnu.sme.goal.istar.view.IStarView;
 
 /**
@@ -91,10 +91,10 @@ public final class ConformanceForm extends JDialog {
         istarField = new JTextField(42);
         bpmn2Field = new JTextField(42);
 
-        p.add(fileRow("ACL structure (.acl):", aclField, "ACL (*.acl)", "acl"));
-        p.add(fileRow("Initial state (.soil):", soilField, "SOIL (*.soil)", "soil"));
         p.add(fileRow("i* goals (.istar):", istarField, "iStar 2.0 (*.istar)", "istar"));
         p.add(fileRow("BPMN2 solution (.bpmn2):", bpmn2Field, "BPMN 2.0 (*.bpmn2)", "bpmn2"));
+        p.add(fileRow("ACL structure (.acl):", aclField, "ACL (*.acl)", "acl"));
+        p.add(fileRow("Scenario (.soil):", soilField, "SOIL (*.soil)", "soil"));
 
         JPanel runRow = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 6, 6));
         JButton run = new JButton("Check 4-Input Conformance");
@@ -173,9 +173,8 @@ public final class ConformanceForm extends JDialog {
         }
 
         try {
-            AclBpmnIStarConformanceChecker.Result result =
-                    AclBpmnIStarConformanceChecker.check(
-                            Path.of(aclPath), Path.of(soilPath), Path.of(istarPath), Path.of(bpmnPath));
+            var result = ActionCheckConformance.check(
+                    Path.of(istarPath), Path.of(bpmnPath), Path.of(aclPath), Path.of(soilPath));
 
             if (!result.ok()) {
                 result.errors().forEach(this::appendResult);
@@ -189,6 +188,8 @@ public final class ConformanceForm extends JDialog {
             appendResult("Generated USE : " + result.generatedUse());
             appendResult("Execution SOIL: " + result.executionSoil());
             appendResult("Checkpoints   : " + result.checkpoints());
+            appendResult("ACL invariants: " + (result.aclFailures().isEmpty() ? "PASS" : "FAIL"));
+            result.aclFailures().forEach(f -> appendResult("  - " + f));
             appendResult("BPMN OCL      : " + (result.bpmnFailures().isEmpty() ? "PASS" : "FAIL"));
             result.bpmnFailures().forEach(f -> appendResult("  - " + f));
             appendResult("i* root goals : " + (result.goalFailures().isEmpty() ? "PASS" : "FAIL"));

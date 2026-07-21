@@ -5,91 +5,127 @@
         <antialiasing>true</antialiasing>
         <showassocnames>false</showassocnames>
         <showattributes>true</showattributes>
-        <showmultiplicities>false</showmultiplicities>
+        <showmultiplicities>true</showmultiplicities>
         <showoperations>false</showoperations>
         <showrolenames>true</showrolenames>
         <showgrid>false</showgrid>
     </diagramOptions>
-    <node height="60.0" id="Person" sizeCalculated="false"
-        type="AclNode" width="220.0">
-        <name>Person</name>
+    <node height="69.0" id="entity::PhoneContact" sizeCalculated="false"
+        type="Class" width="165.0">
+        <name>entity::PhoneContact</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>342.0</x>
-            <y>60.0</y>
+            <x>42.0</x>
+            <y>42.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="78.0" id="PhoneContact" sizeCalculated="false"
-        type="AclNode" width="220.0">
-        <name>PhoneContact</name>
+    <node height="84.0" id="entity::Meeting" sizeCalculated="false"
+        type="Class" width="202.0">
+        <name>entity::Meeting</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>720.0</x>
-            <y>58.0</y>
+            <x>590.0</x>
+            <y>22.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="78.0" id="MeetingParty" sizeCalculated="false"
-        type="AclNode" width="220.0">
-        <name>MeetingParty</name>
+    <node height="69.0" id="role::MeetingParty" sizeCalculated="false"
+        type="AclNode" width="165.0">
+        <name>role::MeetingParty</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>155.0</x>
-            <y>187.0</y>
+            <x>308.0</x>
+            <y>42.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="108.0" id="Initiator" sizeCalculated="false"
-        type="AclNode" width="220.0">
-        <name>Initiator</name>
+    <node height="58.0" id="role::Initiator" sizeCalculated="false"
+        type="AclNode" width="165.0">
+        <name>role::Initiator</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>80.0</x>
-            <y>536.0</y>
+            <x>332.0</x>
+            <y>365.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="60.0" id="Organizer" sizeCalculated="false"
-        type="AclNode" width="220.0">
-        <name>Organizer</name>
+    <node height="58.0" id="role::Organizer" sizeCalculated="false"
+        type="AclNode" width="165.0">
+        <name>role::Organizer</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>1335.0</x>
-            <y>145.0</y>
+            <x>379.0</x>
+            <y>257.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="110.0" id="Secretary" sizeCalculated="false"
-        type="AclNode" width="220.0">
-        <name>Secretary</name>
+    <node height="58.0" id="role::Secretary" sizeCalculated="false"
+        type="AclNode" width="165.0">
+        <name>role::Secretary</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>911.0</x>
-            <y>333.0</y>
+            <x>554.0</x>
+            <y>127.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="150.0" id="Participant" sizeCalculated="false"
-        type="AclNode" width="220.0">
-        <name>Participant</name>
+    <node height="129.0" id="role::Participant" sizeCalculated="false"
+        type="AclNode" width="279.0">
+        <name>role::Participant</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>400.0</x>
-            <y>359.0</y>
+            <x>18.0</x>
+            <y>431.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="168.0" id="group:Meeting" sizeCalculated="false"
-        type="AclNode" width="220.0">
-        <name>group:Meeting</name>
+    <node height="58.0" id="group::MeetingUnit" sizeCalculated="false"
+        type="AclNode" width="165.0">
+        <name>group::MeetingUnit</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>1338.0</x>
-            <y>514.0</y>
+            <x>654.0</x>
+            <y>451.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="99.0" id="enum::TimetableStatus"
+        sizeCalculated="false" type="AclNode" width="165.0">
+        <name>enum::TimetableStatus</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>880.0</x>
+            <y>42.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="99.0" id="enum::TimetableChannel"
+        sizeCalculated="false" type="AclNode" width="165.0">
+        <name>enum::TimetableChannel</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>880.0</x>
+            <y>173.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="84.0" id="enum::NotificationStatus"
+        sizeCalculated="false" type="AclNode" width="165.0">
+        <name>enum::NotificationStatus</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>880.0</x>
+            <y>304.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="99.0" id="enum::AttendanceStatus"
+        sizeCalculated="false" type="AclNode" width="165.0">
+        <name>enum::AttendanceStatus</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>880.0</x>
+            <y>420.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
     <edge type="AclEdge">
-        <source>group:Meeting</source>
-        <target>Initiator</target>
-        <name>group_member</name>
+        <source>group::MeetingUnit</source>
+        <target>entity::Meeting</target>
+        <name>association</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="acl::GROUP_MEMBER::group:Meeting::Initiator::1..1::WayPoint::0"
+                id="acl::ASSOCIATION::group::MeetingUnit::entity::Meeting::0::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -102,7 +138,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="acl::GROUP_MEMBER::group:Meeting::Initiator::1..1::WayPoint::1"
+                id="acl::ASSOCIATION::group::MeetingUnit::entity::Meeting::0::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -118,13 +154,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="AclEdge">
-        <source>group:Meeting</source>
-        <target>Organizer</target>
-        <name>group_member</name>
+        <source>role::MeetingParty</source>
+        <target>entity::PhoneContact</target>
+        <name>association</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="acl::GROUP_MEMBER::group:Meeting::Organizer::1..1::WayPoint::0"
+                id="acl::ASSOCIATION::role::MeetingParty::entity::PhoneContact::0::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -137,7 +173,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="acl::GROUP_MEMBER::group:Meeting::Organizer::1..1::WayPoint::1"
+                id="acl::ASSOCIATION::role::MeetingParty::entity::PhoneContact::0::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -153,13 +189,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="AclEdge">
-        <source>group:Meeting</source>
-        <target>Participant</target>
-        <name>group_member</name>
+        <source>role::Initiator</source>
+        <target>role::Participant</target>
+        <name>compatibility</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="acl::GROUP_MEMBER::group:Meeting::Participant::2..*::WayPoint::0"
+                id="acl::COMPATIBILITY::role::Initiator::role::Participant::0::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -172,7 +208,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="acl::GROUP_MEMBER::group:Meeting::Participant::2..*::WayPoint::1"
+                id="acl::COMPATIBILITY::role::Initiator::role::Participant::0::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -188,13 +224,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="AclEdge">
-        <source>group:Meeting</source>
-        <target>Secretary</target>
-        <name>group_member</name>
+        <source>role::Organizer</source>
+        <target>role::Secretary</target>
+        <name>compatibility</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="acl::GROUP_MEMBER::group:Meeting::Secretary::0..1::WayPoint::0"
+                id="acl::COMPATIBILITY::role::Organizer::role::Secretary::0::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -207,7 +243,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="acl::GROUP_MEMBER::group:Meeting::Secretary::0..1::WayPoint::1"
+                id="acl::COMPATIBILITY::role::Organizer::role::Secretary::0::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -223,13 +259,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="AclEdge">
-        <source>Initiator</source>
-        <target>Participant</target>
-        <name>link</name>
+        <source>role::MeetingParty</source>
+        <target>entity::PhoneContact</target>
+        <name>composition</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="acl::LINK::Initiator::Participant::compatibility::WayPoint::0"
+                id="acl::COMPOSITION::role::MeetingParty::entity::PhoneContact::1::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -242,7 +278,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="acl::LINK::Initiator::Participant::compatibility::WayPoint::1"
+                id="acl::COMPOSITION::role::MeetingParty::entity::PhoneContact::1::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -258,13 +294,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="AclEdge">
-        <source>Organizer</source>
-        <target>Secretary</target>
-        <name>link</name>
+        <source>role::Initiator</source>
+        <target>role::MeetingParty</target>
+        <name>generalization</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="acl::LINK::Organizer::Secretary::authority::WayPoint::0"
+                id="acl::GENERALIZATION::role::Initiator::role::MeetingParty::0::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -277,7 +313,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="acl::LINK::Organizer::Secretary::authority::WayPoint::1"
+                id="acl::GENERALIZATION::role::Initiator::role::MeetingParty::0::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -293,13 +329,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="AclEdge">
-        <source>Organizer</source>
-        <target>Secretary</target>
-        <name>link</name>
+        <source>role::Organizer</source>
+        <target>role::MeetingParty</target>
+        <name>generalization</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="acl::LINK::Organizer::Secretary::compatibility::WayPoint::0"
+                id="acl::GENERALIZATION::role::Organizer::role::MeetingParty::0::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -312,7 +348,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="acl::LINK::Organizer::Secretary::compatibility::WayPoint::1"
+                id="acl::GENERALIZATION::role::Organizer::role::MeetingParty::0::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -328,13 +364,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="AclEdge">
-        <source>Person</source>
-        <target>PhoneContact</target>
-        <name>relationship</name>
+        <source>role::Participant</source>
+        <target>role::MeetingParty</target>
+        <name>generalization</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="acl::RELATIONSHIP::Person::PhoneContact::PersonPhoneContacts::WayPoint::0"
+                id="acl::GENERALIZATION::role::Participant::role::MeetingParty::0::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -347,7 +383,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="acl::RELATIONSHIP::Person::PhoneContact::PersonPhoneContacts::WayPoint::1"
+                id="acl::GENERALIZATION::role::Participant::role::MeetingParty::0::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -363,13 +399,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="AclEdge">
-        <source>Secretary</source>
-        <target>PhoneContact</target>
-        <name>relationship</name>
+        <source>role::Secretary</source>
+        <target>role::MeetingParty</target>
+        <name>generalization</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="acl::RELATIONSHIP::Secretary::PhoneContact::SecretaryKnowsPhoneContact::WayPoint::0"
+                id="acl::GENERALIZATION::role::Secretary::role::MeetingParty::0::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -382,7 +418,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="acl::RELATIONSHIP::Secretary::PhoneContact::SecretaryKnowsPhoneContact::WayPoint::1"
+                id="acl::GENERALIZATION::role::Secretary::role::MeetingParty::0::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -398,13 +434,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="AclEdge">
-        <source>Initiator</source>
-        <target>MeetingParty</target>
-        <name>specializes</name>
+        <source>group::MeetingUnit</source>
+        <target>role::Initiator</target>
+        <name>owner</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="acl::SPECIALIZES::Initiator::MeetingParty::specializes::WayPoint::0"
+                id="acl::OWNER::group::MeetingUnit::role::Initiator::0::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -417,7 +453,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="acl::SPECIALIZES::Initiator::MeetingParty::specializes::WayPoint::1"
+                id="acl::OWNER::group::MeetingUnit::role::Initiator::0::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -433,13 +469,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="AclEdge">
-        <source>Organizer</source>
-        <target>MeetingParty</target>
-        <name>specializes</name>
+        <source>group::MeetingUnit</source>
+        <target>role::Organizer</target>
+        <name>owner</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="acl::SPECIALIZES::Organizer::MeetingParty::specializes::WayPoint::0"
+                id="acl::OWNER::group::MeetingUnit::role::Organizer::0::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -452,7 +488,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="acl::SPECIALIZES::Organizer::MeetingParty::specializes::WayPoint::1"
+                id="acl::OWNER::group::MeetingUnit::role::Organizer::0::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -468,13 +504,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="AclEdge">
-        <source>Participant</source>
-        <target>MeetingParty</target>
-        <name>specializes</name>
+        <source>group::MeetingUnit</source>
+        <target>role::Participant</target>
+        <name>owner</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="acl::SPECIALIZES::Participant::MeetingParty::specializes::WayPoint::0"
+                id="acl::OWNER::group::MeetingUnit::role::Participant::0::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -487,7 +523,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="acl::SPECIALIZES::Participant::MeetingParty::specializes::WayPoint::1"
+                id="acl::OWNER::group::MeetingUnit::role::Participant::0::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -503,13 +539,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="AclEdge">
-        <source>Secretary</source>
-        <target>MeetingParty</target>
-        <name>specializes</name>
+        <source>group::MeetingUnit</source>
+        <target>role::Secretary</target>
+        <name>owner</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="acl::SPECIALIZES::Secretary::MeetingParty::specializes::WayPoint::0"
+                id="acl::OWNER::group::MeetingUnit::role::Secretary::0::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -522,7 +558,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="acl::SPECIALIZES::Secretary::MeetingParty::specializes::WayPoint::1"
+                id="acl::OWNER::group::MeetingUnit::role::Secretary::0::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>

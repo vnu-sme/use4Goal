@@ -1,0 +1,71 @@
+// Stress snapshot for ../mtg/mtg.acl.
+// It exercises multiple Group instances, multi-role Agents, compatibility,
+// cardinalities, enums, booleans, and different state in each meeting.
+
+aol v1.0 ComplexMeetingSchedulerSnapshot for "../mtg/mtg.acl" {
+  agent alice, bob, carol, dave, erin, frank;
+
+  group MeetingUnit as architectureReview {
+    // Explicitly compatible in mtg.acl.
+    play Initiator as architectureInitiator by alice;
+    play Participant as architectureParticipantAlice by alice {
+      hasCalendar = true;
+      timetable = collected;
+      timetableChannel = calendar;
+      notified = sent;
+      attendance = attended;
+    }
+
+    // Explicitly compatible in mtg.acl.
+    play Organizer as architectureOrganizer by bob;
+    play Secretary as architectureSecretary by bob;
+
+    play Participant as architectureParticipantCarol by carol {
+      hasCalendar = false;
+      timetable = requested;
+      timetableChannel = phone;
+      notified = sent;
+      attendance = attended;
+    }
+
+    entity Meeting as architectureMeeting {
+      detailsDecided = true;
+      timeChosen = true;
+    }
+  }
+
+  group MeetingUnit as releasePlanning {
+    play Initiator as releaseInitiator by dave;
+    play Organizer as releaseOrganizer by erin;
+    play Secretary as releaseSecretary by frank;
+
+    play Participant as releaseParticipantAlice by alice {
+      hasCalendar = true;
+      timetable = collected;
+      timetableChannel = calendar;
+      notified = sent;
+      attendance = unknown;
+    }
+
+    play Participant as releaseParticipantCarol by carol {
+      hasCalendar = false;
+      timetable = requested;
+      timetableChannel = phone;
+      notified = notSent;
+      attendance = absent;
+    }
+
+    play Participant as releaseParticipantDave by dave {
+      hasCalendar = true;
+      timetable = collected;
+      timetableChannel = calendar;
+      notified = sent;
+      attendance = attended;
+    }
+
+    entity Meeting as releaseMeeting {
+      detailsDecided = true;
+      timeChosen = false;
+    }
+  }
+}
