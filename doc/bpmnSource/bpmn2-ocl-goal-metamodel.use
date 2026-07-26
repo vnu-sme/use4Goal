@@ -1,0 +1,568 @@
+-- Reduced BPMN2 metamodel with OCL-bearing verification extension.
+--
+-- Source basis:
+--   doc/drawio/05-bpmn2-metamodel.drawio
+--   user-provided extension for checking whether a BPMN Activity achieves a Goal
+--
+-- Design intent:
+--   BPMN Activity is not treated as a domain operation. Instead, an Activity
+--   invokes one or more DomainOperations. DomainOperations describe domain-state
+--   changes with pre/post OCL. Goals are satisfied by OCL evaluated on the
+--   resulting SystemState.
+
+model Bpmn2OclGoalMetamodel
+
+-- =====================================================================
+-- Enumerations
+-- =====================================================================
+
+enum EventTrigger {
+  none,
+  message,
+  timer,
+  error,
+  signal,
+  terminate,
+  compensation,
+  conditional
+}
+
+enum EventDirection {
+  catching,
+  throwing
+}
+
+enum GatewayKind {
+  gwXor,
+  gwAnd,
+  gwOr,
+  gwEventBased
+}
+
+enum OclExpressionKind {
+  invariant,
+  precondition,
+  postcondition,
+  guard,
+  assertion,
+  satisfaction
+}
+
+enum GoalRefinementKind {
+  andRefinement,
+  orRefinement
+}
+
+enum ContributionKind {
+  make,
+  help,
+  hurt,
+  break
+}
+
+enum AchievementResult {
+  achieved,
+  contributed,
+  notAchieved,
+  violated,
+  unknown
+}
+
+enum ProofKind {
+  executionWitness,
+  designImplication,
+  manualAssessment
+}
+
+-- =====================================================================
+-- BPMN2 reduced metamodel
+-- Mirrors doc/drawio/05-bpmn2-metamodel.drawio.
+-- =====================================================================
+
+class Model
+attributes
+  name : String
+end
+
+class Process
+attributes
+  processId : String
+  name      : String
+end
+
+class Message
+attributes
+  messageId : String
+  name      : String
+end
+
+class Lane
+attributes
+  laneId : String
+  name   : String
+end
+
+abstract class FlowElement
+attributes
+  flowElementId : String
+end
+
+abstract class Event < FlowElement
+attributes
+  trigger : EventTrigger
+end
+
+class StartEvent < Event end
+class EndEvent   < Event end
+
+class IntermediateEvent < Event
+attributes
+  direction : EventDirection
+end
+
+abstract class Activity < FlowElement end
+
+class BpmnTask < Activity
+attributes
+  name : String
+end
+
+class CallActivity < Activity end
+
+class SubProcess < Activity
+attributes
+  name : String
+end
+
+class Gateway < FlowElement
+attributes
+  kind : GatewayKind
+end
+
+class SequenceFlow
+attributes
+  label : String
+end
+
+class MessageFlow end
+
+composition ModelProcesses between
+  Model   [1] role model
+  Process [*] role processes
+end
+
+composition ModelMessages between
+  Model   [1] role messageModel
+  Message [*] role messages
+end
+
+composition ModelMessageFlows between
+  Model       [1] role messageFlowModel
+  MessageFlow [*] role messageFlows
+end
+
+composition ProcessLanes between
+  Process [1] role laneProcess
+  Lane    [*] role lanes
+end
+
+composition ProcessFlowElements between
+  Process     [1] role process
+  FlowElement [*] role flowElements
+end
+
+composition ProcessSequenceFlows between
+  Process      [1] role owningProcess
+  SequenceFlow [*] role sequenceFlows
+end
+
+association LanePartition between
+  Lane        [0..1] role lane
+  FlowElement [*]   role partitionedFlowElements
+end
+
+association SequenceFlowSource between
+  SequenceFlow [*] role outgoing
+  FlowElement  [1] role source
+end
+
+association SequenceFlowTarget between
+  SequenceFlow [*] role incoming
+  FlowElement  [1] role target
+end
+
+association MessageFlowSource between
+  MessageFlow [*] role outgoingMessages
+  FlowElement [1] role messageSource
+end
+
+association MessageFlowTarget between
+  MessageFlow [*] role incomingMessages
+  FlowElement [1] role messageTarget
+end
+
+association MessageFlowMessage between
+  MessageFlow [*]  role messageUsages
+  Message     [0..1] role message
+end
+
+-- =====================================================================
+-- OCL expression layer
+-- =====================================================================
+
+class OclExpression
+attributes
+  expressionId : String
+  name         : String
+  kind         : OclExpressionKind
+  contextType  : String
+  body         : String
+end
+
+association FlowElementOclExpressions between
+  FlowElement   [0..1] role flowElementOwner
+  OclExpression [*]    role flowElementOcl
+end
+
+association SequenceFlowOclExpressions between
+  SequenceFlow  [0..1] role sequenceFlowOwner
+  OclExpression [*]    role sequenceFlowOcl
+end
+
+-- =====================================================================
+-- Domain operation layer
+-- The Activity invokes DomainOperation; it is not itself a domain operation.
+-- =====================================================================
+
+class DomainModel
+attributes
+  name : String
+end
+
+class DomainClass
+attributes
+  className : String
+end
+
+class DomainAttribute
+attributes
+  attributeName : String
+  typeName      : String
+end
+
+class DomainOperation
+attributes
+  operationName : String
+end
+
+composition DomainModelClasses between
+  DomainModel [1] role domainModel
+  DomainClass [*] role classes
+end
+
+composition DomainClassAttributes between
+  DomainClass     [1] role ownerClass
+  DomainAttribute [*] role attributes
+end
+
+composition DomainClassOperations between
+  DomainClass     [1] role operationOwner
+  DomainOperation [*] role operations
+end
+
+association ActivityInvokesOperations between
+  Activity        [*] role invokedByActivities
+  DomainOperation [*] role invokedOperations
+end
+
+association OperationPreconditions between
+  DomainOperation [0..1] role preconditionOperation
+  OclExpression   [*]    role preconditions
+end
+
+association OperationPostconditions between
+  DomainOperation [0..1] role postconditionOperation
+  OclExpression   [*]    role postconditions
+end
+
+-- =====================================================================
+-- Goal layer
+-- =====================================================================
+
+class GoalModel
+attributes
+  name : String
+end
+
+class Goal
+attributes
+  goalId : String
+  name   : String
+end
+
+class GoalRefinement
+attributes
+  kind : GoalRefinementKind
+end
+
+composition GoalModelGoals between
+  GoalModel [1] role goalModel
+  Goal      [*] role goals
+end
+
+association GoalSatisfactionCondition between
+  Goal          [0..1] role satisfiedGoal
+  OclExpression [1]    role satisfactionCondition
+end
+
+association GoalRefinementParent between
+  GoalRefinement [*] role refinements
+  Goal           [1] role parent
+end
+
+association GoalRefinementChildren between
+  GoalRefinement [*] role childRefinements
+  Goal           [1..*] role children
+end
+
+-- Explicit contribution assertion. MAKE should be confirmed by a proof, not
+-- accepted only because a modeler selected make.
+associationclass GoalContribution between
+  Activity [*] role contributingActivities
+  Goal     [*] role contributedGoals
+attributes
+  kind : ContributionKind
+end
+
+-- =====================================================================
+-- State and evaluation layer
+-- =====================================================================
+
+class SystemState
+attributes
+  stateId : String
+end
+
+class ObjectInstance
+attributes
+  objectId : String
+end
+
+class Slot
+attributes
+  valueLiteral : String
+end
+
+composition StateObjects between
+  SystemState    [1] role state
+  ObjectInstance [*] role objects
+end
+
+association ObjectClassifier between
+  ObjectInstance [*] role instances
+  DomainClass    [1] role classifier
+end
+
+composition ObjectSlots between
+  ObjectInstance [1] role object
+  Slot           [*] role slots
+end
+
+association SlotAttribute between
+  Slot            [*] role slotsForAttribute
+  DomainAttribute [1] role attribute
+end
+
+class OperationGoalProof
+attributes
+  proofId : String
+  kind    : ProofKind
+  note    : String
+end
+
+association ProofOperation between
+  OperationGoalProof [*] role operationProofs
+  DomainOperation    [1] role provenOperation
+end
+
+association ProofGoal between
+  OperationGoalProof [*] role goalProofs
+  Goal               [1] role provenGoal
+end
+
+class AchievementEvaluation
+attributes
+  evaluationId : String
+  result       : AchievementResult
+end
+
+association EvaluationActivity between
+  AchievementEvaluation [*] role activityEvaluations
+  Activity              [1] role evaluatedActivity
+end
+
+association EvaluationOperation between
+  AchievementEvaluation [*] role operationEvaluations
+  DomainOperation       [1] role evaluatedOperation
+end
+
+association EvaluationGoal between
+  AchievementEvaluation [*] role goalEvaluations
+  Goal                  [1] role evaluatedGoal
+end
+
+association EvaluationBeforeState between
+  AchievementEvaluation [*] role beforeEvaluations
+  SystemState           [0..1] role before
+end
+
+association EvaluationAfterState between
+  AchievementEvaluation [*] role afterEvaluations
+  SystemState           [0..1] role after
+end
+
+association EvaluationProof between
+  AchievementEvaluation [*] role evaluations
+  OperationGoalProof    [0..1] role proof
+end
+
+-- =====================================================================
+-- Structural OCL constraints
+-- These constraints protect the metamodel shape. The semantic implication
+-- "post(op) implies goal(g)" is represented by OperationGoalProof because
+-- OclExpression.body is opaque text at this metamodel level.
+-- =====================================================================
+
+constraints
+
+context Model
+  inv UniqueProcessIds:
+    self.processes->isUnique(processId)
+
+context Model
+  inv UniqueMessageIds:
+    self.messages->isUnique(messageId)
+
+context Process
+  inv UniqueFlowElementIds:
+    self.flowElements->isUnique(flowElementId)
+
+context Process
+  inv SequenceFlowEndpointsBelongToSameProcess:
+    self.sequenceFlows->forAll(sf |
+      self.flowElements->includes(sf.source) and
+      self.flowElements->includes(sf.target))
+
+context Lane
+  inv LaneElementsBelongToOwningProcess:
+    self.partitionedFlowElements->forAll(fe |
+      self.laneProcess.flowElements->includes(fe))
+
+context StartEvent
+  inv NoIncomingSequenceFlow:
+    self.incoming->isEmpty()
+
+context EndEvent
+  inv NoOutgoingSequenceFlow:
+    self.outgoing->isEmpty()
+
+context Gateway
+  inv EventBasedGatewayUsesMessageOrTimerOutcomes:
+    self.kind = #gwEventBased implies
+      self.outgoing->forAll(sf |
+        sf.target.oclIsKindOf(IntermediateEvent) implies
+          Set{#message, #timer, #signal, #conditional}
+            ->includes(sf.target.oclAsType(IntermediateEvent).trigger))
+
+context OclExpression
+  inv NonEmptyBody:
+    self.body.size() > 0
+
+context OclExpression
+  inv NonEmptyContextType:
+    self.contextType.size() > 0
+
+context FlowElement
+  inv FlowElementOclKinds:
+    self.flowElementOcl->forAll(e |
+      Set{#invariant, #guard, #assertion, #satisfaction}->includes(e.kind))
+
+context SequenceFlow
+  inv SequenceFlowOclKinds:
+    self.sequenceFlowOcl->forAll(e |
+      Set{#guard, #assertion}->includes(e.kind))
+
+context DomainModel
+  inv UniqueClassNames:
+    self.classes->isUnique(className)
+
+context DomainClass
+  inv UniqueAttributeNames:
+    self.attributes->isUnique(attributeName)
+
+context DomainClass
+  inv UniqueOperationNames:
+    self.operations->isUnique(operationName)
+
+context DomainOperation
+  inv PreconditionsHavePreKind:
+    self.preconditions->forAll(e | e.kind = #precondition)
+
+context DomainOperation
+  inv PostconditionsHavePostKind:
+    self.postconditions->forAll(e | e.kind = #postcondition)
+
+context DomainOperation
+  inv HasAtLeastOnePostcondition:
+    self.postconditions->notEmpty()
+
+context GoalModel
+  inv UniqueGoalIds:
+    self.goals->isUnique(goalId)
+
+context Goal
+  inv SatisfactionConditionHasSatisfactionKind:
+    self.satisfactionCondition.kind = #satisfaction
+
+context GoalRefinement
+  inv ParentIsNotAChild:
+    not self.children->includes(self.parent)
+
+context GoalRefinement
+  inv HasAtLeastOneChild:
+    self.children->notEmpty()
+
+context GoalContribution
+  inv MakeContributionRequiresProof:
+    self.kind = #make implies
+      OperationGoalProof.allInstances->exists(p |
+        self.contributingActivities.invokedOperations->includes(p.provenOperation)
+        and p.provenGoal = self.contributedGoals
+        and p.kind = #designImplication)
+
+context AchievementEvaluation
+  inv EvaluatedOperationIsInvokedByActivity:
+    self.evaluatedActivity.invokedOperations->includes(self.evaluatedOperation)
+
+context AchievementEvaluation
+  inv AchievedRequiresAfterState:
+    self.result = #achieved implies self.after->notEmpty()
+
+context AchievementEvaluation
+  inv AchievedRequiresDesignProof:
+    self.result = #achieved implies
+      self.proof->exists(p |
+        p.provenOperation = self.evaluatedOperation
+        and p.provenGoal = self.evaluatedGoal
+        and p.kind = #designImplication)
+
+context AchievementEvaluation
+  inv ViolatedRequiresConcreteStates:
+    self.result = #violated implies
+      self.before->notEmpty() and self.after->notEmpty()
+
+context OperationGoalProof
+  inv DesignProofMeansPostImpliesGoal:
+    self.kind = #designImplication implies
+      self.provenOperation.postconditions->notEmpty()
+      and self.provenGoal.satisfactionCondition.kind = #satisfaction
