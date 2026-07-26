@@ -1,0 +1,7 @@
+model TaskOnly {
+  pool OrderOffice "Order Office" {
+    task review_order "Review Order" ocl {[
+      self.reviewed = true
+    ]}
+  }
+}

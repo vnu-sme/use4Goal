@@ -1,0 +1,13 @@
+model StartEndOnly {
+  pool OrderOffice "Order Office" {
+    start order_received : message ocl {[
+      self.created = true
+    ]}
+
+    end order_closed : none ocl {[
+      self.created = true
+    ]}
+
+    flow order_received -> order_closed
+  }
+}

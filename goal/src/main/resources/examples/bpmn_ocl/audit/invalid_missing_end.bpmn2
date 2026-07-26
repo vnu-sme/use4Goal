@@ -1,0 +1,13 @@
+model MissingEnd {
+  pool OrderOffice "Order Office" {
+    start order_received : message ocl {[
+      self.created = true
+    ]}
+
+    task review_order "Review Order" ocl {[
+      self.reviewed = true
+    ]}
+
+    flow order_received -> review_order
+  }
+}

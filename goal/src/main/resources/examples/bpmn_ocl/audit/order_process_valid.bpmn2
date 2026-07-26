@@ -1,0 +1,45 @@
+// Representative BPMN2 + OCL use case for implementation audit.
+//
+// The OCL clauses are domain conditions compiled with self : Order.
+
+model OrderAudit {
+  pool OrderOffice "Order Office" {
+    start order_received : message ocl {[
+      self.created = true
+    ]}
+
+    task review_order "Review Order" ocl {[
+      self.reviewed = true and self.amount > 0
+    ]}
+
+    gateway decide_order : xor ocl {[
+      self.reviewed = true
+    ]}
+
+    task approve_order "Approve Order" ocl {[
+      self.status = #approved and self.approved = true
+    ]}
+
+    task reject_order "Reject Order" ocl {[
+      self.status = #rejected and self.rejected = true
+    ]}
+
+    end order_closed : none ocl {[
+      self.status = #approved or self.status = #rejected
+    ]}
+
+    flow order_received -> review_order
+    flow review_order -> decide_order
+
+    flow decide_order -> approve_order : "priority" ocl {[
+      self.priority = true
+    ]}
+
+    flow decide_order -> reject_order : "standard" ocl {[
+      self.priority = false
+    ]}
+
+    flow approve_order -> order_closed
+    flow reject_order -> order_closed
+  }
+}

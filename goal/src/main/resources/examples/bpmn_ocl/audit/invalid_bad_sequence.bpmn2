@@ -1,0 +1,17 @@
+model BadSequence {
+  pool OrderOffice "Order Office" {
+    start order_received : message ocl {[
+      self.created = true
+    ]}
+
+    task review_order "Review Order" ocl {[
+      self.reviewed = true
+    ]}
+
+    end order_closed : none ocl {[
+      self.status = #approved or self.status = #rejected
+    ]}
+
+    flow order_received -> missing_task
+  }
+}

@@ -1,0 +1,13 @@
+model ContradictoryOcl {
+  pool OrderOffice "Order Office" {
+    start order_received : message ocl {[
+      self.created = true and self.created = false
+    ]}
+
+    end order_closed : none ocl {[
+      self.status = #approved
+    ]}
+
+    flow order_received -> order_closed
+  }
+}

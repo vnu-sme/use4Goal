@@ -1,0 +1,7 @@
+# Deliberately missing review_order and both gateway flow mappings.
+
+context order_received -> Order
+context decide_order -> Order
+context approve_order -> Order
+context reject_order -> Order
+context order_closed -> Order

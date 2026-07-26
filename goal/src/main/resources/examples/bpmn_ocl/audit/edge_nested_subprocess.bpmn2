@@ -1,0 +1,42 @@
+model NestedSubprocess {
+  pool OrderOffice "Order Office" {
+    start order_received : message ocl {[
+      self.created = true
+    ]}
+
+    subprocess handle_order "Handle Order" {
+      task review_order "Review Order" ocl {[
+        self.reviewed = true
+      ]}
+
+      gateway decide_order : xor ocl {[
+        self.reviewed = true
+      ]}
+
+      task approve_order "Approve Order" ocl {[
+        self.status = #approved
+      ]}
+
+      task reject_order "Reject Order" ocl {[
+        self.status = #rejected
+      ]}
+
+      flow review_order -> decide_order
+      flow decide_order -> approve_order : "priority" ocl {[
+        self.priority = true
+      ]}
+      flow decide_order -> reject_order : "standard" ocl {[
+        self.priority = false
+      ]}
+    } ocl {[
+      self.created = true
+    ]}
+
+    end order_closed : none ocl {[
+      self.status = #approved or self.status = #rejected
+    ]}
+
+    flow order_received -> handle_order
+    flow handle_order -> order_closed
+  }
+}

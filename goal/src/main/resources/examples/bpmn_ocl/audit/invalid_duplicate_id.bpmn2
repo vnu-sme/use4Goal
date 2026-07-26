@@ -1,0 +1,22 @@
+model DuplicateId {
+  pool OrderOffice "Order Office" {
+    start order_received : message ocl {[
+      self.created = true
+    ]}
+
+    task duplicate "First Duplicate" ocl {[
+      self.reviewed = true
+    ]}
+
+    task duplicate "Second Duplicate" ocl {[
+      self.approved = true
+    ]}
+
+    end order_closed : none ocl {[
+      self.status = #approved or self.status = #rejected
+    ]}
+
+    flow order_received -> duplicate
+    flow duplicate -> order_closed
+  }
+}

@@ -1,0 +1,13 @@
+model InvalidOclSyntax {
+  pool OrderOffice "Order Office" {
+    start order_received : message ocl {[
+      self.created =
+    ]}
+
+    end order_closed : none ocl {[
+      self.status = #approved
+    ]}
+
+    flow order_received -> order_closed
+  }
+}

@@ -1,0 +1,13 @@
+model MissingStart {
+  pool OrderOffice "Order Office" {
+    task review_order "Review Order" ocl {[
+      self.reviewed = true
+    ]}
+
+    end order_closed : none ocl {[
+      self.status = #approved or self.status = #rejected
+    ]}
+
+    flow review_order -> order_closed
+  }
+}

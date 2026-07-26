@@ -1,0 +1,14 @@
+model OrderAuditDomain
+
+enum OrderStatus {newOrder, reviewed, approved, rejected, closed}
+
+class Order
+attributes
+  created  : Boolean
+  reviewed : Boolean
+  approved : Boolean
+  rejected : Boolean
+  priority : Boolean
+  amount   : Integer
+  status   : OrderStatus
+end
