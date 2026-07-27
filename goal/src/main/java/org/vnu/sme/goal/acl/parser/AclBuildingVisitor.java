@@ -1,5 +1,26 @@
 package org.vnu.sme.goal.acl.parser;
 
+
+/**
+ * =============================================================================
+ * MODULE: ACL parse-tree to CST visitor
+ * =============================================================================
+ * 1. PURPOSE:
+ *    Walks the generated ANTLR parse tree and creates typed ACL CST records. Parser contexts are the input; a ACLModelCS tree is the output.
+ *
+ * 2. CORE MAPPING / LOGIC RULES:
+ *    - Map each grammar alternative to its matching *CS node.
+ *    - Preserve declaration order and optional clauses for deterministic diagnostics.
+ *    - Do not resolve semantic references while the parse tree is being traversed.
+ *    - Main operations exposed by this file: visitModel(), enumValue(), entity(), role(), relation(), group(), compatibility().
+ *
+ * 3. PIPELINE / WORKFLOW:
+ *      1. visitModel / visit...(...)
+ *      2. visit child grammar contexts
+ *      3. construct *CS records
+ *      4. return ACLModelCS to model factory
+ * =============================================================================
+ */
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -7,7 +28,11 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.vnu.sme.goal.acl.ast.*;
 
-public final class AclBuildingVisitor extends ACLBaseVisitor<AclModelCS> {
+public final class AclBuildingVisitor extends ACLBaseVisitor<AclModelCS> {/**
+ * WHY: Scope and compatibility are transitive across group relationships, so visitModel
+ * must evaluate the reachable context before accepting or rejecting a local relationship.
+ */
+
     @Override public AclModelCS visitModel(ACLParser.ModelContext ctx) {
         List<AclEnumCS> enums = new ArrayList<>(); List<AclEntityCS> entities = new ArrayList<>();
         List<AclRoleCS> roles = new ArrayList<>(); List<AclRelationCS> relations = new ArrayList<>();
@@ -42,7 +67,11 @@ public final class AclBuildingVisitor extends ACLBaseVisitor<AclModelCS> {
     }
     private static GroupBuild group(ACLParser.GroupDeclContext c) {
         return group(c.IDENT().getText(), c.groupItem(), location(c));
-    }
+    }/**
+ * WHY: Scope and compatibility are transitive across group relationships, so group
+ * must evaluate the reachable context before accepting or rejecting a local relationship.
+ */
+
     private static GroupBuild group(String name, List<ACLParser.GroupItemContext> items, AclSourceLocationCS loc) {
         List<AclAttributeCS> attributes = new ArrayList<>(); List<AclGroupMemberCS> members = new ArrayList<>();
         List<AclCompatibilityCS> compatibilities = new ArrayList<>(); List<AclGroupCS> nested = new ArrayList<>();
@@ -54,7 +83,11 @@ public final class AclBuildingVisitor extends ACLBaseVisitor<AclModelCS> {
             else if (item.legacySubgroupDecl() != null) { var m=item.legacySubgroupDecl(); members.add(new AclGroupMemberCS(m.IDENT().getText(), cardinality(m.cardinality()), location(m))); GroupBuild child=group(m.IDENT().getText(),m.groupItem(),location(m)); nested.add(child.group()); nested.addAll(child.nested()); compatibilities.addAll(child.compatibilities()); }
         }
         return new GroupBuild(new AclGroupCS(name, attributes, members, List.of(), loc), nested, compatibilities);
-    }
+    }/**
+ * WHY: Scope and compatibility are transitive across group relationships, so compatibility
+ * must evaluate the reachable context before accepting or rejecting a local relationship.
+ */
+
     private static AclCompatibilityCS compatibility(ACLParser.CompatibilityDeclContext c) {
         List<AclLinkOptionCS> options = new ArrayList<>();
         for (var option : c.compatibilityOption()) {

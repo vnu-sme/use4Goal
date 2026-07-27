@@ -83,6 +83,15 @@
                 toolbaritem="DCR Graph Viewer"
                 id="org.vnu.sme.goal.dcr.action.ActionOpenDcr">
         </action>
+        <action label="Complete i*/BPMN2 Conformance Flow"
+                icon="images/conformance.png"
+                class="org.vnu.sme.goal.conformance.action.ActionRunConformanceFlow"
+                tooltip="Run ACL -> AOL -> iStar -> ISCN -> BPMN2/OCL -> conformance in dependency order"
+                menu="GoalModel Plugin"
+                menuitem="Complete i*/BPMN2 Conformance Flow"
+                toolbaritem="Complete Conformance Flow"
+                id="org.vnu.sme.goal.conformance.action.ActionRunConformanceFlow">
+        </action>
         <action label="i*/BPMN2 Conformance Checker"
                 icon="images/conformance.png"
                 class="org.vnu.sme.goal.conformance.action.ActionCheckConformance"

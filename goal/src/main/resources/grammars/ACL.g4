@@ -1,7 +1,6 @@
 grammar ACL;
 
-@parser::header { package org.vnu.sme.goal.acl.parser; }
-@lexer::header { package org.vnu.sme.goal.acl.parser; }
+@header { package org.vnu.sme.goal.acl.parser; }
 
 model : 'acl' VERSION IDENT '{' topLevelDecl* '}' EOF ;
 
