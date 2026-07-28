@@ -505,37 +505,143 @@ Không nên dùng từ “strong” đồng thời cho universal-path semantics 
 
 ---
 
-## 10. Meeting Scheduler example
 
-### 10.1 Input state và execution
+## 10. Meeting Scheduler — ví dụ Weak Conformance
 
-Initial state chính:
+Ví dụ này minh họa một BPMN có **hai cách thực thi hợp lệ**:
+
+* Một execution trace đạt toàn bộ goal và oracle.
+* Một execution trace kết thúc nhưng không đạt goal tham gia cuộc họp.
+
+Do đó, process là **WEAK_CONFORMANT**: tồn tại ít nhất một cách chạy đúng, nhưng không phải mọi cách chạy đều đúng.
+
+### 10.1 Initial state
+
+Trước khi BPMN bắt đầu, trạng thái chính được khởi tạo từ AOL:
 
 ```text
 Meeting:
   detailsDecided = false
   timeChosen = false
 
-Alice and Carol:
+Alice:
+  hasCalendar = true
+  timetable = requested
+  channel = none
+  notified = notSent
+  attendance = unknown
+
+Carol:
+  hasCalendar = false
   timetable = requested
   channel = none
   notified = notSent
   attendance = unknown
 ```
 
-State transitions:
+ACL yêu cầu Meeting Scheduler có:
 
-| Step | Activity | State effect |
-|---:|---|---|
-| S1 | `decideMeetingDetails` | `detailsDecided := true` |
-| S2 | `checkCalendar` | Alice timetable collected via calendar |
-| S2 | `requestSecretaryCall` | Không mutate state |
-| S3 | `collectConstraintsByPhone` | Carol timetable collected via phone |
-| S4 | `chooseTimeAndDate` | `timeChosen := true` |
-| S5 | `announceMeeting` | Mọi participant `notified := sent` |
-| S6 | `participate` | Mọi participant `attendance := attended` |
+* Một Initiator.
+* Một Organizer.
+* Tối đa một Secretary.
+* Ít nhất hai Participant.
 
-Trong current example:
+Initial state thỏa các constraint này.
+
+---
+
+### 10.2 Phần chung của process
+
+Hai execution trace cùng thực hiện các activity sau:
+
+| Step | Activity                    | State effect                          |
+| ---: | --------------------------- | ------------------------------------- |
+|   S1 | `decideMeetingDetails`      | `detailsDecided := true`              |
+|   S2 | `checkCalendar`             | Alice thu thập timetable qua calendar |
+|   S2 | `requestSecretaryCall`      | Không thay đổi state                  |
+|   S3 | `collectConstraintsByPhone` | Carol thu thập timetable qua phone    |
+|   S4 | `chooseTimeAndDate`         | `timeChosen := true`                  |
+|   S5 | `announceMeeting`           | Mọi participant có `notified := sent` |
+
+Sau `announceMeeting`, process đi tới XOR gateway:
+
+```text
+participationChoice
+```
+
+Gateway tạo hai nhánh:
+
+```text
+                              ┌→ participate ────────→ end
+announceMeeting → XOR gateway
+                              └→ skipParticipation ─→ end
+```
+
+![bpmn_example.png](bpmn_example.png)
+
+
+---
+
+### 10.3 Execution trace A — tham gia cuộc họp
+
+Trace thứ nhất chọn nhánh `participate`:
+
+```text
+start
+→ decideMeetingDetails
+→ checkCalendar
+→ requestSecretaryCall
+→ collectConstraintsByPhone
+→ chooseTimeAndDate
+→ announceMeeting
+→ participationChoice
+→ participate
+→ end
+```
+
+Activity `participate` thay đổi state:
+
+```text
+participantAlice.attendance: unknown → attended
+participantCarol.attendance: unknown → attended
+```
+
+Final state quan trọng:
+
+```text
+Meeting:
+  detailsDecided = true
+  timeChosen = true
+
+Alice:
+  timetable = collected
+  channel = calendar
+  notified = sent
+  attendance = attended
+
+Carol:
+  timetable = collected
+  channel = phone
+  notified = sent
+  attendance = attended
+```
+
+Kết quả kiểm tra trace A:
+
+| Conformance layer | Kết quả | Giải thích                                          |
+| ----------------- | ------- | --------------------------------------------------- |
+| ACL invariants    | PASS    | Final state vẫn hợp lệ theo ACL                     |
+| BPMN pre/post OCL | PASS    | Mọi activity contract đều thỏa                      |
+| iStar root goals  | PASS    | Các goal tổ chức và tham gia cuộc họp đều Fulfilled |
+| ISCN oracle       | PASS    | Actual final marking khớp expected marking          |
+
+Do đó:
+
+```text
+Trace A → TRACE_CONFORMANT
+```
+
+Theo cách đếm checkpoint hiện tại:
 
 ```text
 41 initial SOIL statements
@@ -543,36 +649,192 @@ Trong current example:
 = 47 checkpoints
 ```
 
-### 10.2 Check result
+---
+
+### 10.4 Execution trace B — bỏ qua tham gia
+
+Trace thứ hai chọn nhánh `skipParticipation`:
 
 ```text
-ACL invariants: PASS
-BPMN pre/post OCL: PASS
-iStar root goals: PASS
-ISCN oracle: PASS
+start
+→ decideMeetingDetails
+→ checkCalendar
+→ requestSecretaryCall
+→ collectConstraintsByPhone
+→ chooseTimeAndDate
+→ announceMeeting
+→ participationChoice
+→ skipParticipation
+→ end
 ```
 
-Suy ra:
+`skipParticipation` không có effect, vì vậy attendance không thay đổi:
+
+```text
+participantAlice.attendance = unknown
+participantCarol.attendance = unknown
+```
+
+Final state quan trọng:
+
+```text
+Meeting:
+  detailsDecided = true
+  timeChosen = true
+
+Alice:
+  timetable = collected
+  channel = calendar
+  notified = sent
+  attendance = unknown
+
+Carol:
+  timetable = collected
+  channel = phone
+  notified = sent
+  attendance = unknown
+```
+
+Kết quả kiểm tra trace B:
+
+| Conformance layer | Kết quả | Giải thích                                                                |
+| ----------------- | ------- | ------------------------------------------------------------------------- |
+| ACL invariants    | PASS    | `unknown` vẫn là giá trị enum hợp lệ                                      |
+| BPMN pre/post OCL | PASS    | Nhánh kết thúc hợp lệ và `skipParticipation` không có contract bị vi phạm |
+| iStar root goals  | FAIL    | Goal `MeetingAttended` không được Fulfilled                               |
+| ISCN oracle       | FAIL    | ISCN mong đợi các participant đã thực hiện `Participate`                  |
+
+Các marking liên quan vẫn chưa đạt:
+
+```text
+participantAlice.Participate = Pending
+participantCarol.Participate = Pending
+
+participantAlice.MeetingAttendedByParticipant = Pending
+participantCarol.MeetingAttendedByParticipant = Pending
+
+initiatorAlice.MeetingAttended = Pending
+initiatorAlice.HaveMeetingOrganized = Pending
+```
+
+Do đó:
+
+```text
+Trace B → TRACE_NON_CONFORMANT
+```
+
+Do nhánh này không có effect `participate`, số checkpoint là:
+
+```text
+41 initial SOIL statements
++ 5 BPMN effect statements
+= 46 checkpoints
+```
+
+![compare_final_state.png](compare_final_state.png)
+
+
+
+---
+
+### 10.5 Process-level classification
+
+Tập tất cả complete execution trace của process là:
 
 <div align="center">
 
-<img src="formulas/formula-093.svg" alt="\operatorname{TraceConf}(\tau_{MeetingScheduler})=\mathsf{true}">
+<img src="formulas/formula-075.svg" alt="T=\operatorname{Exec}(P,s_0)">
 
 </div>
 
-Formal verdict hiện tại:
+Trong ví dụ này:
 
 ```text
-TRACE_CONFORMANT
-scope = DETERMINISTIC_CONCRETE_TRACE
+T = {
+  Trace A: participate,
+  Trace B: skipParticipation
+}
 ```
 
-Nếu chứng minh:
+Tập các trace conformant là:
 
 <div align="center">
 
-<img src="formulas/formula-094.svg" alt="\operatorname{Exec}(P,s_0)=\{\tau_{MeetingScheduler}\}">
+<img src="formulas/formula-076.svg" alt="T_C=\{\tau\in T\mid\operatorname{TraceConf}(\tau)\}">
 
 </div>
 
-thì có thể nâng kết luận thành `STRONG_CONFORMANT` cho initial snapshot đã chọn.
+Cụ thể:
+
+```text
+T_C = {
+  Trace A: participate
+}
+```
+
+Ta có:
+
+```text
+Trace A → PASS
+Trace B → FAIL
+```
+
+Vì tập trace conformant khác rỗng nhưng không chứa toàn bộ execution trace:
+
+<div align="center">
+
+<img src="formulas/formula-085.svg" alt="\varnothing\subset T_C\subset T">
+
+</div>
+
+nên:
+
+<div align="center">
+
+<img src="formulas/formula-079.svg" alt="\operatorname{WeakConf}(P,s_0)\iff\exists\tau\in T:\operatorname{TraceConf}(\tau)">
+
+</div>
+
+Process-level verdict là:
+
+```text
+WEAK_CONFORMANT
+```
+
+Nói cách khác:
+
+> BPMN có ít nhất một cách thực thi đạt toàn bộ yêu cầu conformance, nhưng cũng có một cách thực thi không đạt goal model và ISCN oracle.
+
+Process không phải `STRONG_CONFORMANT`, vì điều kiện sau không đúng:
+
+<div align="center">
+
+<img src="formulas/formula-080.svg" alt="\operatorname{StrongConf}(P,s_0)\iff\forall\tau\in T:\operatorname{TraceConf}(\tau)">
+
+</div>
+
+![categorize_conformant.png](categorize_conformant.png)
+
+---
+
+### 10.6 Kết luận
+
+```text
+Trace A: participate
+  → TRACE_CONFORMANT
+
+Trace B: skipParticipation
+  → TRACE_NON_CONFORMANT
+
+Process:
+  → WEAK_CONFORMANT
+```
+
+Ví dụ này cho thấy:
+
+* `TRACE_CONFORMANT` chỉ kết luận cho một execution trace.
+* `WEAK_CONFORMANT` yêu cầu khám phá nhiều trace.
+* Chỉ cần một trace conformant để process đạt Weak Conformance.
+* Muốn đạt `STRONG_CONFORMANT`, mọi complete execution trace đều phải conformant.
+
+> **Implementation note:** checker deterministic hiện tại chỉ đánh giá một execution trace. Để tự động trả `WEAK_CONFORMANT`, checker phải khám phá riêng hai nhánh của XOR gateway, kiểm tra conformance cho từng trace rồi tổng hợp kết quả ở process level.
