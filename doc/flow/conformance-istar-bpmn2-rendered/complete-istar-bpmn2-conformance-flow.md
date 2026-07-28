@@ -815,26 +815,3 @@ Process không phải `STRONG_CONFORMANT`, vì điều kiện sau không đúng:
 
 ![categorize_conformant.png](categorize_conformant.png)
 
----
-
-### 10.6 Kết luận
-
-```text
-Trace A: participate
-  → TRACE_CONFORMANT
-
-Trace B: skipParticipation
-  → TRACE_NON_CONFORMANT
-
-Process:
-  → WEAK_CONFORMANT
-```
-
-Ví dụ này cho thấy:
-
-* `TRACE_CONFORMANT` chỉ kết luận cho một execution trace.
-* `WEAK_CONFORMANT` yêu cầu khám phá nhiều trace.
-* Chỉ cần một trace conformant để process đạt Weak Conformance.
-* Muốn đạt `STRONG_CONFORMANT`, mọi complete execution trace đều phải conformant.
-
-> **Implementation note:** checker deterministic hiện tại chỉ đánh giá một execution trace. Để tự động trả `WEAK_CONFORMANT`, checker phải khám phá riêng hai nhánh của XOR gateway, kiểm tra conformance cho từng trace rồi tổng hợp kết quả ở process level.
