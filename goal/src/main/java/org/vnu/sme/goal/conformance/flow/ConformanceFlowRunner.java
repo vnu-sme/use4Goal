@@ -12,6 +12,8 @@ import org.vnu.sme.goal.aol.transform.AolToSoilTransformer;
 import org.vnu.sme.goal.bpmn2.mm.Bpmn2Model;
 import org.vnu.sme.goal.bpmn2.parser.Bpmn2Compiler;
 import org.vnu.sme.goal.conformance.AclBpmnIStarConformanceChecker;
+import org.vnu.sme.goal.conformance.ConformanceVerdict;
+import org.vnu.sme.goal.conformance.ProcessConformanceClassifier;
 import org.vnu.sme.goal.conformance.oracle.IscnOracleComparator;
 import org.vnu.sme.goal.istar.mm.GoalModel;
 import org.vnu.sme.goal.istar.parser.IStarCompiler;
@@ -54,24 +56,50 @@ public final class ConformanceFlowRunner {
     public record StageResult(Stage stage, StageState state, String detail) {}
     private record InputIssue(Stage stage, String detail) {}
 
+    public record TraceResult(
+            int index,
+            List<String> flowElementIds,
+            List<String> activityIds,
+            AclBpmnIStarConformanceChecker.Result conformance,
+            List<String> oracleFailures,
+            ConformanceVerdict verdict) {
+        public TraceResult {
+            flowElementIds = List.copyOf(flowElementIds);
+            activityIds = List.copyOf(activityIds);
+            oracleFailures = List.copyOf(oracleFailures);
+        }
+
+        public boolean conformant() {
+            return verdict == ConformanceVerdict.TRACE_CONFORMANT;
+        }
+    }
+
     public record Result(
             List<StageResult> stages,
             Path generatedInitialSoil,
             AclBpmnIStarConformanceChecker.Result conformance,
             List<String> oracleFailures,
-            List<String> errors) {
+            List<String> errors,
+            ConformanceVerdict verdict,
+            List<TraceResult> traces,
+            boolean completeExecutionSpace) {
         public Result {
             stages = List.copyOf(stages);
             oracleFailures = List.copyOf(oracleFailures);
             errors = List.copyOf(errors);
+            traces = List.copyOf(traces);
         }
 
         public boolean ok() {
-            return errors.isEmpty() && conformance != null && conformance.ok();
+            return verdict != ConformanceVerdict.EXECUTION_ERROR;
         }
 
         public boolean conformant() {
-            return ok() && conformance.conformant() && oracleFailures.isEmpty();
+            return verdict.isConformant();
+        }
+
+        public int conformantTraceCount() {
+            return (int) traces.stream().filter(TraceResult::conformant).count();
         }
 
         public GoalModel goalModel() {
@@ -184,14 +212,11 @@ public final class ConformanceFlowRunner {
         stages.add(passed(Stage.BPMN2, bpmn.model().name()));
 
         Path generatedInitialSoil = null;
-        AclBpmnIStarConformanceChecker.Result conformance;
         try {
             generatedInitialSoil = Files.createTempFile("aol-initial-", ".soil");
             generatedInitialSoil.toFile().deleteOnExit();
             Files.writeString(generatedInitialSoil,
                     AolToSoilTransformer.transform(acl.model(), aol.model()));
-            conformance = AclBpmnIStarConformanceChecker.check(
-                    aclFile, generatedInitialSoil, istarFile, bpmnFile);
         } catch (Exception ex) {
             List<String> details = new ArrayList<>();
             details.add(message(ex));
@@ -206,37 +231,89 @@ public final class ConformanceFlowRunner {
             return failed(stages, Stage.CONFORMANCE, "Flow execution crashed",
                     details, null, null);
         }
-        if (!conformance.ok()) {
-            return failed(stages, Stage.CONFORMANCE, "Conformance execution failed",
-                    conformance.errors(), generatedInitialSoil, conformance);
+
+        BpmnExecutionSpaceEnumerator.Result executionSpace =
+                BpmnExecutionSpaceEnumerator.enumerate(bpmn.model());
+        if (!executionSpace.ok()) {
+            return failed(stages, Stage.CONFORMANCE,
+                    "Cannot prove complete BPMN execution-space coverage",
+                    executionSpace.errors(), generatedInitialSoil, null);
         }
 
-        List<String> oracleFailures;
-        try {
-            IStarUseTraceCompiler.Result trace = IStarUseTraceCompiler.compile(
-                    istarFile, conformance.generatedUse(), conformance.executionSoil());
-            if (!trace.ok()) {
-                return failed(stages, Stage.CONFORMANCE, "Cannot build oracle comparison trace",
-                        trace.errors(), generatedInitialSoil, conformance);
+        List<TraceResult> traceResults = new ArrayList<>();
+        AclBpmnIStarConformanceChecker.Result firstConformance = null;
+        for (BpmnExecutionSpaceEnumerator.Trace executionTrace : executionSpace.traces()) {
+            AclBpmnIStarConformanceChecker.Result traceConformance;
+            try {
+                traceConformance = AclBpmnIStarConformanceChecker.checkTrace(
+                        aclFile, generatedInitialSoil, istarFile, bpmnFile,
+                        executionTrace.activityIds());
+            } catch (Exception ex) {
+                return failed(stages, Stage.CONFORMANCE,
+                        "Trace #" + executionTrace.index() + " execution crashed",
+                        List.of(message(ex)), generatedInitialSoil, firstConformance);
             }
-            if (trace.checkpoints().isEmpty()) {
-                return failed(stages, Stage.CONFORMANCE, "Cannot compare an empty execution trace",
-                        List.of("the generated AOL/BPMN execution produced no checkpoint"),
-                        generatedInitialSoil, conformance);
+            if (firstConformance == null) firstConformance = traceConformance;
+            if (!traceConformance.ok()) {
+                return failed(stages, Stage.CONFORMANCE,
+                        "Trace #" + executionTrace.index() + " execution failed",
+                        traceConformance.errors(), generatedInitialSoil, traceConformance);
             }
-            oracleFailures = IscnOracleComparator.compare(
-                    iscn, aol.model(), trace.checkpoints().get(trace.checkpoints().size() - 1));
-        } catch (Exception ex) {
-            return failed(stages, Stage.CONFORMANCE, "ISCN oracle comparison crashed",
-                    List.of(message(ex)), generatedInitialSoil, conformance);
+
+            List<String> traceOracleFailures;
+            try {
+                IStarUseTraceCompiler.Result trace = IStarUseTraceCompiler.compile(
+                        istarFile, traceConformance.generatedUse(), traceConformance.executionSoil());
+                if (!trace.ok()) {
+                    return failed(stages, Stage.CONFORMANCE,
+                            "Cannot build oracle comparison trace #" + executionTrace.index(),
+                            trace.errors(), generatedInitialSoil, traceConformance);
+                }
+                if (trace.checkpoints().isEmpty()) {
+                    return failed(stages, Stage.CONFORMANCE,
+                            "Cannot compare empty execution trace #" + executionTrace.index(),
+                            List.of("the generated AOL/BPMN execution produced no checkpoint"),
+                            generatedInitialSoil, traceConformance);
+                }
+                traceOracleFailures = IscnOracleComparator.compare(
+                        iscn, aol.model(), trace.checkpoints().get(trace.checkpoints().size() - 1));
+            } catch (Exception ex) {
+                return failed(stages, Stage.CONFORMANCE,
+                        "ISCN oracle comparison crashed for trace #" + executionTrace.index(),
+                        List.of(message(ex)), generatedInitialSoil, traceConformance);
+            }
+
+            ConformanceVerdict traceVerdict =
+                    traceConformance.conformant() && traceOracleFailures.isEmpty()
+                            ? ConformanceVerdict.TRACE_CONFORMANT
+                            : ConformanceVerdict.TRACE_NON_CONFORMANT;
+            traceResults.add(new TraceResult(
+                    executionTrace.index(),
+                    executionTrace.flowElementIds(),
+                    executionTrace.activityIds(),
+                    traceConformance,
+                    traceOracleFailures,
+                    traceVerdict));
         }
 
-        boolean verdict = conformance.conformant() && oracleFailures.isEmpty();
+        int conformantTraceCount = (int) traceResults.stream()
+                .filter(TraceResult::conformant)
+                .count();
+        ConformanceVerdict verdict = traceResults.size() == 1
+                ? traceResults.get(0).verdict()
+                : ProcessConformanceClassifier.classify(
+                        conformantTraceCount,
+                        traceResults.size(),
+                        executionSpace.completeExecutionSpace(),
+                        executionSpace.traceUniquenessProven());
         stages.add(new StageResult(Stage.CONFORMANCE,
-                verdict ? StageState.PASSED : StageState.FAILED,
-                verdict ? "CONFORMANT" : "NOT CONFORMANT"));
-        return new Result(stages, generatedInitialSoil, conformance,
-                oracleFailures, List.of());
+                verdict.isConformant() ? StageState.PASSED : StageState.FAILED,
+                verdict.name() + " (" + conformantTraceCount + "/"
+                        + traceResults.size() + " conformant traces)"));
+        TraceResult firstTrace = traceResults.get(0);
+        return new Result(stages, generatedInitialSoil, firstConformance,
+                firstTrace.oracleFailures(), List.of(), verdict,
+                traceResults, executionSpace.completeExecutionSpace());
     }
 
     private static InputIssue validateInputs(
@@ -287,7 +364,8 @@ public final class ConformanceFlowRunner {
         errors.add(stage.label() + ": " + summary);
         details.forEach(detail -> errors.add("  - " + detail));
         stages.add(new StageResult(stage, StageState.FAILED, summary));
-        return new Result(stages, generatedInitialSoil, conformance, List.of(), errors);
+        return new Result(stages, generatedInitialSoil, conformance, List.of(), errors,
+                ConformanceVerdict.EXECUTION_ERROR, List.of(), false);
     }
 
     private static String message(Exception ex) {

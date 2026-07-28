@@ -1,0 +1,62 @@
+// Structural schema for the complete conformance-flow example.
+
+acl v2.0 MeetingSchedulerShadow {
+  enum TimetableStatus    { notRequested, requested, collected }
+  enum TimetableChannel   { none, calendar, phone }
+  enum NotificationStatus { notSent, sent }
+  enum AttendanceStatus   { unknown, attended, absent }
+
+  entity PhoneContact {
+    number : String;
+  }
+
+  entity Meeting {
+    detailsDecided : Boolean mutable;
+    timeChosen     : Boolean mutable;
+  }
+
+  abstract role MeetingParty {
+    name : String;
+  }
+
+  role Initiator   extends MeetingParty;
+  role Organizer   extends MeetingParty;
+  role Secretary   extends MeetingParty;
+  role Participant extends MeetingParty {
+    hasCalendar      : Boolean;
+    timetable        : TimetableStatus mutable;
+    timetableChannel : TimetableChannel mutable;
+    notified         : NotificationStatus mutable;
+    attendance       : AttendanceStatus mutable;
+  }
+
+  group MeetingUnit {
+    role Initiator    [1..1];
+    role Organizer    [1..1];
+    role Secretary    [0..1];
+    role Participant  [2..*];
+
+    compatibility Initiator <-> Participant
+      scope intra-group
+      type compatible;
+
+    compatibility Organizer <-> Secretary
+      scope intra-group
+      type compatible;
+  }
+
+  association know {
+    MeetingParty [1];
+    PhoneContact [*];
+  }
+
+  association meetingUnitMeetings {
+    MeetingUnit [1];
+    Meeting [*];
+  }
+
+  composition phoneContacts {
+    MeetingParty [1];
+    PhoneContact [*];
+  }
+}

@@ -58,15 +58,40 @@ public final class AclBpmnIStarConformanceChecker {
                          List<String> aclFailures,
                          List<String> bpmnFailures,
                          List<String> goalFailures,
-                         List<String> errors) {
-        public boolean ok() { return errors.isEmpty(); }
-        public boolean conformant() { return ok() && aclFailures.isEmpty()
-                && bpmnFailures.isEmpty() && goalFailures.isEmpty(); }
+                         List<String> errors,
+                         ConformanceVerdict verdict) {
+        public Result {
+            aclFailures = List.copyOf(aclFailures);
+            bpmnFailures = List.copyOf(bpmnFailures);
+            goalFailures = List.copyOf(goalFailures);
+            errors = List.copyOf(errors);
+        }
+
+        public boolean ok() { return verdict != ConformanceVerdict.EXECUTION_ERROR; }
+        public boolean conformant() { return verdict == ConformanceVerdict.TRACE_CONFORMANT; }
     }
 
     private AclBpmnIStarConformanceChecker() {}
 
     public static Result check(Path aclFile, Path soilFile, Path istarFile, Path bpmnFile) throws Exception {
+        return checkInternal(aclFile, soilFile, istarFile, bpmnFile, null);
+    }
+
+    public static Result checkTrace(
+            Path aclFile,
+            Path soilFile,
+            Path istarFile,
+            Path bpmnFile,
+            List<String> activityIds) throws Exception {
+        return checkInternal(aclFile, soilFile, istarFile, bpmnFile, List.copyOf(activityIds));
+    }
+
+    private static Result checkInternal(
+            Path aclFile,
+            Path soilFile,
+            Path istarFile,
+            Path bpmnFile,
+            List<String> activityIds) throws Exception {
         List<String> errors = new ArrayList<>();
 
         AclCompiler.Result acl = AclCompiler.compile(aclFile);
@@ -78,7 +103,13 @@ public final class AclBpmnIStarConformanceChecker {
         Path generatedUse = Files.createTempFile("acl-", ".use");
         Files.writeString(generatedUse, AclUseTranslator.translate(acl.model()));
 
-        ExecutionPlan plan = executionPlan(Files.readString(soilFile), bpmn.model());
+        List<String> activityErrors = new ArrayList<>();
+        List<Activity> activities = activityIds == null
+                ? executionOrder(bpmn.model())
+                : resolveActivities(bpmn.model(), activityIds, activityErrors);
+        if (!activityErrors.isEmpty()) return failure(errors, "BPMN2 trace", activityErrors);
+
+        ExecutionPlan plan = executionPlan(Files.readString(soilFile), activities);
         Path executionSoil = Files.createTempFile("bpmn-execution-", ".soil");
         Files.writeString(executionSoil, plan.soil());
 
@@ -87,28 +118,35 @@ public final class AclBpmnIStarConformanceChecker {
         if (trace.checkpoints().isEmpty()) return failure(errors, "SOIL", List.of("no checkpoints were produced"));
 
         Checkpoint finalCheckpoint = trace.checkpoints().get(trace.checkpoints().size() - 1);
-        List<String> aclFailures = evaluateAclInvariants(plan, trace.checkpoints());
-        List<String> bpmnFailures = evaluateBpmnOcl(plan, trace.useModel(), trace.checkpoints());
+        List<String> aclFailures = evaluateAclInvariants(plan, trace.checkpoints(), errors);
+        List<String> bpmnFailures = evaluateBpmnOcl(
+                plan, trace.useModel(), trace.checkpoints(), errors);
         List<String> goalFailures = evaluateRootGoals(trace.model(), finalCheckpoint);
 
+        ConformanceVerdict verdict = !errors.isEmpty()
+                ? ConformanceVerdict.EXECUTION_ERROR
+                : aclFailures.isEmpty() && bpmnFailures.isEmpty() && goalFailures.isEmpty()
+                        ? ConformanceVerdict.TRACE_CONFORMANT
+                        : ConformanceVerdict.TRACE_NON_CONFORMANT;
         return new Result(generatedUse, executionSoil, trace.model(), bpmn.model(), trace.checkpoints().size(),
-                aclFailures, bpmnFailures, goalFailures, List.of());
+                aclFailures, bpmnFailures, goalFailures, errors, verdict);
     }
 
     private static Result failure(List<String> errors, String stage, List<String> stageErrors) {
         errors.add(stage + " failed:");
         stageErrors.forEach(e -> errors.add("  - " + e));
-        return new Result(null, null, null, null, 0, List.of(), List.of(), List.of(), List.copyOf(errors));
+        return new Result(null, null, null, null, 0, List.of(), List.of(), List.of(),
+                errors, ConformanceVerdict.EXECUTION_ERROR);
     }
 
-    private static ExecutionPlan executionPlan(String initialSoil, Bpmn2Model bpmnModel) {
+    private static ExecutionPlan executionPlan(String initialSoil, List<Activity> activities) {
         List<ActivityStep> steps = new ArrayList<>();
         StringBuilder out = new StringBuilder();
         out.append(initialSoil.stripTrailing()).append("\n\n");
         out.append("-- Generic BPMN effects follow; snapshot object names are not embedded in them.\n");
         int checkpoint = countSoilStatements(initialSoil);
         int initialCheckpoint = checkpoint;
-        for (Activity activity : executionOrder(bpmnModel)) {
+        for (Activity activity : activities) {
             int preCheckpoint = checkpoint;
             String effect = activity.effectSource();
             if (effect != null && !effect.isBlank()) {
@@ -123,22 +161,48 @@ public final class AclBpmnIStarConformanceChecker {
         return new ExecutionPlan(out.toString(), List.copyOf(steps), initialCheckpoint);
     }
 
-    private static List<String> evaluateAclInvariants(ExecutionPlan plan, List<Checkpoint> checkpoints) {
+    private static List<Activity> resolveActivities(
+            Bpmn2Model model,
+            List<String> activityIds,
+            List<String> errors) {
+        Map<String, Activity> byId = new LinkedHashMap<>();
+        activities(model).forEach(activity -> byId.put(activity.id(), activity));
+        List<Activity> resolved = new ArrayList<>();
+        for (String id : activityIds) {
+            Activity activity = byId.get(id);
+            if (activity == null) {
+                errors.add("execution trace references unknown BPMN activity '" + id + "'");
+            } else {
+                resolved.add(activity);
+            }
+        }
+        return resolved;
+    }
+
+    private static List<String> evaluateAclInvariants(
+            ExecutionPlan plan,
+            List<Checkpoint> checkpoints,
+            List<String> errors) {
         Set<Integer> selected = new LinkedHashSet<>();
         selected.add(plan.initialCheckpoint());
         plan.steps().forEach(step -> selected.add(step.postCheckpoint()));
         List<String> failures = new ArrayList<>();
         for (int number : selected) {
             if (number <= 0 || number > checkpoints.size()) {
-                failures.add("ACL state check cannot use missing checkpoint " + number);
+                errors.add("ACL state check cannot use missing checkpoint " + number);
                 continue;
             }
             StringWriter output = new StringWriter();
             boolean valid = checkpoints.get(number - 1).state().check(
                     new PrintWriter(output), false, true, true, List.of());
             if (!valid) {
-                failures.add("earliest invalid checkpoint " + number + " violates ACL/USE constraints:\n"
-                        + output.toString().strip());
+                String detail = "earliest invalid checkpoint " + number
+                        + " violates ACL/USE constraints:\n" + output.toString().strip();
+                if (number == plan.initialCheckpoint()) {
+                    errors.add("invalid initial ACL state: " + detail);
+                } else {
+                    failures.add(detail);
+                }
                 break;
             }
         }
@@ -201,47 +265,59 @@ public final class AclBpmnIStarConformanceChecker {
         return order;
     }
 
-    private static List<String> evaluateBpmnOcl(ExecutionPlan plan, MModel useModel, List<Checkpoint> checkpoints) {
+    private static List<String> evaluateBpmnOcl(
+            ExecutionPlan plan,
+            MModel useModel,
+            List<Checkpoint> checkpoints,
+            List<String> errors) {
         List<String> failures = new ArrayList<>();
         for (ActivityStep step : plan.steps()) {
             Activity activity = step.activity();
             for (ActivityConstraint constraint : activity.preconditions()) {
                 String label = activity.id() + " " + constraint.kind().name().toLowerCase();
-                evaluateOclAtCheckpoint(useModel, checkpoints, step.preCheckpoint(), label, constraint, failures);
+                evaluateOclAtCheckpoint(
+                        useModel, checkpoints, step.preCheckpoint(), label, constraint, failures, errors);
             }
             for (ActivityConstraint constraint : activity.postconditions()) {
                 String label = activity.id() + " " + constraint.kind().name().toLowerCase();
-                evaluateOclAtCheckpoint(useModel, checkpoints, step.postCheckpoint(), label, constraint, failures);
+                evaluateOclAtCheckpoint(
+                        useModel, checkpoints, step.postCheckpoint(), label, constraint, failures, errors);
             }
         }
         return failures;
     }
 
     private static void evaluateOclAtCheckpoint(MModel useModel, List<Checkpoint> checkpoints, int checkpointNumber,
-                                                String label, ActivityConstraint constraint, List<String> failures) {
+                                                String label, ActivityConstraint constraint,
+                                                List<String> failures, List<String> errors) {
         if (checkpointNumber <= 0 || checkpointNumber > checkpoints.size()) {
-            failures.add(label + " cannot be evaluated: missing checkpoint " + checkpointNumber);
+            errors.add(label + " cannot be evaluated: missing checkpoint " + checkpointNumber);
             return;
         }
         MSystemState state = checkpoints.get(checkpointNumber - 1).state();
-        Expression expr = compileOcl(useModel, label, constraint.oclBody(), failures);
+        Expression expr = compileOcl(useModel, label, constraint.oclBody(), errors);
         if (expr == null) return;
-        var value = expr.eval(new SimpleEvalContext(state, state, new VarBindings()));
-        if (!(value instanceof BooleanValue bv) || !bv.isTrue()) {
-            failures.add(label + " is false at checkpoint " + checkpointNumber);
+        try {
+            var value = expr.eval(new SimpleEvalContext(state, state, new VarBindings()));
+            if (!(value instanceof BooleanValue bv) || !bv.isTrue()) {
+                failures.add(label + " is false at checkpoint " + checkpointNumber);
+            }
+        } catch (RuntimeException ex) {
+            errors.add(label + " evaluation failed at checkpoint " + checkpointNumber + ": "
+                    + ex.getMessage());
         }
     }
 
-    private static Expression compileOcl(MModel useModel, String label, String source, List<String> failures) {
+    private static Expression compileOcl(MModel useModel, String label, String source, List<String> errors) {
         StringWriter sw = new StringWriter();
         PrintWriter err = new PrintWriter(sw);
         try {
             Expression expr = OCLCompiler.compileExpression(useModel, source, label, err, new Symtable());
             err.flush();
-            if (expr == null) failures.add(label + " does not compile: " + sw);
+            if (expr == null) errors.add(label + " does not compile: " + sw);
             return expr;
         } catch (Exception ex) {
-            failures.add(label + " does not compile: " + ex.getMessage());
+            errors.add(label + " does not compile: " + ex.getMessage());
             return null;
         }
     }
@@ -252,13 +328,16 @@ public final class AclBpmnIStarConformanceChecker {
         for (var entry : checkpoint.markings().entrySet()) {
             for (String goalId : rootGoalIds) {
                 GoalTaskStatus status = entry.getValue().goalTaskStatus(goalId);
-                if (status == GoalTaskStatus.UNKNOWN) continue;
-                if (status != GoalTaskStatus.FULFILLED) {
+                if (!isStrictRootGoalSatisfied(status)) {
                     failures.add(entry.getKey() + "." + goalId + " = " + status);
                 }
             }
         }
         return failures;
+    }
+
+    static boolean isStrictRootGoalSatisfied(GoalTaskStatus status) {
+        return status == GoalTaskStatus.FULFILLED;
     }
 
     private static Set<String> rootGoalIds(GoalModel model) {

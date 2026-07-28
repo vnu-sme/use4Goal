@@ -178,7 +178,8 @@ public final class ConformanceForm extends JDialog {
 
             if (!result.ok()) {
                 result.errors().forEach(this::appendResult);
-                status("Conformance check failed before verdict.", C_ERR);
+                appendResult("Verdict       : " + result.verdict());
+                status(result.verdict().name(), C_ERR);
                 return;
             }
 
@@ -194,14 +195,14 @@ public final class ConformanceForm extends JDialog {
             result.bpmnFailures().forEach(f -> appendResult("  - " + f));
             appendResult("i* root goals : " + (result.goalFailures().isEmpty() ? "PASS" : "FAIL"));
             result.goalFailures().forEach(f -> appendResult("  - " + f));
-            appendResult("Verdict       : " + (result.conformant() ? "CONFORMANT" : "NOT CONFORMANT"));
+            appendResult("Verdict       : " + result.verdict());
 
             PREFS.put(PREF_ACL, aclPath);
             PREFS.put(PREF_SOIL, soilPath);
             PREFS.put(PREF_ISTAR, istarPath);
             PREFS.put(PREF_BPMN2, bpmnPath);
 
-            status(result.conformant() ? "CONFORMANT" : "NOT CONFORMANT",
+            status(result.verdict().name(),
                     result.conformant() ? C_OK : C_ERR);
         } catch (Exception ex) {
             appendResult("Error: " + ex.getMessage());

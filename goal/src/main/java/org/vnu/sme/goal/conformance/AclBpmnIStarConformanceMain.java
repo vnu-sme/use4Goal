@@ -25,6 +25,7 @@ public final class AclBpmnIStarConformanceMain {
                 AclBpmnIStarConformanceChecker.check(aclFile, soilFile, istarFile, bpmnFile);
         if (!result.ok()) {
             result.errors().forEach(System.err::println);
+            System.err.println("Verdict       : " + result.verdict());
             System.exit(1);
         }
         System.out.println("Generated USE : " + result.generatedUse());
@@ -36,6 +37,6 @@ public final class AclBpmnIStarConformanceMain {
         result.bpmnFailures().forEach(f -> System.out.println("  - " + f));
         System.out.println("i* root goals : " + (result.goalFailures().isEmpty() ? "PASS" : "FAIL"));
         result.goalFailures().forEach(f -> System.out.println("  - " + f));
-        System.out.println("Verdict       : " + (result.conformant() ? "CONFORMANT" : "NOT CONFORMANT"));
+        System.out.println("Verdict       : " + result.verdict());
     }
 }

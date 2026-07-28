@@ -213,7 +213,8 @@ public final class ConformanceFlowForm extends JDialog {
 
         result.errors().forEach(this::append);
         if (!result.ok()) {
-            status("Flow failed before a conformance verdict.", C_ERR);
+            append("VERDICT: " + result.verdict());
+            status(result.verdict().name(), C_ERR);
             return;
         }
 
@@ -222,24 +223,38 @@ public final class ConformanceFlowForm extends JDialog {
         Bpmn2View.openUseDesktop(
                 mainWindow, result.bpmnModel(), bpmnPath);
 
-        var conformance = result.conformance();
         append("ARTIFACTS");
         append("  Initial SOIL : " + result.generatedInitialSoil());
-        append("  Generated USE: " + conformance.generatedUse());
-        append("  Execution SOIL: " + conformance.executionSoil());
-        append("  Checkpoints  : " + conformance.checkpoints());
         append("");
 
-        appendGroup("ACL invariants", conformance.aclFailures());
-        appendGroup("BPMN pre/post OCL", conformance.bpmnFailures());
-        appendGroup("iStar root goals", conformance.goalFailures());
-        appendGroup("ISCN oracle", result.oracleFailures());
+        append("EXECUTION SPACE");
+        append("  Traces       : " + result.traces().size());
+        append("  Conformant   : " + result.conformantTraceCount());
+        append("  Complete     : " + result.completeExecutionSpace());
         append("");
-        append("VERDICT: " + (result.conformant() ? "CONFORMANT" : "NOT CONFORMANT"));
-        append("Scope  : one deterministic concrete execution; not a universal proof over BPMN branches/loops.");
+
+        for (var trace : result.traces()) {
+            var conformance = trace.conformance();
+            append("TRACE #" + trace.index() + ": " + trace.verdict());
+            append("  Activities   : " + String.join(" -> ", trace.activityIds()));
+            append("  Generated USE: " + conformance.generatedUse());
+            append("  Execution SOIL: " + conformance.executionSoil());
+            append("  Checkpoints  : " + conformance.checkpoints());
+            appendGroup("  ACL invariants", conformance.aclFailures());
+            appendGroup("  BPMN pre/post OCL", conformance.bpmnFailures());
+            appendGroup("  iStar root goals", conformance.goalFailures());
+            appendGroup("  ISCN oracle", trace.oracleFailures());
+            append("");
+        }
+
+        append("");
+        append("VERDICT: " + result.verdict());
+        append("Scope  : " + (result.verdict().isProcessLevel()
+                ? "complete supported BPMN execution space"
+                : "one concrete trace"));
 
         rememberPaths();
-        status(result.conformant() ? "CONFORMANT" : "NOT CONFORMANT",
+        status(result.verdict().name(),
                 result.conformant() ? C_OK : C_ERR);
     }
 

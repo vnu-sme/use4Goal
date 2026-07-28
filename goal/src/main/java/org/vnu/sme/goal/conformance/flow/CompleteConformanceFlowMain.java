@@ -21,18 +21,34 @@ public final class CompleteConformanceFlowMain {
         result.stages().forEach(stage -> System.out.printf(
                 "%-30s %-6s %s%n", stage.stage().label(), stage.state(), stage.detail()));
         result.errors().forEach(System.err::println);
-        if (!result.ok()) System.exit(1);
 
-        var conformance = result.conformance();
-        printFailures("ACL invariants", conformance.aclFailures());
-        printFailures("BPMN pre/post OCL", conformance.bpmnFailures());
-        printFailures("iStar root goals", conformance.goalFailures());
-        printFailures("ISCN oracle", result.oracleFailures());
-        System.out.println("Initial SOIL : " + result.generatedInitialSoil());
-        System.out.println("Generated USE: " + conformance.generatedUse());
-        System.out.println("Execution SOIL: " + conformance.executionSoil());
-        System.out.println("Verdict       : "
-                + (result.conformant() ? "CONFORMANT" : "NOT CONFORMANT"));
+        if (result.ok()) {
+            for (ConformanceFlowRunner.TraceResult trace : result.traces()) {
+                var conformance = trace.conformance();
+                System.out.println();
+                System.out.println("Trace #" + trace.index() + "   : " + trace.verdict());
+                System.out.println("Activities     : " + String.join(" -> ", trace.activityIds()));
+                printFailures("ACL invariants", conformance.aclFailures());
+                printFailures("BPMN pre/post OCL", conformance.bpmnFailures());
+                printFailures("iStar root goals", conformance.goalFailures());
+                printFailures("ISCN oracle", trace.oracleFailures());
+                System.out.println("Generated USE  : " + conformance.generatedUse());
+                System.out.println("Execution SOIL : " + conformance.executionSoil());
+            }
+        }
+        if (result.ok()) {
+            System.out.println();
+            System.out.println("Initial SOIL   : " + result.generatedInitialSoil());
+            System.out.println("Trace coverage : " + result.conformantTraceCount() + "/"
+                    + result.traces().size() + " conformant; complete="
+                    + result.completeExecutionSpace());
+        }
+        System.out.println("Verdict       : " + result.verdict());
+        if (result.ok()) {
+            System.out.println("Scope         : "
+                    + (result.verdict().isProcessLevel()
+                            ? "COMPLETE_EXECUTION_SPACE" : "SINGLE_TRACE"));
+        }
         if (!result.conformant()) System.exit(1);
     }
 

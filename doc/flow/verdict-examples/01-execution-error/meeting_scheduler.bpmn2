@@ -1,0 +1,154 @@
+// Executable BPMN solution model. Each effect block mutates the same USE state
+// against which BPMN pre/post conditions and iStar OCL are evaluated.
+
+model MeetingScheduler {
+  pool MeetingOrganization {
+    name "Meeting Organization"
+
+    lane Initiator {
+      name "Initiator"
+
+      start start_meeting {
+        trigger none
+      }
+
+      task decideMeetingDetails {
+        name "Decide Meeting Details"
+
+        pre {[
+          Meeting.allInstances()->exists(m | not m.detailsDecided)
+        ]}
+
+        post {[
+          Meeting.allInstances()->exists(m | m.detailsDecided)
+        ]}
+
+        effect {[
+          for m in Meeting.allInstances() do
+            m.detailsDecided := true;
+          end
+        ]}
+      }
+    }
+
+    lane Organizer {
+      name "Organizer"
+
+      task checkCalendar {
+        name "Check Participant Calendar"
+        pre {[
+          Meeting.allInstances()->exists(m | m.detailsDecided)
+          and Participant.allInstances()
+            ->exists(p | p.hasCalendar and p.timetable <> #collected)
+        ]}
+        post {[
+          Participant.allInstances()
+            ->select(p | p.hasCalendar)
+            ->forAll(p | p.timetable = #collected and p.timetableChannel = #calendar)
+        ]}
+        effect {[
+          for p in Participant.allInstances()->select(p | p.hasCalendar) do
+            p.timetable := #collected;
+            p.timetableChannel := #calendar;
+          end
+        ]}
+      }
+
+      task requestSecretaryCall {
+        name "Request Secretary Call"
+        pre {[
+          Meeting.allInstances()->exists(m | m.detailsDecided)
+          and Participant.allInstances()
+            ->exists(p | not p.hasCalendar and p.timetable <> #collected)
+        ]}
+      }
+      
+      task chooseTimeAndDate {
+        name "Choose Time And Date"
+        pre {[
+          Meeting.allInstances()->exists(m | m.detailsDecided)
+          and Participant.allInstances()
+            ->forAll(p | p.timetable = #collected)
+        ]}
+        post {[
+          Meeting.allInstances()->exists(m | m.timeChosen)
+        ]}
+        effect {[
+          for m in Meeting.allInstances() do
+            m.timeChosen := true;
+          end
+        ]}
+      }
+
+      task announceMeeting {
+        name "Announce Meeting"
+        pre {[
+          Meeting.allInstances()->exists(m | m.timeChosen)
+        ]}
+        post {[
+          Participant.allInstances()->forAll(p | p.notified = #sent)
+        ]}
+        effect {[
+          for p in Participant.allInstances() do
+            p.notified := #sent;
+          end
+        ]}
+      }
+
+      end end_meeting {
+        trigger none
+      }
+    }
+
+    lane Secretary {
+      name "Secretary"
+
+      task collectConstraintsByPhone {
+        name "Collect Constraints By Phone"
+        pre {[
+          Participant.allInstances()
+            ->exists(p | not p.hasCalendar and p.timetable <> #collected)
+        ]}
+        post {[
+          Participant.allInstances()
+            ->select(p | not p.hasCalendar)
+            ->forAll(p | p.timetable = #collected and p.timetableChannel = #phone)
+        ]}
+        effect {[
+          for p in Participant.allInstances()->select(p | not p.hasCalendar) do
+            p.timetable := #collected;
+            p.timetableChannel := #phone;
+          end
+        ]}
+      }
+    }
+
+    lane Participant {
+      name "Participant"
+
+      task participate {
+        name "Participate"
+        pre {[
+          Participant.allInstances()->forAll(p | p.notified = #sent)
+        ]}
+        post {[
+          Participant.allInstances()->forAll(p | p.attendance = #attended)
+        ]}
+        effect {[
+          for p in Participant.allInstances() do
+            p.attendance := #attended;
+          end
+        ]}
+      }
+    }
+
+    flow start_meeting -> decideMeetingDetails
+    flow decideMeetingDetails -> checkCalendar
+    flow checkCalendar -> requestSecretaryCall
+    flow requestSecretaryCall -> collectConstraintsByPhone
+    flow collectConstraintsByPhone -> chooseTimeAndDate
+    flow chooseTimeAndDate -> announceMeeting
+    flow announceMeeting -> participate
+    flow participate -> end_meeting
+  }
+}

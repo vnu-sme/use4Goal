@@ -1,0 +1,11 @@
+// Negative fixture: all AOL/iStar actor instances are bound, but the single
+// observed expectation deliberately disagrees with the final trace marking.
+
+scenario MeetingSchedulerOracleMismatch for "meeting_scheduler.istar" {
+  instance initiatorAlice : Initiator;
+  instance organizerBob : Organizer;
+  instance secretaryBob : Secretary;
+  instance participantAlice, participantCarol : Participant;
+
+  assign initiatorAlice.HaveMeetingOrganized = Pending;
+}
