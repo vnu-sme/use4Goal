@@ -194,6 +194,7 @@ public final class ConformanceForm extends JDialog {
             result.bpmnFailures().forEach(f -> appendResult("  - " + f));
             appendResult("i* root goals : " + (result.goalFailures().isEmpty() ? "PASS" : "FAIL"));
             result.goalFailures().forEach(f -> appendResult("  - " + f));
+            appendResult("Compliance    : " + result.conformanceLevel());
             appendResult("Verdict       : " + (result.conformant() ? "CONFORMANT" : "NOT CONFORMANT"));
 
             PREFS.put(PREF_ACL, aclPath);

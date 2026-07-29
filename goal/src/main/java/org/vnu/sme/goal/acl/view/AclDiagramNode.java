@@ -14,9 +14,11 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 
 import org.tzi.use.gui.views.diagrams.ToolTipProvider;
-import org.tzi.use.gui.views.diagrams.elements.PlaceableNode;
+import org.tzi.use.gui.views.diagrams.elements.CompartmentNode;
+import org.vnu.sme.goal.gui.DiagramVisualStyle;
 
-public final class AclDiagramNode extends PlaceableNode implements ToolTipProvider {
+/** Role, Group and Enumeration node using USE's compartment-node infrastructure. */
+public final class AclDiagramNode extends CompartmentNode implements ToolTipProvider {
     private static final int H_PAD = 10;
     private static final int V_PAD = 5;
     private static final int ROLE_HEADER = 40;
@@ -74,7 +76,7 @@ public final class AclDiagramNode extends PlaceableNode implements ToolTipProvid
         g.setColor(isSelected() ? getBackColorSelected() : fillColor());
         g.fill(shape);
         g.setColor(getFrameColor());
-        g.setStroke(new BasicStroke(1.4f));
+        g.setStroke(DiagramVisualStyle.solid());
         g.draw(shape);
 
         switch (node.kind) {
@@ -88,7 +90,8 @@ public final class AclDiagramNode extends PlaceableNode implements ToolTipProvid
 
     private void drawRole(Graphics2D g) {
         drawRoleIcon(g);
-        Font nameFont = getFont().deriveFont(isAbstractRole() ? Font.BOLD | Font.ITALIC : Font.BOLD, 13f);
+        Font nameFont = getFont().deriveFont(isAbstractRole() ? Font.BOLD | Font.ITALIC : Font.BOLD,
+                DiagramVisualStyle.FONT_NODE_NAME);
         g.setColor(getTextColor());
         g.setFont(nameFont);
         drawCentered(g, node.label, new Rectangle2D.Double(
@@ -115,7 +118,7 @@ public final class AclDiagramNode extends PlaceableNode implements ToolTipProvid
 
     private void drawGroup(Graphics2D g) {
         g.setColor(getTextColor());
-        g.setFont(getFont().deriveFont(Font.BOLD, 13f));
+        g.setFont(getFont().deriveFont(Font.BOLD, DiagramVisualStyle.FONT_NODE_NAME));
         drawCentered(g, node.label, new Rectangle2D.Double(
                 getX() + H_PAD, getY() + GROUP_TAB_HEIGHT,
                 getWidth() - H_PAD * 2, GROUP_HEADER - GROUP_TAB_HEIGHT));
@@ -132,7 +135,7 @@ public final class AclDiagramNode extends PlaceableNode implements ToolTipProvid
         g.drawString("«entity»", (float) getX() + H_PAD,
                 (float) getY() + V_PAD + g.getFontMetrics().getAscent());
 
-        g.setFont(getFont().deriveFont(Font.BOLD, 13f));
+        g.setFont(getFont().deriveFont(Font.BOLD, DiagramVisualStyle.FONT_NODE_NAME));
         drawCentered(g, node.label, new Rectangle2D.Double(
                 getX() + H_PAD, getY() + 16, getWidth() - H_PAD * 2, 26));
 
@@ -147,7 +150,7 @@ public final class AclDiagramNode extends PlaceableNode implements ToolTipProvid
         g.setFont(getFont().deriveFont(Font.PLAIN, 10f));
         g.drawString("«enumeration»", (float) getX() + H_PAD,
                 (float) getY() + V_PAD + g.getFontMetrics().getAscent());
-        g.setFont(getFont().deriveFont(Font.BOLD, 13f));
+        g.setFont(getFont().deriveFont(Font.BOLD, DiagramVisualStyle.FONT_NODE_NAME));
         drawCentered(g, node.label, new Rectangle2D.Double(
                 getX() + H_PAD, getY() + 16, getWidth() - H_PAD * 2, 26));
         g.setColor(getFrameColor());
@@ -158,7 +161,7 @@ public final class AclDiagramNode extends PlaceableNode implements ToolTipProvid
 
     private void drawDetails(Graphics2D g, int headerHeight, int horizontalPadding) {
         g.setColor(getTextColor());
-        g.setFont(getFont().deriveFont(Font.PLAIN, 11f));
+        g.setFont(getFont().deriveFont(Font.PLAIN, DiagramVisualStyle.FONT_DETAIL));
         FontMetrics metrics = g.getFontMetrics();
         int y = (int) getY() + headerHeight + V_PAD + metrics.getAscent();
         for (String detail : node.details) {
@@ -171,8 +174,8 @@ public final class AclDiagramNode extends PlaceableNode implements ToolTipProvid
 
     @Override
     protected void doCalculateSize(Graphics2D g) {
-        FontMetrics nameMetrics = g.getFontMetrics(getFont().deriveFont(Font.BOLD, 13f));
-        FontMetrics detailMetrics = g.getFontMetrics(getFont().deriveFont(Font.PLAIN, 11f));
+        FontMetrics nameMetrics = g.getFontMetrics(getFont().deriveFont(Font.BOLD, DiagramVisualStyle.FONT_NODE_NAME));
+        FontMetrics detailMetrics = g.getFontMetrics(getFont().deriveFont(Font.PLAIN, DiagramVisualStyle.FONT_DETAIL));
         int width = nameMetrics.stringWidth(node.label) + H_PAD * 4;
         for (String detail : node.details) {
             width = Math.max(width, detailMetrics.stringWidth(detail) + H_PAD * 4);

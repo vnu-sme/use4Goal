@@ -61,6 +61,9 @@ model MeetingScheduler {
         pre {[
           Meeting.allInstances()->exists(m | m.detailsDecided)
           and Participant.allInstances()->exists(p | not p.hasCalendar)
+          and Participant.allInstances()->select(p | not p.hasCalendar)->forAll(p |
+            p.target_phoneContacts->exists(phone |
+              Secretary.allInstances()->exists(s | s.target_know->includes(phone))))
         ]}
       }
 
@@ -116,6 +119,9 @@ model MeetingScheduler {
         name "Collect Constraints By Phone"
         pre {[
           Participant.allInstances()->exists(p | not p.hasCalendar)
+          and Participant.allInstances()->select(p | not p.hasCalendar)->forAll(p |
+            p.target_phoneContacts->exists(phone |
+              Secretary.allInstances()->exists(s | s.target_know->includes(phone))))
         ]}
         post {[
           Participant.allInstances()
@@ -165,7 +171,9 @@ model MeetingScheduler {
       ]}
     }
     flow requestSecretaryCall -> collectConstraintsByPhone
-    flow collectConstraintsByPhone -> gw_collect_join
+    // A mixed scenario must collect non-calendar participants by phone and then
+    // collect the remaining calendar participants before reaching the join.
+    flow collectConstraintsByPhone -> checkCalendar
     flow checkCalendar -> gw_collect_join
     flow gw_collect_join -> chooseTimeAndDate
     flow chooseTimeAndDate -> announceMeeting

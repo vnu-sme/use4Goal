@@ -92,5 +92,14 @@
                 toolbaritem="Conformance Checker"
                 id="org.vnu.sme.goal.conformance.action.ActionCheckConformance">
         </action>
+        <action label="Step-by-step Conformance Debugger"
+                icon="images/conformance.png"
+                class="org.vnu.sme.goal.conformance.action.ActionStepConformance"
+                tooltip="Inspect SOIL/BPMN execution, USE snapshots, and i* goal satisfaction one checkpoint at a time"
+                menu="GoalModel Plugin"
+                menuitem="Step-by-step Conformance Debugger"
+                toolbaritem="Step Conformance"
+                id="org.vnu.sme.goal.conformance.action.ActionStepConformance">
+        </action>
     </actions>
 </plugin>

@@ -1,0 +1,857 @@
+%  \documentclass[conference]{IEEEtran}
+% \documentclass[a4paper]{IEEEtran}
+\documentclass[a4paper, conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+\pdfminorversion=6
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage{epsfig}
+\usepackage{svg}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+%\usepackage{algorithmic}
+%\pagenumbering{gobble}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{listings}
+\usepackage{multirow}
+\usepackage{multicol}
+
+\usepackage[T1]{fontenc}
+\usepackage{enumitem}
+
+\usepackage{array}
+%\usepackage{lipsum}
+%\usepackage{multirow}
+%\usepackage{enumitem}
+\usepackage[utf8]{inputenc} 
+\usepackage[noend]{algpseudocode}
+\usepackage{pseudocode}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e} 
+\usepackage{balance}
+\usepackage{caption}
+\usepackage{comment}
+
+
+\algnewcommand{\IfThenElse}[3]{% \IfThenElse{<if>}{<then>}{<else>}
+	\State \algorithmicif\ #1\ \algorithmicthen\ #2\ \algorithmicelse\ #3}
+
+% custom macro definitions
+
+\include{resource/header-codelisting}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+%duclm: tikz for drawing LTS
+%\include{resource/tikzdrawings}
+% Algorithm
+%\usepackage{epsfig}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e} 
+%\makeatletter
+%\def\BState{\State\hskip-\ALG@thistlm}
+%\makeatother
+
+%\usepackage[top=0.75in,bottom=0.75in,left=1in,right=1in,]{geometry}
+%\usepackage{listings}
+
+%\pagestyle{plain} % removes running headers
+
+% custom macro definitions
+%\include{resource/header}
+
+%\include{resource/header-javacodelisting}
+%\breakauthorline{}% breaks lines after the n-th author
+% % % % % % % % % %
+% % % % % % % % % %
+% CUSTOM CONFIGURATIONS:
+% graphics
+\graphicspath{ {images/} }
+\DeclareGraphicsExtensions{.png,.jpg,.eps,.pdf}
+\usepackage{}
+% % % % % % % % % %
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+		T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\newcommand{\hdfigure}[3]{%
+	\begin{figure}[phtb]%
+		\vspace{-1ex}%
+		\begin{center}%
+			\includegraphics[scale=#2]{#1}%
+			\vspace{-1ex}%
+			\caption{#3\label{fig:#1}}%
+		\end{center}%
+		\vspace{-3ex}%
+\end{figure}}
+
+\newcommand{\hdfigurestar}[3]{%
+	\begin{figure*}[phtb]%
+		\vspace*{-1ex}%
+		\begin{center}%
+			\includegraphics[scale=#2]{#1}%
+			\vspace*{-1ex}%
+			\caption{#3\label{fig:#1}}%
+		\end{center}%
+		\vspace*{-3ex}%
+\end{figure*}}
+
+\newcommand{\hdfigurerot}[3]{%
+	\begin{figure}[phtb]%
+		% \vspace*{2ex}%
+		\begin{center}%
+			% \vspace*{-30ex}%
+			\includegraphics[angle=90,origin=B,scale=#2]{#1}%
+			% \vspace*{-6ex}%
+			\caption{#3\label{fig:#1}}%
+			% \vspace*{-18ex}%
+		\end{center}%
+\end{figure}}
+  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{
+On Specifying and Verifying \\
+OCL Temporal Properties 
+%{\footnotesize \textsuperscript{*}Note: Sub-titles are not captured in Xplore and
+%should not be used}
+%\thanks{Identify applicable funding agency here. If none, delete this.}
+}
+
+\author{
+    \IEEEauthorblockN{
+        Duc-Hanh Dang, Hoang-Lan Le, Duc-Quyen Nguyen, and Minh-Hai Dinh
+    }\IEEEauthorblockA{
+	University of Engineering and Technology, Vietnam National University, Hanoi\\
+     Email: {\tt\{hanhdd|22028013|21020388|21020622\}@vnu.edu.vn}
+     }
+}
+
+\pagestyle{empty}
+\maketitle
+\thispagestyle{plain} %--to make title page number less
+\pagestyle{plain}    % -- to make other pages number less.
+%\thispagestyle{empty}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{abstract}
+% ---------------
+% 1. Context/Motivation:  What is the context for the issue? Why do the problem and results matter? In what way will your results improve or change the reader’s work, the organization, or the world?  TIP: Lift the motivation statement from your Introduction.
+% ---------------
+% Modern software systems are increasingly complex, making traditional code-centric development prone to errors and delays. Hence, Model-Driven Engineering (MDE) addresses this by emphasizing models as primary artifacts. Within this context, UML provides visual modeling while OCL specifies precise constraints.
+Modern software engineering demands reliable systems in increasingly complex contexts. Model-Driven Engineering (MDE) elevates models as central artifacts, enabling early validation and automated code generation. While Unified Modeling Language (UML) supports structural and behavioral modeling, OCL specifies formal constraints and rules.
+% ---------------
+% 2. Problem/Purpose:  Why was the study/research/work performed? What problem are you solving? What question are you answering? What is the scope of your work?  TIP: Lift the purpose statement from your Introduction.
+% ---------------
+ However, OCL lacks temporal and event-driven constructs, limiting its ability to capture dynamic properties such as safety and liveness.
+% ---------------
+% 3. Approach/Methodology:  How did you solve or make progress on the problem? Briefly describe your basic methodology, being sure to list the key techniques used and to highlight any distinctive features of your approach.  TIP: Lift your approach statement(s) from your Methods section.
+% ---------------
+% To address these issues, we propose TOCL+ (Temporal OCL Plus), an extension of OCL that introduces temporal operators, explicit event constructs, and bounded quantifiers. The approach builds on the filmstripping technique, which represents system dynamics as sequences of snapshots and operation calls. TOCL+ constraints are systematically translated into standard OCL over filmstrip models, enabling verification with existing tools such as the USE Model Validator without requiring specialized temporal logic engines.
+To address this, we propose TOCL+, an OCL extension with temporal operators, event constructs, and bounded quantifiers. Using filmstripping, TOCL+ constraints are translated into standard OCL, allowing verification with existing tools like the USE Model Validator. 
+% ---------------
+% 4. Findings/Results:  What did you learn? Anticipate and answer your readers’ most important questions about the information. Summarize key findings such as quantitative results or trends. Highlight and explain any new or unusual results. Use only the high-level information; save the details for the discussion in the paper/report.  TIP: Lift your findings/results statement(s) from your Results section.
+% ---------------
+A case study demonstrates that TOCL+ specifies and verifies temporal properties beyond standard OCL, bridging the gap between temporal specification and practical verification in MDE.
+% The proposed method bridges the gap between temporal specification and practical verification in MDE. TOCL+ allows direct expression of safety and liveness properties that standard OCL cannot specify. The translation to filmstrip models ensures compatibility with current verification infrastructure. A plugin implementation validates the approach through a case study.
+% We implement a plugin in the USE environment to demonstrate feasibility through a case study. The results show that TOCL+ enables specification and verification of temporal properties beyond the expressiveness of standard OCL, while preserving its familiar syntax.
+% ---------------
+% 5. Conclusions/Recommendations:  What is the solution to the problem? What is the answer to the question? What are the implications of your answer—the basis for the recommendation? What is the significance of what you learned? What is the path forward?   TIP: Lift your conclusions/recommendations statement(s) from your Conclusions/Recommendations section(s).
+% ---------------
+% A language extension, a methodology, and tool support that together advance the state of model-driven specification and verification. As TOCL+ potentially empowers developers to specify realistic system behaviors while continuing to use familiar UML/OCL notations, we recommend applying the approach to larger industrial systems and exploring integration with other verification frameworks to further validate scalability and generality in the future.
+% Future work will examine scalability on industrial-scale systems and integration with other verification frameworks.
+
+
+% ---------------
+\end{abstract}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{IEEEkeywords}
+	Model-Driven Engineering(MDE); UML/OCL; TOCL; Temporal Constraints;
+\end{IEEEkeywords}
+% \vspace{-1em}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+\label{sect:intro}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------
+%-------- Research context & problems ---------
+%----------------------------------------------
+Modern software engineering is increasingly shaped by the need to deliver reliable systems in the face of high complexity. Model-Driven Engineering (MDE) elevates models to first-class artifacts, supporting early validation and automated generation of code and documentation \cite{KHALIL2018145}. Within this paradigm, the Unified Modeling Language (UML) provides expressive constructs to model structural and behavioral aspects of systems \cite{booch2005unified}, while the Object Constraint Language (OCL) introduces a formal textual mechanism to specify constraints and business rules beyond graphical representations \cite{warmer1998object}. The integration of UML and OCL enables a comprehensive specification
+of requirements while supporting automated analysis of their consistency and correctness. However, OCL is inherently limited to evaluating either individual system states or the pre- and postconditions of operations,
+which makes it unsuitable for specifying temporal constraints and event-driven behaviors. This gap prevents practitioners from capturing requirements such as ordering of operations, bounded occurrences, or liveness properties, which are crucial for reactive and time-sensitive systems.
+%----------------------------------------------
+%------------- State of the art ---------------
+%----------------------------------------------
+
+Several extensions have been proposed to overcome these limitations. Temporal OCL (TOCL) \cite{kanso2014specification,ziemann2003ocl}  extends OCL with temporal operators inspired by temporal logics such as
+Linear Temporal Logic (LTL) and Computation Tree Logic (CTL), thereby allowing properties like \textit{always}, \textit{eventually}, and \textit{until}
+to be expressed directly in OCL syntax. While these proposals enhance reasoning about state evolution, they remain limited: TOCL lacks explicit constructs for event handling
+and operation counting, and most temporal verification approaches depend on specialized tools that are not well integrated into the UML/OCL toolchain \cite{hilkenTransformationUMLOCL2014}. Hence, there remains a gap between temporal specification and practical verification in MDE.
+
+%----------------------------------------------
+%---------------- Our proposal ----------------
+%----------------------------------------------
+We propose TOCL+, an extension of OCL that supports both temporal and event-driven properties while preserving the familiar syntax of OCL. TOCL+ introduces constructs such as \texttt{isCalled} for operation events, \texttt{becomesTrue} for state changes, and bounded quantifiers for event frequencies. Verification is based on the film-stripping technique \cite{hilkenTransformationUMLOCL2014}, which encodes dynamic behavior as sequences of snapshots and operation calls. TOCL+ constraints are systematically translated into standard OCL over filmstrip models, allowing verification using existing tools such as the USE Model Validator \cite{gogolla2018achieving}, without the need for specialized temporal logic engines.
+
+This paper makes the following key contributions: (1)~A language extension (TOCL+) that enhances OCL with temporal operators, event constructs, and bounded quantifiers. (2)~A systematic translation methodology based on filmtripping to verify temporal properties. (3)~A prototype plugin integrated into the USE environment to support verification. (4)~An evaluation through a case study that demonstrates the feasibility of the approach.
+
+The remainder of this paper is organized as follows. Section~\ref{sect:motivation} reviews the necessary background on UML, OCL, TOCL and filmstripping. Section~\ref{sect:overview} gives an overview of our approach, introduces the TOCL+ language and outlines the transformation approach for verification. Section~\ref{sect:toolSupport} describes the tool support and discusses the applicability of our method. Section~\ref{sect:relatedWork} reviews related work. Finally, Section~\ref{sect:conclusion} concludes the paper and discusses the directions for future work.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Background and Motivating Example}
+\label{sect:motivation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+This section first presents the background knowledge for our research and then outlines the underlying motivations.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Motivating Example}
+\label{subsect:umlocl}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% To illustrate the expressive scope and limitations of OCL, we present a motivating example of a traffic light system in Figure~\ref{fig:case-study}. The model consists of two main classes, \texttt{TrafficLight} and \texttt{Button}, together with an enumeration \textit{Color}. 
+
+% OCL is used to formalize the operational correctness of these methods by specifying pre- and postconditions and invariants. The operation \texttt{switchPedLight()} in \texttt{TrafficLight} is constrained so that it only executes if a request has been made and upon execution, resets the request flag and ensures the pedestrian light state changes as specified. Similarly, \texttt{requestPass()} in Button alters the state of the request flag when the button is pressed, ensuring transactional integrity.
+
+To demonstrate both the expressive power and the limitations of OCL in modeling behavioral correctness, we present three representative case studies.
+
+The first case study, a traffic light control system, models the interaction between a pedestrian crossing button and a set of traffic lights (in Figure~\ref{fig:case-study}). The OCL constraints specify operational safety and logical consistency—ensuring, for example, that car and pedestrian lights never share the same color, that pedestrian requests are handled only when valid, and that each operation transitions system states deterministically.
+
+
+
+
+
+\begin{figure}[htb]
+\vspace{-.5em}
+\begin{center}
+	\includegraphics[scale=0.325]{backup/version0.1/images/TOCL+Background.png}
+				\vspace{-0.3em}
+	\begin{center}	
+			\caption{The application model of \textit{TrafficLight}.} 	
+			\label{fig:case-study}
+	\end{center}
+	\vspace{-2.7em}
+    
+\end{center}
+\end{figure} 
+
+The second case study, a banking system, captures the relationship between a bank account and its associated debit cards in Figure~\ref{fig:BankCase}. OCL constraints are used to guarantee the correctness of account operations such as deposits, withdrawals, and payments. They also ensure that spending limits remain within the available balance and that each newly created debit card instance is uniquely associated with its respective account.
+\begin{figure}[htb]
+\vspace{-.5em}
+\begin{center}
+	\includegraphics[scale=0.31]{backup/version0.1/images/BankAccount.drawio.png}
+				\vspace{-0.3em}
+	\begin{center}	
+			\caption{The application model of \textit{BankAccount}.} 	
+			\label{fig:BankCase}
+	\end{center}
+	\vspace{-2.7em}
+    
+\end{center}
+\end{figure} 
+
+The third case study, a software system manager (Figure~\ref{fig:AppCase}), models the lifecycle of applications within a host system. OCL constraints govern this lifecycle by defining the precise semantics for operations like \textit{load}, \textit{install}, and \textit{run}. These constraints enforce critical pre-conditions, such as requiring sufficient \textit{freeMemory} to load an application, and post-conditions to track resource allocation (e.g., decreasing memory upon loading). Furthermore, system-level invariants guarantee a consistent and logical state, preventing errors such as an application being simultaneously in the \textit{loadedApps} and \textit{runningApps} collections.
+\begin{figure}[htb]
+\vspace{-.5em}
+\begin{center}
+	\includegraphics[scale=0.26]{backup/version0.1/images/Application.drawio.png}
+				\vspace{-0.3em}
+	\begin{center}	
+			\caption{The application model of \textit{SoftwareSystem}.} 	
+			\label{fig:AppCase}
+	\end{center}
+	\vspace{-2.7em}
+    
+\end{center}
+\end{figure} 
+
+Together, these examples illustrate how OCL can formally express system rules, operation semantics, and cross-object consistency, while also revealing the language’s limitations in expressing more complex temporal or quantitative properties.
+
+% However, OCL faces considerable limitations when specifying constraints that involve the temporal ordering of operations and event-driven behaviors. For instance, articulating requirements such as “if a crossing request is made, the next operation must be a call to \texttt{switchPedLight()}” exceeds the capabilities of standard OCL, which cannot enforce the sequence or timing of events. Additionally, OCL lacks mechanisms to express constraints involving the frequency or history of operations, such as tracking how many times an action occurs within a specified interval. These gaps hinder the formal specification and verification of systems where time and event dependencies are critical.
+
+
+However, OCL, based on first-order logic, lacks native support for specifying temporal properties~\cite{lail2022TOCL}. Some approaches rely on non-UML formalisms, requiring the transformation of UML models into external verification frameworks, which are not well aligned with MDE. Therefore, extending OCL with temporal constructs is a more suitable solution. Among the notable efforts in this direction, TOCL~\cite{ziemann2003ocl} extends OCL to address its core limitation: the inability to express temporal properties that span multiple system states. While OCL is effective for invariants and pre- and postconditions within a single snapshot, it cannot describe evolving behavior in reactive or real-time systems.
+
+TOCL enriches OCL with temporal operators inspired by LTL~\cite{rozier2011linear}. Constraints are evaluated over a  infinite sequence of states and organizes its temporal operators into two categories~\cite{ziemann2003ocl}:
+
+\begin{itemize}
+    \item \textbf{Future Operators}: These include \texttt{next e} (true if $e$ holds in the next state), \texttt{always e} (true if $e$ holds in the current and all subsequent states), and \texttt{sometime e} (true if $e$ holds in the current or at least one future state).
+    \item \textbf{Past Operators}: These include \texttt{previous e} (true if $e$ was true in the previous state), \texttt{alwaysPast e} (true if $e$ was true in all past states), and \texttt{sometimePast e} (true if $e$ was true in at least one past state).
+\end{itemize}
+
+These operators provide the core temporal reasoning capabilities in TOCL, allowing precise specification of how properties evolve over time, a critical feature for modeling and verifying dynamic system behavior. TOCL's ability to express temporal relations between states is particularly valuable for verifying properties in reactive and real-time systems, where actions in the system are triggered by the passage of time or by other events.
+
+
+However, TOCL faces considerable limitations when specifying constraints that involve event-driven behaviors. For instance, articulating requirements such as \textit{“if a crossing request is made, the next operation must be a call to switchPedLight()”} or \textit{“detecting that an event becomes true between two states”} exceeds the capabilities of TOCL. Additionally, TOCL lacks mechanisms to capture constraints involving the precise frequency of operations, such as restricting how many times an action may occur within a specified interval. These gaps hinder the formal specification and verification of systems where quantitative control over event occurrences is critical.
+
+% However, TOCL lacks the ablity to constraints involving bounded-extistence event or operation counting (as stated in...). 
+To overcome these limitations, we propose extending TOCL, a version that augments OCL with temporal constraints, enabling more direct modeling of time-dependent and event-driven requirements. This raises several important questions for further research: (1)~How can TOCL be extended to capture such temporal and event-based constraints? (2)~In what way can these new constraints be translated into UML/OCL models? (3)~How can the correctness of these newly added constraints be verified? 
+
+% However, there are some properties we come across that both OCL and TOCL cannot express - the one involving event handling via operations or counting operations (bounded existence). Thus, to overcome this challenge, the following questions should be addressed:
+
+% \begin{itemize}
+%     \item How should we extend TOCL so that those constraints can be expressed?
+%     \item How can we find a way to translate these new types of constraints to UML/OCL?  
+%     \item How can we verify those newly added constraints?
+% \end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\subsection{Temporal OCL - TOCL}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TOCL was introduced as an extension to the standard OCL to address its fundamental limitation: the inability to specify temporal properties that span multiple system states over time. OCL, while effective for specifying invariants within a single state and simple pre/post-conditions, lacks the expressiveness needed for capturing dynamic behaviors in systems that evolve over time, especially in real-time, concurrent, and reactive systems.
+
+% TOCL addresses this limitation by incorporating elements from LTL \cite{rozier2011linear}, allowing it to reason about both future and past states. Unlike standard OCL, which applies constraints to a single system state, TOCL applies an "always" condition across a sequence of system states, making it possible to express constraints that must hold across multiple states. TOCL uses a framework where system states are modeled as an infinite sequence, and temporal constraints are evaluated over this sequence.
+
+% \begin{lstcodeplainssm}{TOCL Specification for  \texttt{TrafficLight}}{lst:toclTrafficLight}
+% context TrafficLight
+% inv TL2: self.pedLight = #Green implies sometimePast self.requested
+% \end{lstcodeplainssm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Filmstrip Method for Model Validation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The model filmstripping method  \cite{hilkenTransformationUMLOCL2014}  enables efficient verification of UML/OCL models
+by addressing dynamic aspects through techniques traditionally applied to static analysis. Specifically, the UML/OCL model, a so-called application model, is transformed into an equivalent model containing only invariants, referred to as the filmstrip model.
+The validity of the application model can be verified by applying static verification techniques to this filmstrip model. For a better understanding, we would take a look at the \textit{TrafficLight} example above with the original model shown in Figure~\ref{fig:case-study}. 
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\linewidth]{backup/version0.1/images/TOCL+filmstrip.png}
+  \caption{Transform TrafficLight into the filmstrip model.}
+  \label{fig:filmstrip-example}
+\end{figure}
+
+
+
+ Figure~\ref{fig:filmstrip-example} shows the filmstrip model obtained from the original model \textit{TrafficLight}. Two operations of the class \texttt{TrafficLight}, \texttt{switchCarLight()} and \texttt{switchPedLight()}, correspond to two classes in the filmstrip model, \texttt{switchCarLight$\_$TrafficLightOpC} and \texttt{switchPedLight$\_$TrafficLightOpC}. A transition between two system snapshots w.r.t a call of the operations would be represented in only one corresponding snapshot in the filmstrip model. 
+
+ \begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\linewidth]{backup/version0.1/images/App_Filmstrip_model.png}
+  \caption{Transform Application into the filmstrip model.}
+  \label{fig:app-example}
+\end{figure}
+
+Figure~\ref{fig:app-example} presents the filmstrip model obtained from the application-management system. The operations of the class \texttt{System} in the original model, such as \texttt{install()}, \texttt{load()}, \texttt{run()}, and \texttt{stop()}, are transformed into the corresponding operation-classes \texttt{install$\_$SystemOpC}, \texttt{load$\_$SystemOpC}, \texttt{run$\_$SystemOpC}, and \texttt{stop$\_$SystemOpC}. Similar to the previous example, each call of an operation is represented in the filmstrip by linking two snapshots through the temporal relations \texttt{pred} and \texttt{succ}. The classes \texttt{System} and \texttt{Application} appear in every snapshot, allowing changes in attributes such as memory usage and application sets to be captured in a static form. This enables the verification of system behavior by applying standard OCL invariant checking on the filmstrip structure.
+
+ \begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\linewidth]{backup/version0.1/images/BankAccount_filmstrip_model.png}
+  \caption{Transform BankAccount into the filmstrip model.}
+  \label{fig:bank-example}
+\end{figure}
+
+Figure~\ref{fig:bank-example} illustrates the filmstrip model derived from the \textit{BankAccount} case study. The operations of the class \texttt{BankAccount}, specifically \texttt{deposit()} and \texttt{withdraw()}, are transformed into the corresponding operation-classes \texttt{deposit$\_$BankAccountOpC} and \texttt{withdraw$\_$BankAccountOpC}. Consistent with the previous examples, the execution of a transaction is represented in the filmstrip by linking two snapshots—representing the pre-state and post-state—through the temporal relations \texttt{pred} and \texttt{succ}. Key attributes, such as the account \texttt{balance}, are maintained within each snapshot. This transformation allows dynamic constraints, such as preventing a balance from becoming negative or ensuring data consistency during transactions, to be formulated and verified as static invariants on the filmstrip model.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Overview of Our Approach}
+\label{sect:overview}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Figure~\ref{fig:overview} illustrates our approach, which consists of three main steps.
+First, the application model (a UML/OCL class diagram) is transformed into a filmstrip model. Second, temporal properties are specified in TOCL+ will be translated into semantically equivalent OCL constraints so that they can be interpreted on the filmstrip model.
+
+\begin{figure}[htbp]	
+\vspace{-.5em}
+\begin{center}
+	\includegraphics[scale=0.38]{backup/version0.1/images/TOCL+Appoarch.png}
+        \vspace{-0.3em}
+	\begin{center}		
+		\caption{Overview of the proposed approach.}
+            \label{fig:overview}
+	\end{center}	
+	\vspace{-2.7em}
+\end{center}
+\end{figure}
+
+Finally, the filmstrip model, the translated OCL properties, and the verification configuration for bound constraints
+serve as inputs to the USE Model Validator. The validator explores candidate snapshots and checks whether all static and temporal constraints are satisfied. If \textit{satisfiable}, an object diagram is generated to illustrate a valid execution scenario. If \textit{not}, then no such scenario exists.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\vspace{-2em}
+% \section{Expressing temporal constraints with TOCL+}
+% \label{sect:tocl-expressing}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% This section focuses on the main steps of our approach as illustrated in Figure~\ref{fig:overview}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{TOCL+: An Extension for OCL Temporal Properties}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+While TOCL extended OCL with temporal operators for reasoning
+about past and future system states, it faced significant limitations, particularly in expressing event-driven behaviors and bounded existence properties. TOCL could only track state changes, not actual event occurrences (e.g., the number of times an operation is invoked). These gaps were addressed with the introduction of TOCL+.
+
+\begin{figure}[htbp]	
+\vspace{-.5em}
+\begin{center}
+	% \includegraphics[scale=0.8]
+	\includegraphics[scale=0.6]
+    {backup/version0.1/images/TOCL+TOCL+ (1).png}
+        \vspace{-0.7em}
+	\begin{center}		
+		\caption{Example of a state transition.}
+            \label{fig:stateTransition}
+	\end{center}	
+	\vspace{-2.7em}
+\end{center}
+\end{figure}
+
+TOCL+ extends TOCL by incorporating event constructs and bounded existence operators, which significantly expand its expressive power for dynamic system behaviors. The Figure~\ref{fig:stateTransition} shows a state-transition sequence where states are annotated with condition \texttt{P} and transitions are triggered by operation calls \texttt{op}. This serves to illustrate the core features supported in TOCL+.
+
+\begin{itemize}
+    \item \textbf{Event Constructs}:
+    \begin{itemize}
+        \item \texttt{isCalled}: Detects the invocation of a specific operation on an object, representing the atomic transition from pre-state to post-state.
+        \item \texttt{becomesTrue}: Detects when a condition \texttt{P} changes from false to true between two consecutive states.
+    \end{itemize}
+    
+    \item \textbf{Bounded Existence Properties}: TOCL+ introduces bounded quantifiers for counting events:
+    \begin{itemize}
+        \item \texttt{isCalled(...)} at most $k$ times: Restricts the operation to be called no more than $k$ times.
+        \item \texttt{isCalled(...)} $k$ times: Specifies that the operation must be called exactly $k$ times.
+        \item \texttt{isCalled(...)} at least $k$ times: Ensures the operation is called at least $k$ times.
+    \end{itemize}
+\end{itemize}
+
+There are two main benefits of our extension. First, these new capabilities enable TOCL+ to express properties that were previously inexpressible in TOCL, such as ensuring that an operation is invoked a specified number of times or that a system event occurs within a given range of system states. Importantly, this extension preserves the familiar OCL syntax, ensuring that TOCL+ remains accessible to practitioners already accustomed to OCL. Second, the introduction of event-based constructs in TOCL+ allows for a more intuitive specification of reactive systems and real-time applications, where behaviors are driven by the occurrence of specific events (e.g., operation calls, state changes). By adding bounded existence operators, TOCL+ supports verification of safety properties like \textit{"an operation is called at most once"} or \textit{"a system transition occurs exactly three times"}.
+\begin{lstcodeplainssm}{EBNF Grammar}{lst:grammarebnf}
+primaryExp[Environment env] returns [ASTOclExpression ast]
+  : literalExp[$env]
+  | varExp[$env]
+  | callExp[$env, null]
+  | ifExp[$env]
+  | toclOperatorExpression[$env]
+  | LPAREN oclExpression[$env] RPAREN
+  | events[$env]
+  {
+    $ast = $events.ast;
+  };
+
+events[Environment env] returns [ASTEvent ast]
+  : isCalledEvent[$env] { $ast = $isCalledEvent.ast; }
+  | becomesTrueEvent[$env] { \$ast = \$becomesTrueEvent.ast; };
+
+isCalledEvent[Environment env] returns [ASTEvent ast]
+  : 'isCalled' LPAREN eventOp[$env] RPAREN bounds[$env]?
+  {
+    $_ast = new ASTEvent();
+  };
+
+bounds[Environment env]
+  : quantif=('at least' | 'at most')? n=NATURAL_N 'times';
+
+eventOp[Environment env]
+  : simpleName LPAREN parameters[$env]? RPAREN;
+
+becomesTrueEvent[Environment env] returns [ASTEvent ast]
+  : 'becomesTrue' LPAREN e=binaryOperationExp[$env] RPAREN
+  {
+    $_ast = new ASTEvent();
+  };
+  
+\end{lstcodeplainssm}
+
+Listing \ref{lst:grammarebnf} shows the formal EBNF as the  Grammar of two new events constructed types extending the formal grammar that was built by Lail et al. \cite{lail2022TOCL}. The formal grammar specification serves two principal functions. It delivers a rigorous definition of the TOCL+ syntax, thereby complementing the semantic foundation introduced in the preceding section. In addition, it facilitates the systematic translation of TOCL+ specifications into standard OCL constraints, which are subsequently employed in our verification framework described in the next section.
+
+Listing~\ref{lst:tocl+Properties} presents representative TOCL+ constraints for the \textit{TrafficLight} system. They capture temporal and event-driven requirements, such as detecting when specific operations are called and when an OCL expression \texttt{P} changes from false to true. These examples highlight how TOCL+ extends TOCL with additional constructs to specify dynamic and event-dependent system behavior more precisely. 
+
+\begin{lstcodeplainssm}{TOCL+ properties for TrafficLight} {lst:tocl+Properties}
+context TrafficLight
+-- When the traffic light receives a request, at some point in time, the pedestrian light will be turned on.
+inv TL1: self.requested = true implies sometime isCalled(switchPedLight())
+-- When the pedestrian light is turned on, it will change to green.
+inv TL2: isCalled(switchPedLight()) implies becomesTrue(self.pedLight = #Green)
+
+context Button
+-- When the button is pressed, a request to change the light will be sent to the traffic light.
+inv TL3: isCalled(requestPass()) implies becomesTrue(self.light.requested = true)
+
+\end{lstcodeplainssm}
+
+Similarly, Listing~\ref{lst:ApplicationProperties} presents the TOCL+ constraints for the \textit{Application} system, focusing on lifecycle dependencies such as ensuring an application is loaded before execution. 
+
+\begin{lstcodeplainssm}{TOCL+ properties for Application} {lst:ApplicationProperties}
+context System
+-- An application must be loaded before it is run
+inv safety1:
+    self.runningApps->notEmpty() implies
+    self.runningApps->forAll(app |
+        isCalled(run(app : Application)) implies
+        sometimePast isCalled(load(app : Application))
+    )
+-- An application must eventually be installed after it is loaded
+inv safety2:
+    self.runningApps->notEmpty() implies
+    self.runningApps->forAll(app |
+        isCalled(run(app : Application)) implies
+        sometime isCalled(install()) since isCalled(load(app : Application))
+    )
+-- Each application can be loaded at most once in the past
+inv safety3:
+    self.installedApps->notEmpty() implies
+    self.installedApps->forAll(app |
+        sometimePast isCalled(load(app : Application)) at most 1 times
+    )
+-- Every loaded application must eventually be installed
+inv liveness:
+    self.loadedApps->notEmpty() implies
+    self.loadedApps->forAll(app |
+        sometime isCalled(install())
+    )
+
+context Application
+-- Once an application becomes loaded, it must eventually become installed
+inv livenessBecomesTrue:
+    self.system.loadedApps->includes(self) implies
+    sometime becomesTrue(self.system.installedApps->includes(self))
+
+
+\end{lstcodeplainssm}
+
+Finally, Listing~\ref{lst:BankAccountProperties} illustrates the \textit{BankAccount} scenario, which highlights the capability of TOCL+ to handle bounded existence properties and immediate obligations. Specifically, it demonstrates how to restrict the frequency of an operation (e.g., limiting card issuance).
+
+\begin{lstcodeplainssm}{TOCL+ properties for BankAccount} {lst:BankAccountProperties}
+context BankAccount
+-- If the account balance falls below zero (debt), it must eventually return to a positive state at some future point.
+inv Recovery: self.balance < 0 implies sometime (self.balance > 0)
+
+-- The operation to assign a new card is restricted to occur at most three times throughout the system's execution.
+inv MaxCardIssuance: isCalled(assignNewCard()) at most 3 times
+
+-- Immediate Response: Whenever the account balance transitions to a negative value (overdraft), a withdrawal operation (representing a penalty fee) must be invoked in the immediate next state.
+inv OverdraftPenalty: becomesTrue(self.balance < 0) implies next isCalled(withdraw())
+
+
+\end{lstcodeplainssm}
+\vspace{-1em}
+
+%-----------------------------
+\subsection{Translating TOCL+ Properties into OCL}
+%-----------------------------
+Table \ref{table:TOCLPlusOperators} illustrates the translation rules applied in Step~2 for our extended TOCL operators to the corresponding OCL constraints on the filmstrip model. The patterns use placeholders (in square brackets) that are instantiated during transformation: \texttt{[ContextSnapshot]} is the snapshot in which the property is evaluated; \texttt{[ContextObject]} is the object on which the property is evaluated; \texttt{[OpClassName]} is the class representing an operation call in the filmstrip model; \texttt{[ObjectClass]} is the class name of the current object.
+
+
+Listing~\ref{lst:toclTrafficLight} presents the resulting OCL constraints for the \textit{TrafficLight} case study.
+
+\begin{table}
+\caption{TOCL+ Operators and Events}
+\label{table:TOCLPlusOperators}
+\footnotesize
+\begin{tabular}{p{0.2cm} p{2cm} p{5.2cm}}
+\hline
+\textbf{No.} & \textbf{TOCL+ Expression} &\textbf{OCL Translation} \\ \hline
+1 & \texttt{isCalled(Op())} & \texttt{[OpClassName].allInstances()
+->exists(op | op.succ() = [ContextSnapshot])} \\ \hline
+2 & \texttt{isCalled
+(Op(param1, ..., paramn))}
+   & \texttt{[OpClassName].allInstances()
+   ->exists(op | op.succ() = [ContextSnapshot] and
+   (Set{op.param1.succ(ObjectClass)}
+   ->closure(p | p.succ(ObjectClass))
+   ->includes(param1) or Set{op.param1.pred(ObjectClass)}
+   ->closure(p | p.pred(ObjectClass))
+   ->includes(param1)) and ( ... )}
+   or
+   \texttt{(Set{op.paramn.succ(ObjectClass)}
+   ->closure(p | p.succ(ObjectClass))
+   ->includes(paramn) or Set{op.paramn.pred(ObjectClass)}
+   ->closure(p | p.pred(ObjectClass))
+   ->includes(paramn))} \\ \hline
+3 & \texttt{isCalled
+(Op())
+[at most | at least | ]  n times }
+   & \texttt{[OpClassName].allInstances()
+   ->select(op | op.succ() = [ContextSnapshot])->size() [<= | >= | =] n} \\ \hline
+4 & \texttt{isCalled
+(Op(param1, ..., paramn)) 
+[at most | at least | ] n times }
+   & \texttt{[OpClassName].allInstances()
+   ->select(op | op.succ() = [ContextSnapshot] and (Set{op.param1.succ[ObjectClass]}
+   ->closure(p | p.succ[ObjectClass])
+   ->includes(param1) or Set{op.param1.pred[ObjectClass]}
+   ->closure(p | p.pred[ObjectClass])
+   ->includes(param1)) and (...) and (Set{op.paramn.succ[ObjectClass]}
+   ->closure(p | p.succ[ObjectClass])
+   ->includes(paramn) or Set{op.paramn.pred[ObjectClass]}
+   ->closure(p | p.pred[ObjectClass])
+   ->includes(paramn)))->size() [<= | >= | =] n} \\ \hline
+5 & \texttt{becomesTrue(P)} 
+    & \texttt{let currentObject = [ContextSnapshot].
+    [ContextObject]->any(o | o.id = self.id) in
+    let previousObject = [ContextSnapshot].pred().
+    [ContextObject]->any(o | o.id = self.id) in 
+    not [previousObject |= P] 
+    and [currentObject |= P]} \\ \hline
+\end{tabular}
+\end{table}
+
+\vspace{0.3em}
+
+\begin{lstcodeplainssm}{OCL invariants generated from the example TrafficLight filmstrip model.} {lst:toclTrafficLight}
+context TrafficLight
+inv TL1: self.requested = true implies (let CS:Snapshot = self.snapshotTrafficLight in Set{CS}->closure(s | s.succ())->excluding(null)->exists(s | switchPedLight_TrafficLightOpC.allInstances()->exists(op | op.succ() = s)))
+
+inv TL2: switchPedLight_TrafficLightOpC.allInstances()->exists(op | op.succ() = self.snapshotTrafficLight) implies (let currentObject = self.snapshotTrafficLight.trafficLight->any(o | o.id = self.id) in let previousObject = self.snapshotTrafficLight.pred().trafficLight->any(o | o.id = self.id) in not (previousObject.pedLight = #Green) and (currentObject.pedLight = #Green))
+
+context Button
+inv TL3: requestPass_ButtonOpC.allInstances()->exists(op | op.succ() = self.snapshotButton) implies (let currentObject = self.snapshotButton.button->any(o | o.id = self.id) in let previousObject = self.snapshotButton.pred().button->any(o | o.id = self.id) in not (previousObject.light.requested = true) and (currentObject.light.requested = true))
+
+\end{lstcodeplainssm}
+
+Listing~\ref{lst:toclApplication} displays the translated constraints for the \textit{Application} system, which include translations for past operators and time intervals.
+\begin{lstcodeplainssm}{OCL invariants generated from the example Application filmstrip model.} {lst:toclApplication}
+context System
+-- An application must be loaded before it is run
+inv safety1: self.runningApps->notEmpty() implies self.runningApps >forAll(app | (run_SystemOpC.allInstances()->exists(op | op.succ() = self.snapshotSystem and (Set{op.app.succApplication}->closure(p | p.succApplication)->includes(app) or Set{op.app.predApplication}->closure(p | p.predApplication)->includes(app)))) implies (let CS:Snapshot = self.snapshotSystem in Set{CS.pred()}->closure(s | s.pred())->exists(s | (load_SystemOpC.allInstances()->exists(op | op.succ() = s and (Set{op.app.succApplication}->closure(p | p.succApplication)->includes(app) or Set{op.app.predApplication}->closure(p | p.predApplication)->includes(app)))))))
+-- An application must eventually be installed after it is loaded
+inv safety2: self.runningApps->notEmpty() implies self.runningApps->forAll(app | (run_SystemOpC.allInstances()->exists(op | op.succ() = self.snapshotSystem and (Set{op.app.succApplication}->closure(p | p.succApplication)->includes(app) or Set{op.app.predApplication}->closure(p | p.predApplication)->includes(app)))) implies (let CS:Snapshot = self.snapshotSystem in let PS:Set(Snapshot) = Set{CS.pred()}->closure(s | s.pred())->excluding(null) in let AllPSQ:Set(Snapshot) = PS->select(s |(load_SystemOpC.allInstances()->exists(op | op.succ() = s and (Set{op.app.succApplication}->closure(p | p.succApplication)->includes(app) or Set{op.app.predApplication}->closure(p | p.predApplication)->includes(app))))) in let PSQ:Snapshot = AllPSQ->any(s | Set{s}->closure(s | s.pred())->includesAll(AllPSQ)) in let PSP:Set(Snapshot) = PS->select(s | install_SystemOpC.allInstances()->exists(op | op.succ() = s)) in if PSQ.isDefined() then (Set{PSQ}->closure(s | s.succ())->excluding(null)->intersection(PS)->exists(s | PSP->includes(s))) else false endif))
+-- Each application can be loaded at most once in the past
+inv safety3: self.installedApps->notEmpty() implies self.installedApps->forAll(app | (let CS:Snapshot = self.snapshotSystem in Set{CS.pred()}->closure(s | s.pred())->exists(s | (load_SystemOpC.allInstances()->select(op | op.succ() = s and (Set{op.app.succApplication}->closure(p | p.succApplication)->includes(app) or Set{op.app.predApplication}->closure(p | p.predApplication)->includes(app)))->size() <= 1))))
+-- Every loaded application must eventually be installed
+inv liveness: self.loadedApps->notEmpty() implies self.loadedApps->forAll(app | (let CS:Snapshot = self.snapshotSystem in Set{CS}->closure(s | s.succ())->excluding(null)->exists(s | install_SystemOpC.allInstances()->exists(op | op.succ() = s))))
+
+context Application
+-- Once an application becomes loaded, it must eventually become installed
+inv livenessBecomesTrue: self.system.loadedApps->includes(self) implies (let CS:Snapshot = self.snapshotApplication in Set{CS}->closure(s | s.succ())->excluding(null)->exists(s | (let currentObject = s.application->any(o | o.id = self.id) in let previousObject = s.pred().application->any(o | o.id = self.id) in not (previousObject.system.installedApps->includes(previousObject)) and (currentObject.system.installedApps->includes(currentObject)))))
+
+
+\end{lstcodeplainssm}
+
+Finally, Listing~\ref{lst:toclBankAccount} shows the generated OCL constraints for the \textit{BankAccount} model, corresponding to the bounded existence properties defined in TOCL+.
+\begin{lstcodeplainssm}{OCL invariants generated from the example BankAccount filmstrip model.} {lst:toclBankAccount}
+context BankAccount
+    -- If the account balance falls below zero (debt), it must eventually return to a positive state at some future point.
+    inv Recovery: self.balance < 0 implies (let CS:Snapshot = self.snapshotBankAccount in Set{CS}->closure(s | s.succ())->excluding(null)->exists(s | (s.bankAccount->any(o | self.id = o.id).balance > 0)))
+
+    -- The operation to assign a new card is restricted to occur at most three times throughout the system's execution.
+    inv MaxCardIssuance: assignNewCard_BankAccountOpC.allInstances()->select(op | op.succ() = self.snapshotBankAccount)->size() <= 3
+
+    -- Immediate Response: Whenever the account balance transitions to a negative value (overdraft), a withdrawal operation (representing a penalty fee) must be invoked in the immediate next state.
+    inv OverdraftPenalty: (let currentObject = self.snapshotBankAccount.bankAccount->any(o | o.id = self.id) in let previousObject = self.snapshotBankAccount.pred().bankAccount->any(o | o.id = self.id) in not (previousObject.balance < 0) and (currentObject.balance < 0)) implies (let CS:Snapshot = self.snapshotBankAccount in withdraw_BankAccountOpC.allInstances()->exists(op | op.succ() = self.snapshotBankAccount.succ()))
+
+
+\end{lstcodeplainssm}
+\vspace{1em}
+
+\begin{algorithm}
+\small % hoặc \footnotesize, \scriptsize để đổi cỡ chữ
+\ttfamily 
+\caption{Verification of UML/TOCL+ application models}
+\label{alg::toclToOcl}
+\KwIn{An UML/TOCL+ Application Model}
+\KwOut{SAT(witness object diagram) | UNSAT}
+
+Transform the application model into a filmstrip model using the USE Filmstrip plugin\;
+Translate TOCL+ constraints into the corresponding OCL constraints over the transformed filmstrip model by applying a set of translation rules on TOCL+ constraints\;
+Verify the filmstrip model with the translated OCL constraints and additional constraints by model finding\;
+
+\If{a model (object diagram) is found}{
+  \Return SATISFIABLE with the object diagram\;
+}
+\Else{
+  \Return UNSATISFIABLE\;
+}
+\end{algorithm}
+\vspace{-1em}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Verifying TOCL+ Properties}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Algorithm~\ref{alg::toclToOcl} outlines the process of verifying TOCL+ constraints by determining whether a witness model instance exists that satisfies all specified conditions. This task can be carried out using UML/OCL model finders, such as the USE Model Validator~\cite{kuhlmannUMLOCLRelational2012} or UMLtoCSP~\cite{cabot2014verification}. These tools translate the structural and behavioral aspects of the model, along with its constraints, into relational logic~\cite{torlakKodkodRelationalModel2007}, and then rely on constraint solvers to systematically explore a user-defined finite search space for object diagrams that fulfill all invariants. A key step in this process is defining appropriate lower and upper bounds for objects, associations, and attribute values, as this greatly influences the efficiency of model finding.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Tool Support and Experiments}
+\label{sect:toolSupport}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Figure~\ref{fig:ToolSupport} illustrates the architecture of the TOCL+ support tool as an integrated verification framework within the USE environment. The system separates specification processing from verification logic. Model and temporal constraint files (.use and .tocl) are loaded into USE, where the TOCL+ plugin performs two main tasks: It first converts the application model to a filmstrip-based representation using the Filmstrip plugin, then translates temporal specifications from the .tocl file into OCL invariants via an ANTLR4-based parser and rule engine. These invariants are merged with the filmstrip model to generate the output model file.
+
+\begin{figure}[htb]
+\vspace{-.5em}
+\begin{center}
+	\includegraphics[scale=0.6]{backup/version0.1/images/TOCL+Architecture.png}
+        \vspace{-0.3em}
+        \begin{center}	
+            \caption{ Support tool architecture and workflow.} 	
+            \label{fig:ToolSupport}
+        \end{center}
+        \vspace{-2.7em}
+\end{center}
+\end{figure}
+
+Building on this general approach, we leverage the USE Model Validator to check the satisfiability of the translated constraints. To enable model finding, the search space configuration must be defined. Listing~\ref{lst:trafficLightConfig} shows the configuration for the \textit{TrafficLight} model, specifying bounds for integer values and class instances.
+
+\begin{lstcodeplainssm}{A part of the configuration file of \textit{TrafficLight}}{lst:trafficLightConfig}[h]
+
+[default]                       # Button
+Integer_min = 0                 Button_min = 4
+Integer_max = 100               Button_max = 4
+
+String_max = 10                 # TrafficLight
+                                TrafficLight_min = 4
+Real_min = -2.0                 TrafficLight_max = 4
+Real_max = 2.0
+Real_step = 0.5                 # requestPass_ButtonOpC
+                                requestPass_ButtonOpC_min = 1
+# Snapshot                      requestPass_ButtonOpC_max = 1
+Snapshot_min = 4                ... 
+Snapshot_max = 4
+
+# Filmstrip
+Filmstrip_min = 3
+Filmstrip_max = 3
+\end{lstcodeplainssm}
+
+Similarly, Listing~\ref{lst:applicationConfig} outlines the search bounds for the \textit{Application} system. This configuration ensures that the validator explores a sufficient number of snapshots to capture the complete lifecycle of an application, from loading to installation.
+\begin{lstcodeplainssm}{A part of the configuration file of \textit{Application}}{lst:applicationConfig}[h]
+
+[default]                       # load_SystemOpC
+Integer_min = 0                 load_SystemOpC_min = 1
+Integer_max = 100               load_SystemOpC_max = 1
+
+String_max = 10                 # install_SystemOpC
+                                install_SystemOpC_min = 1
+Real_min = -2.0                 install_SystemOpC_max = 1
+Real_max = 2.0
+Real_step = 0.5                 # run_SystemOpC
+                                run_SystemOpC_min = 0
+# Snapshot                      run_SystemOpC_max = 0
+Snapshot_min = 3                 
+Snapshot_max = 3                # stop_SystemOpC
+                                stop_SystemOpC_min = 0
+# Filmstrip                     stop_SystemOpC_max = 0
+Filmstrip_min = 2               
+Filmstrip_max = 2               # SnapshotSystem
+                                SnapshotSystem_min = 3
+# System                        SnapshotSystem_max = 3
+System_min = 3
+System_max = 3                  # SnapshotApplication
+                                SnapshotApplication_min = 6
+# Application                   SnapshotApplication_max = 6
+Application_min = 6
+Application_max = 6
+\end{lstcodeplainssm}
+
+Finally, Listing~\ref{lst:bankAccountConfig} presents the configuration for the \textit{BankAccount} case study. It defines the bounds for account operations such as deposits and withdrawals, as well as limits for card issuance to verify the bounded existence properties.
+\begin{lstcodeplainssm}{A part of the configuration file of \textit{BankAccount}}{lst:bankAccountConfig}[h]
+
+[default]                    # assignNewCard_BankAccountOpC
+Integer_min = 0              assignNewCard_BankAccountOpC_min = 1
+Integer_max = 100            assignNewCard_BankAccountOpC_max = 1
+
+String_max = 10              # deposit_BankAccountOpC
+                             deposit_BankAccountOpC_min = 0
+Real_min = -2.0              deposit_BankAccountOpC_max = 0
+Real_max = 2.0
+Real_step = 0.5              # pay_DebitCardOpC
+                             pay_DebitCardOpC_min = 0
+# Snapshot                   pay_DebitCardOpC_max = 0
+Snapshot_min = 2                 
+Snapshot_max = 2             # withdraw_BankAccountOpC
+                             withdraw_BankAccountOpC_min = 0
+# Filmstrip                  withdraw_BankAccountOpC_max = 0
+Filmstrip_min = 1               
+Filmstrip_max = 1               
+                                
+# BankAccount                        
+BankAccount_min = 2
+BankAccount_max = 2             
+                                
+# DebitCard                   
+DebitCard_min = 1
+DebitCard_max = 1
+\end{lstcodeplainssm}
+
+This output, along with a configuration file defining search bounds (user is also able to configure the search space manually), is fed into the Model Validator. The validator automatically explores the model’s state space, checks temporal constraints, and generates valid model instances as evidence when the constraints are satisfied.
+
+To demonstrate the framework’s effectiveness, we applied it to the \textit{TrafficLight} case study. Figure~\ref{fig:TOCL+validator} presents a valid object diagram generated by the tool for the filmstrip model displayed in Figure~\ref{fig:filmstrip-example} with the search bounds shown in Listing~\ref{lst:trafficLightConfig}.
+
+\begin{figure}[htbp]
+\vspace{-.5em}
+\begin{center}
+	\includegraphics[scale=0.3]{backup/version0.1/images/TOCL+validator.png}
+            \vspace{-0.3em}
+		\begin{center}	
+			\caption{An object diagram found by USE Model Validator} 	
+			\label{fig:TOCL+validator}
+		\end{center}
+        \vspace{-2.7em}
+    \end{center}
+\end{figure} 
+
+In the same vein, Figure~\ref{fig:AppValidator} depicts a valid execution trace found for the \textit{Application} system, validating the safety and liveness properties defined in the previous section.
+
+\begin{figure}[htbp]
+\vspace{-.5em}
+\begin{center}
+	\includegraphics[scale=0.4]{backup/version0.1/images/App_filmstrip.png}
+            \vspace{-0.3em}
+		\begin{center}	
+			\caption{An object diagram found by USE Model Validator} 	
+			\label{fig:AppValidator}
+		\end{center}
+        \vspace{-2.7em}
+    \end{center}
+\end{figure} 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Evaluation}
+\label{sect:evaluative}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+To position our approach, we compare TOCL+ with two major classes of state-of-the-art verification frameworks. The first includes traditional temporal model checkers such as Spin~\cite{holzmann2004spin} and NuSMV~\cite{cimatti2002nusmv}, which provide exhaustive verification of low-level temporal logics like LTL and CTL. Although highly powerful, these tools rely on distinct specification formalisms (e.g., Promela~\cite{holzmann2004spin}, SMV~\cite{cimatti2002nusmv}), forcing designers to manually translate UML/OCL models into external representations. This translation process introduces a semantic gap between design and verification artifacts, is prone to errors, and requires substantial expertise in temporal logic—posing a steep learning curve for MDE practitioners. Moreover, expressing high-level, domain-oriented properties, such as “an operation is called at most three times,” is cumbersome in LTL and often requires explicit encoding of auxiliary state variables, reducing clarity and maintainability.
+
+The second class comprises UML/OCL-based verification tools such as UMLtoCSP~\cite{cabot2014verification}, which employ constraint programming or relational logic. While these approaches preserve the UML/OCL semantics, they generally lack native mechanisms to express temporal relationships across multiple states or capture operation-call events, thereby limiting their expressiveness for dynamic system behavior.
+
+Standard OCL is unable to capture temporal dependencies, as it only evaluates invariants over a single system state. A liveness property like inv TL1: self.requested = true implies sometime isCalled(switchPedLight()) cannot be represented. Our TOCL+ approach bridges this exact expressiveness gap. By extending OCL with high-level operators such as \textit{sometime}, \textit{isCalled}, and \textit{becomesTrue}, it enables designers to specify complex temporal and event-driven properties directly within the UML/OCL environment. Implemented as a plugin for the USE tool, TOCL+ performs verification through bounded model finding, eliminating the need for external model transformation. Consequently, while traditional model checkers like Spin and NuSMV achieve higher scalability for pure logical verification, TOCL+  prioritizes accessibility, practical efficiency, and native consistency with MDE workflows, making temporal property verification both expressive and usable in real-world modeling environments.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Discussion}
+\label{sect:discussion}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Although $TOCL+$ demonstrates the feasibility of integrating temporal property verification into a standard UML/OCL environment, the approach exhibits several important limitations concerning expressiveness, scalability, and the underlying verification assumptions.
+
+First, the filmstrip abstraction limits temporal expressiveness. By discretizing system evolution into ordered snapshots, the current approach cannot natively express quantitative real-time requirements. For example, a constraint such as "an operation must be invoked within five seconds" is not supported. Future work could address this by extending the filmstrip metamodel with explicit timestamp attributes, allowing time and duration constraints to be encoded as standard OCL comparisons.
+
+Second, the reliance on bounded model finding impacts scalability. Translating $TOCL+$ into standard OCL and applying model finding exposes the approach to state-space explosion as the filmstrip depth or model complexity increases. This limitation is coupled with the usability challenge of manually configuring search bounds—a process requiring expertise, as restrictive bounds can conceal counterexamples while permissive bounds increase resource usage. Consequently, $TOCL+$ is intended for early fault detection within bounded scenarios, not as a replacement for high-performance, exhaustive model checkers.
+
+Finally, the method's validity depends entirely on the translation fidelity. The soundness and completeness of the verification results rely on the correctness of the $TOCL+$ to OCL translation rules and the fidelity of the underlying model finder. To strengthen internal validity, these translation rules must be formally specified and independently validated. We also plan to publish all implementation artifacts and benchmark suites to enable independent replication, which will increase confidence in the method's generality and robustness.
+
+Taken together, these limitations identify a focused research agenda: extending the filmstrip model for real-time constraints, quantitatively benchmarking scalability, automating search bound selection, and formally validating the translation toolchain.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Related work}
+\label{sect:relatedWork}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Various methods have been proposed to address the challenge of specifying and verifying temporal properties in UML models. Al Lail et al \cite{ailTPV2025} introduced a technique similar to ours, converting application models into Snapshot Transition Models (STM) and using TOCL for specification. However, their approach still inherits the limitations of TOCL when dealing with event-based properties. Kanso and Taha \cite{kanso2014specification} and Dadeau et al. \cite{dadeauTemporalPattern2019} explored pattern-based specification methods, implementing these patterns in Eclipse, but without providing verification capabilities or focusing on model-based testing instead of comprehensive verification. Baresi et al. \cite{baresiMADES2015} presented the MADES approach, which integrates multiple heavyweight formalisms for verifying embedded systems but requires a steep learning curve and advanced mathematical skills, making it difficult for many UML designers. Similarly, Combemale et al. \cite{combemalrPropertyDriven2008} used a temporal extension of OCL translated into Petri nets, which necessitates designers learning additional formalisms to interpret the verification results. Meyers et al. \cite{Meyers2014} supported temporal property verification in domain-specific modeling through a set of five languages, relying on LTL and the Spin model checker, creating a separation between specification and verification languages. Hilken and Gogolla \cite{hilken2016} introduced a filmstripping approach similar to our verification technique, but without supporting high-level temporal property specification. In contrast, our approach combines specification and verification within the well-known OCL context, removing the need for learning additional formalisms.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion}
+\label{sect:conclusion}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+This paper has presented a comprehensive approach for verifying temporal properties in model-driven engineering environments, with a particular focus on UML/OCL models. This research encompasses three core contributions. First, it introduces two time-determining concepts that extend the TOCL syntax, thereby enhancing the expressiveness and verification capabilities for temporal constraints in UML/OCL models. Second, a transformer from TOCL+ to OCL has been developed, allowing temporal specifications to be directly incorporated into existing verification tools. Third, a practical verification tool
+has been implemented and demonstrated, evidencing the
+effectiveness and applicability of the proposed approach
+through concrete scenarios.
+
+% By integrating the USE Validator with the TOCL+ and Filmstrip plugins, the proposed framework enables systematic and automated analysis of time-dependent behaviors and state transitions. The introduction of two novel time-determining concepts, the development of an automated converter from TOCL+ to OCL, and the implementation of a practical verification tool collectively represent significant advancements in the expressiveness and applicability of temporal constraint validation.
+
+Through concrete scenarios such as the \textit{TrafficLight} example, the effectiveness of the method has been demonstrated, offering enhanced traceability and transparency in the verification process. Despite certain limitations regarding configuration management and the expressiveness of temporal logic, the results establish a robust and extensible foundation for future research and tool development. Subsequent work may further refine the framework by supporting more sophisticated temporal constraints and improving automation, thereby advancing the practical utility of temporal property verification in complex software systems.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\balance
+%\vspace{-0.5em}
+\bibliographystyle{IEEEtran}
+\bibliography{ref}
+\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

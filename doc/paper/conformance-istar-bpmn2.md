@@ -1,5 +1,72 @@
 # Conformance giữa Goal Model i* (.istar) và Process Model BPMN (.bpmn2)
 
+## Trạng thái hiện thực hóa: scenario-driven execution
+
+Trong workflow ACL–SOIL–BPMN–iStar hiện tại, **scenario** là input fixture trước khi hệ thống
+chạy, không phải một trace viết tay:
+
+```
+ACL   = hợp đồng cấu trúc dùng chung
+SOIL  = object/agent/role/group và dữ liệu đầu vào cụ thể
+BPMN  = bộ sinh trace bằng token, guard, pre/post và effect
+USE   = trạng thái runtime dùng chung để đánh giá OCL
+iStar = bộ quan sát mức độ thỏa mãn mục tiêu sau từng Activity
+```
+
+Sau khi đọc hết SOIL, initialization gate chỉ xác nhận fixture thuộc không gian trạng thái ACL.
+Nó không phải verdict conformance. Verdict chỉ được đưa ra khi BPMN đã chạy:
+
+- `CONFORMANT`: BPMN đến EndEvent và mọi occurrence của root goal iStar là `FULFILLED`.
+- `NOT CONFORMANT`: BPMN đến EndEvent nhưng còn root goal `PENDING/UNKNOWN`, hoặc BPMN không
+  thể hoàn tất theo contract của chính nó.
+
+Một phản ví dụ đúng nghĩa vì thế phải có initial snapshot hợp lệ. Ví dụ kiểm thử MTG dùng cùng
+`mtg_i1o1p3s1.soil`: `mtg.bpmn2` thực hiện cả attendance và conformant, trong khi
+`mtg_goal_gap.bpmn2` vẫn đến EndEvent nhưng bỏ `participate`, làm root goal attendance chưa đạt.
+
+`VisualConformanceSession` là semantics dùng chung của checker một lần và debugger. Mỗi bước:
+
+1. lấy Activity đang enabled từ BPMN token engine;
+2. kiểm tra precondition trên USE state hiện tại;
+3. thực thi generic SOIL effect;
+4. kiểm tra postcondition và ACL/USE constraints;
+5. tính lại iStar instance marking;
+6. lưu BPMN snapshot, state delta và goal delta làm proof trace.
+
+Các input và expected trace MTG được catalog tại
+`goal/src/main/resources/examples/mtg/README.md`.
+
+### Nhiều trace và ba mức conformance đã hiện thực hóa
+
+`ScenarioTraceExplorer` ghi lại mỗi choice point XOR/event-based có nhiều flow cùng hợp lệ,
+tái chạy input scenario theo mọi choice vector quan sát được (có giới hạn `maxTraces`) và trả về:
+
+- **weak**: tồn tại ít nhất một trace đến EndEvent và thỏa mọi root-goal occurrence;
+- **strong**: mọi trace đã sinh đều đến EndEvent và thỏa mọi root goal;
+- **stable**: trên từng trace, root goal đã fulfilled không quay lại pending/unknown;
+- verdict `NON_CONFORMANT`, `WEAKLY_CONFORMANT`, hoặc `STRONGLY_CONFORMANT`.
+
+Debugger có nút `Explore all traces` và combobox chọn trace để phát lại trực quan. Checker một
+lần dùng cùng explorer, không còn sử dụng execution order tuyến tính riêng.
+
+### Phạm vi token engine hiện tại
+
+- nhiều process/pool độc lập được chạy trong cùng session;
+- AND split/join giữ token cho đến khi đủ mọi incoming branch;
+- structured inclusive-OR ghi số nhánh thực sự được chọn và chờ đúng số token tại OR join;
+- XOR/event-based choice có thể enumerate;
+- loop có thể enable lại cùng Activity;
+- SubProcess được thực thi như một opaque contracted Activity (pre/effect/post ở biên);
+- message-flow synchronization giữa nhiều pool chưa được suy diễn vì metamodel hiện chưa cung
+  cấp correlation/runtime message instance trong bốn input conformance.
+
+### Case study bổ sung
+
+Incident Response đã được migrate khỏi ACL syntax/SOIL final-state cũ và có đủ
+`incident_response.{acl,soil,istar,bpmn2}`. OJS có thêm `ojs_input.soil`, `ojs.istar` và
+`ojs.bpmn2`; file AOL cũ vẫn giữ vai trò snapshot minh họa độc lập. Cả hai case được chạy trong
+regression suite qua chính one-shot checker.
+
 ## Phương pháp nền JUCS + tổng hợp alig / vaDL — thiết kế đầy đủ (API cụ thể + case study chạy tay)
 
 Ngày lập: 2026-07-04 (cập nhật: thiết kế đầy đủ toàn bộ 4 giai đoạn + case study thật)

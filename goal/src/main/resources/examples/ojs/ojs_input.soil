@@ -1,0 +1,68 @@
+-- One valid OJS input scenario before review/decision activities run.
+!create systemOjs : OJS
+!set systemOjs.systemName := 'Demo OJS'
+!set systemOjs.baseUrl := 'https://ojs.example'
+!create journal : Journal
+!set journal.journalID := 1
+!set journal.title := 'Software Modeling Journal'
+!set journal.description := 'Demo journal'
+!insert (systemOjs, journal) into Owner_OJS_Journal
+!create users : GroupUser
+!set users.title := 'Registered users'
+!insert (systemOjs, users) into Owner_OJS_GroupUser
+!create section : Section
+!set section.sectionID := 10
+!set section.title := 'Modeling'
+!insert (journal, section) into Owner_Journal_Section
+!create submission : Submission
+!insert (section, submission) into Owner_Section_Submission
+
+!create adminAgent : Agent
+!create authorAgent : Agent
+!create editorAgent : Agent
+!create editAgent : Agent
+!create reviewerAgent : Agent
+!create memberAgent : Agent
+!create admin : Admin
+!insert (adminAgent, admin) into Agent_plays_Admin
+!insert (journal, admin) into Admin_in_Journal
+!create mainMember : Main
+!set mainMember.description := 'Primary member'
+!insert (memberAgent, mainMember) into Agent_plays_Main
+!insert (users, mainMember) into Main_in_GroupUser
+!create author : Author
+!insert (authorAgent, author) into Agent_plays_Author
+!insert (submission, author) into Author_in_Submission
+!create editor : Edit
+!set editor.editorID := 501
+!set editor.dateNotified := '2026-07-01'
+!insert (editAgent, editor) into Agent_plays_Edit
+!insert (submission, editor) into Edit_in_Submission
+!create sectionEditor : SectionEditor
+!set sectionEditor.sectionEditorID := 501
+!insert (editorAgent, sectionEditor) into Agent_plays_SectionEditor
+!insert (section, sectionEditor) into SectionEditor_in_Section
+!create review : Review
+!set review.reviewID := 1001
+!set review.dateAssigned := '2026-07-02'
+!set review.dateDue := '2026-07-20'
+!set review.recommendation := Recommendation::reject
+!insert (reviewerAgent, review) into Agent_plays_Review
+!insert (submission, review) into Review_in_Submission
+
+!create paper : SubmissionRecord
+!set paper.submissionID := 101
+!set paper.title := 'Scenario-driven conformance'
+!set paper.summary := 'Input before review'
+!insert (submission, paper) into submissionContextRecord
+!create sourceFile : ArticleFile
+!set sourceFile.fileID := 10001
+!set sourceFile.fileName := 'paper.pdf'
+!set sourceFile.filePath := '/ojs/101/paper.pdf'
+!set sourceFile.fileType := 'application/pdf'
+!insert (paper, sourceFile) into submissionUsesFile
+!create round1 : ReviewRound
+!set round1.roundNumber := 1
+!set round1.editorDecision := EditorDecision::reject
+!insert (review, round1) into reviewBelongsToRound
+!insert (paper, round1) into submissionReviewRounds

@@ -14,9 +14,10 @@ import org.tzi.use.gui.views.diagrams.elements.PlaceableNode;
 import org.tzi.use.gui.views.diagrams.elements.edges.EdgeBase;
 import org.tzi.use.gui.views.diagrams.util.Direction;
 import org.tzi.use.gui.views.diagrams.waypoints.WayPoint;
+import org.vnu.sme.goal.gui.DiagramVisualStyle;
 
 public final class Bpmn2DiagramEdge extends EdgeBase {
-    private static final Font EDGE_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 10);
+    private static final Font EDGE_FONT = DiagramVisualStyle.EDGE_FONT;
     private final Bpmn2Edge edge;
 
     public Bpmn2DiagramEdge(Bpmn2Edge edge, PlaceableNode source, PlaceableNode target, Bpmn2DiagramOptions opt) {
@@ -43,8 +44,12 @@ public final class Bpmn2DiagramEdge extends EdgeBase {
                 Point2D p1 = previous.getCenter();
                 Point2D p2 = current.getCenter();
                 if (!it.hasNext()) {
+                    if (edge.kind() == Bpmn2EdgeKind.MESSAGE) {
+                        paintMessageStart(g2, first, p1);
+                    }
                     DirectedEdgeFactory.drawArrow(g2, (int) p1.getX(), (int) p1.getY(),
-                            (int) p2.getX(), (int) p2.getY(), ArrowStyle.FILLED);
+                            (int) p2.getX(), (int) p2.getY(),
+                            edge.kind() == Bpmn2EdgeKind.MESSAGE ? ArrowStyle.OPEN : ArrowStyle.FILLED);
                     last = p2;
                 } else {
                     g2.drawLine((int) p1.getX(), (int) p1.getY(), (int) p2.getX(), (int) p2.getY());
@@ -70,10 +75,24 @@ public final class Bpmn2DiagramEdge extends EdgeBase {
 
     private Stroke stroke() {
         if (edge.kind() == Bpmn2EdgeKind.MESSAGE) {
-            return new BasicStroke(1.3f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
-                    10f, new float[]{7f, 5f}, 0f);
+            return DiagramVisualStyle.dashed();
         }
-        return new BasicStroke(1.4f);
+        return DiagramVisualStyle.solid();
+    }
+
+    private static void paintMessageStart(Graphics2D g, Point2D start, Point2D toward) {
+        if (start == null || toward == null) return;
+        double dx = toward.getX() - start.getX();
+        double dy = toward.getY() - start.getY();
+        double length = Math.hypot(dx, dy);
+        if (length < 0.01) return;
+        double cx = start.getX() + dx / length * 4.0;
+        double cy = start.getY() + dy / length * 4.0;
+        java.awt.Color old = g.getColor();
+        g.setColor(java.awt.Color.WHITE);
+        g.fill(new java.awt.geom.Ellipse2D.Double(cx - 4, cy - 4, 8, 8));
+        g.setColor(old);
+        g.draw(new java.awt.geom.Ellipse2D.Double(cx - 4, cy - 4, 8, 8));
     }
 
     private void paintLabel(Graphics2D g, Point2D first, Point2D last) {

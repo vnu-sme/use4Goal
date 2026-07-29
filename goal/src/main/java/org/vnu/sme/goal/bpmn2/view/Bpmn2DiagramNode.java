@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.tzi.use.gui.views.diagrams.ToolTipProvider;
 import org.tzi.use.gui.views.diagrams.elements.PlaceableNode;
+import org.vnu.sme.goal.gui.DiagramVisualStyle;
 
 public final class Bpmn2DiagramNode extends PlaceableNode implements ToolTipProvider {
     public enum ContainerKind { NONE, POOL, LANE, PARTICIPANT }
@@ -96,7 +97,8 @@ public final class Bpmn2DiagramNode extends PlaceableNode implements ToolTipProv
         g2.setColor(fillColor());
         g2.fill(s);
         g2.setColor(getFrameColor());
-        g2.setStroke(new BasicStroke(containerKind == ContainerKind.NONE ? 1.5f : 1.1f));
+        g2.setStroke(containerKind == ContainerKind.NONE ? DiagramVisualStyle.solid()
+                : new BasicStroke(1.1f));
         g2.draw(s);
         paintMarker(g2);
         paintScenarioBadge(g2);
@@ -193,7 +195,7 @@ public final class Bpmn2DiagramNode extends PlaceableNode implements ToolTipProv
         if (node == null) return;
         double x = getX(), y = getY(), w = getWidth(), h = getHeight();
         if (node.kind == Bpmn2NodeKind.END_EVT) {
-            g.setStroke(new BasicStroke(3f));
+            g.setStroke(new BasicStroke(DiagramVisualStyle.STROKE_EMPHASIS));
             g.draw(new Ellipse2D.Double(x + 3, y + 3, w - 6, h - 6));
             paintEventIcon(g, true);
         } else if (node.kind == Bpmn2NodeKind.INT_EVT) {
@@ -208,7 +210,7 @@ public final class Bpmn2DiagramNode extends PlaceableNode implements ToolTipProv
             g.drawLine((int) (x + w / 2), (int) (y + h - 13), (int) (x + w / 2), (int) (y + h - 5));
             g.drawLine((int) (x + w / 2 - 4), (int) (y + h - 9), (int) (x + w / 2 + 4), (int) (y + h - 9));
         } else if (node.kind == Bpmn2NodeKind.CALL_ACTIVITY) {
-            g.setStroke(new BasicStroke(3f));
+            g.setStroke(new BasicStroke(DiagramVisualStyle.STROKE_EMPHASIS));
             g.draw(new RoundRectangle2D.Double(x + 3, y + 3, w - 6, h - 6, 8, 8));
         } else if (node.kind == Bpmn2NodeKind.CHOREOGRAPHY) {
             g.drawLine((int) x, (int) (y + 14), (int) (x + w), (int) (y + 14));

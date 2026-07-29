@@ -1,0 +1,58 @@
+-- Input scenario: 1 Initiator, 1 Organizer, 2 Participants, 1 Secretary.
+-- One participant has a calendar; the secretary knows both phone contacts.
+-- No BPMN activity has executed yet.
+
+!create meetingUnit : MeetingUnit
+!create meeting : Meeting
+!set meeting.detailsDecided := false
+!set meeting.timeChosen := false
+!insert (meetingUnit, meeting) into meetingUnitMeetings
+
+!create alice : Agent
+!create bob : Agent
+!create carol : Agent
+
+!create initiatorAlice : Initiator
+!set initiatorAlice.name := 'Alice as initiator'
+!insert (alice, initiatorAlice) into Agent_plays_Initiator
+!insert (meetingUnit, initiatorAlice) into Initiator_in_MeetingUnit
+
+!create organizerBob : Organizer
+!set organizerBob.name := 'Bob as organizer'
+!insert (bob, organizerBob) into Agent_plays_Organizer
+!insert (meetingUnit, organizerBob) into Organizer_in_MeetingUnit
+
+!create secretaryBob : Secretary
+!set secretaryBob.name := 'Bob as secretary'
+!insert (bob, secretaryBob) into Agent_plays_Secretary
+!insert (meetingUnit, secretaryBob) into Secretary_in_MeetingUnit
+
+!create participantAlice : Participant
+!set participantAlice.name := 'Alice as participant'
+!set participantAlice.hasCalendar := true
+!set participantAlice.timetable := #notRequested
+!set participantAlice.timetableChannel := #none
+!set participantAlice.notified := #notSent
+!set participantAlice.attendance := #unknown
+!insert (alice, participantAlice) into Agent_plays_Participant
+!insert (meetingUnit, participantAlice) into Participant_in_MeetingUnit
+
+!create participantCarol : Participant
+!set participantCarol.name := 'Carol as participant'
+!set participantCarol.hasCalendar := false
+!set participantCarol.timetable := #notRequested
+!set participantCarol.timetableChannel := #none
+!set participantCarol.notified := #notSent
+!set participantCarol.attendance := #unknown
+!insert (carol, participantCarol) into Agent_plays_Participant
+!insert (meetingUnit, participantCarol) into Participant_in_MeetingUnit
+
+!create alicePhone : PhoneContact
+!set alicePhone.number := '+84-900-111-222'
+!insert (participantAlice, alicePhone) into phoneContacts
+!insert (secretaryBob, alicePhone) into know
+
+!create carolPhone : PhoneContact
+!set carolPhone.number := '+84-900-333-444'
+!insert (participantCarol, carolPhone) into phoneContacts
+!insert (secretaryBob, carolPhone) into know

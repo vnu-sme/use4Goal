@@ -27,6 +27,10 @@ public final class Bpmn2ExecutionEngine {
     public interface PredicateEvaluator {
         boolean evaluate(String booleanOcl) throws Exception;
     }
+    @FunctionalInterface
+    public interface ChoiceSelector {
+        int choose(String gatewayId, List<SequenceFlow> acceptedFlows);
+    }
 
     public record RunningStep(String elementId) {}
     public record Snapshot(Set<String> enabled, Set<String> running,
@@ -34,15 +38,28 @@ public final class Bpmn2ExecutionEngine {
 
     private final Map<String, FlowElement> elements = new LinkedHashMap<>();
     private final Map<String, List<SequenceFlow>> outgoing = new LinkedHashMap<>();
+    private final Map<String, List<SequenceFlow>> incoming = new LinkedHashMap<>();
+    private final Map<String, Set<String>> arrivals = new LinkedHashMap<>();
+    private final Map<String, String> orJoinForSplit = new LinkedHashMap<>();
+    private final Map<String, Integer> orExpectedArrivals = new LinkedHashMap<>();
     private final Set<String> enabled = new LinkedHashSet<>();
     private final Set<String> running = new LinkedHashSet<>();
     private final Set<String> completed = new LinkedHashSet<>();
     private boolean ended;
+    private final ChoiceSelector choiceSelector;
 
     public Bpmn2ExecutionEngine(Process process) {
+        this(process, (gateway, flows) -> 0);
+    }
+
+    public Bpmn2ExecutionEngine(Process process, ChoiceSelector choiceSelector) {
+        this.choiceSelector = choiceSelector;
         process.flowElements().forEach(value -> elements.put(value.id(), value));
-        process.sequenceFlows().forEach(value -> outgoing
-                .computeIfAbsent(value.source().id(), ignored -> new ArrayList<>()).add(value));
+        process.sequenceFlows().forEach(value -> {
+            outgoing.computeIfAbsent(value.source().id(), ignored -> new ArrayList<>()).add(value);
+            incoming.computeIfAbsent(value.target().id(), ignored -> new ArrayList<>()).add(value);
+        });
+        indexStructuredOrPairs();
     }
 
     /** Places tokens at every start event whose precondition is true. */
@@ -115,15 +132,68 @@ public final class Bpmn2ExecutionEngine {
             if (flow.guardSource() == null || flow.guardSource().isBlank()
                     || state.evaluate(flow.guardSource())) {
                 accepted.add(flow);
-                // Friendly, deterministic XOR semantics: declaration order is
-                // priority order, so the first satisfied branch wins.
-                if (source instanceof Gateway gateway && gateway.kind() == GatewayKind.XOR) break;
             }
         }
         if (source instanceof Gateway gateway && gateway.kind() == GatewayKind.XOR && accepted.isEmpty()) {
             throw new IllegalStateException("XOR gateway " + source.id() + " has no true outgoing guard");
         }
-        accepted.forEach(flow -> enabled.add(flow.target().id()));
+        if (source instanceof Gateway gateway
+                && (gateway.kind() == GatewayKind.XOR || gateway.kind() == GatewayKind.EVENT_BASED)
+                && accepted.size() > 1) {
+            int selected = choiceSelector.choose(source.id(), List.copyOf(accepted));
+            if (selected < 0 || selected >= accepted.size()) {
+                throw new IllegalStateException("invalid branch " + selected + " for " + source.id());
+            }
+            arrive(accepted.get(selected));
+        } else {
+            if (source instanceof Gateway gateway && gateway.kind() == GatewayKind.OR && accepted.size() > 1) {
+                String join = orJoinForSplit.get(source.id());
+                if (join != null) orExpectedArrivals.merge(join, accepted.size(), Integer::sum);
+            }
+            accepted.forEach(this::arrive);
+        }
+    }
+
+    private void arrive(SequenceFlow flow) {
+        String targetId = flow.target().id();
+        Set<String> sources = arrivals.computeIfAbsent(targetId, ignored -> new LinkedHashSet<>());
+        sources.add(flow.source().id());
+        List<SequenceFlow> required = incoming.getOrDefault(targetId, List.of());
+        boolean andJoin = flow.target() instanceof Gateway gateway
+                && gateway.kind() == GatewayKind.AND && required.size() > 1;
+        int orExpected = flow.target() instanceof Gateway gateway && gateway.kind() == GatewayKind.OR
+                ? orExpectedArrivals.getOrDefault(targetId, 1) : 1;
+        boolean ready = andJoin ? required.stream().allMatch(in -> sources.contains(in.source().id()))
+                : sources.size() >= orExpected;
+        if (ready) {
+            enabled.add(targetId);
+            sources.clear();
+            orExpectedArrivals.remove(targetId);
+        }
+    }
+
+    /** Pairs a structured inclusive split with the first inclusive join reachable from every branch. */
+    private void indexStructuredOrPairs() {
+        for (FlowElement element : elements.values()) {
+            if (!(element instanceof Gateway split) || split.kind() != GatewayKind.OR) continue;
+            List<SequenceFlow> branches = outgoing.getOrDefault(split.id(), List.of());
+            if (branches.size() < 2) continue;
+            for (FlowElement candidate : elements.values()) {
+                if (!(candidate instanceof Gateway join) || join.kind() != GatewayKind.OR
+                        || incoming.getOrDefault(join.id(), List.of()).size() < 2) continue;
+                if (branches.stream().allMatch(branch -> reachable(branch.target().id(), join.id(), new LinkedHashSet<>()))) {
+                    orJoinForSplit.put(split.id(), join.id());
+                    break;
+                }
+            }
+        }
+    }
+
+    private boolean reachable(String current, String target, Set<String> seen) {
+        if (current.equals(target)) return true;
+        if (!seen.add(current)) return false;
+        return outgoing.getOrDefault(current, List.of()).stream()
+                .anyMatch(flow -> reachable(flow.target().id(), target, seen));
     }
 
     private static boolean conditionsTrue(List<org.vnu.sme.goal.bpmn2.mm.ActivityConstraint> conditions,

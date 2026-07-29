@@ -72,8 +72,5 @@ acl v2.0 IncidentResponseShadow {
     AuditTrail     [0..*];
   }
 
-  link authority Coordinator -> Analyst intra IncidentCase;
-  link authority Coordinator -> Technician intra IncidentCase;
-  link communication Analyst -> Technician intra IncidentCase;
-  link compatibility Analyst -> Auditor intra IncidentCase;
+  compatibility Analyst <-> Auditor scope intra-group type compatible;
 }

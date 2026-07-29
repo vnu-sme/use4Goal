@@ -1,39 +1,44 @@
-incident1 := new Incident('incident1');
-service1 := new Service('service1');
-evidence1 := new EvidencePacket('evidence1');
-change1 := new ChangeRequest('change1');
-audit1 := new AuditTrail('audit1');
-archive1 := new ArchiveBox('archive1');
+-- Valid input scenario. No response activity has run yet.
+!create incident1 : IncidentCase
+!set incident1.reported := true
+!set incident1.severity := #high
+!set incident1.closed := false
 
-insert (incident1, service1) into IncidentService;
-insert (incident1, evidence1) into IncidentEvidence;
-insert (incident1, change1) into IncidentChangeRequest;
-insert (incident1, audit1) into IncidentAuditTrail;
+!create service1 : Service
+!set service1.restored := false
+!insert (incident1, service1) into member_IncidentCase_Service
+!create evidence1 : EvidencePacket
+!set evidence1.complete := false
+!insert (incident1, evidence1) into member_IncidentCase_EvidencePacket
+!create change1 : ChangeRequest
+!set change1.deployed := false
+!insert (incident1, change1) into member_IncidentCase_ChangeRequest
+!insert (change1, service1) into ChangeRestoresService
+!create audit1 : AuditTrail
+!set audit1.signed := false
+!insert (incident1, audit1) into member_IncidentCase_AuditTrail
 
-personCoord := new Person('personCoord');
-personAnn := new Person('personAnn');
-personBob := new Person('personBob');
-personTara := new Person('personTara');
-personMinh := new Person('personMinh');
-personAuditor := new Person('personAuditor');
-
-coord := new Coordinator('coord') between (incident1, personCoord);
-ann := new Analyst('ann') between (incident1, personAnn);
-bob := new Analyst('bob') between (incident1, personBob);
-tara := new Technician('tara') between (incident1, personTara);
-minh := new Technician('minh') between (incident1, personMinh);
-audrey := new Auditor('audrey') between (incident1, personAuditor);
-
-incident1.reported := true;
-service1.restored := true;
-evidence1.complete := true;
-change1.deployed := true;
-audit1.signed := true;
-archive1.sealed := true;
-
-coord.triaged := true;
-ann.reportReady := true;
-bob.reportReady := true;
-tara.fixApplied := true;
-minh.fixApplied := false;
-audrey.auditApproved := true;
+!create agentCoordinator : Agent
+!create agentAnalyst : Agent
+!create agentTechnician : Agent
+!create agentAuditor : Agent
+!create coordinator : Coordinator
+!set coordinator.name := 'Coordinator'
+!set coordinator.triaged := false
+!insert (agentCoordinator, coordinator) into Agent_plays_Coordinator
+!insert (incident1, coordinator) into Coordinator_in_IncidentCase
+!create analyst : Analyst
+!set analyst.name := 'Analyst'
+!set analyst.reportReady := false
+!insert (agentAnalyst, analyst) into Agent_plays_Analyst
+!insert (incident1, analyst) into Analyst_in_IncidentCase
+!create technician : Technician
+!set technician.name := 'Technician'
+!set technician.fixApplied := false
+!insert (agentTechnician, technician) into Agent_plays_Technician
+!insert (incident1, technician) into Technician_in_IncidentCase
+!create auditor : Auditor
+!set auditor.name := 'Auditor'
+!set auditor.auditApproved := false
+!insert (agentAuditor, auditor) into Agent_plays_Auditor
+!insert (incident1, auditor) into Auditor_in_IncidentCase

@@ -4,7 +4,7 @@
 
 !create architectureReview : MeetingUnit
 !create reviewMeeting : Meeting
-!set reviewMeeting.detailsDecided := true
+!set reviewMeeting.detailsDecided := false
 !set reviewMeeting.timeChosen := false
 !insert (architectureReview, reviewMeeting) into meetingUnitMeetings
 
@@ -30,18 +30,18 @@
 !create participantAlice : Participant
 !set participantAlice.name := 'Alice as participant'
 !set participantAlice.hasCalendar := true
-!set participantAlice.timetable := #collected
-!set participantAlice.timetableChannel := #calendar
-!set participantAlice.notified := #sent
-!set participantAlice.attendance := #attended
+!set participantAlice.timetable := #notRequested
+!set participantAlice.timetableChannel := #none
+!set participantAlice.notified := #notSent
+!set participantAlice.attendance := #unknown
 !insert (alice, participantAlice) into Agent_plays_Participant
 !insert (architectureReview, participantAlice) into Participant_in_MeetingUnit
 
 !create participantCarol : Participant
 !set participantCarol.name := 'Carol as participant'
 !set participantCarol.hasCalendar := false
-!set participantCarol.timetable := #requested
-!set participantCarol.timetableChannel := #phone
+!set participantCarol.timetable := #notRequested
+!set participantCarol.timetableChannel := #none
 !set participantCarol.notified := #notSent
 !set participantCarol.attendance := #unknown
 !insert (carol, participantCarol) into Agent_plays_Participant

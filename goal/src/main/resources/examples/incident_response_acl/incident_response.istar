@@ -1,9 +1,9 @@
 istar IncidentResponse {
 
-  agent Coordinator {
+  role Coordinator {
     goal IncidentHandled
     task TriageIncident > IncidentHandled ocl {[
-      self.triaged and self.agentIncident.reported
+      self.triaged and IncidentCase.allInstances()->exists(i | i.reported)
     ]}
     goal EvidenceCollected > IncidentHandled
     goal EvidenceReviewed > forall Analyst EvidenceCollected
@@ -16,22 +16,22 @@ istar IncidentResponse {
   role Analyst {
     task AnalyzeEvidence ocl {[
       self.reportReady
-      and self.actorIncident.evidence.complete
+      and EvidencePacket.allInstances()->exists(e | e.complete)
     ]}
   }
 
   role Technician {
     task RepairService ocl {[
       self.fixApplied
-      and self.actorIncident.service.restored
-      and self.actorIncident.changeRequest.deployed
+      and Service.allInstances()->exists(s | s.restored)
+      and ChangeRequest.allInstances()->exists(c | c.deployed)
     ]}
   }
 
-  agent Auditor {
+  role Auditor {
     task AuditClosure ocl {[
       self.auditApproved
-      and self.agentIncident.auditTrail.signed
+      and AuditTrail.allInstances()->exists(a | a.signed)
     ]}
   }
 

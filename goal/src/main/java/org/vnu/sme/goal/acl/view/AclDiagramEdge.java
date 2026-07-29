@@ -17,9 +17,10 @@ import org.tzi.use.gui.views.diagrams.elements.PlaceableNode;
 import org.tzi.use.gui.views.diagrams.elements.edges.EdgeBase;
 import org.tzi.use.gui.views.diagrams.util.Direction;
 import org.tzi.use.gui.views.diagrams.waypoints.WayPoint;
+import org.vnu.sme.goal.gui.DiagramVisualStyle;
 
 public final class AclDiagramEdge extends EdgeBase {
-    private static final Font EDGE_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 11);
+    private static final Font EDGE_FONT = DiagramVisualStyle.EDGE_FONT;
     private static final double MARKER_LENGTH = 14.0;
     private static final double MARKER_HALF_WIDTH = 5.5;
     private final AclEdge edge;
@@ -149,8 +150,8 @@ public final class AclDiagramEdge extends EdgeBase {
 
     private Stroke edgeStroke() {
         if (edge.kind() == AclEdgeKind.COMPATIBILITY && edge.interGroup())
-            return new BasicStroke(1.4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10f, new float[] {7f, 5f}, 0f);
-        return new BasicStroke(1.4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+            return DiagramVisualStyle.dashed();
+        return DiagramVisualStyle.solid();
     }
 
     private Color edgeColor() { return opt.getColor(AclDiagramOptions.MOISE_EDGE_COLOR); }

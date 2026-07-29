@@ -14,9 +14,10 @@ import org.tzi.use.gui.views.diagrams.elements.PlaceableNode;
 import org.tzi.use.gui.views.diagrams.elements.edges.EdgeBase;
 import org.tzi.use.gui.views.diagrams.util.Direction;
 import org.tzi.use.gui.views.diagrams.waypoints.WayPoint;
+import org.vnu.sme.goal.gui.DiagramVisualStyle;
 
 public final class IStarDiagramEdge extends EdgeBase {
-    private static final Font EDGE_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 10);
+    private static final Font EDGE_FONT = DiagramVisualStyle.EDGE_FONT;
     private final IStarEdge edge;
 
     public IStarDiagramEdge(IStarEdge edge, PlaceableNode source, PlaceableNode target, IStarDiagramOptions opt) {
@@ -77,9 +78,8 @@ public final class IStarDiagramEdge extends EdgeBase {
     private Stroke stroke() {
         return switch (edge.kind()) {
             case QUALIFICATION, DEPENDENCY, OBSTRUCTION, RESOLUTION ->
-                    new BasicStroke(1.4f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
-                            10f, new float[]{6f, 4f}, 0f);
-            default -> new BasicStroke(1.4f);
+                    DiagramVisualStyle.dashed();
+            default -> DiagramVisualStyle.solid();
         };
     }
 

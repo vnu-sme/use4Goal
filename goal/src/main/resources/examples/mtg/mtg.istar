@@ -92,6 +92,9 @@ istar MeetingScheduler {
     task CollectConstraintsByPhone
     pre {[
       Participant.allInstances()->exists(p | not p.hasCalendar and p.timetable <> #collected)
+      and Participant.allInstances()->select(p | not p.hasCalendar)->forAll(p |
+        p.target_phoneContacts->exists(phone |
+          Secretary.allInstances()->exists(s | s.target_know->includes(phone))))
     ]}
     post {[
       Participant.allInstances()->select(p | not p.hasCalendar)
