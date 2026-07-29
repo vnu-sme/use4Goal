@@ -1,0 +1,93 @@
+// Goal model evaluated through OCL against the shared USE state generated from
+// meeting_scheduler.acl and meeting_scheduler_initial.aol.
+
+istar MeetingScheduler {
+
+  role Initiator {
+    goal HaveMeetingOrganized
+    task DecideMeetingDetails > HaveMeetingOrganized
+    pre {[
+      Meeting.allInstances()->exists(m | not m.detailsDecided)
+    ]}
+    post {[
+      Meeting.allInstances()->exists(m | m.detailsDecided)
+    ]}
+    goal HaveSchedulingPerformed            > HaveMeetingOrganized
+    goal MeetingAttended                    > HaveMeetingOrganized
+    goal HaveSchedulingPerformedByOrganizer > pick Organizer HaveSchedulingPerformed post {[
+      Meeting.allInstances()->exists(m | m.detailsDecided and m.timeChosen)
+    ]}
+    goal MeetingAttendedByParticipant > forall Participant MeetingAttended post {[
+      self.attendance = #attended
+    ]}
+  }
+
+  role Organizer {
+    goal HaveMeetingScheduled
+    goal TimetablesCollected > HaveMeetingScheduled
+    task ChooseTimeAndDate   > HaveMeetingScheduled
+    pre {[
+      Meeting.allInstances()->exists(m | m.detailsDecided)
+      and Participant.allInstances()->forAll(p | p.timetable = #collected)
+    ]}
+    post {[
+      Meeting.allInstances()->exists(m | m.timeChosen)
+    ]}
+    goal MeetingAnnounced    > HaveMeetingScheduled
+
+    goal TimetableCollected  > forall Participant TimetablesCollected post {[
+      self.timetable = #collected
+    ]}
+    goal HavePPCalled        > or TimetableCollected > make Inclusivity post {[
+      not self.hasCalendar
+      and self.timetable = #collected
+      and self.timetableChannel = #phone
+    ]}
+    task CollectFromCalendar > or TimetableCollected > make QuickScheduling
+    pre {[
+      self.hasCalendar and self.timetable <> #collected
+    ]}
+    post {[
+      self.hasCalendar
+      and self.timetable = #collected
+      and self.timetableChannel = #calendar
+    ]}
+    goal HaveSecretaryCallPP > pick Secretary HavePPCalled
+
+    task AnnounceMeeting     > forall Participant MeetingAnnounced
+    pre {[
+      Meeting.allInstances()->exists(m | m.timeChosen)
+    ]}
+    post {[
+      self.notified = #sent
+    ]}
+
+    quality Inclusivity
+    quality QuickScheduling
+  }
+
+  role Secretary {
+    task CollectConstraintsByPhone
+    pre {[
+      Participant.allInstances()->exists(p | not p.hasCalendar and p.timetable <> #collected)
+    ]}
+    post {[
+      Participant.allInstances()->select(p | not p.hasCalendar)
+        ->forAll(p | p.timetable = #collected and p.timetableChannel = #phone)
+    ]}
+  }
+
+  role Participant {
+    task Participate
+    pre {[
+      self.notified = #sent
+    ]}
+    post {[
+      self.attendance = #attended
+    ]}
+  }
+
+  depend Initiator.HaveSchedulingPerformedByOrganizer -> task ChooseTimeAndDate -> Organizer.HaveMeetingScheduled
+  depend Organizer.HaveSecretaryCallPP -> task CollectConstraintsByPhone -> Secretary.CollectConstraintsByPhone
+  depend Initiator.MeetingAttendedByParticipant -> task Participate -> Participant.Participate
+}

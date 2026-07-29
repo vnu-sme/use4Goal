@@ -1,0 +1,41 @@
+// Initial object snapshot. The referenced ACL is deliberately local so this
+// directory can be copied and executed as one self-contained input bundle.
+
+aol v1.0 MeetingSchedulerInitial for "meeting_scheduler.acl" {
+  agent alice, bob, carol;
+
+  group MeetingUnit as architectureReview {
+    play Initiator as initiatorAlice by alice;
+    play Organizer as organizerBob by bob;
+    play Secretary as secretaryBob by bob;
+
+    play Participant as participantAlice by alice {
+      hasCalendar = true;
+      timetable = requested;
+      timetableChannel = none;
+      notified = notSent;
+      attendance = unknown;
+    }
+
+    play Participant as participantCarol by carol {
+      hasCalendar = false;
+      timetable = requested;
+      timetableChannel = none;
+      notified = notSent;
+      attendance = unknown;
+    }
+
+    entity Meeting as reviewMeeting {
+      detailsDecided = false;
+      timeChosen = false;
+    }
+  }
+
+  entity PhoneContact as alicePhone { number = "+84-900-111-222"; }
+  entity PhoneContact as carolPhone { number = "+84-900-333-444"; }
+
+  link phoneContacts: participantAlice -> alicePhone;
+  link know: secretaryBob -> alicePhone;
+  link phoneContacts: participantCarol -> carolPhone;
+  link know: secretaryBob -> carolPhone;
+}

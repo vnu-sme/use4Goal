@@ -42,12 +42,7 @@
             <artifactId>antlr4-runtime</artifactId>
             <version>${antlr4.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>5.7.0</version>
-            <scope>test</scope>
-        </dependency>
+
     </dependencies>
 
     <build>
@@ -132,6 +127,12 @@
                         </goals>
                         <configuration>
                             <target>
+                                <!-- The shaded jar is the deployable plugin because each USE
+                                     plugin has an isolated classloader and therefore needs its
+                                     own ANTLR4 runtime. Remove the unshaded duplicate so plugin
+                                     discovery cannot load the wrong copy first. -->
+                                <delete file="../use/use-assembly/target/use-7.1.1/lib/plugins/${project.build.finalName}.jar"
+                                        quiet="true"/>
                                 <copy file="${project.build.directory}/${project.build.finalName}-complete.jar"
                                       tofile="../use/use-assembly/target/use-7.1.1/lib/plugins/${project.build.finalName}-complete.jar"
                                       overwrite="true"/>
@@ -142,4 +143,22 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!-- VS Code's Eclipse JDT builder writes error-tolerant class stubs into
+             goal/target while Maven is generating ANTLR sources. Activate this
+             profile for a release/deployment build so Maven compiles and packages
+             from an output directory that the IDE does not own. -->
+        <profile>
+            <id>isolated-plugin-build</id>
+            <activation>
+                <property>
+                    <name>isolatedPluginBuild</name>
+                </property>
+            </activation>
+            <build>
+                <directory>${project.basedir}/target-maven</directory>
+            </build>
+        </profile>
+    </profiles>
 </project>

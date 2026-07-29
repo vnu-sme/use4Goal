@@ -1,5 +1,26 @@
 package org.vnu.sme.goal.acl.parser;
 
+
+/**
+ * =============================================================================
+ * MODULE: ACL CST to semantic-model factory
+ * =============================================================================
+ * 1. PURPOSE:
+ *    Resolves parsed CST declarations into the executable ACL semantic model. A ACLModelCS is the input; linked model objects ready for validation/rendering are the output.
+ *
+ * 2. CORE MAPPING / LOGIC RULES:
+ *    - Register declarations before resolving references to support forward references.
+ *    - Convert textual attributes/cardinalities into typed semantic values.
+ *    - Reject missing or incompatible references at the semantic boundary.
+ *    - Main operations exposed by this file: ok(), create(), build(), group(), relation(), compatibility(), attributes().
+ *
+ * 3. PIPELINE / WORKFLOW:
+ *      1. create / build(ACLModelCS)
+ *      2. index declarations
+ *      3. resolve references and relationships
+ *      4. assemble ACLModel
+ * =============================================================================
+ */
 import java.math.BigInteger;
 import java.util.*;
 import org.vnu.sme.goal.acl.ast.*;

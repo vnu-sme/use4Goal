@@ -1,5 +1,26 @@
 package org.vnu.sme.goal.acl.view;
 
+
+/**
+ * =============================================================================
+ * MODULE: ACL diagram rendering: AclDiagram
+ * =============================================================================
+ * 1. PURPOSE:
+ *    Adapts the ACL semantic model for diagram presentation. Semantic nodes/links and display options are input; positioned graph elements, rendered figures, or specification text are output.
+ *
+ * 2. CORE MAPPING / LOGIC RULES:
+ *    - Keep semantic identity separate from mutable screen geometry.
+ *    - Derive edge/node kinds from model relationships, not visual state.
+ *    - Apply deterministic layout ordering so repeated renders remain stable.
+ *    - Main operations exposed by this file: getOptions(), setSwitchAction(), setSourceFile(), setModel(), rebuild(), unionOfPopUpMenu(), actionPerformed().
+ *
+ * 3. PIPELINE / WORKFLOW:
+ *      1. AclView receives model
+ *      2. AclLayoutBuilder builds graph/layout
+ *      3. AclDiagram renders nodes and edges
+ *      4. selection/options trigger repaint
+ * =============================================================================
+ */
 import java.awt.Dimension;
 import java.awt.Font;
 import java.io.PrintWriter;
@@ -70,7 +91,11 @@ public final class AclDiagram extends DiagramView {
     public void setModel(AclModel model) {
         this.model = model;
         rebuild();
-    }
+    }/**
+ * WHY: Diagram geometry is mutually dependent; rebuild computes the connected
+ * positions together to avoid overlaps and unstable results from piecemeal updates.
+ */
+
 
     private void rebuild() {
         nodeMap.clear();
