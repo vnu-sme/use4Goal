@@ -1,0 +1,29 @@
+model ClassroomModel
+
+class Classroom
+end
+
+class Person
+attributes
+    name : String
+end
+
+class Student < Person
+attributes
+    gpa : Real
+end
+
+class Teacher < Person
+attributes
+    specialty : String
+end
+
+composition ClassroomStudents between
+    Classroom [0..1] role classroom
+    Student [0..*] role students
+end
+
+association ClassroomTeacher between
+    Classroom [0..*] role classrooms
+    Teacher [1] role teacher
+end

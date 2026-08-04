@@ -1,0 +1,38 @@
+% Archived AOL concrete-syntax example, removed from main.tex (Section III,
+% "The ACL Language", sec:acl-language) on the grounds that Definition 1
+% (System marking, \label{def:system-marking}) already gives AOL its formal
+% meaning, so also carrying a full textual listing + walkthrough was
+% redundant in the short (conference) version. Kept here for a future
+% long/journal version where a worked example is still wanted alongside the
+% definition.
+%
+% Requires (already loaded by main.tex): \usepackage{listings}
+%
+% To reuse: paste back into sec:acl-language, right after the \emph{Concrete
+% syntax.} paragraph and its Figure~\ref{fig:acl-mtg}, before \emph{Semantics.}
+% Label lst:mtg-aol is also referenced from Part D (sec:bpmn-semantics,
+% "A translator compiles the .aol snapshot ... into an initial SOIL script")
+% and, implicitly, by the sentence following Definition~\ref{def:system-marking}
+% ("An ACL model A denotes the set of every valid system marking on it...") --
+% restore both pointers to \ref{lst:mtg-aol} if this listing comes back.
+
+AOL's textual syntax instantiates a named \texttt{.acl} schema with concrete agents, role/entity instances, and attribute values. Listing~\ref{lst:mtg-aol} gives one snapshot: an initiator, an organizer who is also secretary, and three participants, two with a calendar.
+
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize,frame=single,breaklines=true,caption={Initial object snapshot in \texttt{mtg\_initial.aol}.},label={lst:mtg-aol}]
+aol MeetingSchedulerInitial for "mtg.acl" {
+  agent a1, a2, a3, a4, a5;
+
+  group MeetingUnit as unit1 {
+    play Initiator   as init1 by a1 { }
+    play Organizer   as org1  by a2 { }
+    play Secretary   as sec1  by a2 { }
+    play Participant as p1    by a3 { hasCalendar = true; }
+    play Participant as p2    by a4 { hasCalendar = true; }
+    play Participant as p3    by a5 { hasCalendar = false; }
+
+    entity Meeting as m1 { detailsDecided = false; timeChosen = false; }
+  }
+}
+\end{lstlisting}
+
+\texttt{org1} and \texttt{sec1} are the same agent \texttt{a2}, exercising the organizer--secretary compatibility of Figure~\ref{fig:acl-mtg}.

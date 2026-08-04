@@ -1,0 +1,116 @@
+-- Create two classrooms.
+!create classroom1 : Classroom
+!create classroom2 : Classroom
+
+-- Create and assign one teacher to each classroom.
+!create teacherMath : Teacher
+!set teacherMath.name := 'Nguyen Minh'
+!set teacherMath.specialty := 'Mathematics'
+!insert (classroom1, teacherMath) into ClassroomTeacher
+
+!create teacherPhysics : Teacher
+!set teacherPhysics.name := 'Tran Lan'
+!set teacherPhysics.specialty := 'Physics'
+!insert (classroom2, teacherPhysics) into ClassroomTeacher
+
+-- Add ten students to classroom1.
+!create student01 : Student
+!set student01.name := 'Student 01'
+!set student01.gpa := 3.10
+!insert (classroom1, student01) into ClassroomStudents
+
+!create student02 : Student
+!set student02.name := 'Student 02'
+!set student02.gpa := 3.20
+!insert (classroom1, student02) into ClassroomStudents
+
+!create student03 : Student
+!set student03.name := 'Student 03'
+!set student03.gpa := 3.30
+!insert (classroom1, student03) into ClassroomStudents
+
+!create student04 : Student
+!set student04.name := 'Student 04'
+!set student04.gpa := 3.40
+!insert (classroom1, student04) into ClassroomStudents
+
+!create student05 : Student
+!set student05.name := 'Student 05'
+!set student05.gpa := 3.50
+!insert (classroom1, student05) into ClassroomStudents
+
+!create student06 : Student
+!set student06.name := 'Student 06'
+!set student06.gpa := 3.60
+!insert (classroom1, student06) into ClassroomStudents
+
+!create student07 : Student
+!set student07.name := 'Student 07'
+!set student07.gpa := 3.70
+!insert (classroom1, student07) into ClassroomStudents
+
+!create student08 : Student
+!set student08.name := 'Student 08'
+!set student08.gpa := 3.80
+!insert (classroom1, student08) into ClassroomStudents
+
+!create student09 : Student
+!set student09.name := 'Student 09'
+!set student09.gpa := 3.90
+!insert (classroom1, student09) into ClassroomStudents
+
+!create student10 : Student
+!set student10.name := 'Student 10'
+!set student10.gpa := 4.00
+!insert (classroom1, student10) into ClassroomStudents
+
+-- Add ten students to classroom2.
+!create student11 : Student
+!set student11.name := 'Student 11'
+!set student11.gpa := 2.60
+!insert (classroom2, student11) into ClassroomStudents
+
+!create student12 : Student
+!set student12.name := 'Student 12'
+!set student12.gpa := 2.70
+!insert (classroom2, student12) into ClassroomStudents
+
+!create student13 : Student
+!set student13.name := 'Student 13'
+!set student13.gpa := 2.80
+!insert (classroom2, student13) into ClassroomStudents
+
+!create student14 : Student
+!set student14.name := 'Student 14'
+!set student14.gpa := 2.90
+!insert (classroom2, student14) into ClassroomStudents
+
+!create student15 : Student
+!set student15.name := 'Student 15'
+!set student15.gpa := 3.00
+!insert (classroom2, student15) into ClassroomStudents
+
+!create student16 : Student
+!set student16.name := 'Student 16'
+!set student16.gpa := 3.10
+!insert (classroom2, student16) into ClassroomStudents
+
+!create student17 : Student
+!set student17.name := 'Student 17'
+!set student17.gpa := 3.20
+!insert (classroom2, student17) into ClassroomStudents
+
+!create student18 : Student
+!set student18.name := 'Student 18'
+!set student18.gpa := 3.30
+!insert (classroom2, student18) into ClassroomStudents
+
+!create student19 : Student
+!set student19.name := 'Student 19'
+!set student19.gpa := 3.40
+!insert (classroom2, student19) into ClassroomStudents
+
+!create student20 : Student
+!set student20.name := 'Student 20'
+!set student20.gpa := 3.50
+!insert (classroom2, student20) into ClassroomStudents

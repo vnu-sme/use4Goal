@@ -8,6 +8,8 @@
 \usepackage{svg}
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsthm}
+\newtheorem{definition}{Definition}
 %\usepackage{algorithmic}
 %\pagenumbering{gobble}
 \usepackage{graphicx}
@@ -25,13 +27,15 @@
 %\usepackage{lipsum}
 %\usepackage{multirow}
 %\usepackage{enumitem}
-\usepackage[utf8]{inputenc} 
+\usepackage[utf8]{inputenc}
 \usepackage[noend]{algpseudocode}
 \usepackage{pseudocode}
-\usepackage[linesnumbered,ruled,vlined]{algorithm2e} 
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
 \usepackage{balance}
 \usepackage{caption}
 \usepackage{comment}
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes.geometric}
 
 
 \algnewcommand{\IfThenElse}[3]{% \IfThenElse{<if>}{<then>}{<else>}
@@ -39,7 +43,7 @@
 
 % custom macro definitions
 
-\include{resource/header-codelisting}
+%\include{resource/header-codelisting} % not present in this repo -- listings used directly below
 \newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
 \newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
 
@@ -47,7 +51,7 @@
 %\include{resource/tikzdrawings}
 % Algorithm
 %\usepackage{epsfig}
-\usepackage[linesnumbered,ruled,vlined]{algorithm2e} 
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
 %\makeatletter
 %\def\BState{\State\hskip-\ALG@thistlm}
 %\makeatother
@@ -107,13 +111,13 @@
 			% \vspace*{-18ex}%
 		\end{center}%
 \end{figure}}
-  
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
 \title{
-On Specifying and Verifying \\
-OCL Temporal Properties 
+\huge Checking the Conformance between Goal Models \\
+and Process Models Based on Scenario Synchronization
 %{\footnotesize \textsuperscript{*}Note: Sub-titles are not captured in Xplore and
 %should not be used}
 %\thanks{Identify applicable funding agency here. If none, delete this.}
@@ -121,10 +125,13 @@ OCL Temporal Properties
 
 \author{
     \IEEEauthorblockN{
-        Duc-Hanh Dang, Hoang-Lan Le, Duc-Quyen Nguyen, and Minh-Hai Dinh
+        Duc-Quyen Nguyen, Minh-Phuc Bui, and Huy-Hung Dao, Duc-Hanh Dang
     }\IEEEauthorblockA{
 	University of Engineering and Technology, Vietnam National University, Hanoi\\
-     Email: {\tt\{hanhdd|22028013|21020388|21020622\}@vnu.edu.vn}
+     % NOTE: only "hanhdd" is a confirmed address (reused from the co-author's known VNU
+     % account); the other three are placeholders and MUST be replaced with the real
+     % student/account IDs before submission.
+     Email: {\tt\{TODO-quyen|TODO-phuc|TODO-hung|hanhdd\}@vnu.edu.vn}
      }
 }
 
@@ -138,35 +145,27 @@ OCL Temporal Properties
 % ---------------
 % 1. Context/Motivation:  What is the context for the issue? Why do the problem and results matter? In what way will your results improve or change the reader’s work, the organization, or the world?  TIP: Lift the motivation statement from your Introduction.
 % ---------------
-% Modern software systems are increasingly complex, making traditional code-centric development prone to errors and delays. Hence, Model-Driven Engineering (MDE) addresses this by emphasizing models as primary artifacts. Within this context, UML provides visual modeling while OCL specifies precise constraints.
-Modern software engineering demands reliable systems in increasingly complex contexts. Model-Driven Engineering (MDE) elevates models as central artifacts, enabling early validation and automated code generation. While Unified Modeling Language (UML) supports structural and behavioral modeling, OCL specifies formal constraints and rules.
+In model-driven requirements engineering, a system's intent and its operational behavior are specified by two complementary models: a goal model and a process model, most commonly i* and BPMN.
 % ---------------
 % 2. Problem/Purpose:  Why was the study/research/work performed? What problem are you solving? What question are you answering? What is the scope of your work?  TIP: Lift the purpose statement from your Introduction.
 % ---------------
- However, OCL lacks temporal and event-driven constructs, limiting its ability to capture dynamic properties such as safety and liveness.
+Existing techniques relate the two by mapping corresponding concepts directly, an activity to a goal, a workflow pattern to an intentional relation, but none grounds them in a shared model of system state that a concrete execution could be checked against, step by step.
 % ---------------
 % 3. Approach/Methodology:  How did you solve or make progress on the problem? Briefly describe your basic methodology, being sure to list the key techniques used and to highlight any distinctive features of your approach.  TIP: Lift your approach statement(s) from your Methods section.
 % ---------------
-% To address these issues, we propose TOCL+ (Temporal OCL Plus), an extension of OCL that introduces temporal operators, explicit event constructs, and bounded quantifiers. The approach builds on the filmstripping technique, which represents system dynamics as sequences of snapshots and operation calls. TOCL+ constraints are systematically translated into standard OCL over filmstrip models, enabling verification with existing tools such as the USE Model Validator without requiring specialized temporal logic engines.
-To address this, we propose TOCL+, an OCL extension with temporal operators, event constructs, and bounded quantifiers. Using filmstripping, TOCL+ constraints are translated into standard OCL, allowing verification with existing tools like the USE Model Validator. 
+We propose ACL, a shared intermediate class model grounded in organizational structure, that both i* and BPMN are translated against within one USE object system; a checkpoint-trace algorithm then checks all three together at every step of one concrete execution scenario.
 % ---------------
 % 4. Findings/Results:  What did you learn? Anticipate and answer your readers’ most important questions about the information. Summarize key findings such as quantitative results or trends. Highlight and explain any new or unusual results. Use only the high-level information; save the details for the discussion in the paper/report.  TIP: Lift your findings/results statement(s) from your Results section.
 % ---------------
-A case study demonstrates that TOCL+ specifies and verifies temporal properties beyond standard OCL, bridging the gap between temporal specification and practical verification in MDE.
-% The proposed method bridges the gap between temporal specification and practical verification in MDE. TOCL+ allows direct expression of safety and liveness properties that standard OCL cannot specify. The translation to filmstrip models ensures compatibility with current verification infrastructure. A plugin implementation validates the approach through a case study.
-% We implement a plugin in the USE environment to demonstrate feasibility through a case study. The results show that TOCL+ enables specification and verification of temporal properties beyond the expressiveness of standard OCL, while preserving its familiar syntax.
+Implemented as a USE plugin with a batch checker and a step-by-step debugger, the approach is evaluated on a meeting-scheduling and an incident-response case study, correctly flagging a role-assignment violation invisible to i*-only or BPMN-only checks, at the cost of checking one scenario rather than every reachable execution.
 % ---------------
 % 5. Conclusions/Recommendations:  What is the solution to the problem? What is the answer to the question? What are the implications of your answer—the basis for the recommendation? What is the significance of what you learned? What is the path forward?   TIP: Lift your conclusions/recommendations statement(s) from your Conclusions/Recommendations section(s).
 % ---------------
-% A language extension, a methodology, and tool support that together advance the state of model-driven specification and verification. As TOCL+ potentially empowers developers to specify realistic system behaviors while continuing to use familiar UML/OCL notations, we recommend applying the approach to larger industrial systems and exploring integration with other verification frameworks to further validate scalability and generality in the future.
-% Future work will examine scalability on industrial-scale systems and integration with other verification frameworks.
-
-
-% ---------------
+% (folded into the results sentence above, as the closing half-sentence trade-off)
 \end{abstract}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{IEEEkeywords}
-	Model-Driven Engineering(MDE); UML/OCL; TOCL; Temporal Constraints;
+	GORE; i*; BPMN; MDE; UML/OCL; Conformance Checking;
 \end{IEEEkeywords}
 % \vspace{-1em}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -177,26 +176,30 @@ A case study demonstrates that TOCL+ specifies and verifies temporal properties 
 %----------------------------------------------
 %-------- Research context & problems ---------
 %----------------------------------------------
-Modern software engineering is increasingly shaped by the need to deliver reliable systems in the face of high complexity. Model-Driven Engineering (MDE) elevates models to first-class artifacts, supporting early validation and automated generation of code and documentation \cite{KHALIL2018145}. Within this paradigm, the Unified Modeling Language (UML) provides expressive constructs to model structural and behavioral aspects of systems \cite{booch2005unified}, while the Object Constraint Language (OCL) introduces a formal textual mechanism to specify constraints and business rules beyond graphical representations \cite{warmer1998object}. The integration of UML and OCL enables a comprehensive specification
-of requirements while supporting automated analysis of their consistency and correctness. However, OCL is inherently limited to evaluating either individual system states or the pre- and postconditions of operations,
-which makes it unsuitable for specifying temporal constraints and event-driven behaviors. This gap prevents practitioners from capturing requirements such as ordering of operations, bounded occurrences, or liveness properties, which are crucial for reactive and time-sensitive systems.
+Modern software engineering increasingly relies on models to specify a system before it is built, reducing the cost of errors discovered late in development. Within this practice, a system's requirements and its behavior are typically captured by two separate models: a process model specifies what a system does, a goal model specifies why, and combining the two has been an active research direction for over two decades~\cite{amyot2022combining}. Yet capturing both does not guarantee they agree: a process can execute exactly as specified while still failing its goal, a gap that causes rework and implementation errors in practice~\cite{alignment2019slr}.
 %----------------------------------------------
 %------------- State of the art ---------------
 %----------------------------------------------
+Several techniques relate the two directly~\cite{ghose2007validation,koliadis2006goalbpm,caballero2026alig}: an activity mapped to a goal, a workflow pattern mapped to an intentional relation, built by hand from the designer's own judgment. None revisits this correspondence automatically: if either model changes, nothing detects whether the mapping, and the consistency it was meant to guarantee, still holds.
 
-Several extensions have been proposed to overcome these limitations. Temporal OCL (TOCL) \cite{kanso2014specification,ziemann2003ocl}  extends OCL with temporal operators inspired by temporal logics such as
-Linear Temporal Logic (LTL) and Computation Tree Logic (CTL), thereby allowing properties like \textit{always}, \textit{eventually}, and \textit{until}
-to be expressed directly in OCL syntax. While these proposals enhance reasoning about state evolution, they remain limited: TOCL lacks explicit constructs for event handling
-and operation counting, and most temporal verification approaches depend on specialized tools that are not well integrated into the UML/OCL toolchain \cite{hilkenTransformationUMLOCL2014}. Hence, there remains a gap between temporal specification and practical verification in MDE.
+What none provides is a shared model of system state that both could operate on directly: a process model changes that state step by step as it executes, while a goal model reads the same state to judge whether an intention is met, and only when both refer to the same state can their consistency be checked directly, instead of inferred from a hand-built mapping. Building such a state model requires, first, a vocabulary for it: neither a process model nor a goal model records the organizational facts of a system, who may hold which role, and which roles may be held together, facts a real execution still depends on.
 
 %----------------------------------------------
 %---------------- Our proposal ----------------
 %----------------------------------------------
-We propose TOCL+, an extension of OCL that supports both temporal and event-driven properties while preserving the familiar syntax of OCL. TOCL+ introduces constructs such as \texttt{isCalled} for operation events, \texttt{becomesTrue} for state changes, and bounded quantifiers for event frequencies. Verification is based on the film-stripping technique \cite{hilkenTransformationUMLOCL2014}, which encodes dynamic behavior as sequences of snapshots and operation calls. TOCL+ constraints are systematically translated into standard OCL over filmstrip models, allowing verification using existing tools such as the USE Model Validator \cite{gogolla2018achieving}, without the need for specialized temporal logic engines.
+We propose ACL, an intermediate language that captures the state of the system, following the same approach Dang et al.~\cite{dang2010jucs} use to synchronize a use case model and a design model in one shared conceptual class model. BPMN~\cite{omg2013bpmn}, grounded in that same state, is the language that executes changes to it, while i*~\cite{yu1997towards}, grounded in the same state, reads it to track whether the organization's goals are met. We formalize both readings, together with ACL's own structural invariants, and give a checkpoint-trace algorithm that checks all three together at every step of one execution scenario; because ACL specifies roles explicitly, it also catches role-assignment violations as a direct consequence.
 
-This paper makes the following key contributions: (1)~A language extension (TOCL+) that enhances OCL with temporal operators, event constructs, and bounded quantifiers. (2)~A systematic translation methodology based on filmtripping to verify temporal properties. (3)~A prototype plugin integrated into the USE environment to support verification. (4)~An evaluation through a case study that demonstrates the feasibility of the approach.
+Implemented as a USE~\cite{gogolla2007use} plugin with a batch mode and a step-by-step debugger, the method is evaluated on a meeting-scheduling and an incident-response case study, confirming feasibility with and without role-compatibility constraints.
 
-The remainder of this paper is organized as follows. Section~\ref{sect:motivation} reviews the necessary background on UML, OCL, TOCL and filmstripping. Section~\ref{sect:overview} gives an overview of our approach, introduces the TOCL+ language and outlines the transformation approach for verification. Section~\ref{sect:toolSupport} describes the tool support and discusses the applicability of our method. Section~\ref{sect:relatedWork} reviews related work. Finally, Section~\ref{sect:conclusion} concludes the paper and discusses the directions for future work.
+This work is guided by two research questions:
+\begin{itemize}
+  \item \textbf{RQ1.} How can the organizational structure of a system be formally specified during analysis, alongside its goal model and its process model?
+  \item \textbf{RQ2.} How can the evolving state of a goal model and a process model be represented in a shared intermediate model, so that their consistency can be checked along one execution scenario?
+\end{itemize}
+
+This paper makes three contributions: i) a metamodel and formal state-based semantics for each of three modeling languages, ACL, an extended i*, and a simplified BPMN, grounded in one shared object system (Section~\ref{sect:overview}); ii) a checking mechanism evaluating structural, process, and goal properties together at every step of one execution, returning independent diagnostics rather than a single verdict; and iii) a USE plugin with a batch mode and a step-by-step visual debugger.
+
+The remainder of this paper is organized as follows. Section~\ref{sect:motivation} presents the motivating example and background. Section~\ref{sect:overview} gives an overview of the approach, introducing the metamodels, their semantics, and the checking mechanism. Section~\ref{sect:toolSupport} describes tool support. Section~\ref{sect:evaluative} evaluates the approach against related techniques. Section~\ref{sect:discussion} discusses trade-offs and limitations. Section~\ref{sect:relatedWork} reviews related work. Finally, Section~\ref{sect:conclusion} concludes the paper.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Background and Motivating Example}
@@ -204,654 +207,319 @@ The remainder of this paper is organized as follows. Section~\ref{sect:motivatio
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 This section first presents the background knowledge for our research and then outlines the underlying motivations.
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Motivating Example}
 \label{subsect:umlocl}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% To illustrate the expressive scope and limitations of OCL, we present a motivating example of a traffic light system in Figure~\ref{fig:case-study}. The model consists of two main classes, \texttt{TrafficLight} and \texttt{Button}, together with an enumeration \textit{Color}. 
-
-% OCL is used to formalize the operational correctness of these methods by specifying pre- and postconditions and invariants. The operation \texttt{switchPedLight()} in \texttt{TrafficLight} is constrained so that it only executes if a request has been made and upon execution, resets the request flag and ensures the pedestrian light state changes as specified. Similarly, \texttt{requestPass()} in Button alters the state of the request flag when the button is pressed, ensuring transactional integrity.
-
-To demonstrate both the expressive power and the limitations of OCL in modeling behavioral correctness, we present three representative case studies.
-
-The first case study, a traffic light control system, models the interaction between a pedestrian crossing button and a set of traffic lights (in Figure~\ref{fig:case-study}). The OCL constraints specify operational safety and logical consistency—ensuring, for example, that car and pedestrian lights never share the same color, that pedestrian requests are handled only when valid, and that each operation transitions system states deterministically.
-
-
-
-
-
-\begin{figure}[htb]
-\vspace{-.5em}
-\begin{center}
-	\includegraphics[scale=0.325]{backup/version0.1/images/TOCL+Background.png}
-				\vspace{-0.3em}
-	\begin{center}	
-			\caption{The application model of \textit{TrafficLight}.} 	
-			\label{fig:case-study}
-	\end{center}
-	\vspace{-2.7em}
-    
-\end{center}
-\end{figure} 
-
-The second case study, a banking system, captures the relationship between a bank account and its associated debit cards in Figure~\ref{fig:BankCase}. OCL constraints are used to guarantee the correctness of account operations such as deposits, withdrawals, and payments. They also ensure that spending limits remain within the available balance and that each newly created debit card instance is uniquely associated with its respective account.
-\begin{figure}[htb]
-\vspace{-.5em}
-\begin{center}
-	\includegraphics[scale=0.31]{backup/version0.1/images/BankAccount.drawio.png}
-				\vspace{-0.3em}
-	\begin{center}	
-			\caption{The application model of \textit{BankAccount}.} 	
-			\label{fig:BankCase}
-	\end{center}
-	\vspace{-2.7em}
-    
-\end{center}
-\end{figure} 
-
-The third case study, a software system manager (Figure~\ref{fig:AppCase}), models the lifecycle of applications within a host system. OCL constraints govern this lifecycle by defining the precise semantics for operations like \textit{load}, \textit{install}, and \textit{run}. These constraints enforce critical pre-conditions, such as requiring sufficient \textit{freeMemory} to load an application, and post-conditions to track resource allocation (e.g., decreasing memory upon loading). Furthermore, system-level invariants guarantee a consistent and logical state, preventing errors such as an application being simultaneously in the \textit{loadedApps} and \textit{runningApps} collections.
-\begin{figure}[htb]
-\vspace{-.5em}
-\begin{center}
-	\includegraphics[scale=0.26]{backup/version0.1/images/Application.drawio.png}
-				\vspace{-0.3em}
-	\begin{center}	
-			\caption{The application model of \textit{SoftwareSystem}.} 	
-			\label{fig:AppCase}
-	\end{center}
-	\vspace{-2.7em}
-    
-\end{center}
-\end{figure} 
-
-Together, these examples illustrate how OCL can formally express system rules, operation semantics, and cross-object consistency, while also revealing the language’s limitations in expressing more complex temporal or quantitative properties.
-
-% However, OCL faces considerable limitations when specifying constraints that involve the temporal ordering of operations and event-driven behaviors. For instance, articulating requirements such as “if a crossing request is made, the next operation must be a call to \texttt{switchPedLight()}” exceeds the capabilities of standard OCL, which cannot enforce the sequence or timing of events. Additionally, OCL lacks mechanisms to express constraints involving the frequency or history of operations, such as tracking how many times an action occurs within a specified interval. These gaps hinder the formal specification and verification of systems where time and event dependencies are critical.
-
-
-However, OCL, based on first-order logic, lacks native support for specifying temporal properties~\cite{lail2022TOCL}. Some approaches rely on non-UML formalisms, requiring the transformation of UML models into external verification frameworks, which are not well aligned with MDE. Therefore, extending OCL with temporal constructs is a more suitable solution. Among the notable efforts in this direction, TOCL~\cite{ziemann2003ocl} extends OCL to address its core limitation: the inability to express temporal properties that span multiple system states. While OCL is effective for invariants and pre- and postconditions within a single snapshot, it cannot describe evolving behavior in reactive or real-time systems.
-
-TOCL enriches OCL with temporal operators inspired by LTL~\cite{rozier2011linear}. Constraints are evaluated over a  infinite sequence of states and organizes its temporal operators into two categories~\cite{ziemann2003ocl}:
-
-\begin{itemize}
-    \item \textbf{Future Operators}: These include \texttt{next e} (true if $e$ holds in the next state), \texttt{always e} (true if $e$ holds in the current and all subsequent states), and \texttt{sometime e} (true if $e$ holds in the current or at least one future state).
-    \item \textbf{Past Operators}: These include \texttt{previous e} (true if $e$ was true in the previous state), \texttt{alwaysPast e} (true if $e$ was true in all past states), and \texttt{sometimePast e} (true if $e$ was true in at least one past state).
-\end{itemize}
-
-These operators provide the core temporal reasoning capabilities in TOCL, allowing precise specification of how properties evolve over time, a critical feature for modeling and verifying dynamic system behavior. TOCL's ability to express temporal relations between states is particularly valuable for verifying properties in reactive and real-time systems, where actions in the system are triggered by the passage of time or by other events.
-
-
-However, TOCL faces considerable limitations when specifying constraints that involve event-driven behaviors. For instance, articulating requirements such as \textit{“if a crossing request is made, the next operation must be a call to switchPedLight()”} or \textit{“detecting that an event becomes true between two states”} exceeds the capabilities of TOCL. Additionally, TOCL lacks mechanisms to capture constraints involving the precise frequency of operations, such as restricting how many times an action may occur within a specified interval. These gaps hinder the formal specification and verification of systems where quantitative control over event occurrences is critical.
-
-% However, TOCL lacks the ablity to constraints involving bounded-extistence event or operation counting (as stated in...). 
-To overcome these limitations, we propose extending TOCL, a version that augments OCL with temporal constraints, enabling more direct modeling of time-dependent and event-driven requirements. This raises several important questions for further research: (1)~How can TOCL be extended to capture such temporal and event-based constraints? (2)~In what way can these new constraints be translated into UML/OCL models? (3)~How can the correctness of these newly added constraints be verified? 
-
-% However, there are some properties we come across that both OCL and TOCL cannot express - the one involving event handling via operations or counting operations (bounded existence). Thus, to overcome this challenge, the following questions should be addressed:
-
-% \begin{itemize}
-%     \item How should we extend TOCL so that those constraints can be expressed?
-%     \item How can we find a way to translate these new types of constraints to UML/OCL?  
-%     \item How can we verify those newly added constraints?
-% \end{itemize}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\subsection{Temporal OCL - TOCL}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% TOCL was introduced as an extension to the standard OCL to address its fundamental limitation: the inability to specify temporal properties that span multiple system states over time. OCL, while effective for specifying invariants within a single state and simple pre/post-conditions, lacks the expressiveness needed for capturing dynamic behaviors in systems that evolve over time, especially in real-time, concurrent, and reactive systems.
-
-% TOCL addresses this limitation by incorporating elements from LTL \cite{rozier2011linear}, allowing it to reason about both future and past states. Unlike standard OCL, which applies constraints to a single system state, TOCL applies an "always" condition across a sequence of system states, making it possible to express constraints that must hold across multiple states. TOCL uses a framework where system states are modeled as an infinite sequence, and temporal constraints are evaluated over this sequence.
-
-% \begin{lstcodeplainssm}{TOCL Specification for  \texttt{TrafficLight}}{lst:toclTrafficLight}
-% context TrafficLight
-% inv TL2: self.pedLight = #Green implies sometimePast self.requested
-% \end{lstcodeplainssm}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Filmstrip Method for Model Validation}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-The model filmstripping method  \cite{hilkenTransformationUMLOCL2014}  enables efficient verification of UML/OCL models
-by addressing dynamic aspects through techniques traditionally applied to static analysis. Specifically, the UML/OCL model, a so-called application model, is transformed into an equivalent model containing only invariants, referred to as the filmstrip model.
-The validity of the application model can be verified by applying static verification techniques to this filmstrip model. For a better understanding, we would take a look at the \textit{TrafficLight} example above with the original model shown in Figure~\ref{fig:case-study}. 
+To illustrate the scope and the limits of checking a BPMN process against an i* goal model, we present \textit{MeetingScheduler}: a unit organizes a meeting among an initiator, an organizer, an optional secretary, and several participants. The i* model (Figure~\ref{fig:istar-mtg}) ties the initiator's overall goal to two conditions: the schedule is fixed, and every participant has shown up, the latter reached by collecting each participant's availability from their calendar or, failing that, a phone call from the secretary.
 
 \begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.9\linewidth]{backup/version0.1/images/TOCL+filmstrip.png}
-  \caption{Transform TrafficLight into the filmstrip model.}
-  \label{fig:filmstrip-example}
+\vspace{-.3em}
+\begin{center}
+\includegraphics[width=\columnwidth,keepaspectratio]{images/Istarmodel.png}
+\vspace{-1.1em}
+\begin{center}
+\caption{i* model of \textit{MeetingScheduler}.}
+\label{fig:istar-mtg}
+\end{center}
+\vspace{-2.7em}
+\end{center}
 \end{figure}
 
+The BPMN model (Figure~\ref{fig:bpmn-mtg}) lays this out, one lane per role, from the initial details to the final announcement.
 
-
- Figure~\ref{fig:filmstrip-example} shows the filmstrip model obtained from the original model \textit{TrafficLight}. Two operations of the class \texttt{TrafficLight}, \texttt{switchCarLight()} and \texttt{switchPedLight()}, correspond to two classes in the filmstrip model, \texttt{switchCarLight$\_$TrafficLightOpC} and \texttt{switchPedLight$\_$TrafficLightOpC}. A transition between two system snapshots w.r.t a call of the operations would be represented in only one corresponding snapshot in the filmstrip model. 
-
- \begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.9\linewidth]{backup/version0.1/images/App_Filmstrip_model.png}
-  \caption{Transform Application into the filmstrip model.}
-  \label{fig:app-example}
+\begin{figure}[htbp]
+\vspace{-.3em}
+\begin{center}
+\includegraphics[width=\columnwidth,keepaspectratio]{images/BPMNmodel.png}
+\vspace{-1.1em}
+\begin{center}
+\caption{BPMN model of \textit{MeetingScheduler}.}
+\label{fig:bpmn-mtg}
+\end{center}
+\vspace{-2.7em}
+\end{center}
 \end{figure}
 
-Figure~\ref{fig:app-example} presents the filmstrip model obtained from the application-management system. The operations of the class \texttt{System} in the original model, such as \texttt{install()}, \texttt{load()}, \texttt{run()}, and \texttt{stop()}, are transformed into the corresponding operation-classes \texttt{install$\_$SystemOpC}, \texttt{load$\_$SystemOpC}, \texttt{run$\_$SystemOpC}, and \texttt{stop$\_$SystemOpC}. Similar to the previous example, each call of an operation is represented in the filmstrip by linking two snapshots through the temporal relations \texttt{pred} and \texttt{succ}. The classes \texttt{System} and \texttt{Application} appear in every snapshot, allowing changes in attributes such as memory usage and application sets to be captured in a static form. This enables the verification of system behavior by applying standard OCL invariant checking on the filmstrip structure.
+However, checking that a process realizes its goal model is usually done through a hand-built, one-to-one correspondence between BPMN activities and i* tasks~\cite{koliadis2006goalbpm}, one that nothing keeps in sync as the process changes, so maintaining it becomes a recurring manual cost. A shared model of the two models' state transitions is a more suitable direction: Dang et al.~\cite{dang2010jucs} check i* and BPMN this way instead, tracking the correspondence as execution unfolds rather than fixing it once by hand. Applying that idea to \textit{MeetingScheduler}, however, shows the correspondence is rarely one task to one activity: reaching one task can depend on several activities, and one activity can feed several tasks.
 
- \begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.9\linewidth]{backup/version0.1/images/BankAccount_filmstrip_model.png}
-  \caption{Transform BankAccount into the filmstrip model.}
-  \label{fig:bank-example}
-\end{figure}
+Tracking the correspondence this way still leaves two things unconfirmed. For instance, participants here split into two groups, phoned by the secretary or checking their own calendar, so a quality like \texttt{Inclusivity} can already read as satisfied once either path fires, without confirming it held for every participant; nothing checks whether the process, once finished, has satisfied everyone rather than the goal in the abstract. Additionally, neither model can say that the same agent should not both phone participants and be counted as one of them, since none of their input languages, nor any technique surveyed in Section~\ref{sect:relatedWork}, represents organizational role. These gaps require checking i* per participant instance rather than per goal type, and a language for organizational structure alongside it, both introduced in Section~\ref{sect:overview}.
 
-Figure~\ref{fig:bank-example} illustrates the filmstrip model derived from the \textit{BankAccount} case study. The operations of the class \texttt{BankAccount}, specifically \texttt{deposit()} and \texttt{withdraw()}, are transformed into the corresponding operation-classes \texttt{deposit$\_$BankAccountOpC} and \texttt{withdraw$\_$BankAccountOpC}. Consistent with the previous examples, the execution of a transaction is represented in the filmstrip by linking two snapshots—representing the pre-state and post-state—through the temporal relations \texttt{pred} and \texttt{succ}. Key attributes, such as the account \texttt{balance}, are maintained within each snapshot. This transformation allows dynamic constraints, such as preventing a balance from becoming negative or ensuring data consistency during transactions, to be formulated and verified as static invariants on the filmstrip model.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Organizational Structure Modeling: MOISE}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+MOISE~\cite{hubner2002moise} and its extension MOISE+~\cite{hubner2007moiseplus} specify a multi-agent organization along structural, functional, and deontic dimensions. ACL (Section~\ref{sec:acl-language}) adopts only the structural one, roles, groups, and cardinality, and extends it with the entities, associations, and role-compatibility constraints that \textit{MeetingScheduler}'s second question needs and that neither MOISE nor MOISE+ provide.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Overview of Our Approach}
 \label{sect:overview}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Figure~\ref{fig:overview} illustrates our approach, which consists of three main steps.
-First, the application model (a UML/OCL class diagram) is transformed into a filmstrip model. Second, temporal properties are specified in TOCL+ will be translated into semantically equivalent OCL constraints so that they can be interpreted on the filmstrip model.
+Figure~\ref{fig:overview} states the approach as a domain-independent methodology, applicable to any \emph{(state model, process model, goal model)} triple: a process model replays a state model into an execution path; a goal model reads that execution path into a goal path; checking the goal path yields a consistency result. This paper instantiates the triple with one concrete choice, ACL for the state model, the simplified BPMN of Part C for the process model, and the extended i* of Part B for the goal model, but nothing in Figure~\ref{fig:overview} itself is specific to that choice; a different state, process, or goal language, one with no organizational-structure notion of its own, or a stronger one than ACL, could be substituted without changing the methodology.
 
-\begin{figure}[htbp]	
-\vspace{-.5em}
+\begin{figure}[htbp]
+\vspace{-.3em}
 \begin{center}
-	\includegraphics[scale=0.38]{backup/version0.1/images/TOCL+Appoarch.png}
-        \vspace{-0.3em}
-	\begin{center}		
-		\caption{Overview of the proposed approach.}
-            \label{fig:overview}
-	\end{center}	
-	\vspace{-2.7em}
+\includegraphics[width=\columnwidth,keepaspectratio]{images/overview.png}
+\vspace{-1.1em}
+\begin{center}
+\caption{Overview of the proposed approach.}
+\label{fig:overview}
+\end{center}
+\vspace{-2.7em}
 \end{center}
 \end{figure}
 
-Finally, the filmstrip model, the translated OCL properties, and the verification configuration for bound constraints
-serve as inputs to the USE Model Validator. The validator explores candidate snapshots and checks whether all static and temporal constraints are satisfied. If \textit{satisfiable}, an object diagram is generated to illustrate a valid execution scenario. If \textit{not}, then no such scenario exists.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\vspace{-2em}
-% \section{Expressing temporal constraints with TOCL+}
-% \label{sect:tocl-expressing}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% This section focuses on the main steps of our approach as illustrated in Figure~\ref{fig:overview}.
+Formally, the execution path is a checkpoint trace $\Gamma_B = (\Sigma_0,\dots,\Sigma_n)$, a sequence of state markings, and the goal path is its counterpart on the goal side, a marking trace $M_B = (\mu_{\Sigma_0},\dots,\mu_{\Sigma_n})$, one goal marking per checkpoint. Checking compares the final marking $\mu_{\Sigma_n}$ against the root goals and an independent oracle, and reports whether the two agree; none of the three definitions above mentions ACL, i*, or BPMN by name, only a state model, a process model, and a goal model in the abstract.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{TOCL+: An Extension for OCL Temporal Properties}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\subsection{The ACL Language}
+\label{sec:acl-language}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-While TOCL extended OCL with temporal operators for reasoning
-about past and future system states, it faced significant limitations, particularly in expressing event-driven behaviors and bounded existence properties. TOCL could only track state changes, not actual event occurrences (e.g., the number of times an operation is invoked). These gaps were addressed with the introduction of TOCL+.
+An ACL model captures an organization's roles and groups, together with the domain entities they act on and the cardinality and compatibility constraints between them. Its core concepts, role, group, and entity, are inspired by MOISE~\cite{hubner2002moise}, and all three specialize class to inherit its properties. Two relations complete the model (Figure~\ref{fig:acl-metamodel}): ownership, always from a group to the role or child group it owns, and compatibility, between two roles. At the highest level a model is a set of groups; each group owns its child groups and roles through ownership, and two roles linked by compatibility may be held by the same agent within that group at once; any other role pair may not. ACL is designed to capture the state of a multi-agent system, spanning both its agents and the objects they act on.
 
-\begin{figure}[htbp]	
-\vspace{-.5em}
+\begin{figure}[htbp]
+\vspace{-.3em}
 \begin{center}
-	% \includegraphics[scale=0.8]
-	\includegraphics[scale=0.6]
-    {backup/version0.1/images/TOCL+TOCL+ (1).png}
-        \vspace{-0.7em}
-	\begin{center}		
-		\caption{Example of a state transition.}
-            \label{fig:stateTransition}
-	\end{center}	
-	\vspace{-2.7em}
+\includegraphics[width=\columnwidth,keepaspectratio]{images/ACLMetamodel.png}
+\vspace{-1.1em}
+\begin{center}
+\caption{The ACL metamodel.}
+\label{fig:acl-metamodel}
+\end{center}
+\vspace{-2.7em}
 \end{center}
 \end{figure}
 
-TOCL+ extends TOCL by incorporating event constructs and bounded existence operators, which significantly expand its expressive power for dynamic system behaviors. The Figure~\ref{fig:stateTransition} shows a state-transition sequence where states are annotated with condition \texttt{P} and transitions are triggered by operation calls \texttt{op}. This serves to illustrate the core features supported in TOCL+.
+Figure~\ref{fig:acl-mtg} illustrates ACL applied to \textit{MeetingScheduler}: a single meeting unit holds four roles, initiator, organizer, secretary, and participant, together with the properties and entity relations each carries. Two compatibilities let one agent hold two of these roles at once: the person who requests the meeting may also attend it, so initiator and participant are declared compatible, and the organizer may double as secretary to phone the participants who have no calendar, so organizer and secretary are declared compatible too. Any other pairing is left undeclared and so forbidden by default. The meeting record and the phone contacts used for those calls are domain data rather than roles, so they attach to the group as entities.
 
+\begin{figure}[htbp]
+\vspace{-.3em}
+\begin{center}
+\includegraphics[width=\columnwidth,keepaspectratio]{images/ACLmodel.png}
+\vspace{-1.1em}
+\begin{center}
+\caption{ACL model of \textit{MeetingScheduler}.}
+\label{fig:acl-mtg}
+\end{center}
+\vspace{-2.7em}
+\end{center}
+\end{figure}
+
+\begin{definition}[ACL model]
+\label{def:acl-model}
+An ACL model is a tuple
+$$\mathcal{A} = (C, \mathit{Re}), \qquad C = E \uplus R \uplus G,$$
+where $E$, $R$, $G$ are pairwise disjoint finite sets of entities, roles, and groups, respectively. Let $K = \{\mathsf{own}, \mathsf{cmp}, \mathsf{asc}, \mathsf{agg}, \mathsf{cps}, \mathsf{gen}\}$ be the set of relation kinds, each $k \in K$ admitting endpoint pairs $D_k$: $D_{\mathsf{own}} = G \times (G \cup R)$, $D_{\mathsf{cmp}} = R \times R$, $D_{\mathsf{asc}} = D_{\mathsf{agg}} = D_{\mathsf{cps}} = C \times E$, and $D_{\mathsf{gen}} = (E \times E) \cup (R \times R) \cup (G \times G)$. The set of relations satisfies $\mathit{Re} \subseteq \bigcup_{k \in K} (D_k \times \{k\})$.
+\end{definition}
+
+\begin{definition}[System marking]
+\label{def:system-marking}
+Given an ACL model $\mathcal{A}$ (Definition~\ref{def:acl-model}), a \emph{system marking} on $\mathcal{A}$ is a tuple
+$$\Sigma = (\mathit{Agent}, O, \mathit{type}, \mathit{plays}, \mathit{link}),$$
+where $\mathit{Agent}$ is a finite set of agents, $O$ is a finite set of role, group, and entity instances ($E$, hence $O$, already including the built-in primitive values, e.g.\ \texttt{true}, \texttt{false}), $\mathit{type} : O \to C$, $\mathit{plays} \subseteq \mathit{Agent} \times O$, and $\mathit{link} \subseteq O \times O \times K$. $\Sigma$ is \emph{valid} iff:
+\begin{enumerate}[label=(\roman*)]
+  \item $\forall (a,r) \in \mathit{plays}$, $\mathit{type}(r) \in R$;
+  \item $\forall ((o_1,o_2),k) \in \mathit{link}$, $(\mathit{type}(o_1),\mathit{type}(o_2)) \in D_k$;
+  \item $\forall o \in O$, $|\{o' \mid ((o,o'),\mathsf{own}) \in \mathit{link}\}| \le 1$;
+  \item for all $a \in \mathit{Agent}$, $r_1 \neq r_2$ with $(a,r_1),(a,r_2) \in \mathit{plays}$ and a common $g$ with $((r_1,g),\mathsf{own}),((r_2,g),\mathsf{own}) \in \mathit{link}$: $(\mathit{type}(r_1),\mathit{type}(r_2)) \in D_{\mathsf{cmp}}$.
+\end{enumerate}
+\end{definition}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{The Extended i* Metamodel and the ISCN Oracle}
+\label{sec:istar}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+This paper extends i*~\cite{yu1997towards} with two constructs specific enough to carry an OCL guard: quantified refinement, and an explicit condition on every goal/task. Figure~\ref{fig:istar-metamodel} gives the resulting abstract syntax: a refinement can be quantified over the instances of a role, every one of them or just one; and every goal/task carries that condition, the guard the marking semantics below evaluates.
+
+\begin{figure}[htbp]
+\vspace{-.3em}
+\begin{center}
+\includegraphics[width=\columnwidth,keepaspectratio]{images/IstarMetamodel.png}
+\vspace{-1.1em}
+\begin{center}
+\caption{The extended i* metamodel.}
+\label{fig:istar-metamodel}
+\end{center}
+\vspace{-2.7em}
+\end{center}
+\end{figure}
+
+\textit{MeetingScheduler} instantiates this metamodel directly: Figure~\ref{fig:istar-mtg} is its diagrammatic concrete syntax, i* also has an equivalent textual one.
+
+What a goal or task's status actually is at a given point in a run is not fixed by the model itself either; it takes a separate notion, a goal marking, adapted from the marking-propagation idea of Caballero-Villalobos et al.~\cite{caballero2026alig} to a boolean domain, to read that off a system marking.
+
+\begin{definition}[Goal marking]
+\label{def:goal-marking}
+Given an i* model and a system marking $\Sigma$ (Definition~\ref{def:system-marking}), the \emph{goal marking} it induces is a partial function
+$$\mu_\Sigma : \mathit{IntentionalElement} \times \mathit{ActorInstance} \rightharpoonup \mathbb{B}$$
+defined exactly on pairs $(e,t')$ with $t' \in O_\Sigma$; for $t' \notin O_\Sigma$, $\mu_\Sigma(e,t')$ is undefined, i.e.\ $e$ does not apply to $t'$ in $\Sigma$. For $(e,t') \in \mathrm{dom}(\mu_\Sigma)$, its value is computed recursively on the structure of $e$:
+$$\mu_\Sigma(e,t') = \begin{cases}
+\mathit{guard}(e)(t',\Sigma) & \text{if } e \text{ is a leaf goal/task}, \\
+\bigwedge_{c \in C} \mu_\Sigma(c,t') & \text{if } e \text{ is AND-refined by } C, \\
+\bigvee_{c \in C} \mu_\Sigma(c,t') & \text{if } e \text{ is OR-refined by } C.
+\end{cases}$$
+A \texttt{make}/\texttt{help} contribution from $e$ sets its target quality's marking to $\mu_\Sigma(e,t')$, a \texttt{hurt}/\texttt{break} contribution to $\neg\mu_\Sigma(e,t')$; a \texttt{forall}-quantified refinement aggregates $\bigwedge$ over every matching $t'' \in O_\Sigma$, \texttt{pick} aggregates $\bigvee$.
+\end{definition}
+
+In \textit{MeetingScheduler}, a participant's timetable counts as collected as soon as either a phone call or a calendar check succeeds, an OR-refinement; and phoning every participant without a calendar counts as done once one secretary succeeds, not every one, a \texttt{pick}.
+
+The word \texttt{Pending} is a display label for $\mu_\Sigma(e,t') = \mathit{false}$ with $t' \in O_\Sigma$, not a third semantic value; $t' \notin O_\Sigma$ (undefined) is what an earlier, three-valued formulation called \texttt{UNKNOWN}. Because Part D's failure lists range only over $\mathrm{dom}(\mu_{\Sigma_n})$, an actor instance absent from the trace is skipped automatically, never counted as a failure.
+
+An \texttt{.iscn} file is the instance-level companion to \texttt{.istar}: it assigns the expected final marking for chosen actor instances, compared by Part D against the actual $\mu_{\Sigma_n}$ (Definition~\ref{def:goal-marking}).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{The Simplified BPMN Metamodel and State-Transition Semantics}
+\label{sec:bpmn}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+A \texttt{.bpmn2} specification fixes a process as activities, gateways, and events linked by sequence flow; it inherits BPMN's~\cite{omg2013bpmn} pool/lane/activity/event/gateway vocabulary and adds an optional OCL \texttt{pre}/\texttt{post}/\texttt{effect} on each activity and an OCL \texttt{guard} on each gateway flow, so that every state change is a single \texttt{effect} SOIL statement, with no other domain mutation.
+
+A process model needs to say more than which activities happen in which order: each activity's effect on the state that ACL and i* both read must be pinned down too, and a gateway's branch condition must be evaluable against that same state. Figure~\ref{fig:bpmn-metamodel} gives BPMN's abstract syntax for exactly this: a model groups one or more processes, each partitioned into lanes of flow elements, activities, tasks, sub-processes, or call activities, and events, start, end, or intermediate, linked by sequence flow within a process and message flow across processes; gateways sit among the flow elements too, each carrying a kind, exclusive, parallel, inclusive, or event-based. \texttt{pre}, \texttt{post}, \texttt{effect}, and \texttt{guard} attach directly to this metamodel rather than to a separate annotation layer, each written over the same class model as ACL (Section~\ref{sec:acl-language}) and i* (Section~\ref{sec:istar}).
+
+\begin{figure}[htbp]
+\vspace{-.3em}
+\begin{center}
+\includegraphics[width=\columnwidth,keepaspectratio]{images/BPMNMetamodel.png}
+\vspace{-1.1em}
+\begin{center}
+\caption{The simplified BPMN metamodel.}
+\label{fig:bpmn-metamodel}
+\end{center}
+\vspace{-2.7em}
+\end{center}
+\end{figure}
+
+\textit{MeetingScheduler} instantiates this metamodel too, and only a subset of it: Figure~\ref{fig:bpmn-mtg} (Section~\ref{subsect:umlocl}) already gave its concrete syntax, annotated activities and exclusive-gateway-guarded flows, one lane per role, from the initial-details activity to the final announcement, with the gateway guarding the phone-versus-calendar branch for collecting a participant's availability.
+
+\label{sec:bpmn-semantics}
+What such a schema actually does at runtime, in what order its activities run and what each run changes in the state that ACL and i* both read, is not fixed by the schema itself; it takes a separate notion, a checkpoint transition system, to pin that down.
+
+\begin{definition}[BPMN model]
+\label{def:bpmn-model}
+A BPMN model over an ACL model $\mathcal{A}$ (Definition~\ref{def:acl-model}) is a tuple $B = (Act, Gw, Ev, \mathit{Flow}, \mathit{lane}, \mathit{pre}, \mathit{post}, \mathit{effect}, \mathit{guard})$, instantiating Figure~\ref{fig:bpmn-metamodel}:
 \begin{itemize}
-    \item \textbf{Event Constructs}:
-    \begin{itemize}
-        \item \texttt{isCalled}: Detects the invocation of a specific operation on an object, representing the atomic transition from pre-state to post-state.
-        \item \texttt{becomesTrue}: Detects when a condition \texttt{P} changes from false to true between two consecutive states.
-    \end{itemize}
-    
-    \item \textbf{Bounded Existence Properties}: TOCL+ introduces bounded quantifiers for counting events:
-    \begin{itemize}
-        \item \texttt{isCalled(...)} at most $k$ times: Restricts the operation to be called no more than $k$ times.
-        \item \texttt{isCalled(...)} $k$ times: Specifies that the operation must be called exactly $k$ times.
-        \item \texttt{isCalled(...)} at least $k$ times: Ensures the operation is called at least $k$ times.
-    \end{itemize}
+  \item $Act$, $Gw$, $Ev$ are pairwise disjoint finite sets of activities, gateways, and events;
+  \item $\mathit{Flow} \subseteq N \times N$, for $N = Act \cup Gw \cup Ev$, is the sequence-flow graph, with a unique start event $s \in Ev$ having no incoming edge;
+  \item $\mathit{lane} : Act \to R$ assigns each activity the ACL role responsible for it;
+  \item $\mathit{pre}, \mathit{post}, \mathit{effect} : Act \rightharpoonup \mathit{OCL}(\mathcal{A})$ are partial functions giving each activity an optional precondition, postcondition, and effect;
+  \item $\mathit{guard} : \mathit{Flow} \rightharpoonup \mathit{OCL}(\mathcal{A})$ optionally guards a flow leaving a gateway in $Gw$.
 \end{itemize}
+\end{definition}
 
-There are two main benefits of our extension. First, these new capabilities enable TOCL+ to express properties that were previously inexpressible in TOCL, such as ensuring that an operation is invoked a specified number of times or that a system event occurs within a given range of system states. Importantly, this extension preserves the familiar OCL syntax, ensuring that TOCL+ remains accessible to practitioners already accustomed to OCL. Second, the introduction of event-based constructs in TOCL+ allows for a more intuitive specification of reactive systems and real-time applications, where behaviors are driven by the occurrence of specific events (e.g., operation calls, state changes). By adding bounded existence operators, TOCL+ supports verification of safety properties like \textit{"an operation is called at most once"} or \textit{"a system transition occurs exactly three times"}.
-\begin{lstcodeplainssm}{EBNF Grammar}{lst:grammarebnf}
-primaryExp[Environment env] returns [ASTOclExpression ast]
-  : literalExp[$env]
-  | varExp[$env]
-  | callExp[$env, null]
-  | ifExp[$env]
-  | toclOperatorExpression[$env]
-  | LPAREN oclExpression[$env] RPAREN
-  | events[$env]
-  {
-    $ast = $events.ast;
-  };
+Fixing $B$ over the same $\mathcal{A}$ that every system marking (Definition~\ref{def:system-marking}) is an instance of is what lets $\mathit{pre}$, $\mathit{post}$, $\mathit{effect}$, and $\mathit{guard}$ be evaluated directly on any $\Sigma$, with no separate translation step, the trade-off motivating the simplified dialect above.
 
-events[Environment env] returns [ASTEvent ast]
-  : isCalledEvent[$env] { $ast = $isCalledEvent.ast; }
-  | becomesTrueEvent[$env] { \$ast = \$becomesTrueEvent.ast; };
+Two things this schema still leaves open: the order in which $Act$ actually runs, and what running it produces as a trace of system markings.
 
-isCalledEvent[Environment env] returns [ASTEvent ast]
-  : 'isCalled' LPAREN eventOp[$env] RPAREN bounds[$env]?
-  {
-    $_ast = new ASTEvent();
-  };
+\begin{definition}[Execution order]
+\label{def:execution-order}
+Given a BPMN model $B$ (Definition~\ref{def:bpmn-model}), its activities $A = \{a_1,\dots,a_n\} = Act$ are ordered by a topological sort (Kahn's algorithm) of $(N, \mathit{Flow})$ starting from $s$. $B$ executes along this single, fixed sequence, without evaluating $\mathit{guard}$ to choose among competing successors, a simplification discussed in Section~\ref{sect:discussion}.
+\end{definition}
 
-bounds[Environment env]
-  : quantif=('at least' | 'at most')? n=NATURAL_N 'times';
+A translator compiles the \texttt{.aol} snapshot into an initial SOIL script; executing it, not any hand-written SOIL, is how the system marking $\Sigma_0$ below is obtained.
 
-eventOp[Environment env]
-  : simpleName LPAREN parameters[$env]? RPAREN;
+\begin{definition}[Checkpoint transition system]
+\label{def:checkpoint-trace}
+Let $B$ be a BPMN model over $\mathcal{A}$ (Definition~\ref{def:bpmn-model}) and $\Sigma_0$ a system marking on the \emph{same} $\mathcal{A}$ (Definition~\ref{def:system-marking}) — here, the one \texttt{mtg\_initial.aol} compiles to. The \emph{checkpoint transition system} induced by $B$ and $\Sigma_0$ is
+$$\Gamma_B = \langle \Sigma, A, \Sigma_0, \rightarrow \rangle, \quad \Sigma=\{\Sigma_0,\dots,\Sigma_n\},$$
+where $(\Sigma_{i-1}, a_i, \Sigma_i) \in\, \rightarrow$ iff $\Sigma_i = \mathit{effect}(a_i)(\Sigma_{i-1})$ ($\Sigma_i = \Sigma_{i-1}$ if $\mathit{effect}(a_i)$ is undefined), for $1 \le i \le n$. Every $\Sigma_i$ is itself a system marking on $\mathcal{A}$ — this is the whole answer to ``how do $B$ and $\mathcal{A}$ together generate an execution trace'': $\mathcal{A}$ fixes the space of valid $\Sigma_i$, $\Sigma_0$ anchors the trace in it, and $B$'s $\mathit{effect}$, taken in the order of Definition~\ref{def:execution-order}, walks it forward one checkpoint at a time.
+\end{definition}
 
-becomesTrueEvent[Environment env] returns [ASTEvent ast]
-  : 'becomesTrue' LPAREN e=binaryOperationExp[$env] RPAREN
-  {
-    $_ast = new ASTEvent();
-  };
-  
-\end{lstcodeplainssm}
+By Definition~\ref{def:execution-order}, $\Gamma_B$ has one outgoing transition per state: a single \emph{run} $\Sigma_0 \xrightarrow{a_1} \Sigma_1 \xrightarrow{a_2} \cdots \xrightarrow{a_n} \Sigma_n$, a checkpoint trace rather than a branching system, deliberately checking one concrete execution rather than the full reachable state space (Section~\ref{sect:discussion}).
 
-Listing \ref{lst:grammarebnf} shows the formal EBNF as the  Grammar of two new events constructed types extending the formal grammar that was built by Lail et al. \cite{lail2022TOCL}. The formal grammar specification serves two principal functions. It delivers a rigorous definition of the TOCL+ syntax, thereby complementing the semantic foundation introduced in the preceding section. In addition, it facilitates the systematic translation of TOCL+ specifications into standard OCL constraints, which are subsequently employed in our verification framework described in the next section.
-
-Listing~\ref{lst:tocl+Properties} presents representative TOCL+ constraints for the \textit{TrafficLight} system. They capture temporal and event-driven requirements, such as detecting when specific operations are called and when an OCL expression \texttt{P} changes from false to true. These examples highlight how TOCL+ extends TOCL with additional constructs to specify dynamic and event-dependent system behavior more precisely. 
-
-\begin{lstcodeplainssm}{TOCL+ properties for TrafficLight} {lst:tocl+Properties}
-context TrafficLight
--- When the traffic light receives a request, at some point in time, the pedestrian light will be turned on.
-inv TL1: self.requested = true implies sometime isCalled(switchPedLight())
--- When the pedestrian light is turned on, it will change to green.
-inv TL2: isCalled(switchPedLight()) implies becomesTrue(self.pedLight = #Green)
-
-context Button
--- When the button is pressed, a request to change the light will be sent to the traffic light.
-inv TL3: isCalled(requestPass()) implies becomesTrue(self.light.requested = true)
-
-\end{lstcodeplainssm}
-
-Similarly, Listing~\ref{lst:ApplicationProperties} presents the TOCL+ constraints for the \textit{Application} system, focusing on lifecycle dependencies such as ensuring an application is loaded before execution. 
-
-\begin{lstcodeplainssm}{TOCL+ properties for Application} {lst:ApplicationProperties}
-context System
--- An application must be loaded before it is run
-inv safety1:
-    self.runningApps->notEmpty() implies
-    self.runningApps->forAll(app |
-        isCalled(run(app : Application)) implies
-        sometimePast isCalled(load(app : Application))
-    )
--- An application must eventually be installed after it is loaded
-inv safety2:
-    self.runningApps->notEmpty() implies
-    self.runningApps->forAll(app |
-        isCalled(run(app : Application)) implies
-        sometime isCalled(install()) since isCalled(load(app : Application))
-    )
--- Each application can be loaded at most once in the past
-inv safety3:
-    self.installedApps->notEmpty() implies
-    self.installedApps->forAll(app |
-        sometimePast isCalled(load(app : Application)) at most 1 times
-    )
--- Every loaded application must eventually be installed
-inv liveness:
-    self.loadedApps->notEmpty() implies
-    self.loadedApps->forAll(app |
-        sometime isCalled(install())
-    )
-
-context Application
--- Once an application becomes loaded, it must eventually become installed
-inv livenessBecomesTrue:
-    self.system.loadedApps->includes(self) implies
-    sometime becomesTrue(self.system.installedApps->includes(self))
-
-
-\end{lstcodeplainssm}
-
-Finally, Listing~\ref{lst:BankAccountProperties} illustrates the \textit{BankAccount} scenario, which highlights the capability of TOCL+ to handle bounded existence properties and immediate obligations. Specifically, it demonstrates how to restrict the frequency of an operation (e.g., limiting card issuance).
-
-\begin{lstcodeplainssm}{TOCL+ properties for BankAccount} {lst:BankAccountProperties}
-context BankAccount
--- If the account balance falls below zero (debt), it must eventually return to a positive state at some future point.
-inv Recovery: self.balance < 0 implies sometime (self.balance > 0)
-
--- The operation to assign a new card is restricted to occur at most three times throughout the system's execution.
-inv MaxCardIssuance: isCalled(assignNewCard()) at most 3 times
-
--- Immediate Response: Whenever the account balance transitions to a negative value (overdraft), a withdrawal operation (representing a penalty fee) must be invoked in the immediate next state.
-inv OverdraftPenalty: becomesTrue(self.balance < 0) implies next isCalled(withdraw())
-
-
-\end{lstcodeplainssm}
-\vspace{-1em}
-
-%-----------------------------
-\subsection{Translating TOCL+ Properties into OCL}
-%-----------------------------
-Table \ref{table:TOCLPlusOperators} illustrates the translation rules applied in Step~2 for our extended TOCL operators to the corresponding OCL constraints on the filmstrip model. The patterns use placeholders (in square brackets) that are instantiated during transformation: \texttt{[ContextSnapshot]} is the snapshot in which the property is evaluated; \texttt{[ContextObject]} is the object on which the property is evaluated; \texttt{[OpClassName]} is the class representing an operation call in the filmstrip model; \texttt{[ObjectClass]} is the class name of the current object.
-
-
-Listing~\ref{lst:toclTrafficLight} presents the resulting OCL constraints for the \textit{TrafficLight} case study.
-
-\begin{table}
-\caption{TOCL+ Operators and Events}
-\label{table:TOCLPlusOperators}
-\footnotesize
-\begin{tabular}{p{0.2cm} p{2cm} p{5.2cm}}
-\hline
-\textbf{No.} & \textbf{TOCL+ Expression} &\textbf{OCL Translation} \\ \hline
-1 & \texttt{isCalled(Op())} & \texttt{[OpClassName].allInstances()
-->exists(op | op.succ() = [ContextSnapshot])} \\ \hline
-2 & \texttt{isCalled
-(Op(param1, ..., paramn))}
-   & \texttt{[OpClassName].allInstances()
-   ->exists(op | op.succ() = [ContextSnapshot] and
-   (Set{op.param1.succ(ObjectClass)}
-   ->closure(p | p.succ(ObjectClass))
-   ->includes(param1) or Set{op.param1.pred(ObjectClass)}
-   ->closure(p | p.pred(ObjectClass))
-   ->includes(param1)) and ( ... )}
-   or
-   \texttt{(Set{op.paramn.succ(ObjectClass)}
-   ->closure(p | p.succ(ObjectClass))
-   ->includes(paramn) or Set{op.paramn.pred(ObjectClass)}
-   ->closure(p | p.pred(ObjectClass))
-   ->includes(paramn))} \\ \hline
-3 & \texttt{isCalled
-(Op())
-[at most | at least | ]  n times }
-   & \texttt{[OpClassName].allInstances()
-   ->select(op | op.succ() = [ContextSnapshot])->size() [<= | >= | =] n} \\ \hline
-4 & \texttt{isCalled
-(Op(param1, ..., paramn)) 
-[at most | at least | ] n times }
-   & \texttt{[OpClassName].allInstances()
-   ->select(op | op.succ() = [ContextSnapshot] and (Set{op.param1.succ[ObjectClass]}
-   ->closure(p | p.succ[ObjectClass])
-   ->includes(param1) or Set{op.param1.pred[ObjectClass]}
-   ->closure(p | p.pred[ObjectClass])
-   ->includes(param1)) and (...) and (Set{op.paramn.succ[ObjectClass]}
-   ->closure(p | p.succ[ObjectClass])
-   ->includes(paramn) or Set{op.paramn.pred[ObjectClass]}
-   ->closure(p | p.pred[ObjectClass])
-   ->includes(paramn)))->size() [<= | >= | =] n} \\ \hline
-5 & \texttt{becomesTrue(P)} 
-    & \texttt{let currentObject = [ContextSnapshot].
-    [ContextObject]->any(o | o.id = self.id) in
-    let previousObject = [ContextSnapshot].pred().
-    [ContextObject]->any(o | o.id = self.id) in 
-    not [previousObject |= P] 
-    and [currentObject |= P]} \\ \hline
-\end{tabular}
-\end{table}
-
-\vspace{0.3em}
-
-\begin{lstcodeplainssm}{OCL invariants generated from the example TrafficLight filmstrip model.} {lst:toclTrafficLight}
-context TrafficLight
-inv TL1: self.requested = true implies (let CS:Snapshot = self.snapshotTrafficLight in Set{CS}->closure(s | s.succ())->excluding(null)->exists(s | switchPedLight_TrafficLightOpC.allInstances()->exists(op | op.succ() = s)))
-
-inv TL2: switchPedLight_TrafficLightOpC.allInstances()->exists(op | op.succ() = self.snapshotTrafficLight) implies (let currentObject = self.snapshotTrafficLight.trafficLight->any(o | o.id = self.id) in let previousObject = self.snapshotTrafficLight.pred().trafficLight->any(o | o.id = self.id) in not (previousObject.pedLight = #Green) and (currentObject.pedLight = #Green))
-
-context Button
-inv TL3: requestPass_ButtonOpC.allInstances()->exists(op | op.succ() = self.snapshotButton) implies (let currentObject = self.snapshotButton.button->any(o | o.id = self.id) in let previousObject = self.snapshotButton.pred().button->any(o | o.id = self.id) in not (previousObject.light.requested = true) and (currentObject.light.requested = true))
-
-\end{lstcodeplainssm}
-
-Listing~\ref{lst:toclApplication} displays the translated constraints for the \textit{Application} system, which include translations for past operators and time intervals.
-\begin{lstcodeplainssm}{OCL invariants generated from the example Application filmstrip model.} {lst:toclApplication}
-context System
--- An application must be loaded before it is run
-inv safety1: self.runningApps->notEmpty() implies self.runningApps >forAll(app | (run_SystemOpC.allInstances()->exists(op | op.succ() = self.snapshotSystem and (Set{op.app.succApplication}->closure(p | p.succApplication)->includes(app) or Set{op.app.predApplication}->closure(p | p.predApplication)->includes(app)))) implies (let CS:Snapshot = self.snapshotSystem in Set{CS.pred()}->closure(s | s.pred())->exists(s | (load_SystemOpC.allInstances()->exists(op | op.succ() = s and (Set{op.app.succApplication}->closure(p | p.succApplication)->includes(app) or Set{op.app.predApplication}->closure(p | p.predApplication)->includes(app)))))))
--- An application must eventually be installed after it is loaded
-inv safety2: self.runningApps->notEmpty() implies self.runningApps->forAll(app | (run_SystemOpC.allInstances()->exists(op | op.succ() = self.snapshotSystem and (Set{op.app.succApplication}->closure(p | p.succApplication)->includes(app) or Set{op.app.predApplication}->closure(p | p.predApplication)->includes(app)))) implies (let CS:Snapshot = self.snapshotSystem in let PS:Set(Snapshot) = Set{CS.pred()}->closure(s | s.pred())->excluding(null) in let AllPSQ:Set(Snapshot) = PS->select(s |(load_SystemOpC.allInstances()->exists(op | op.succ() = s and (Set{op.app.succApplication}->closure(p | p.succApplication)->includes(app) or Set{op.app.predApplication}->closure(p | p.predApplication)->includes(app))))) in let PSQ:Snapshot = AllPSQ->any(s | Set{s}->closure(s | s.pred())->includesAll(AllPSQ)) in let PSP:Set(Snapshot) = PS->select(s | install_SystemOpC.allInstances()->exists(op | op.succ() = s)) in if PSQ.isDefined() then (Set{PSQ}->closure(s | s.succ())->excluding(null)->intersection(PS)->exists(s | PSP->includes(s))) else false endif))
--- Each application can be loaded at most once in the past
-inv safety3: self.installedApps->notEmpty() implies self.installedApps->forAll(app | (let CS:Snapshot = self.snapshotSystem in Set{CS.pred()}->closure(s | s.pred())->exists(s | (load_SystemOpC.allInstances()->select(op | op.succ() = s and (Set{op.app.succApplication}->closure(p | p.succApplication)->includes(app) or Set{op.app.predApplication}->closure(p | p.predApplication)->includes(app)))->size() <= 1))))
--- Every loaded application must eventually be installed
-inv liveness: self.loadedApps->notEmpty() implies self.loadedApps->forAll(app | (let CS:Snapshot = self.snapshotSystem in Set{CS}->closure(s | s.succ())->excluding(null)->exists(s | install_SystemOpC.allInstances()->exists(op | op.succ() = s))))
-
-context Application
--- Once an application becomes loaded, it must eventually become installed
-inv livenessBecomesTrue: self.system.loadedApps->includes(self) implies (let CS:Snapshot = self.snapshotApplication in Set{CS}->closure(s | s.succ())->excluding(null)->exists(s | (let currentObject = s.application->any(o | o.id = self.id) in let previousObject = s.pred().application->any(o | o.id = self.id) in not (previousObject.system.installedApps->includes(previousObject)) and (currentObject.system.installedApps->includes(currentObject)))))
-
-
-\end{lstcodeplainssm}
-
-Finally, Listing~\ref{lst:toclBankAccount} shows the generated OCL constraints for the \textit{BankAccount} model, corresponding to the bounded existence properties defined in TOCL+.
-\begin{lstcodeplainssm}{OCL invariants generated from the example BankAccount filmstrip model.} {lst:toclBankAccount}
-context BankAccount
-    -- If the account balance falls below zero (debt), it must eventually return to a positive state at some future point.
-    inv Recovery: self.balance < 0 implies (let CS:Snapshot = self.snapshotBankAccount in Set{CS}->closure(s | s.succ())->excluding(null)->exists(s | (s.bankAccount->any(o | self.id = o.id).balance > 0)))
-
-    -- The operation to assign a new card is restricted to occur at most three times throughout the system's execution.
-    inv MaxCardIssuance: assignNewCard_BankAccountOpC.allInstances()->select(op | op.succ() = self.snapshotBankAccount)->size() <= 3
-
-    -- Immediate Response: Whenever the account balance transitions to a negative value (overdraft), a withdrawal operation (representing a penalty fee) must be invoked in the immediate next state.
-    inv OverdraftPenalty: (let currentObject = self.snapshotBankAccount.bankAccount->any(o | o.id = self.id) in let previousObject = self.snapshotBankAccount.pred().bankAccount->any(o | o.id = self.id) in not (previousObject.balance < 0) and (currentObject.balance < 0)) implies (let CS:Snapshot = self.snapshotBankAccount in withdraw_BankAccountOpC.allInstances()->exists(op | op.succ() = self.snapshotBankAccount.succ()))
-
-
-\end{lstcodeplainssm}
-\vspace{1em}
-
-\begin{algorithm}
-\small % hoặc \footnotesize, \scriptsize để đổi cỡ chữ
-\ttfamily 
-\caption{Verification of UML/TOCL+ application models}
-\label{alg::toclToOcl}
-\KwIn{An UML/TOCL+ Application Model}
-\KwOut{SAT(witness object diagram) | UNSAT}
-
-Transform the application model into a filmstrip model using the USE Filmstrip plugin\;
-Translate TOCL+ constraints into the corresponding OCL constraints over the transformed filmstrip model by applying a set of translation rules on TOCL+ constraints\;
-Verify the filmstrip model with the translated OCL constraints and additional constraints by model finding\;
-
-\If{a model (object diagram) is found}{
-  \Return SATISFIABLE with the object diagram\;
-}
-\Else{
-  \Return UNSATISFIABLE\;
-}
-\end{algorithm}
-\vspace{-1em}
+\begin{definition}[Guarded properties]
+\label{def:guarded-properties}
+Every $a_i$ may carry OCL booleans $\mathit{pre}(a_i)$, $\mathit{post}(a_i)$; unlike $\mathit{effect}$, these do not alter $\rightarrow$, but are evaluated by Part D's mechanism, $\mathit{pre}(a_i)$ at $\Sigma_{i-1}$ and $\mathit{post}(a_i)$ at $\Sigma_i$.
+\end{definition}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Verifying TOCL+ Properties}
+\subsection{Checking i* and BPMN over State Transitions}
+\label{sec:checking}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Algorithm~\ref{alg::toclToOcl} outlines the process of verifying TOCL+ constraints by determining whether a witness model instance exists that satisfies all specified conditions. This task can be carried out using UML/OCL model finders, such as the USE Model Validator~\cite{kuhlmannUMLOCLRelational2012} or UMLtoCSP~\cite{cabot2014verification}. These tools translate the structural and behavioral aspects of the model, along with its constraints, into relational logic~\cite{torlakKodkodRelationalModel2007}, and then rely on constraint solvers to systematically explore a user-defined finite search space for object diagrams that fulfill all invariants. A key step in this process is defining appropriate lower and upper bounds for objects, associations, and attribute values, as this greatly influences the efficiency of model finding.
+As in Definition~\ref{def:guarded-properties}, every i* intentional element carries an OCL guard, evaluated over $\Gamma_B$ via the goal marking $\mu_{\Sigma_i}$ of Definition~\ref{def:goal-marking}, one $\mu_{\Sigma_i}$ per checkpoint.
+
+Formally, the \texttt{.iscn} oracle (Section~\ref{sec:istar}) is a partial function of the same type as a goal marking, $\mathit{oracle} : \mathit{IntentionalElement} \times \mathit{ActorInstance} \rightharpoonup \mathbb{B}$, defined only on the elements/instances it observes; an instance resolves first by exact \texttt{.aol} role-instance identity, else by an \texttt{.aol} agent identity resolving to exactly one role instance, rejecting ambiguous agents.
+
+With $\Gamma_B$, $\mathit{pre}/\mathit{post}$, $\mu_\Sigma$, and $\mathit{oracle}$ all defined, the four failure lists are:
+\begin{align*}
+\mathit{aclFailures} &= \{\, i : \Sigma_i \not\models \mathit{Inv},\ \text{some invariant } \mathit{Inv},\ i \text{ minimal} \,\}, \\
+\mathit{bpmnFailures} &= \{\, a_i : \mathit{pre}(a_i)(\Sigma_{i-1}) = \mathit{false} \,\} \cup \{\, a_i : \mathit{post}(a_i)(\Sigma_i) = \mathit{false} \,\}, \\
+\mathit{goalFailures} &= \{\, (g,t') \in \mathrm{dom}(\mu_{\Sigma_n}) : g \text{ a root goal}, \mu_{\Sigma_n}(g,t') = \mathit{false} \,\}, \\
+\mathit{oracleFailures} &= \{\, (e,t') \in \mathrm{dom}(\mathit{oracle}) \cap \mathrm{dom}(\mu_{\Sigma_n}) : \mu_{\Sigma_n}(e,t') \ne \mathit{oracle}(e,t') \,\}.
+\end{align*}
+$\mathit{aclFailures}$ is \emph{fail-fast}, reporting only the minimal violating $i$, since later $\Sigma_j$ may already be invalid; a non-empty result already makes the trace non-conformant before $\mathit{goalFailures}$/$\mathit{oracleFailures}$ are computed. $\mathit{bpmnFailures}$ collects every independent violation, likewise non-conformant on its own. $\mathit{goalFailures}$ and $\mathit{oracleFailures}$ are evaluated once, at $\Sigma_n$, only after a clean replay; restricting both to $\mathrm{dom}(\mu_{\Sigma_n})$ (Definition~\ref{def:goal-marking}) skips any actor instance absent from the trace automatically, rather than counting it as a failure.
+
+Three situations from Section~\ref{subsect:umlocl} show why four separate lists matter. \emph{ACL}: if one agent holds both \texttt{Secretary} and \texttt{Participant} in the same \texttt{MeetingUnit}, neither BPMN nor i* notices, since each checks its own actor type independently, but $\mathit{aclFailures}$ flags it immediately, since \texttt{Secretary~<->~Participant} is never declared compatible. \emph{Goal}: if the trace stops right after \texttt{announceMeeting}, before some \texttt{Participant} executes \texttt{participate}, $\mathit{bpmnFailures} = \emptyset$, yet $\mu_{\Sigma_n}(\texttt{HaveMeetingOrganized}, \cdot) = \mathit{false}$ since the root goal also needs \texttt{MeetingAttendedByParticipant}, so $\mathit{goalFailures} \ne \emptyset$. \emph{Oracle}: if a \texttt{Participant} with no calendar is wrongly marked Fulfilled on \texttt{CollectFromCalendar} instead of the oracle's Pending, an authoring slip that still lets every root goal reach \texttt{true} through the phone path, $\mathit{goalFailures} = \emptyset$ but $\mathit{oracleFailures} \ne \emptyset$. $\mathit{bpmnFailures}$ alone would have passed the second case, and $\mathit{goalFailures}$ alone the third.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Tool Support and Experiments}
+\section{Tool Support}
 \label{sect:toolSupport}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Figure~\ref{fig:ToolSupport} illustrates the architecture of the TOCL+ support tool as an integrated verification framework within the USE environment. The system separates specification processing from verification logic. Model and temporal constraint files (.use and .tocl) are loaded into USE, where the TOCL+ plugin performs two main tasks: It first converts the application model to a filmstrip-based representation using the Filmstrip plugin, then translates temporal specifications from the .tocl file into OCL invariants via an ANTLR4-based parser and rule engine. These invariants are merged with the filmstrip model to generate the output model file.
+The method is implemented as a USE plugin, adding i*, BPMN, and ACL each as a compiler/metamodel/view triple following USE's own convention for a new modeling language, with OCL embedded directly in i*.
 
-\begin{figure}[htb]
-\vspace{-.5em}
-\begin{center}
-	\includegraphics[scale=0.6]{backup/version0.1/images/TOCL+Architecture.png}
-        \vspace{-0.3em}
-        \begin{center}	
-            \caption{ Support tool architecture and workflow.} 	
-            \label{fig:ToolSupport}
-        \end{center}
-        \vspace{-2.7em}
-\end{center}
-\end{figure}
+Two checking modes are exposed. The \emph{batch mode} runs the pipeline of Section~\ref{sect:overview} once over the five inputs of Figure~\ref{fig:overview} and reports the four failure lists, suited to answering ``is the system conformant, and where is the first problem''. The \emph{step-by-step debugger} instead replays the checkpoint trace one activity at a time, coloring the i* diagram by goal/task status (\texttt{FULFILLED}/\texttt{PENDING}/violated/\texttt{UNKNOWN}) in sync with the BPMN diagram, so a user sees the exact point and diagram where the state diverges from expectation, rather than a text log of failures.
 
-Building on this general approach, we leverage the USE Model Validator to check the satisfiability of the translated constraints. To enable model finding, the search space configuration must be defined. Listing~\ref{lst:trafficLightConfig} shows the configuration for the \textit{TrafficLight} model, specifying bounds for integer values and class instances.
-
-\begin{lstcodeplainssm}{A part of the configuration file of \textit{TrafficLight}}{lst:trafficLightConfig}[h]
-
-[default]                       # Button
-Integer_min = 0                 Button_min = 4
-Integer_max = 100               Button_max = 4
-
-String_max = 10                 # TrafficLight
-                                TrafficLight_min = 4
-Real_min = -2.0                 TrafficLight_max = 4
-Real_max = 2.0
-Real_step = 0.5                 # requestPass_ButtonOpC
-                                requestPass_ButtonOpC_min = 1
-# Snapshot                      requestPass_ButtonOpC_max = 1
-Snapshot_min = 4                ... 
-Snapshot_max = 4
-
-# Filmstrip
-Filmstrip_min = 3
-Filmstrip_max = 3
-\end{lstcodeplainssm}
-
-Similarly, Listing~\ref{lst:applicationConfig} outlines the search bounds for the \textit{Application} system. This configuration ensures that the validator explores a sufficient number of snapshots to capture the complete lifecycle of an application, from loading to installation.
-\begin{lstcodeplainssm}{A part of the configuration file of \textit{Application}}{lst:applicationConfig}[h]
-
-[default]                       # load_SystemOpC
-Integer_min = 0                 load_SystemOpC_min = 1
-Integer_max = 100               load_SystemOpC_max = 1
-
-String_max = 10                 # install_SystemOpC
-                                install_SystemOpC_min = 1
-Real_min = -2.0                 install_SystemOpC_max = 1
-Real_max = 2.0
-Real_step = 0.5                 # run_SystemOpC
-                                run_SystemOpC_min = 0
-# Snapshot                      run_SystemOpC_max = 0
-Snapshot_min = 3                 
-Snapshot_max = 3                # stop_SystemOpC
-                                stop_SystemOpC_min = 0
-# Filmstrip                     stop_SystemOpC_max = 0
-Filmstrip_min = 2               
-Filmstrip_max = 2               # SnapshotSystem
-                                SnapshotSystem_min = 3
-# System                        SnapshotSystem_max = 3
-System_min = 3
-System_max = 3                  # SnapshotApplication
-                                SnapshotApplication_min = 6
-# Application                   SnapshotApplication_max = 6
-Application_min = 6
-Application_max = 6
-\end{lstcodeplainssm}
-
-Finally, Listing~\ref{lst:bankAccountConfig} presents the configuration for the \textit{BankAccount} case study. It defines the bounds for account operations such as deposits and withdrawals, as well as limits for card issuance to verify the bounded existence properties.
-\begin{lstcodeplainssm}{A part of the configuration file of \textit{BankAccount}}{lst:bankAccountConfig}[h]
-
-[default]                    # assignNewCard_BankAccountOpC
-Integer_min = 0              assignNewCard_BankAccountOpC_min = 1
-Integer_max = 100            assignNewCard_BankAccountOpC_max = 1
-
-String_max = 10              # deposit_BankAccountOpC
-                             deposit_BankAccountOpC_min = 0
-Real_min = -2.0              deposit_BankAccountOpC_max = 0
-Real_max = 2.0
-Real_step = 0.5              # pay_DebitCardOpC
-                             pay_DebitCardOpC_min = 0
-# Snapshot                   pay_DebitCardOpC_max = 0
-Snapshot_min = 2                 
-Snapshot_max = 2             # withdraw_BankAccountOpC
-                             withdraw_BankAccountOpC_min = 0
-# Filmstrip                  withdraw_BankAccountOpC_max = 0
-Filmstrip_min = 1               
-Filmstrip_max = 1               
-                                
-# BankAccount                        
-BankAccount_min = 2
-BankAccount_max = 2             
-                                
-# DebitCard                   
-DebitCard_min = 1
-DebitCard_max = 1
-\end{lstcodeplainssm}
-
-This output, along with a configuration file defining search bounds (user is also able to configure the search space manually), is fed into the Model Validator. The validator automatically explores the model’s state space, checks temporal constraints, and generates valid model instances as evidence when the constraints are satisfied.
-
-To demonstrate the framework’s effectiveness, we applied it to the \textit{TrafficLight} case study. Figure~\ref{fig:TOCL+validator} presents a valid object diagram generated by the tool for the filmstrip model displayed in Figure~\ref{fig:filmstrip-example} with the search bounds shown in Listing~\ref{lst:trafficLightConfig}.
-
-\begin{figure}[htbp]
-\vspace{-.5em}
-\begin{center}
-	\includegraphics[scale=0.3]{backup/version0.1/images/TOCL+validator.png}
-            \vspace{-0.3em}
-		\begin{center}	
-			\caption{An object diagram found by USE Model Validator} 	
-			\label{fig:TOCL+validator}
-		\end{center}
-        \vspace{-2.7em}
-    \end{center}
-\end{figure} 
-
-In the same vein, Figure~\ref{fig:AppValidator} depicts a valid execution trace found for the \textit{Application} system, validating the safety and liveness properties defined in the previous section.
-
-\begin{figure}[htbp]
-\vspace{-.5em}
-\begin{center}
-	\includegraphics[scale=0.4]{backup/version0.1/images/App_filmstrip.png}
-            \vspace{-0.3em}
-		\begin{center}	
-			\caption{An object diagram found by USE Model Validator} 	
-			\label{fig:AppValidator}
-		\end{center}
-        \vspace{-2.7em}
-    \end{center}
-\end{figure} 
-
+The tool has been applied to \textit{MeetingScheduler}, which exercises the ACL role-compatibility check, and to an \textit{Incident Response} process with no role-compatibility constraints; both run through the same pipeline unchanged, confirming feasibility with and without organizational-structure constraints.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Evaluation}
 \label{sect:evaluative}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-To position our approach, we compare TOCL+ with two major classes of state-of-the-art verification frameworks. The first includes traditional temporal model checkers such as Spin~\cite{holzmann2004spin} and NuSMV~\cite{cimatti2002nusmv}, which provide exhaustive verification of low-level temporal logics like LTL and CTL. Although highly powerful, these tools rely on distinct specification formalisms (e.g., Promela~\cite{holzmann2004spin}, SMV~\cite{cimatti2002nusmv}), forcing designers to manually translate UML/OCL models into external representations. This translation process introduces a semantic gap between design and verification artifacts, is prone to errors, and requires substantial expertise in temporal logic—posing a steep learning curve for MDE practitioners. Moreover, expressing high-level, domain-oriented properties, such as “an operation is called at most three times,” is cumbersome in LTL and often requires explicit encoding of auxiliary state variables, reducing clarity and maintainability.
+RQ1 is answered by the ACL, extended i*, and simplified BPMN metamodels (Sections~\ref{sec:acl-language}--\ref{sec:bpmn}); RQ2 by the state-transition semantics and checking algorithm (Sections~\ref{sec:bpmn-semantics}--\ref{sec:checking}) and the tool of Section~\ref{sect:toolSupport}. The rest of this section positions these answers against the three representative techniques of Section~\ref{sect:intro}.
 
-The second class comprises UML/OCL-based verification tools such as UMLtoCSP~\cite{cabot2014verification}, which employ constraint programming or relational logic. While these approaches preserve the UML/OCL semantics, they generally lack native mechanisms to express temporal relationships across multiple states or capture operation-call events, thereby limiting their expressiveness for dynamic system behavior.
+Ghose and Koliadis's~\cite{ghose2007validation} Description-Logics classification is fully automated and decidable, but reasons at a single point in time and cannot represent execution order (Section~\ref{sect:relatedWork}). GoalBPM~\cite{koliadis2006goalbpm} tracks effects along an execution trajectory, closer in spirit to the checkpoint trace here, but the whole pipeline is manual, whereas this method infers checkpoints and snapshots automatically from OCL already in the models. Caballero-Villalobos et al.~\cite{caballero2026alig} offer the strongest guarantee, a verdict holding for every reachable execution rather than one trace; this method trades that guarantee for running directly on existing USE/SOIL infrastructure, and, unlike all three, adds organizational-role constraints none of them can express.
 
-Standard OCL is unable to capture temporal dependencies, as it only evaluates invariants over a single system state. A liveness property like inv TL1: self.requested = true implies sometime isCalled(switchPedLight()) cannot be represented. Our TOCL+ approach bridges this exact expressiveness gap. By extending OCL with high-level operators such as \textit{sometime}, \textit{isCalled}, and \textit{becomesTrue}, it enables designers to specify complex temporal and event-driven properties directly within the UML/OCL environment. Implemented as a plugin for the USE tool, TOCL+ performs verification through bounded model finding, eliminating the need for external model transformation. Consequently, while traditional model checkers like Spin and NuSMV achieve higher scalability for pure logical verification, TOCL+  prioritizes accessibility, practical efficiency, and native consistency with MDE workflows, making temporal property verification both expressive and usable in real-world modeling environments.
+None of the three would catch the \texttt{Secretary}/\texttt{Participant} conflict of Section~\ref{sec:acl-language} on \textit{MeetingScheduler}, not from individual weakness but because their input languages have no concept for a role-compatibility constraint. The proposed method does not supersede them on the goal--process dimension; it adds an orthogonal organizational dimension, at the cost of checking one concrete trace instead of every reachable one (Section~\ref{sect:discussion}).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion}
 \label{sect:discussion}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Although $TOCL+$ demonstrates the feasibility of integrating temporal property verification into a standard UML/OCL environment, the approach exhibits several important limitations concerning expressiveness, scalability, and the underlying verification assumptions.
+\subsection{Separating four kinds of failure}
+Splitting the result into \texttt{aclFailures}, \texttt{bpmnFailures}, \texttt{goalFailures}, and \texttt{oracleFailures}, rather than one verdict, mirrors who actually fixes each: an organization's role-compatibility policy, a BPMN redesign, and a business goal change are usually made by different people at different times, so routing failures by kind is faster than one combined verdict. When a single checkpoint violates two lists at once, for example an agent holding an incompatible role that also breaks an activity precondition, which is reported first is currently just an implementation order, ACL invariants fail-fast before BPMN pre/postconditions, not necessarily the right business priority.
 
-First, the filmstrip abstraction limits temporal expressiveness. By discretizing system evolution into ordered snapshots, the current approach cannot natively express quantitative real-time requirements. For example, a constraint such as "an operation must be invoked within five seconds" is not supported. Future work could address this by extending the filmstrip metamodel with explicit timestamp attributes, allowing time and duration constraints to be encoded as standard OCL comparisons.
+\subsection{One trace, not every trace}
+Checking one concrete SOIL scenario answers whether that scenario is consistent, not whether every scenario is, the stronger guarantee that weak/strong compliance in Caballero-Villalobos et al.~\cite{caballero2026alig} gives for the goal--process pair alone. This is deliberate: it trades that generality for running immediately on the existing USE/SOIL engine, instead of building and independently verifying a new marking-propagation semantics from scratch. Because the checkpoint compiler takes the scenario as an ordinary parameter, the pipeline could be re-run over several scenarios to raise coverage, though without the same formal guarantee as full state-space exploration.
 
-Second, the reliance on bounded model finding impacts scalability. Translating $TOCL+$ into standard OCL and applying model finding exposes the approach to state-space explosion as the filmstrip depth or model complexity increases. This limitation is coupled with the usability challenge of manually configuring search bounds—a process requiring expertise, as restrictive bounds can conceal counterexamples while permissive bounds increase resource usage. Consequently, $TOCL+$ is intended for early fault detection within bounded scenarios, not as a replacement for high-performance, exhaustive model checkers.
-
-Finally, the method's validity depends entirely on the translation fidelity. The soundness and completeness of the verification results rely on the correctness of the $TOCL+$ to OCL translation rules and the fidelity of the underlying model finder. To strengthen internal validity, these translation rules must be formally specified and independently validated. We also plan to publish all implementation artifacts and benchmark suites to enable independent replication, which will increase confidence in the method's generality and robustness.
-
-Taken together, these limitations identify a focused research agenda: extending the filmstrip model for real-time constraints, quantitatively benchmarking scalability, automating search bound selection, and formally validating the translation toolchain.
+\subsection{Limitations}
+\emph{Coverage.} A single topological sort, not gateway semantics, fixes activity order, so a branch off that order is simply not exercised; a \texttt{PASS} is a statement about the trace checked, not every trace. \emph{Scenario quality.} An under-populated SOIL scenario can let the root-goal check silently skip actors absent from the trace. \emph{Fail-fast masking.} A second ACL violation occurring after the first may only surface on a subsequent run. \emph{Pairwise compatibility only.} The compatibility rule handles role pairs, not higher-arity constraints such as ``at most two of three roles at once''. \emph{Evaluation scope.} The evidence rests on two case studies; broader validation and a running-time measurement are left for future work.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related work}
 \label{sect:relatedWork}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Various methods have been proposed to address the challenge of specifying and verifying temporal properties in UML models. Al Lail et al \cite{ailTPV2025} introduced a technique similar to ours, converting application models into Snapshot Transition Models (STM) and using TOCL for specification. However, their approach still inherits the limitations of TOCL when dealing with event-based properties. Kanso and Taha \cite{kanso2014specification} and Dadeau et al. \cite{dadeauTemporalPattern2019} explored pattern-based specification methods, implementing these patterns in Eclipse, but without providing verification capabilities or focusing on model-based testing instead of comprehensive verification. Baresi et al. \cite{baresiMADES2015} presented the MADES approach, which integrates multiple heavyweight formalisms for verifying embedded systems but requires a steep learning curve and advanced mathematical skills, making it difficult for many UML designers. Similarly, Combemale et al. \cite{combemalrPropertyDriven2008} used a temporal extension of OCL translated into Petri nets, which necessitates designers learning additional formalisms to interpret the verification results. Meyers et al. \cite{Meyers2014} supported temporal property verification in domain-specific modeling through a set of five languages, relying on LTL and the Spin model checker, creating a separation between specification and verification languages. Hilken and Gogolla \cite{hilken2016} introduced a filmstripping approach similar to our verification technique, but without supporting high-level temporal property specification. In contrast, our approach combines specification and verification within the well-known OCL context, removing the need for learning additional formalisms.
+A first line of work establishes a \emph{structural} correspondence, deciding once, over the models as written, whether a goal model's decomposition matches a control-flow pattern of the process. Ghose and Koliadis~\cite{ghose2007validation} translate a GRL goal model and a BPMN process into Description Logics and classify each workflow-pattern/intentional-relation pair with a Pellet reasoner, later extended to choreographies~\cite{groner2014vadl}; Guizzardi et al.~\cite{guizzardi2014vemi} assert the same correspondence between an i* metamodel and a model-driven-development metamodel, flagging unmappable elements before a transformation runs; Eshuis and Ghose~\cite{eshuis2021consistency} assert it between a goal model and a declarative case-management schema.
+%Roelens et al.~\cite{roelens2019pga} assert the same correspondence but report it as a continuous score rather than a pass/fail verdict, heat-mapping a strategy-to-process value hierarchy.
+The limitation is structural, not behavioral: a process can satisfy every correspondence rule and still, once executed, never reach the root goal, a failure none of these techniques is positioned to observe.
+
+A second line of work asserts a \emph{behavioral} claim instead, giving the process an execution semantics and checking whether goal satisfaction holds along what it actually does. GoalBPM~\cite{koliadis2006goalbpm} checks one hand-extracted trajectory against KAOS temporal patterns; Dang et al.~\cite{dang2010jucs} derive the same single-trace claim automatically, synchronizing two scenarios via a triple graph grammar and OCL, the framework this paper builds on; Caballero-Villalobos et al.~\cite{caballero2026alig} check every reachable execution instead, translating both models into a shared transition system and deciding weak or strong compliance by two-way graph traversal, with proofs of correctness and completeness.
+%Guizzardi and Reis~\cite{guizzardi2012align} check one trajectory with a continuous verdict instead, propagating a satisfaction score along classified execution paths.
+%A separate cluster keeps this same behavioral machinery but drops the structured goal model entirely, checking a process against a contract~\cite{governatori2006compliance}, a regulation~\cite{ghose2007auditing}, an LTL pattern~\cite{awad2009visualization}, or a real log~\cite{aalst2005conformance} instead.
+The limitation scales with the claim: a single trace says nothing about the branches never taken, and the exhaustive claim forces even a branch never meant to reach the goal, such as a rejected request, to still count as compliant, which the authors themselves call business-irrational.
+
+Neither line's input language models organizational role, so a process can pass every structural or behavioral check above and still let one agent occupy two roles that were never meant to coexist. Section~\ref{sect:overview} closes this gap: it composes role-compatibility invariants, specified in ACL and grounded in MOISE~\cite{hubner2002moise} (Section~\ref{sec:acl-language}), into the same checkpoint trace that already carries the automatic single-trace claim of Dang et al.~\cite{dang2010jucs} and the structural-correspondence claim of Guizzardi et al.~\cite{guizzardi2014vemi}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
 \label{sect:conclusion}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-This paper has presented a comprehensive approach for verifying temporal properties in model-driven engineering environments, with a particular focus on UML/OCL models. This research encompasses three core contributions. First, it introduces two time-determining concepts that extend the TOCL syntax, thereby enhancing the expressiveness and verification capabilities for temporal constraints in UML/OCL models. Second, a transformer from TOCL+ to OCL has been developed, allowing temporal specifications to be directly incorporated into existing verification tools. Third, a practical verification tool
-has been implemented and demonstrated, evidencing the
-effectiveness and applicability of the proposed approach
-through concrete scenarios.
+This paper has presented ACL, an organizational structure language, together with formal state-based semantics for ACL, an extended i*, and a simplified BPMN that let all three be checked together over a single checkpoint trace on one USE/OCL object system. This work makes three contributions. First, each of the three languages is given a metamodel, a concrete instance-level companion, and formal semantics, system-marking validity for ACL, goal marking for i*, checkpoint-trace execution for BPMN, all sharing one object system. Second, a checking mechanism evaluates ACL invariants, BPMN pre/postconditions, and i* goal satisfaction over one checkpoint trace derived from a concrete execution scenario, returning four independently owned diagnostics rather than a single verdict. Third, a plugin integrated into the USE environment supports both a batch checking mode and a step-by-step visual debugger.
 
-% By integrating the USE Validator with the TOCL+ and Filmstrip plugins, the proposed framework enables systematic and automated analysis of time-dependent behaviors and state transitions. The introduction of two novel time-determining concepts, the development of an automated converter from TOCL+ to OCL, and the implementation of a practical verification tool collectively represent significant advancements in the expressiveness and applicability of temporal constraint validation.
-
-Through concrete scenarios such as the \textit{TrafficLight} example, the effectiveness of the method has been demonstrated, offering enhanced traceability and transparency in the verification process. Despite certain limitations regarding configuration management and the expressiveness of temporal logic, the results establish a robust and extensible foundation for future research and tool development. Subsequent work may further refine the framework by supporting more sophisticated temporal constraints and improving automation, thereby advancing the practical utility of temporal property verification in complex software systems.
+Through the \textit{MeetingScheduler} case study, the method has been shown to detect a role-compatibility violation that neither an i*-only nor a BPMN-only check can see, while an incident-response case study confirms the pipeline is equally applicable to models without organizational-structure constraints. As discussed in Section~\ref{sect:discussion}, the method checks a single concrete execution trace rather than every reachable one, and its compatibility rule currently handles role pairs rather than higher-arity constraints. Future work includes re-running the pipeline over multiple scenarios to increase coverage, extending compatibility constraints beyond pairs of roles, and a broader empirical evaluation across the additional case studies already available in the project, together with a measurement of running time as a function of scenario size.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \balance
 %\vspace{-0.5em}
 \bibliographystyle{IEEEtran}
-\bibliography{ref}
+\bibliography{references}
 \end{document}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

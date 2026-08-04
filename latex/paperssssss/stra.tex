@@ -1,0 +1,643 @@
+Author Version
+Stra2Bis: a Model-Driven Method for Aligning
+Business Strategy and Business Processes
+Rene Noel1,2[0000−0002−3652−4645], Jose Ignacio Panach3[0000−0002−7043−6227]
+,
+Marcela Ruiz4[0000−0002−0592−1779], and Oscar Pastor1[0000−0002−1320−8471]
+1 PROS-VRAIN: Valencian Research Institute for Artificial Intelligence, Universitat
+Polit`ecnica de Val`encia, Val`encia, Spain Valencia, Spain
+{rnoel@vrain.upv.es, opastor@dsic.upv.es}
+2 Escuela de Ingenier´ıa Inform´atica, Universidad de Valpara´ıso, Valpara´ıso, Chile
+3 Escola T`ecnica Superior d’Enginyeria, Universitat de Val`encia, Val`encia, Spain
+{joigpana@uv.es}
+4 Z¨urich University of Applied Sciences, Winterthur, Switzerland
+{marcela.ruiz@zhaw.ch}
+Abstract. MDA-based initiatives for software development have included computation-independent models to align information system models with business knowledge which is important in the development process. One source of business knowledge is the business strategy, which,
+traditionally, has had a long-term perspective; changes in the organisational structure and their high-level ends and means were less frequent
+and arguably not relevant for software development. However, organisations that aim to accelerate their software development cycles define
+their business strategy and reconfigure their structure on a short-term,
+continuous basis, fusing, splitting and creating as independent as possible
+organisation units. These changes directly affect the business processes
+and the design of software components of the organisation. Based on this
+approach to business strategy, we propose Stra2Bis, a method for designing strategically aligned business processes in an MDA-based context.
+Stra2Bis proposes a business strategy modelling step when redesigning
+business processes and three transformation guidelines to support the
+analysis of the alignment of processes with the organisational structure
+and the measurement of the units’ outcomes. We discussed the effect of
+the guidelines on the software design with five professionals who supported the proposal’s feasibility and usefulness.
+Keywords: model-driven architecture · business process · business strategy
+1 Introduction
+The Model-Driven Architecture (MDA) [28] approach has been used for designing and developing information systems to ensure that the software products fulfil the business requirements. Computation-independent models (CIM)
+in MDA-based initiatives have been widely used to specify the system’s business
+Author Version
+2 R. Noel et al.
+requirements, mainly in terms of stakeholder’s goals, business processes and use
+cases [14]. Other high-level business concepts have been included less frequently
+at the CIM level [5], despite their usefulness for helping software developers make
+the most of the business knowledge.
+One important source of business knowledge is business strategy, which addresses high-level organisational ends and the means to achieve them [21]. Traditionally, business strategy have had a long-term perspective. Suppose an organisation decides to fuse two business areas. In that case, it requires a considerable
+effort to re-design the organisational structure, processes, and systems and several years for implementation. This drives the need for analysing competing
+goals from different stakeholders across the organisation and aligning business
+processes and their supporting information systems, which has been addressed
+by goal modelling frameworks and included in MDA-based methods [1,5,19,22].
+However, organisations whose value offer depends on software [11,16] (also
+called software-centric organisations or digital enterprises) have a different approach to business strategy and alignment. Forsgren et al. [11] found that independent, cross-disciplinary organisation units or teams yield loosely coupled
+systems, which improve software development performance and scalability. Most
+of the agile software development frameworks have adopted this approach [26,20],
+which is based on the principle that organisations replicate their communication
+structure to everything they design, following Conway’s Law [4]. Inverse Conway Manoeuvre [11] is an approach for evolving the organisational structure, so
+business architecture matches the desired system architecture. Software-centric
+organisations continuously reconfigure their structure to foster the independence
+of their teams while carefully managing their dependencies [2]. The organisation
+structure design sets requirements for the design of business processes and the
+information systems that support them, which translates to more efficient software development delivery [11]. Since organisations need to adjust the strategy
+continuously, it is necessary to measure well-defined, customer-centred objectives
+[6,16], which also sets requirements for business processes and information systems. Also, broadly adopted software design techniques take a strategic approach
+for separating business domains [10] and for designing microservices [33].
+From the above practices, we infer the need to include business strategy information in software development methods. Particularly, we focus on information about organisation units, their dependencies, and their associated strategic
+objectives. While most of the cited works also address other strategic level concerns such as portfolio managing, governance, and capability development, they
+arguably do not affect the software’s requirements.
+The scope of business strategy is broad, and has been mostly conceptualised
+by enterprise modelling frameworks. Archimate [30], through its strategy elements, supports defining the resources, capabilities, and courses of action to
+achieve the organisation’s goals, while its motivation elements permit modelling
+the strategy drivers, goals, and outcomes. In the context of the alignment approach of our interest, one relevant concern that Archimate does not address is
+the organisational structure. Similarly, the Business Motivation Model (BMM)
+Author Version
+Stra2Bis: A Model-Driven Method for Strategic Alignment 3
+[29] addresses business strategy concepts but also lacks organisational structure
+concepts. Importantly, BMM coincides with agile operation models [16] in addressing the more dynamic aspects of business strategy, e.g., defining strategies,
+goals, and more detailed tactics and objectives to address external influences,
+leaving more long-term concerns such as capabilities and resources out of scope.
+In previous work, we proposed LiteStrat, a business strategy modelling method
+designed for the specific requirements of capturing organisation structure and
+strategic ends and means jointly. LiteStrat provides a modelling language based
+on Archimate, BMM, and reuses and adapts concepts from i* to represent roles,
+organisation units, and participation relationships. LiteStrat follows a modelling
+approach similar to i*, which has been widely used for the strategic alignment
+in MDA-based methods [25,12,27]
+This paper presents Stra2Bis, a method that integrates business strategy
+and business process models following the alignment approach of software-centric
+organisations. Stra2Bis proposes 1. Modelling a business strategy scenario before
+business process design, and 2. Three transformation guidelines from the business
+strategy model to the business process model, designed to enable the softwarecentric organisation’s approach to alignment and, thus, to software design.
+The expected benefits are to support the design of independent processes for
+organisational units and to explicitly address the success measurement requirements of the strategy at the business process level. These improvements at the
+CIM level are expected to help design loosely coupled and strategically aligned
+systems at the PIM level, improving the efficiency of the software development
+process. We conducted a first exploratory evaluation through a focus group with
+software development practitioners, who confirmed the proposal’s value.
+2 Related Work
+Several initiatives that combine modelling languages have tackled the design
+of business processes aligned with strategy. Goal modelling languages have been
+used, for instance, to analyse whether business process activities (modelled using
+BPMN) support organisational goals (modelled with TROPOS) [13], or to study
+how business processes constraint business goals (modelled using KAOS)[22].
+The Goal-Oriented Requirements Language (GRL) has been combined with Use
+Case Maps to model strategically aligned processes in the last two decades [1] and
+also to prioritise business processes [17]. MAP models (that define goals and the
+strategies to achieve them) have been mapped directly to the business processes
+elements that operationalise them [19] and also served to analyse the purpose
+behind the creation, modification, and deletion of business process elements [31].
+I* models have been used for transforming social dependencies into interactions
+at the process level [25], validating the consistency of the process interactions
+[12], and checking whether the business processes have the elements needed to
+collect information to verify the goal achievement [27].
+Besides goal modelling, other initiatives have combined frameworks addressing business strategy concerns. Business plans (modelled in Business Motivation
+Author Version
+4 R. Noel et al.
+Model [29]) have been used jointly with i* to add intentionality to the process of
+enterprise architecture construction [32]. Business value models (modelled using
+the e3Value method) have been used for generating performance requirements
+for an enterprise architecture [7]. In [3], organisational capabilities, modelled
+at the enterprise architecture level, are the starting point for the model-driven
+development of context-adapting software systems.
+Enterprise architecture frameworks aim to provide strategic alignment for
+information systems. Archimate [30] covers several business strategy concepts,
+and its multi-viewpoint approach supports connecting strategy with process and
+information system concepts. However, it lacks organisational structure concepts,
+and the links between the concepts do not address specific alignment intentions.
+The above initiatives show that integrating modelling methods is a powerful
+tool for strategic alignment. However, while stakeholders’ strategic goals and
+actions have been the main driver of alignment, organisation units, their dependencies, and their associated strategic objectives have not been addressed by
+MDA approaches.
+3 The Stra2Bis Method
+Stra2Bis is a model-driven method for integrating business strategy information
+into MDA-based software development methods. Stra2Bis was designed following the Situational Method Engineering approach since it allows engineering
+methods to meet the requirements of a given situation [15]. Stra2Bis’ requirements are inferred from the need to enable the software-centric organisations’
+approach to software design in MDA-based software development methods. Fig.
+1 presents the requirements map for the method, which are met by assembling
+method parts. Particularly, Stra2Bis assembles a business strategy and a business
+process modelling method. These methods are integrated by a model-to-model
+transformation that guides the analyst to design strategically aligned processes,
+following the approach of software-centric organisations.
+The remainder of the section focuses on illustrating the method and the
+guidelines’ design since the existing modelling methods are well documented. We
+describe Stra2Bis through a working example as a three-step business process
+improvement cycle in the following subsections. In Step 1, we present the working
+example. In Step 2, we present the business strategy model. Step 3 details the
+transformation guidelines and the re-designed business process model for the
+example. Even though the contribution of Stra2Bis is focused on the CIM level,
+we also comment on the effects of the business strategy information on the PIM
+level using a microservices refactoring example5
+.
+3.1 Step 1: Current Business Process Model (Working Example)
+In this step, the current business process is modelled. The notation proposed
+is from the Communication Analysis (CA) method [8]. We choose this nota5 https://microservices.io/refactoring/
+Author Version
+Stra2Bis: A Model-Driven Method for Strategic Alignment 5
+Start
+Model
+Business
+Strategy
+By strategic scenario
+modelling
+Model
+Business
+Processes
+By alignment-driven
+transformations
+by business modelling
+techniques
+Stop
+end of use
+Model the
+Information
+System
+By CIM-to-PIM
+transformations
+…
+Fig. 1. Stra2Bis requirements map.
+tion because CA, in the same way as BPMN’s choreography diagram [24] is
+not focused on the work performed but on the information exchange between
+the process actors. Moreover, CA has been integrated into an MDA-based development process, having theoretical consistency and technical feasibility for
+generating information system models and software code [9].
+Working Example: F-FOOD is a software-as-a-service company that allows consumers to order food from restaurants, for pickup or for delivery.
+After the restaurant confirms an order, the delivery orders are scheduled to the
+closest available courier. F-FOOD has had exponential growth since its foundation and most of its software development efforts have been focused on mobile
+applications. However, the back end is still a monolithic application.
+Fig. 2.A presents the business process model for the current situation. In
+order to later discuss the effects of the Stra2Bis guidelines on the design of
+software components, we also present a class diagram of the current information
+system in Fig. 2.B. Please note that there is no a Delivery class in the domain
+model and that scheduledelivery is a service offered by OrderService.
+3.2 Step 2: Business Strategy Modelling by Strategic Scenario
+This step proposes modelling the strategic scenario that drives the business
+process re-design. We define a strategic scenario as a model of the business
+strategy elements that are defined to react to a stimulus from the environment.
+Particularly, we refer to short-term definitions that affect the design of business
+processes and information systems: the strategic ends, the actions to achieve
+them, and the organisational structure needed to implement the strategy. The
+scenario does not consider other long-term strategic concerns such as capacity
+and resource development and portfolio management.
+We propose using the LiteStrat method [23] to meet the business strategy
+modelling intention. LiteStrat is our previous work that proposes a business
+strategy modelling language to represent the organisational structure and strategic ends and means jointly, as well as a modelling procedure to reduce the variability of models to improve their integration in MDA contexts.
+LiteStrat addresses two organisational structure concepts: the organisation
+unit concept, which represents a group of social actors working together to
+achieve a goal (e.g. development teams, departments) and the role concept,
+which is an abstraction of a behaviour in an organisational context (similarly
+Author Version
+6 R. Noel et al.
+to Archimate and i*). The assignment relationship addresses the hierarchical
+dependencies. The influence relationship describes the dependency between a
+source element that performs an action that affects the target element for organisation units’ dependencies representation. Regarding the organisational ends
+and means, LiteStrat uses concepts from the Business Motivation Model [29],
+providing two concepts for high-level definitions (goal and strategy) and the more
+Fig. 2. Current situation models: A) Business process model. B) Class diagram of the
+Information System. C) Business strategy model.
+Author Version
+Stra2Bis: A Model-Driven Method for Strategic Alignment 7
+specific tactic and objective concepts. The latter is a measurable and well-defined
+desired state of affairs used to measure the strategy’s performance.
+Other modelling methods can be used while they support representing: 1.
+The organisation units that are affected by the strategic definitions, 2. The
+dependencies between the organisation units generated in the strategic scenario,
+and 3. The measurable objectives to assess the strategy implementation. Fig.
+2.C presents a LiteStrat model for the strategic scenario described below. The
+parenthesis indicates the model elements associated.
+Strategic Scenario: In the last quarter, the growth of consumers in FFOOD (0) has decreased. F-FOOD’s finds out that a new competitor, QUICKFOOD (1), has a better order delivery service (2). Consumers claim that the
+F-FOOD app lacks several features for delivery tracking and has a slow response
+when putting delivery orders. F-FOOD discovers that the Order Management
+Area (7) constantly gives a lower priority to new delivery features and optimisations, favouring the order management functionality. F-FOOD management has
+decided that consumer satisfaction with the delivery is the top strategic goal for
+the next quarter (3). To achieve this goal, the strategy is to decouple the delivery
+service as an independent service (4), owned by a new cross-disciplinary team
+called Order Delivery Cell (8) that is meant to release all the features demanded
+by the customers (6). The Product Owner (11) will track the objective of increasing consumer satisfaction with delivery by 80% (12). The Order Management
+Area will have a leaner order processing, regardless of their delivery option (5)
+and will depend on the Order Delivery Cell for delivering the orders (13). New
+consumers are expected to increase by a 20% (10), which will be tracked by
+the Order Manager (9). The implementation of the strategy seeks to offer an
+improved delivery service (14) for the consumers (15).
+3.3 Step 3: Business Process Modelling by Alignment-Driven
+Transformation
+In this step, we take as input the business strategy model from Step 2 and
+apply three transformation guidelines to generate an initial version of the redesigned business process model. A guideline is a recommendation for designing
+parts of a business process model considering elements from business strategy.
+Guideline 1 deals with designing independent organisation units, Guideline 2
+with organisation units’ dependencies, and Guideline 3 with measuring strategic
+objectives. As with other MDA transformations at the CIM level, the guidelines
+support a semi-automatic, skilled transformation process so that the analysts
+can change the mapped process parts according to the real-world context.
+For each guideline, we describe its motivation by referencing an alignment
+practice from software-centric organisations, detailing the problem and the solution approach. Then, we describe the model-to-model transformation guideline
+according to the motivation; the mappings between the metamodel elements are
+shown in green in Fig. 3. Next, we describe the application of the guideline in
+the working example that produces the model depicted in Fig. 4.A. Finally, we
+Author Version
+8 R. Noel et al.
+«LS»
+ACTOR
+«LS»
+ORGANISATION_UNIT
+«LS»
+ROLE
+«LS»
+INFLUENCE
+«LS»
+REFINEMENT
+«LS»
+GOAL
+«LS»
+TACTIC
+«LS»
+STRATEGY
+«LS»
+OBJECTIVE
+influencedOUs
+0..*
+1..* strategyRefinements
+sourceRefn 1
+tacticRefinements 1..*
+sourceRefn 1
+objectiveRefinements 1..*
+sourceRefn 1
+1..*
+assignedOUs
+0..*
+0..*
+0..*
+influencedOU
+infuencingOU
+0..*
+influencingActor
+0..*
+influencingOUs
+0..* influencedActor
+0..*
+0..*
+0..*
+0..*
+«CA»
+COMMUNICATIVE_ROLE
+«CA»
+PRIMARY
+«CA»
+RECEIVER
+«CA»
+INGOING
+«CA»
+OUTGOING
+«CA»
+COMMUNICATIVE_INTERACTION
+«CA»
+COMMUNICATIVE_EVENT
+«CA»
+EVENT_VARIANT
+1 1
+0..* 1
+«CA»
+ENCAPSULATION
+11
+«CA»
+AND
+«CA»
+OR
+«CA»
+END
+«CA»
+START
+«CA»
+NODE
+«CA»
+LOGICAL_NODE
+«CA»
+PRECEDENCE
+«CA»
+PROCESS 1..* 1
+TARGET
+INCOMING
+0..*
+1
+SOURCE
+1
+OUTGOING
+0..*
+SPECIALISATIONS
+0..*
+GENERALIZATION
+1
+OUTS
+0..* ENCAPS
+1
+1
+1 1
+1
+11
+1
+11..*
+1
+1 1 1
+1..*
+1..*
+1 1..*
+1
+1 1
+REALISED BY
+ACTS AS
+ACTS AS
+ACTS AS
+INFORMED BY
+INFORMED BY
+REALISED BY
+REALISED BY
+HAS HAS
+Fig. 3. Metamodel mappings for LiteStrat (LS stereotype) [23] and a simplified Communication Analysis (CA stereotype) [9] metamodels. Relationships for Guidelines 1,
+2, and 3 are coloured in green, orange, and yellow, respectively.
+comment on the effects of the strategic scenario on the business process model,
+and provide recommendations to address some variations.
+Guideline 1 - Organisation Units’ Independence: Design a single business process for each organisation unit.
+Motivation: This guideline is based on the research by Forsgren et al. [11],
+who found that the coupling between teams has been reported as a hindering
+factor for efficient software development. The problem addressed is that teams
+with multiple business processes or business processes addressed by multiple
+teams increase the need for communication and collaboration between teams,
+and, in the same way, the software design replicates the coupling. The solution
+proposed is to design processes that are as independent as possible for each team.
+Transformation Description: For each organisation unit belonging to the
+overall organisation in the business strategy model, create a new process in the
+business process model. Add a start event with the unit’s name to the new
+process to make the process visible in the model.
+Example: In the business strategy model in Fig. 2.C, ”Order Management
+Area” and the new ”Order Delivery Cell” units originate the ”Order Management” and ”Delivery Management” processes depicted as green start nodes in
+Fig. 4.A. The start nodes are named following the names of their respective
+organisational units. The guideline proposes designing an independent business
+process for the delivery service, otherwise, the new team would still be coupled to
+the Order Management Area process. Although the example specifically regards
+the split of an existing unit, the guideline is also helpful in analysing the creation,
+fusion, or hiring of external teams for tackling new business opportunities.
+Author Version
+Stra2Bis: A Model-Driven Method for Strategic Alignment 9
+Effects on the Business Process: Modelling a strategic scenario helps
+the analysts to reflect on designing separate processes for orders and delivery
+management. Failing to do this will traduce creating a new ”agile” cell that
+will not be autonomous to manage their requirements at the process level and
+thus to design and evolve the information system. The generated elements in
+the business process model reflect the ideal separation of processes. The analyst
+should assess whether this separation is feasible considering the actual context
+of the problem.
+Guideline 2 - Managed Strategic Dependencies: Design the interactions
+between business processes to manage the organisation units’ strategic dependencies.
+Motivation: This guideline is based on the need for managing and reducing
+the dependencies among development teams to foster their autonomy, which is
+a practice followed by operational models such as the Spotify Model [2] and also
+contributes to the design of autonomous teams [11,16]. Another motivation is the
+Domain-Driven Design approach [10], which states that the integration between
+different business contexts must be carefully designed at the information system
+level. The problem addressed is that new strategic scenarios could introduce new
+dependencies among units, which, if overlooked, could hinder the efficiency of
+the software delivery. The solution approach is to ensure that these dependencies
+are considered for designing business processes.
+Transformation Description: For each influence dependency between organisation units in the business strategy model, add events to the source and
+target organisation units’ processes to handle the dependency. In the source
+unit’s process, add an event to provide the information to satisfy the dependency, and a receiver actor representing the target organisation units’ process.
+Similarly, add an event and a primary actor to the target unit’s process to receive information about the dependency from an actor representing the source
+organisation unit.
+Example: The influence relationship ”16.Requests Delivery” from the organisation unit ”Order Management Area” to the ”Order Delivery Cell” in Fig.
+2.C is mapped as the events depicted in orange in Fig. 4.A: an event to perform
+the influencing behaviour (16.Requests Delivery), and an event to address the
+influence (DEL01-Handle Delivery Request). A new actor is introduced to handle the dependency, representing the target organisation unit of the dependency
+(Order Delivery Cell). The name of the events and actors follow the strategy
+diagram, but the analyst can change them according to the domain information.
+Effects on the Business Process: The strategic scenario helps the analyst
+design the interface between the orders management area and the delivery cell
+based on strategic criteria. Since the delivery cell is affected by the requests of the
+order management area, the cell must provide a well-defined way to manage these
+requests at the process level, and the order management area must also consider
+this mechanism in its process. Failing to do this could result in designing addhoc interoperability mechanisms at the process and system levels. The guideline
+assumes that the information needed for the interaction between the processes
+Author Version
+10 R. Noel et al.
+is already known; otherwise, the analyst can add a primary actor to provide the
+required information.
+Guideline 3 - Strategic Objectives Measurement: Design business process
+elements to collect data to measure strategic objectives.
+Motivation: This guideline is based on the practice of a shared measurement
+of the success of strategic initiatives, which is enforced by frameworks for digital transformation such as EDGE [16] and Objectives and Key Results (OKR)
+[6]. The problem addressed is to consider in advance requirements to measure
+and share the status of strategic objectives in order to enable the assessment
+and continuous adjustment of the business strategy. The solution approach is
+ensuring that the strategic objectives are considered in business process design.
+Transformation Description: For each business strategy objective, add an
+event to their respective organisation unit’s process to collect information about
+the objective’s status. Add a receiver actor following the name of the objective’s
+role.
+Example: In the strategy diagram in Fig. 2.C, the objectives ”10.Consumer
+growth greater than 20%” of the organisation unit ”Order Management Area” is
+mapped to the event ”ORD06.Report Consumer Growth” in Fig. 4.A, depicted in
+yellow. Similarly, the objective ”12.Increase consumer satisfaction with delivery
+by 80%” is mapped to the event ”DEL06-Report Delivery Satisfaction”. In both
+cases, the receiver actors are the roles assigned to the objectives in the strategy
+diagram (Order Manager and Product Owner).
+Effects of the Business Process: Mapping the strategic scenario helps
+the analyst consider specifying requirements to measure consumer growth and
+satisfaction with the delivery service. Failing to consider these requirements may
+require adding them later on-demand of top executives, which may harm the
+system design and performance. Similarly to guideline 2, the transformation
+does not generate a primary actor to provide the information. It will not be
+needed if the information is already in the system; otherwise, the analyst can
+add a primary actor according to the problem domain.
+3.4 Effects on the PIM level in an MDA Context.
+The guidelines are expected to affect the information system model at the PIM
+level. Although the integration of the business process and the information system models is not part of this work (but has already been proposed in [9]),
+we exemplify in Fig. 4.B. the effects of the guidelines on the initial information
+system model presented in Fig. 2.B.
+Regarding Guideline 1, since the two organisation units Order Management
+Area and Order Delivery Cell had their separated business processes Order Management and Order Delivery Management, the Delivery domain class and services must be disentangled in a different component. Fig. 4.B shows in green
+the components for both processes. The new component ff-deliver-service
+Author Version
+Stra2Bis: A Model-Driven Method for Strategic Alignment 11
+supports the Order Delivery Process. Some services are removed from the initial order management components (see Fig. 2.B). The changes mainly consist of removing the delivery-related services that were initially located in the
+ff-courier-service, ff-order-service and ff-order-domain components
+and moving them to the new ff-deliver-service component.
+Regarding Guideline 2, the interaction between the processes is mapped
+as an interface ff-deliver-service-api depicted in orange in Fig. 4.B. The
+interface is implemented by the component supporting the delivery process
+ff-delivery-service. It allows the initial order management system to request
+the services that were moved to the new ff-delivery-service.
+Finally, the effects of Guideline 3 are mapped into services and attributes
+to update the values for the strategic objectives collected through the process. As highlighted in yellow in Fig. 4.Bs, the Order class has a new attribute
+isNewConsumer to identify whether the order is from a new consumer. This
+helps track the objective ”10.Consumer growth greater than 20%” objective iniFig. 4. A) Re-designed business process model. B) Re-designed class diagram for the
+information system model.
+Author Version
+12 R. Noel et al.
+tially defined in the strategy model in Fig. 2.C. Similarly, the Delivery class
+has the attribute satisfactionLevel of the objective ”12.Increase consumer
+satisfaction with delivery by 80%”.
+4 Initial Evaluation and Discussion
+We conducted an exploratory evaluation through a focus group since this technique is suitable for the ”initial evaluation of potential solutions, based on the
+practitioner or user feedback” [18]. The research question was, ”what information
+from the business strategy model is valuable for designing business processes?”.
+The goal is to find whether practitioners’ insights and experience match the
+Stra2Bis guidelines in terms of the information traceable from business strategy
+to business process and to the information system model. We wanted to contrast
+opinions from practitioners working in traditional consultancy services companies (CSC) and in Software-as-a-Service companies (SaaS), which main value
+offer is based on software. The participants were five volunteers having a technical leader or scrum master role, with between four and nine years of experience.
+Participants S1, S3 work in CSC, and participants S2, S4, S5 work in a SaaS.
+The activity had two parts of 30 minutes each. First, we presented the working example from Figs. 2 and asked, ”what information would be useful for
+redesigning business processes and why”?. The participants shared and agreed
+on a set of statements that the moderator publicly wrote down. In the second
+part, we presented the Stra2Bis guidelines and the models from Fig. 4, and
+asked the participants to comment on their usefulness and drawbacks. The analysis method was based on pattern-matching [18] the participant’s ideas from the
+first part of the focus group with the guidelines and then looking for explanations
+in the discussion of the second part.
+Insights for Guideline 1: In the first part, the respondents did not identify
+the organisation units as an important source of information for the business
+process design. After seeing the redesigned process and the guideline 1, all the
+participants agreed that independent units must have independent processes.
+All respondents recalled difficulties when business processes and software code
+of different units were entangled. Respondent S2, from a SaaS, stated that ”it
+is important for us to have an independent business flow because each cell can
+take the challenges and opportunities of their own process”.
+Insights for Guideline 2: In the first part, all the respondents identified as
+relevant the dependency among the organisation units. S1 and S2 agreed that
+”the dependency must be clear in the business process flow”. All the participants
+agreed on the value of the guideline for defining the dependency at the process
+level. It is worth noting that respondents S1 and S3, from CSCs, claimed that
+sometimes the flow interactions were not well defined by ”business people”, requiring ”several meeting between teams to define the flow” (S1). On the other
+hand, S2, from a SaaS, declared that her unit was ”designed with a well-defined
+contract with other organisation units” and never had this kind of problem.
+Author Version
+Stra2Bis: A Model-Driven Method for Strategic Alignment 13
+Insights for Guideline 3: In the first part, just S1 identified as valuable the objectives and linked them with OKR, one of the frameworks on which the guideline
+is based on [6]. In the second part, all the respondents valued measuring strategic
+objectives in the business process. Participants S4 and S5 commented we have
+code written to measure the NPS6
+. However, for the rest of the participants, the
+effect on the software product was different to what we presented in Section 3.4,
+who stated that objectives measurement are solved using external tools such as
+Hotjar7
+(for measuring customer satisfaction) or Google Analytics.
+Considering the above results, we discuss three topics: 1. The value added
+by the proposal, 2. The limitations of the method, and 3. The completeness and
+possible extensions of the method. On the first topic, we believe that the participants valued the proposal since it could help raise awareness of issues that
+affect their performance. As stated by S1, ”In my experience, when teams’ processes are not independent, there is a chaotic development process.” and S5 ”It
+is problematic when business people have new ideas and assign them to existing
+cells with non-related business flows.”. This is consistent with the outcomes predicted by agile operation models [11,16]. On the second topic, we believe that
+the organisation’s characteristics may limit the proposal’s value; CSCs might not
+be able to participate in their customers’ strategic definitions, as in the case of
+participant S1. However, this may also occur in SaaS organisations with many
+hierarchical levels: Participant S2 was part of a SaaS organisation inside a major
+retail company and declared that external business people designed the business
+process. These organisational characteristics are identified as problematic by one
+of the works that motivated the proposal [16]. Finally, considering the value perceived by the participants, we believe that the requirements of the method are
+fulfilled. However, participants S1, S2, and S4 raised another issue that is outside
+the proposal’s scope but could be considered in a future extension. The issue regards mapping how the actions assigned to an organisation unit in the strategy
+model (tactics in Fig. 2.C) are realised in the business process model. We believe
+that we could address this by adding a new method part to the proposal, such
+as the purpose analysis of the business process presented in [31].
+5 Conclusions and Future Work
+This article presented Stra2Bis, a method for designing strategically aligned business processes in an MDA context. Stra2Bis proposes to align business processes
+to the organisational units’ structure, dependency and goals. Stra2Bis proposes
+adding a strategy modelling step to represent the organisational elements that
+drive the business process re-design and three guidelines to generate an initial
+version of the new business process model. We conducted an initial evaluation
+through a focus group with eight software development practitioners, who supported the proposals, however, some of the effects on software design could be
+different the predicted. Although the respondents’ profile, experience, and nonmodel-driven context set threats to the evaluation’s validity, the activity showed
+6 Net Promoter Score, https://hbr.org/2003/12/the-one-number-you-need-to-grow
+7 https://www.hotjar.com/
+Author Version
+14 R. Noel et al.
+that the proposal was helpful for reasoning about the strategic alignment of
+business processes. Future work focuses on applying the proposal in an industrial case study and other focus groups and interviews with practitioners to foster
+the proposal’s adoption.
+Acknowledgements This work has the financial support of the Spanish State Research Agency and the Generalitat Valenciana under the projects PID2021-123824OBI00 and PDC2021-121243-I00 funded by MICIN/ AEI/ 10.13039/501100011033, INNEST/
+2021/57 and GV/ 2021/072, co-financed with ERDF and the European Union NextGenerationEU/PRTR, and the National Agency for Research and Development (ANID)/
+Scholarship Program/ Doctorado Becas Chile/2020-72210494. Special thanks to Claudia Negri for her advice on the design of the focus group.
+References
+1. Amyot, D., Akhigbe, O., Baslyman, M., Ghanavati, S., Ghasemi, M., Hassine, J.,
+Lessard, L., Mussbacher, G., Shen, K., Yu, E.: Combining goal modelling with
+business process modelling. Enterprise Modelling and Information Systems Architectures (EMISAJ) 17, 2–1 (2022)
+2. Atlassian: The spotify model. https://www.atlassian.com/agile/
+agile-at-scale/spotify, (Accessed on 05/31/2021)
+3. B¯erziˇsa, S., Bravos, G., Gonzalez, T., et al.: Capability driven development: an
+approach to designing digital enterprises. Business & Information Systems Engineering 57(1), 15–25 (2015)
+4. Conway, M.E.: How do committees invent. Datamation 14(4), 28–31 (1968)
+5. De Castro, V., Marcos, E., Vara, J.M.: Applying cim-to-pim model transformations
+for the service-oriented development of information systems. Information and Software Technology 53(1), 87–105 (2011)
+6. Doerr, J.: Measure what matters: How Google, Bono, and the Gates Foundation
+rock the world with OKRs. Penguin (2018)
+7. Engelsman, W., Gordijn, J., Haaker, T., Sinderen, M.v., Wieringa, R.: Quantitative
+alignment of enterprise architectures with the business model. In: International
+Conference on Conceptual Modeling. pp. 189–198. Springer (2021)
+8. Espa˜na, S., Gonz´alez, A., Pastor, O.: Communication analysis: a requirements engi- ´
+neering method for information systems. In: International Conference on Advanced
+Information Systems Engineering. pp. 530–545. Springer (2009)
+9. Espa˜na, S.: Methodological Integration of Communication Analysis into a ModelDriven Software Development Framework. Ph.D. thesis, Universitat Polit`ecnica de
+Val`encia, Valencia (Spain) (2011)
+10. Evans, E., Evans, E.J.: Domain-driven design: tackling complexity in the heart of
+software. Addison-Wesley Professional (2004)
+11. Forsgren, N., Humbpotifle, J., Kim, G.: Accelerate: The Science of Lean Software
+and DevOps Building and Scaling High Performing Technology Organizations. IT
+Revolution Press (2018)
+12. Gr¨oner, G., Asadi, M., Mohabbati, B., Gaˇsevi´c, D., Boˇskovi´c, M., Parreiras, F.S.:
+Validation of user intentions in process orchestration and choreography. Information Systems 43, 83–99 (2014)
+13. Guizzardi, R., Reis, A.N.: A method to align goals and business processes. In:
+International Conference on Conceptual Modeling. pp. 79–93. Springer (2015)
+Author Version
+Stra2Bis: A Model-Driven Method for Strategic Alignment 15
+14. Habba, M., Fredj, M., Benabdellah Chaouni, S.: Alignment between business requirement, business process, and software system: a systematic literature review.
+Journal of Engineering (2019)
+15. Henderson-Sellers, B., Ralyt´e, J., ˚Agerfalk, P.J., Rossi, M.: Situational method
+engineering. Springer (2014)
+16. Highsmith, J., Luu, L., Robinson, D.: EDGE: Value-Driven Digital Transformation.
+Addison-Wesley Professional (2019)
+17. Insfr´an, E., Abrah˜ao, S., de Oliveira, R.P., Gonz´alez-Ladr´on-de Guevara, F.,
+Fern´andez-Diego, M., Cano-Genoves, C.: Specifying value in grl for guiding bpmn
+activities prioritization. In: Procedings of the International Conference on Information Systems Development (2017)
+18. Kontio, J., Lehtola, L., Bragge, J.: Using the focus group method in software
+engineering: obtaining practitioner and user experiences. In: Proceedings of the
+2004 International Symposium on Empirical Software Engineering (2004)
+19. Kraiem, N., Kaffela, H., Dimassi, J., Al Khanjari, Z.: Mapping from map models
+to bpmn processes. Journal of Software Engineering 8(4), 252–264 (2014)
+20. Larman, C., Vodde, B.: Large-scale scrum: More with LeSS. Addison-Wesley Professional (2016)
+21. Mintzberg, H.: The strategy concept i: Five ps for strategy. California management
+review 30(1), 11–24 (1987)
+22. Nagel, B., Gerth, C., Engels, G., Post, J.: Ensuring consistency among business
+goals and business process models. In: 2013 17th IEEE International Enterprise
+Distributed Object Computing Conference. pp. 17–26. IEEE (2013)
+23. Noel, R., Panach Navarrete, J.I., Ruiz, M., Pastor Lopez, O.: The litestrat method:
+Towards strategic model-driven development. In: Procedings of the International
+Conference on Information Systems Development (2021)
+24. von Rosing, M., White, S., Cummins, F., de Man, H.: Business process model and
+notation-bpmn (2015)
+25. Ruiz, M., Costal, D., Espa˜na, S., Franch, X., Pastor, O.: Gobis: An integrated
+framework to analyse the goal and business process perspectives in information
+systems. Information Systems 53, 330–345 (10 2015)
+26. Scaled Agile, INC: Safe 5 for lean enterprises. https://www.
+scaledagileframework.com/, (Accessed on 04/10/2021)
+27. Sousa, H.P., Prado Leite, J.C.S.d.: Modeling organizational alignment. In: International Conference on Conceptual Modeling. pp. 407–414. Springer (2014)
+28. The Object Management Group: Model driven architecture (mda). https://www.
+omg.org/mda/, (Accessed on 04/14/2021)
+29. The Object Management Group: Business Motivation Model Specification Version
+1.3 (2015), https://www.omg.org/spec/BMM/About-BMM/
+30. The Open Group: Archimate® 2.1 specification - motivation extension. https:
+//pubs.opengroup.org/architecture/archimate2-doc/chap10.html, (Accessed
+on 11/09/2020)
+31. Vara, J.L.d.l., S´anchez, J., Pastor, O.: Business process modelling and purpose ´
+analysis for requirements analysis of information systems. In: International Conference on Advanced Information Systems Engineering. pp. 213–227. Springer (2008)
+32. Yu, E., Strohmaier, M., Deng, X.: Exploring intentional modeling and analysis for
+enterprise architecture. In: 2006 10th IEEE International Enterprise Distributed
+Object Computing Conference Workshops (EDOCW’06). pp. 32–32. IEEE (2006)
+33. Zimmermann, O.: Microservices tenets. Computer Science-Research and Development 32(3), 301–310 (2017)

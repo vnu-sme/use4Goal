@@ -1,0 +1,81 @@
+% Archived pseudocode, removed from main.tex on the grounds that every step is
+% already covered by prose + formal definitions in Section III (Parts B and E),
+% so keeping both as boxed \begin{algorithm} environments was redundant in the
+% short (conference) version. Kept here for a future long/journal version where
+% an explicit algorithmic presentation may still be wanted alongside the
+% definitions, e.g. as an implementation appendix.
+%
+% Requires (already loaded by main.tex): \usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+%
+% To reuse: \input{appendix-algorithms} from within a section, or copy the
+% relevant \begin{algorithm}...\end{algorithm} block directly. Labels are kept
+% as in the original (alg::acl2use, alg::checking); re-check for label clashes
+% before including both this file and any other file using the same labels.
+
+% ---------------------------------------------------------------------------
+% Originally in Part B (sec:acl2use, "Translating ACL into a Class Diagram"),
+% introduced by: "Algorithm~\ref{alg::acl2use} summarizes the translation and
+% its compatibility rule: for each concrete role pair $(R_1, R_2)$ sharing a
+% group scope, no invariant is generated if they can never share an instance
+% or if $\mathit{Compat}$ declares them compatible over that scope; otherwise
+% \texttt{inv NoConflict\_$R_1$\_$R_2$} is generated on \texttt{Agent}."
+% ---------------------------------------------------------------------------
+\begin{algorithm}
+\small
+\ttfamily
+\caption{Translating an ACL model into a USE class model}
+\label{alg::acl2use}
+\KwIn{an ACL model $(E, R, G, \mathit{Assoc}, \mathit{Compat})$}
+\KwOut{a USE \texttt{.use} class model}
+
+create a USE class for every entity in $E$, role in $R$, and group in $G$\;
+translate role extension into USE generalization\;
+\ForEach{relation in $\mathit{Assoc}$}{
+  add the corresponding USE association/aggregation/composition, with the same cardinalities\;
+}
+create class \texttt{Agent}\;
+\ForEach{ownership relation between a group $g$ and a role $r$}{
+  add association \texttt{Agent\_plays\_$r$} between \texttt{Agent} and $r$\;
+  add association \texttt{$r$\_in\_$g$} between $g$ and $r$, with cardinality $\mathit{card}(g,r)$\;
+}
+\ForEach{ownership relation between a parent group and a child group}{
+  add a composition between them\;
+}
+\ForEach{pair of concrete roles $(R_1,R_2)$ that can share a group scope}{
+  \eIf{$(R_1,R_2) \in \mathit{Compat}$ over that scope}{
+    generate no invariant\;
+  }{
+    generate \texttt{inv NoConflict\_$R_1$\_$R_2$} on \texttt{Agent}\;
+  }
+}
+\Return the generated \texttt{.use} class model\;
+\end{algorithm}
+
+% ---------------------------------------------------------------------------
+% Originally in Part E (sec:checking, "Checking i* and BPMN over State
+% Transitions"), introduced by: "Algorithm~\ref{alg::checking} restates this
+% as a procedure," following the four failure-list definitions
+% (aclFailures, bpmnFailures, goalFailures, oracleFailures).
+% ---------------------------------------------------------------------------
+\begin{algorithm}
+\small
+\ttfamily
+\caption{Checking i* against BPMN on a checkpoint trace}
+\label{alg::checking}
+\KwIn{a USE class model generated from ACL, an initial SOIL script compiled from AOL, an i* model, an ISCN oracle, a BPMN model}
+\KwOut{Result(aclFailures, bpmnFailures, goalFailures, oracleFailures)}
+
+order BPMN activities topologically and append each activity's effect to the initial SOIL script\;
+compile the extended script into checkpoints $\Sigma_0,\dots,\Sigma_n$ ($\Gamma_B$), computing $\mu_{\Sigma_i}$ at every checkpoint\;
+\ForEach{checkpoint that is initial or follows an effect}{
+  check every ACL/USE invariant\; stop at the first violation\;
+}
+\ForEach{activity $a_i$}{
+  evaluate $\mathit{pre}(a_i)$ at $\Sigma_{i-1}$ and $\mathit{post}(a_i)$ at $\Sigma_i$\; record every violation\;
+}
+evaluate every root i* goal via $\mu_{\Sigma_n}$, for every $(g,t') \in \mathrm{dom}(\mu_{\Sigma_n})$\; record every unfulfilled goal\;
+\ForEach{$(e,t') \in \mathrm{dom}(\mathit{oracle}) \cap \mathrm{dom}(\mu_{\Sigma_n})$}{
+  compare $\mu_{\Sigma_n}(e,t')$ against $\mathit{oracle}(e,t')$\; record every mismatch\;
+}
+\Return Result(aclFailures, bpmnFailures, goalFailures, oracleFailures)\;
+\end{algorithm}
