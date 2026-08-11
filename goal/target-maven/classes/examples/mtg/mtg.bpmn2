@@ -1,0 +1,193 @@
+// Meeting Scheduler. BPMN contains predicates only; there is no SOIL action.
+// A caller performs each real action after begin(...) and before complete(...).
+
+model MeetingScheduler {
+  pool MeetingOrganization {
+    name "Meeting Organization"
+
+    lane Initiator {
+      name "Initiator"
+
+      start start_meeting {
+        trigger none
+      }
+
+      task decideMeetingDetails {
+        name "Decide Meeting Details"
+        post {[
+          MeetingUnit.allInstances()->exists(m | m.detailsDecided)
+        ]}
+        effect {[
+          for m in MeetingUnit.allInstances() do
+            m.detailsDecided := true;
+          end
+        ]}
+      }
+    }
+
+    lane Organizer {
+      name "Organizer"
+
+      task checkCalendar {
+        name "Check Participant Calendar"
+        pre {[
+          MeetingUnit.allInstances()->exists(m | m.detailsDecided)
+        ]}
+        post {[
+          Participant.allInstances()
+            ->select(p | p.source_Agent_plays_Participant.hasCalendar)
+            ->forAll(p | p.timetableCollected and p.timetableChannel = #calendar)
+        ]}
+        effect {[
+          for p in Participant.allInstances()->select(p | p.source_Agent_plays_Participant.hasCalendar) do
+            p.timetableCollected := true;
+            p.timetableChannel := #calendar;
+          end
+        ]}
+      }
+
+      gateway phoneCollectionRequired {
+        name "Phone Collection Required?"
+        type xor
+        pre {[
+          Participant.allInstances()
+            ->select(p | p.source_Agent_plays_Participant.hasCalendar)
+            ->forAll(p | p.timetableCollected)
+        ]}
+        post {[
+          Participant.allInstances()
+            ->select(p | p.source_Agent_plays_Participant.hasCalendar)
+            ->forAll(p | p.timetableCollected)
+        ]}
+      }
+
+      task requestSecretaryCall {
+        name "Request Secretary Call"
+        pre {[
+          MeetingUnit.allInstances()->exists(m | m.detailsDecided)
+          and Participant.allInstances()->exists(p | not p.source_Agent_plays_Participant.hasCalendar)
+          and Secretary.allInstances()->notEmpty()
+          and Participant.allInstances()->select(p | not p.source_Agent_plays_Participant.hasCalendar)->forAll(p |
+            p.source_Agent_plays_Participant.phone <> ''
+            and Secretary.allInstances()->exists(s |
+              s.source_Agent_plays_Secretary.knownContact
+                ->includes(p.source_Agent_plays_Participant)))
+        ]}
+      }
+
+      gateway timetableCollectionComplete {
+        name "Timetable Collection Complete"
+        type xor
+        pre {[
+          Participant.allInstances()->forAll(p | p.timetableCollected)
+        ]}
+        post {[
+          Participant.allInstances()->forAll(p | p.timetableCollected)
+        ]}
+      }
+
+      task chooseTimeAndDate {
+        name "Choose Time And Date"
+        pre {[
+          Participant.allInstances()->forAll(p | p.timetableCollected)
+        ]}
+        post {[
+          MeetingUnit.allInstances()->exists(m | m.timeChosen)
+        ]}
+        effect {[
+          for m in MeetingUnit.allInstances() do
+            m.timeChosen := true;
+          end
+        ]}
+      }
+
+      task announceMeeting {
+        name "Announce Meeting"
+        pre {[
+          MeetingUnit.allInstances()->exists(m | m.timeChosen)
+        ]}
+        post {[
+          Participant.allInstances()->forAll(p | p.notified)
+        ]}
+        effect {[
+          for p in Participant.allInstances() do
+            p.notified := true;
+          end
+        ]}
+      }
+
+      end end_meeting {
+        trigger none
+      }
+    }
+
+    lane Secretary {
+      name "Secretary"
+
+      task collectConstraintsByPhone {
+        name "Collect Constraints By Phone"
+        pre {[
+          Participant.allInstances()->exists(p | not p.source_Agent_plays_Participant.hasCalendar)
+          and Secretary.allInstances()->notEmpty()
+          and Participant.allInstances()->select(p | not p.source_Agent_plays_Participant.hasCalendar)->forAll(p |
+            p.source_Agent_plays_Participant.phone <> ''
+            and Secretary.allInstances()->exists(s |
+              s.source_Agent_plays_Secretary.knownContact
+                ->includes(p.source_Agent_plays_Participant)))
+        ]}
+        post {[
+          Participant.allInstances()
+            ->select(p | not p.source_Agent_plays_Participant.hasCalendar)
+            ->forAll(p | p.timetableCollected and p.timetableChannel = #phone)
+        ]}
+        effect {[
+          for p in Participant.allInstances()->select(p | not p.source_Agent_plays_Participant.hasCalendar) do
+            p.timetableCollected := true;
+            p.timetableChannel := #phone;
+          end
+        ]}
+      }
+    }
+
+    lane Participant {
+      name "Participant"
+
+      task participate {
+        name "Participate"
+        pre {[
+          Participant.allInstances()->forAll(p | p.notified)
+        ]}
+        post {[
+          Participant.allInstances()->forAll(p | p.attended)
+        ]}
+        effect {[
+          for p in Participant.allInstances() do
+            p.attended := true;
+          end
+        ]}
+      }
+    }
+
+    flow start_meeting -> decideMeetingDetails
+    flow decideMeetingDetails -> checkCalendar
+    flow checkCalendar -> phoneCollectionRequired
+    flow phoneCollectionRequired -> requestSecretaryCall {
+      name "some participant has no calendar"
+      guard {[
+        Participant.allInstances()->exists(p | not p.source_Agent_plays_Participant.hasCalendar)
+      ]}
+    }
+    flow phoneCollectionRequired -> timetableCollectionComplete {
+      name "every participant has a calendar"
+      guard {[
+        Participant.allInstances()->forAll(p | p.source_Agent_plays_Participant.hasCalendar)
+      ]}
+    }
+    flow requestSecretaryCall -> collectConstraintsByPhone
+    flow collectConstraintsByPhone -> timetableCollectionComplete
+    flow timetableCollectionComplete -> chooseTimeAndDate
+    flow chooseTimeAndDate -> announceMeeting
+    flow announceMeeting -> participate
+    flow participate -> end_meeting
+  }
+}

@@ -1,0 +1,23 @@
+istar ServiceMonitoring {
+  role Monitor {
+    // Recur does not finish permanently. While monitoring is active, every
+    // state satisfying healthCheckCompleted is one successful occurrence;
+    // later false states return the runtime monitor to Pending, and another
+    // successful occurrence must eventually follow.
+    goal ServiceChecked : Recur
+    activation {[
+      self.group.monitoringEnabled
+    ]}
+    condition {[
+      self.group.healthCheckCompleted
+    ]}
+
+    task PerformHealthCheck > or ServiceChecked
+    pre {[
+      self.group.monitoringEnabled
+    ]}
+    post {[
+      self.group.healthCheckCompleted
+    ]}
+  }
+}

@@ -1,0 +1,34 @@
+// Partial i* scenario: the meeting is scheduled and announced, but bao has not participated.
+// Attendance fails for bao, and full organization fails because attendance is part of the root.
+
+scenario MeetingOrganization_FiveParticipants_PartialMissingAttendance for "mtg.istar" {
+    instance abdul   : Initiator;
+    instance matilda : Organizer;
+    instance alex    : Secretary;
+    instance xing, amr, naya, bao, chloe : Participant;
+
+    fire DecideMeetingDetails;
+    fire ChooseTimeAndDate;
+
+    fire xing.CollectFromCalendar;
+    fire amr.CollectFromCalendar;
+    fire alex.CollectConstraintsByPhone for naya;
+    fire alex.CollectConstraintsByPhone for bao;
+    fire alex.CollectConstraintsByPhone for chloe;
+
+    fire xing.AnnounceMeeting;
+    fire amr.AnnounceMeeting;
+    fire naya.AnnounceMeeting;
+    fire bao.AnnounceMeeting;
+    fire chloe.AnnounceMeeting;
+
+    fire xing.Participate;
+    fire amr.Participate;
+    fire naya.Participate;
+    fire chloe.Participate;
+
+    aggregate EveryTimetableCollected : all of Participant over TimetableCollected;
+    aggregate EveryoneNotified        : all of Participant over AnnounceMeeting;
+    aggregate EveryoneAttended        : all of Participant over MeetingAttendedByParticipant;
+    aggregate MeetingFullyOrganized   : all of Participant over HaveMeetingOrganized;
+}

@@ -1,0 +1,6 @@
+context System
+inv liveness:
+    self.loadedApps->notEmpty() implies
+    self.loadedApps->forAll(app |
+        sometime isCalled(install())
+    )

@@ -1,6 +1,6 @@
 grammar IStar;
 
-@header { package org.vnu.sme.goal.istar.parser; }
+@header { package org.vnu.sme.goal.dsl.istar.parser; }
 
 // =====================================================================
 //  iStar 2.0 — SD (Strategic Dependency) + SR (Strategic Rationale) views
@@ -22,7 +22,7 @@ grammar IStar;
 //
 //  istar ModelName {
 //    role|agent ActorName {
-//      goal     GoalId [: Achieve|Maintain|Avoid] rel* [ocl {[ raw-OCL ]}]
+//      goal     GoalId [: Achieve|Maintain|Sustain|Recur] rel* [ocl {[ raw-OCL ]}]
 //      task     TaskId                            rel* [ocl {[ raw-OCL ]}]
 //      resource ResourceId                        rel*
 //      quality  QualityId                         rel*
@@ -65,7 +65,7 @@ actorDef : actorKind IDENT '{' actorBody* '}' ;
 actorKind : 'role' | 'agent' ;
 
 actorBody
-    : 'goal'     IDENT goalType?     rel* oclCondition*  # bodyGoal
+    : 'goal'     IDENT goalType?     rel* goalCondition* # bodyGoal
     | 'task'     IDENT                rel* oclCondition*  # bodyTask
     | 'resource' IDENT                rel*  # bodyResource
     | 'quality'  IDENT                rel*  # bodyQuality
@@ -75,7 +75,7 @@ actorBody
     ;
 
 goalType : ':' goalTypeName ;
-goalTypeName : 'Achieve' | 'Maintain' | 'Avoid' ;
+goalTypeName : 'Achieve' | 'Maintain' | 'Sustain' | 'Recur' ;
 
 obstacleType : ':' obstacleTypeName ;
 obstacleTypeName : 'Prevention' | 'Restoration' | 'Mitigation' ;
@@ -109,6 +109,16 @@ contribType
 
 oclCondition
     : ('pre' | 'post') OCL_BLOCK
+    | OCL_CLAUSE
+    ;
+
+// Goal and Task share the readable pre/post surface syntax. For a Goal, pre is
+// its activation condition and post is its satisfaction/required condition;
+// for a Task, pre is its enabling condition and post is its resulting state.
+// activation/condition are the canonical Goal clauses. The older
+// trigger/satisfy/while/ensure spellings remain accepted aliases.
+goalCondition
+    : ('activation' | 'condition' | 'trigger' | 'satisfy' | 'while' | 'ensure' | 'release') OCL_BLOCK
     | OCL_CLAUSE
     ;
 

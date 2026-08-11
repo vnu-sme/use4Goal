@@ -1,0 +1,7 @@
+context System
+inv safety2: self.runningApps->notEmpty() implies
+            self.runningApps->forAll(app |
+                isCalled(run(app : Application)) implies
+                sometime isCalled(install())
+                since isCalled(load(app : Application))
+            )

@@ -1,0 +1,5 @@
+context TrafficLight
+inv nextInv: self.requested = true implies next self.pedLight = #Green
+
+context TrafficLight
+inv alwaysInv: always not (self.carLight = #Green and self.pedLight = #Green)

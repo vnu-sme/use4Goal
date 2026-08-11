@@ -1,0 +1,35 @@
+// BPMN 2.0 Example — Security Compliance
+// Transcribed from example/Data/security/bpmn.bpmn (real bpmn.io-exported BPMN XML).
+// Flow (verified against the source XML's sourceRef/targetRef pairs):
+//   start -> AND-split(updateEncryptionStandards, reviseAccessControls) -> AND-join
+//   -> XOR-split(deployOneTrust | deployDataGrail) -> XOR-join -> performPenetrationTest
+//   -> [end | flagSuspiciousActivity -> applyVulnerabilityTest -> back to performPenetrationTest]
+// The last part is a genuine loop in the source (back-edge sequence flow) — kept as-is;
+// performPenetrationTest has two outgoing flows directly (no gateway node), matching the
+// source XML exactly (it draws the branch without an explicit gateway symbol there too).
+
+model SecurityCompliance {
+
+  pool SecurityComplianceProcess {
+    name "Security Compliance Process"
+    lane main_lane {
+      name "Main"
+      start start1 { trigger none }      gateway gw_split { type and }      task updateEncryptionStandards { name "Update Encryption Standards" }      task reviseAccessControls { name "Revise Access Control" }      gateway gw_join { type and }      gateway gw_choice { type xor }      task deployOneTrust { name "Deploy One Trust" }      task deployDataGrail { name "Deploy Data Grail" }      gateway gw_merge { type xor }      task performPenetrationTest { name "Perform Penetration Test" }      task flagSuspiciousActivity { name "Flag Suspicious Activity" }      task applyVulnerabilityTest { name "Apply Vulnerability Test" }      end end1 { trigger none }    }
+
+    flow start1 -> gw_split
+    flow gw_split -> updateEncryptionStandards
+    flow gw_split -> reviseAccessControls
+    flow updateEncryptionStandards -> gw_join
+    flow reviseAccessControls      -> gw_join
+    flow gw_join -> gw_choice
+    flow gw_choice -> deployOneTrust
+    flow gw_choice -> deployDataGrail
+    flow deployOneTrust  -> gw_merge
+    flow deployDataGrail -> gw_merge
+    flow gw_merge -> performPenetrationTest
+    flow performPenetrationTest -> end1
+    flow performPenetrationTest -> flagSuspiciousActivity
+    flow flagSuspiciousActivity -> applyVulnerabilityTest
+    flow applyVulnerabilityTest -> performPenetrationTest
+  }
+}

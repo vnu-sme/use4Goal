@@ -450,3 +450,115 @@
 % Cách phát hiện lại: grep 'mathit{val}' trong main.tex -- nếu thấy nó
 % xuất hiện trở lại trong Definition [System marking], đối chiếu lại
 % note này trước khi quyết định giữ hay bỏ.
+
+% =====================================================================
+% MỤC MOTIVATION -- Luận điểm so sánh với công trình trước trong
+% Section II (Background and Motivating Example) PHẢI chứng minh 1
+% verdict SAI (false-positive) trên 1 trace cụ thể, không chỉ nêu khác
+% biệt cơ chế/tính năng. Rút ra từ phiên thảo luận: agent viết "type-
+% level mapping cannot distinguish X" (nêu khác biệt), người dùng bác
+% bỏ: phải chỉ ra kỹ thuật cũ CHỨNG MINH SAI cái gì, không phải mình có
+% cái họ không có.
+% =====================================================================
+
+% ---------------------------------------------------------------------
+% LUẬT 7 -- So sánh với 1 kỹ thuật cụ thể (\cite{key}) phải đi kèm 1
+%           walkthrough: kịch bản cụ thể -> chạy đúng cơ chế hình thức
+%           của kỹ thuật đó trên kịch bản -> verdict kỹ thuật đó trả ra
+%           -> đối chiếu thực tế -> gọi tên đây là false-positive (PASS
+%           sai), không phải feature gap.
+% ---------------------------------------------------------------------
+% Sai (dạng feature-gap, KHÔNG đủ sức nặng làm motivation):
+%   "A type-level activity--task mapping cannot distinguish the
+%   contacted participant from the omitted one."
+%   -> chỉ nói "họ không phân biệt được", không nói rõ verdict CUỐI
+%   CÙNG của họ trên trace này là gì -- người đọc dễ nghĩ đây chỉ là 1
+%   tính năng phụ, không phải 1 lỗi nghiêm trọng.
+%
+% Đúng (dạng false-positive, ĐỦ sức nặng) -- walkthrough đã dựng cho
+% GoalBPM/Caballero trên đúng Situation 1 (participant thứ 2 không
+% được gọi điện):
+%   - Leaf node `CollectByPhone` không gắn actor-instance -> đọc là
+%     true ngay khi activity tương ứng chạy postcondition thành công
+%     LẦN ĐẦU (không phân biệt participant nào).
+%   - `CollectAvailability` = OR(CollectFromCalendar, CollectByPhone)
+%     -> true.
+%   - `HaveMeetingScheduled` = AND(CollectAvailability,
+%     chooseTimeAndDate, announceMeeting) -> true (cả 3 activity đều
+%     chạy, đều thoả post).
+%   - `attend`-node cũng không gắn instance -> true ngay khi 1 lần
+%     `participate` chạy thành công (participant thứ nhất).
+%   - `HaveMeetingOrganized` = AND(HaveMeetingScheduled, attend) ->
+%     TRUE.
+%   => GoalBPM/Caballero et al. TRẢ VỀ "compliant/PASS" trên đúng trace
+%   mà participant thứ hai chưa từng attend -- domain thực đòi hỏi
+%   forall Participant. participate(p), tức false. Đây là 1 verdict
+%   SAI đã được chính thuật toán của họ CHỨNG MINH, không phải suy
+%   đoán, không phải "họ thiếu 1 tính năng".
+%
+% Quy tắc áp dụng: trước khi viết câu "phương pháp X không [làm được
+% gì đó]", tự hỏi "nếu chạy đúng cơ chế hình thức của X trên trace
+% trong ví dụ, X trả về verdict gì?". Nếu câu trả lời là "X sẽ PASS/
+% valid trong khi thực tế sai" -> viết theo khuôn false-positive ở
+% trên. Nếu không dựng được 1 verdict sai cụ thể (chỉ thấy X "không có
+% tính năng này") -> đây có thể là khác biệt thật nhưng KHÔNG đủ làm
+% động lực cho 1 phương pháp mới, cần tìm góc khác hoặc không dùng làm
+% luận điểm chính.
+%
+% Cách phát hiện lại: đọc lại đoạn so sánh, gạch chân câu kết luận --
+% nếu câu kết là "X thiếu Y" / "X không phân biệt được Y" (danh từ,
+% tính năng) thay vì "X trả về verdict Z trong khi đúng ra phải là
+% not-Z" (mệnh đề có giá trị chân lý cụ thể), sửa lại theo khuôn walk-
+% through trên.
+
+% ---------------------------------------------------------------------
+% CANDIDATE MOTIVATION WEAKNESSES -- điểm yếu khác đang brainstorm cho
+% Section II, CHƯA đủ rigor theo Luật 7, CẦN thảo luận thêm với người
+% dùng trước khi đưa vào main.tex. Ghi lại đây để không mất ý giữa các
+% phiên.
+% ---------------------------------------------------------------------
+%
+% (a) Co-occurring softgoal hurts trong 1 kịch bản (status: draft, cần
+%     xác nhận lại cơ chế contribution-aggregation của kỹ thuật so
+%     sánh trước khi viết walkthrough đầy đủ).
+%     Ý tưởng: kỹ thuật structural/single-point-in-time (Ghose &
+%     Koliadis) phân loại từng contribution link (make/help/hurt/
+%     break) RIÊNG LẺ, ở mức type, tại 1 thời điểm thiết kế -- không
+%     đánh giá điều gì xảy ra khi NHIỀU hurt/break cùng rơi vào 1 kịch
+%     bản cụ thể (vd trong MeetingScheduler, nếu cả 2 participant
+%     không có calendar đều phải gọi điện, và "gọi điện" hurt cùng 1
+%     softgoal -- 2 hurt riêng lẻ có thể "chấp nhận được" khi xét tách
+%     rời, nhưng CÙNG xảy ra trong 1 trace mới thực sự làm softgoal đó
+%     fail).
+%     => cần 1 walkthrough kiểu Luật 7: chạy đúng cơ chế phân loại của
+%     Ghose & Koliadis trên kịch bản 2-hurt, xem verdict của họ là gì,
+%     rồi đối chiếu với "softgoal thực sự fail vì 2 hurt cộng dồn
+%     trong 1 scenario". CHƯA dựng xong walkthrough này -- cần kiểm
+%     tra lại cơ chế DL classification của họ có thực sự đánh giá
+%     softgoal kiểu này không, trước khi viết vào main.tex.
+%
+% (b) Stale verdict khi 1 trong 2 mô hình thay đổi độc lập (status:
+%     draft, LƯU Ý đây là loại luận điểm KHÁC Luật 7 -- không phải
+%     false-positive trên 1 trace tĩnh, mà false-positive SAU 1 thay
+%     đổi không được lan truyền).
+%     Ý tưởng: GoalBPM có pipeline "manual" (câu đã có sẵn ở
+%     Evaluation: "the whole pipeline is manual") -- effect/trajectory
+%     được người dùng tự tay trích ra 1 lần. Nếu BPMN model sau đó được
+%     sửa (vd đổi effect của 1 activity) mà không ai chủ động chạy lại
+%     bước trích trajectory thủ công, verdict "compliant" cũ vẫn còn
+%     đó dù process thực tế đã đổi -- 1 false-positive gián tiếp do
+%     KHÔNG CÓ CƠ CHẾ BẮT BUỘC re-check khi 1 model đổi.
+%     Rủi ro cần cân nhắc trước khi viết: bản thân phương pháp trong
+%     bài (checkpoint-trace) CŨNG không tự động phát hiện KHI NÀO cần
+%     re-run -- nó chỉ tự động hoá bước trích checkpoint/snapshot từ
+%     OCL có sẵn (đã nêu ở Evaluation), KHÔNG claim theo dõi thay đổi
+%     hay re-verify tự động. Nếu đưa luận điểm (b) vào Section II,
+%     phải diễn đạt cẩn thận: KHÔNG được ngụ ý phương pháp đề xuất
+%     giải quyết bài toán change-impact-analysis nói chung (paper
+%     không claim điều đó), chỉ nên dừng ở mức pipeline tự động hoá
+%     bước trích xuất, tránh lỗi thủ công khi mô hình được VIẾT LẠI
+%     cho 1 scenario mới -- không phải "phát hiện khi nào cần viết
+%     lại".
+%
+% Cả (a) và (b) CHƯA được chốt đưa vào main.tex -- cần người dùng xác
+% nhận hướng trước khi viết câu chính thức vào Section II.

@@ -1,0 +1,18 @@
+// BPMN 2.0 Example — Shop Order Fulfillment
+// Transcribed from example/Data/shop/bpmn.bpmn (real bpmn.io-exported BPMN XML).
+// Simple linear process, no gateways: start -> Pick Items -> Pack Items -> Ship Items -> end.
+
+model ShopOrderFulfillment {
+
+  pool WarehouseProcess {
+    name "Warehouse Process"
+    lane main_lane {
+      name "Main"
+      start start1 { trigger none }      task pickItems { name "Pick Items" }      task packItems { name "Pack Items" }      task shipItems { name "Ship Items" }      end end1 { trigger none }    }
+
+    flow start1  -> pickItems
+    flow pickItems -> packItems
+    flow packItems -> shipItems
+    flow shipItems -> end1
+  }
+}

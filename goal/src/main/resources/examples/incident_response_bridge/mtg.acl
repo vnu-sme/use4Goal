@@ -4,13 +4,13 @@ acl v2.0 MeetingSchedulerShadow {
   enum NotificationStatus {notSent, sent}
   enum AttendanceStatus   {unknown, attended, absent}
 
-  abstract role MeetingParty {
+  role MeetingParty {
     name : String;
   }
 
-  role Initiator   specializes MeetingParty
-  role Organizer   specializes MeetingParty
-  role Secretary   specializes MeetingParty
+  role Initiator   specializes MeetingParty;
+  role Organizer   specializes MeetingParty;
+  role Secretary   specializes MeetingParty;
   role Participant specializes MeetingParty {
     hasCalendar      : Boolean;
     timetable        : TimetableStatus;
@@ -19,7 +19,7 @@ acl v2.0 MeetingSchedulerShadow {
     attendance       : AttendanceStatus;
   }
 
-  relationship SecretaryKnowsParticipantPhone {
+  association SecretaryKnowsParticipantPhone {
     Secretary   [*] secretariesKnowingPhone;
     Participant [*] participantsReachableByPhone;
   }
@@ -32,9 +32,8 @@ acl v2.0 MeetingSchedulerShadow {
     Organizer    [1..1];
     Secretary    [0..1];
     Participant  [2..*];
-  }
 
-  link authority     Organizer -> Secretary   intra MeetingUnit;
-  link compatibility Initiator -> Participant intra MeetingUnit;
-  link compatibility Organizer -> Secretary   intra MeetingUnit;
+    Initiator compatible Participant;
+    Organizer compatible Secretary;
+  }
 }

@@ -1,0 +1,109 @@
+-- Generated from ACL. Regenerate instead of editing this file.
+-- ACL classes/generalizations map directly to USE classes/generalizations.
+-- Agent--Role and Role--Group are ordinary associations; no association classes are generated.
+-- Compatibility is translated into 'inv NoConflict_<R1>_<R2>' invariants on the Agent class.
+
+model MeetingSchedulerShadow
+
+enum TimetableChannel {none, calendar, phone}
+
+class Agent
+attributes
+  name : String
+  phone : String
+  hasCalendar : Boolean
+end
+
+abstract class MeetingParty
+end
+
+class Initiator < MeetingParty
+end
+
+class Organizer < MeetingParty
+end
+
+class Secretary < MeetingParty
+end
+
+class Participant < MeetingParty
+attributes
+  timetableCollected : Boolean
+  timetableChannel : TimetableChannel
+  notified : Boolean
+  attended : Boolean
+end
+
+class MeetingUnit
+attributes
+  detailsDecided : Boolean
+  timeChosen : Boolean
+end
+
+association knowsPhoneOf between
+  Agent[0..*] role knower
+  Agent[0..*] role knownContact
+end
+
+association Agent_plays_Initiator between
+  Agent[1] role source_Agent_plays_Initiator
+  Initiator[0..*] role target_Agent_plays_Initiator
+end
+
+association Initiator_in_MeetingUnit between
+  MeetingUnit[1] role source_Initiator_in_MeetingUnit
+  Initiator[1] role target_Initiator_in_MeetingUnit
+end
+
+association Agent_plays_Organizer between
+  Agent[1] role source_Agent_plays_Organizer
+  Organizer[0..*] role target_Agent_plays_Organizer
+end
+
+association Organizer_in_MeetingUnit between
+  MeetingUnit[1] role source_Organizer_in_MeetingUnit
+  Organizer[1] role target_Organizer_in_MeetingUnit
+end
+
+association Agent_plays_Secretary between
+  Agent[1] role source_Agent_plays_Secretary
+  Secretary[0..*] role target_Agent_plays_Secretary
+end
+
+association Secretary_in_MeetingUnit between
+  MeetingUnit[1] role source_Secretary_in_MeetingUnit
+  Secretary[0..1] role target_Secretary_in_MeetingUnit
+end
+
+association Agent_plays_Participant between
+  Agent[1] role source_Agent_plays_Participant
+  Participant[0..*] role target_Agent_plays_Participant
+end
+
+association Participant_in_MeetingUnit between
+  MeetingUnit[1] role source_Participant_in_MeetingUnit
+  Participant[2..*] role target_Participant_in_MeetingUnit
+end
+
+constraints
+
+context Agent inv NoConflict_Initiator_Organizer:
+  self.target_Agent_plays_Initiator->forAll(r1 : Initiator |
+    self.target_Agent_plays_Organizer->forAll(r2 : Organizer |
+      not (r1.source_Initiator_in_MeetingUnit = r2.source_Organizer_in_MeetingUnit)))
+
+context Agent inv NoConflict_Initiator_Secretary:
+  self.target_Agent_plays_Initiator->forAll(r1 : Initiator |
+    self.target_Agent_plays_Secretary->forAll(r2 : Secretary |
+      not (r1.source_Initiator_in_MeetingUnit = r2.source_Secretary_in_MeetingUnit)))
+
+context Agent inv NoConflict_Organizer_Participant:
+  self.target_Agent_plays_Organizer->forAll(r1 : Organizer |
+    self.target_Agent_plays_Participant->forAll(r2 : Participant |
+      not (r1.source_Organizer_in_MeetingUnit = r2.source_Participant_in_MeetingUnit)))
+
+context Agent inv NoConflict_Secretary_Participant:
+  self.target_Agent_plays_Secretary->forAll(r1 : Secretary |
+    self.target_Agent_plays_Participant->forAll(r2 : Participant |
+      not (r1.source_Secretary_in_MeetingUnit = r2.source_Participant_in_MeetingUnit)))
+

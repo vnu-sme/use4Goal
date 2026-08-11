@@ -1,0 +1,14 @@
+-- The car light and the pedestrian light can not be green simultaneously
+context TrafficLight
+-- When the traffic light receives a request, at some point 
+in time, the pedestrian light will be turned on.
+inv TL1: self.requested = true implies 
+    sometime isCalled(switchPedLight())
+-- When the pedestrian light is turned on, it will change to green.
+inv TL2: isCalled(switchPedLight()) implies becomesTrue(self.pedLight = #Green)
+
+
+context Button
+-- When the button is pressed, a request to change the light will be sent to the traffic light.
+inv TL3: isCalled(requestPass()) implies 
+becomesTrue(self.light.requested = true and self.pressed = true)

@@ -1,0 +1,8 @@
+-- currently this nested temporal operator is not supported
+context Elevator
+inv betweenAndPatternFalse: (isCalled(move()) and sometime isCalled(closeDoor()))
+    implies always (isCalled(closeDoor()) implies sometime isCalled(move()) before isCalled(openDoor()))
+
+--context Elevator
+--inv betweenAndPatternFalse: (OperationCall.allInstances()->exists(op | op.pred() = self.snapshotElevator and op.oclIsTypeOf(move_ElevatorOpC)) and (let CS:Snapshot = self.snapshotElevator in Set{CS}->closure(s | s.succ())->exists(s | OperationCall.allInstances()->exists(op | op.pred() = s and op.oclIsTypeOf(closeDoor_ElevatorOpC)))))
+--    implies (let CS:Snapshot = self.snapshotElevator in Set{CS}->closure(s | s.succ())->excluding(null)->forAll(s | (OperationCall.allInstances()->exists(op | op.pred() = s and op.oclIsTypeOf(move_ElevatorOpC)) implies (let FSQ:Set(Snapshot) = Snapshot.allInstances()->select(s | OperationCall.allInstances()->exists(op | op.pred() = s and op.oclIsTypeOf(closeDoor_ElevatorOpC)))in FSQ->forAll(s | Set{s}->closure(s_1 | s_1.pred())->exists(s | OperationCall.allInstances()->exists(op | op.pred() = s and op.oclIsTypeOf(openDoor_ElevatorOpC))))))))

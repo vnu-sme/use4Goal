@@ -1,58 +1,82 @@
 // Two enabled XOR completions for the same valid input: one satisfies attendance,
 // one reaches EndEvent without it. Used to demonstrate weak versus strong compliance.
 model MeetingSchedulerNondeterministic {
-  pool MeetingOrganization {
-    lane Initiator {
-      start start_meeting { trigger none }
-      task decideMeetingDetails {
-        post {[ Meeting.allInstances()->forAll(m | m.detailsDecided) ]}
-        effect {[
-          for m in Meeting.allInstances() do m.detailsDecided := true; end
-        ]}
-      }
-    }
-    lane Organizer {
-      task checkCalendar {
-        pre {[ Participant.allInstances()->forAll(p | p.hasCalendar) ]}
-        post {[ Participant.allInstances()->forAll(p | p.timetable = #collected) ]}
-        effect {[
-          for p in Participant.allInstances() do
-            p.timetable := #collected; p.timetableChannel := #calendar;
-          end
-        ]}
-      }
-      task chooseTimeAndDate {
-        post {[ Meeting.allInstances()->forAll(m | m.timeChosen) ]}
-        effect {[
-          for m in Meeting.allInstances() do m.timeChosen := true; end
-        ]}
-      }
-      task announceMeeting {
-        post {[ Participant.allInstances()->forAll(p | p.notified = #sent) ]}
-        effect {[
-          for p in Participant.allInstances() do p.notified := #sent; end
-        ]}
-      }
-      gateway completionChoice { type xor }
-      task skipAttendance { name "Finish without recording attendance" }
-      end end_meeting { trigger none }
-    }
-    lane Participant {
-      task participate {
-        post {[ Participant.allInstances()->forAll(p | p.attendance = #attended) ]}
-        effect {[
-          for p in Participant.allInstances() do p.attendance := #attended; end
-        ]}
-      }
-    }
-    flow start_meeting -> decideMeetingDetails
-    flow decideMeetingDetails -> checkCalendar
-    flow checkCalendar -> chooseTimeAndDate
-    flow chooseTimeAndDate -> announceMeeting
-    flow announceMeeting -> completionChoice
-    flow completionChoice -> participate
-    flow completionChoice -> skipAttendance
-    flow participate -> end_meeting
-    flow skipAttendance -> end_meeting
+  pool MeetingOrganization for MeetingUnit {
+    lane Initiator;
+    lane Organizer;
+    lane Participant;
+  }
+
+  start start_meeting {
+    lane Initiator
+    trigger none
+    flow decideMeetingDetails
+  }
+
+  activity decideMeetingDetails {
+    type task
+    lane Initiator
+    post {[
+      self.detailsDecided
+    ]}
+    flow checkCalendar
+  }
+
+  activity checkCalendar {
+    type task
+    lane Organizer
+    pre {[
+      self.target_Participant_in_MeetingUnit->forAll(p | p.source_Agent_plays_Participant.hasCalendar)
+    ]}
+    post {[
+      self.target_Participant_in_MeetingUnit->forAll(p | p.timetableCollected and p.timetableChannel = #calendar)
+    ]}
+    flow chooseTimeAndDate
+  }
+
+  activity chooseTimeAndDate {
+    type task
+    lane Organizer
+    post {[
+      self.timeChosen
+    ]}
+    flow announceMeeting
+  }
+
+  activity announceMeeting {
+    type task
+    lane Organizer
+    post {[
+      self.target_Participant_in_MeetingUnit->forAll(p | p.notified)
+    ]}
+    flow completionChoice
+  }
+
+  gateway completionChoice {
+    lane Organizer
+    type xor
+    flow participate
+    flow skipAttendance
+  }
+
+  activity participate {
+    type task
+    lane Participant
+    post {[
+      self.target_Participant_in_MeetingUnit->forAll(p | p.attended)
+    ]}
+    flow end_meeting
+  }
+
+  activity skipAttendance {
+    name "Finish without recording attendance"
+    type task
+    lane Organizer
+    flow end_meeting
+  }
+
+  end end_meeting {
+    lane Organizer
+    trigger none
   }
 }

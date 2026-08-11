@@ -1,0 +1,5 @@
+-- self.pedLight = #Red until self.pedLight = #Green
+context TrafficLight
+inv AU1: always (self.pedLight = #Red) until (self.carLight = #Red)
+
+-- let CS:Snapshot = self.snapshotTrafficLight in let FS:Set(Snapshot) = Set{CS.succ()}->closure(s | s.succ())->excluding(null) in let FSQ:Set(Snapshot) = FS->select(s | (s.trafficLight->any(o | self.id = o.id).carLight = #Red) ) in let FSP:Set(Snapshot) = FS->including(CS)->select(s | (s.trafficLight->any(o | self.id = o.id).pedLight = #Red) ) in if (FSQ->size() > 0) then (if (FSP->size() > 0) then (FSQ->exists(s | FSP-(Set{s}->closure(ss | ss.succ())->excluding(null)) = FS->including(CS)-(Set{s}->closure(ss | ss.succ())->excluding(null)))) else false endif) else (FSP = FS->including(CS)) endif

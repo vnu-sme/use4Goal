@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+    <uml:Model xmi:type="uml:Model" xmi:id="TrafficLight" name="TrafficLight">
+    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="TrafficLight_Integer" name="Integer"/>
+    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="TrafficLight_UnlimitedNatural" name="UnlimitedNatural"/>
+    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="TrafficLight_Real" name="Real"/>
+    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="TrafficLight_Boolean" name="Boolean"/>
+    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="TrafficLight_String" name="String"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="TrafficLight_Button" name="Button">
+      <ownedAttribute xmi:id="TrafficLight_Button_counter" name="counter" type="TrafficLight_Boolean"/>
+      <ownedOperation xmi:id="TrafficLight_Button_requestPass" name="requestPass" isQuery="false" precondition="TrafficLight_Button_requestPass_pre1"  postcondition="TrafficLight_Button_requestPass_post1">
+        <ownedRule xmi:id="TrafficLight_Button_requestPass_pre1" name="pre1">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="TrafficLight_Button_requestPass_pre1_specification">
+            <body>(self.light.pedLight = Color::Red)</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="TrafficLight_Button_requestPass_post1" name="post1">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="TrafficLight_Button_requestPass_post1_specification">
+            <body>(self.light.requested = true)</body>
+          </specification>
+        </ownedRule>
+      </ownedOperation>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="TrafficLight_TrafficLight" name="TrafficLight">
+      <ownedAttribute xmi:id="TrafficLight_TrafficLight_carLight" name="carLight" type="TrafficLight_Color"/>
+      <ownedAttribute xmi:id="TrafficLight_TrafficLight_pedLight" name="pedLight" type="TrafficLight_Color"/>
+      <ownedAttribute xmi:id="TrafficLight_TrafficLight_requested" name="requested" type="TrafficLight_Boolean"/>
+      <ownedOperation xmi:id="TrafficLight_TrafficLight_switchCarLight" name="switchCarLight" isQuery="false" postcondition="TrafficLight_TrafficLight_switchCarLight_post1">
+        <ownedParameter xmi:id="TrafficLight_TrafficLight_switchCarLight_result" name="result" type="TrafficLight_Color" upper="1" direction="return">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="TrafficLight_TrafficLight_switchCarLight_result" value="0"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="TrafficLight_TrafficLight_switchCarLight_result" value="1"/>
+        </ownedParameter>
+        <ownedRule xmi:id="TrafficLight_TrafficLight_switchCarLight_post1" name="post1">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="TrafficLight_TrafficLight_switchCarLight_post1_specification">
+            <body>(self.carLight &lt;&gt; self.carLight@pre)</body>
+          </specification>
+        </ownedRule>
+      </ownedOperation>
+      <ownedOperation xmi:id="TrafficLight_TrafficLight_switchPedLight" name="switchPedLight" isQuery="false" precondition="TrafficLight_TrafficLight_switchPedLight_pre1"  postcondition="TrafficLight_TrafficLight_switchPedLight_post1 TrafficLight_TrafficLight_switchPedLight_post2">
+        <ownedParameter xmi:id="TrafficLight_TrafficLight_switchPedLight_result" name="result" type="TrafficLight_Color" upper="1" direction="return">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="TrafficLight_TrafficLight_switchPedLight_result" value="0"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="TrafficLight_TrafficLight_switchPedLight_result" value="1"/>
+        </ownedParameter>
+        <ownedRule xmi:id="TrafficLight_TrafficLight_switchPedLight_pre1" name="pre1">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="TrafficLight_TrafficLight_switchPedLight_pre1_specification">
+            <body>(self.requested = true)</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="TrafficLight_TrafficLight_switchPedLight_post1" name="post1">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="TrafficLight_TrafficLight_switchPedLight_post1_specification">
+            <body>(self.pedLight &lt;&gt; self.pedLight@pre)</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="TrafficLight_TrafficLight_switchPedLight_post2" name="post2">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="TrafficLight_TrafficLight_switchPedLight_post2_specification">
+            <body>(self.requested = false)</body>
+          </specification>
+        </ownedRule>
+      </ownedOperation>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="TrafficLight_Color" name="Color">
+      <ownedLiteral xmi:id="TrafficLight_Color_Green" name="Green"/>
+      <ownedLiteral xmi:id="TrafficLight_Color_Red" name="Red"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="TrafficLight_PedButtonTrafficLight" name="PedButtonTrafficLight" memberEnd="TrafficLight_PedButtonTrafficLight_light TrafficLight_PedButtonTrafficLight_button">
+      <ownedEnd xmi:id="TrafficLight_PedButtonTrafficLight_light" name="light" type="TrafficLight_TrafficLight" association="TrafficLight_PedButtonTrafficLight">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="TrafficLight_PedButtonTrafficLight_light_lower" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="TrafficLight_PedButtonTrafficLight_light_upper" value="1"/>
+      </ownedEnd>
+      <ownedEnd xmi:id="TrafficLight_PedButtonTrafficLight_button" name="button" type="TrafficLight_Button" association="TrafficLight_PedButtonTrafficLight">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="TrafficLight_PedButtonTrafficLight_button_lower" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="TrafficLight_PedButtonTrafficLight_button_upper" value="*"/>
+      </ownedEnd>
+    </packagedElement>
+    </uml:Model></xmi:XMI>

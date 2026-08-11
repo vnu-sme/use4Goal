@@ -1,0 +1,12 @@
+scenario IncidentResponseVerify for "incident_response.istar" {
+    instance coord : Coordinator;
+    instance ann, bob : Analyst;
+    instance tara, minh : Technician;
+    instance audrey : Auditor;
+
+    fire TriageIncident;
+    fire ann.AnalyzeEvidence;
+    fire bob.AnalyzeEvidence;
+    fire tara.RepairService;
+    fire audrey.AuditClosure;
+}

@@ -1,0 +1,8 @@
+context TrafficLight
+inv alwaysInv: always not (self.carLight = #Green and self.pedLight = #Green)
+
+-- Translated
+-- context TrafficLight
+-- inv alwaysInv: (let CS:Snapshot = self.snapshotTrafficLight
+--                 in Set{CS}->closure(s | s.succ())
+--                 ->forAll(s | not (s.trafficLight->any(o | self.id = o.id).carLight = #Green and s.trafficLight->any(o | self.id = o.id).pedLight = #Green)))

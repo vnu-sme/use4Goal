@@ -1,0 +1,7 @@
+context Elevator
+inv sometimeBefore: sometime isCalled(move()) before isCalled(closeDoor())
+
+
+
+--context Elevator
+--inv sometimeBeforeTranslated: (let FS:Set{Snapshot} = Set{self.snapshotElevator}->closure(s | s.succ()) in )

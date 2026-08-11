@@ -1,0 +1,4 @@
+context Application
+inv livenessBecomesTrue:
+    self.system.loadedApps->includes(self) implies
+    sometime becomesTrue(self.system.installedApps->includes(self))

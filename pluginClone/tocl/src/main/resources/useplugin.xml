@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?use version="7.1.1" ?>
+<plugin name="TemporalOCL Plugin" version="1.0">
+    <actions>
+        <action label="TemporalOCL Compiler"
+                icon="images/ocl-icon.png"
+                class="org.vnu.sme.tocl.actions.ActionOpenTOCL"
+                tooltip="TemporalOCL Parser"
+                menu="TemporalOCL Plugin"
+                menuitem="TemporalOCL Parser"
+                toolbaritem="TemporalOCL Parser"
+                id="org.vnu.sme.tocl.actions.ActionOpenTOCL">
+        </action>
+    </actions>
+</plugin>

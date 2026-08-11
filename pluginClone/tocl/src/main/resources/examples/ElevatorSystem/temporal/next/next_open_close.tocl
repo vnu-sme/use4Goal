@@ -1,0 +1,4 @@
+-- if openDoor() is called, then closeDoor() is called in the next snapshot
+context Elevator
+inv openNextClose: isCalled(openDoor()) implies next isCalled(closeDoor())
+

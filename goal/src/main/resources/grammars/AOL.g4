@@ -1,6 +1,6 @@
 grammar AOL;
 
-@header { package org.vnu.sme.goal.aol.parser; }
+@header { package org.vnu.sme.goal.dsl.aol.parser; }
 
 // =====================================================================
 //  AOL — ACL Object Language: an object-diagram-style instance snapshot
@@ -62,7 +62,10 @@ topLevelDecl
     | linkDecl
     ;
 
-agentDecl : 'agent' IDENT (',' IDENT)* ';' ;
+agentDecl
+    : 'agent' IDENT 'as' IDENT attributeValueBlock
+    | 'agent' IDENT (',' IDENT)* ';'
+    ;
 
 groupInstanceDecl
     : 'group' IDENT 'as' IDENT (';' | '{' groupItemDecl* '}')
@@ -72,6 +75,7 @@ groupItemDecl
     : groupInstanceDecl
     | playDecl
     | entityInstanceDecl
+    | attributeValue
     ;
 
 playDecl

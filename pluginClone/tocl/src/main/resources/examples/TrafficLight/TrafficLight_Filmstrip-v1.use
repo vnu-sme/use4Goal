@@ -1,0 +1,165 @@
+model TrafficLight
+
+enum Color {
+  Green, Red
+ };
+
+class requestPass_ButtonOpC < ButtonOpC
+end
+
+abstract class OpC
+operations
+  pred() : Snapshot = 
+    if (self.pred->size() = 1) then self.pred->any( $elem0:Snapshot | true ) else null endif
+  succ() : Snapshot = 
+    if (self.succ->size() = 1) then self.succ->any( $elem0:Snapshot | true ) else null endif
+end
+
+association PedButtonTrafficLight between
+  TrafficLight[1] role light
+  Button[1..*]
+end
+
+aggregation PredSucc between
+  SnapshotItem[0..1] role pred
+  SnapshotItem[0..1] role succ
+end
+
+class TrafficLight < SnapshotItem
+attributes
+  carLight : Color
+  id : Integer
+  pedLight : Color
+  requested : Boolean
+operations
+  switchCarLight()
+  switchPedLight()
+end
+
+association Filmstrip between
+  Snapshot[0..1] role pred
+  Snapshot[0..1] role succ
+  OpC[0..1]
+end
+
+class switchCarLight_TrafficLightOpC < TrafficLightOpC
+end
+
+association SnapshotButton between
+  Button[*]
+  Snapshot[1] role snapshotButton redefines snapshot
+end
+
+class Snapshot
+operations
+  pred() : Snapshot = 
+    if (self.pred->size() = 1) then self.pred->any( $elem0:Snapshot | true ) else null endif
+  succ() : Snapshot = 
+    if (self.succ->size() = 1) then self.succ->any( $elem0:Snapshot | true ) else null endif
+end
+
+abstract class ButtonOpC < OpC
+attributes
+  aSelf : Button
+end
+
+aggregation PredSuccTrafficLight between
+  TrafficLight[0..1] role predTrafficLight redefines pred
+  TrafficLight[0..1] role succTrafficLight redefines succ
+end
+
+class switchPedLight_TrafficLightOpC < TrafficLightOpC
+end
+
+association SnapElement between
+  SnapshotItem[*]
+  Snapshot[1]
+end
+
+association SnapshotTrafficLight between
+  TrafficLight[*]
+  Snapshot[1] role snapshotTrafficLight redefines snapshot
+end
+
+class Button < SnapshotItem
+attributes
+  id : Integer
+  pressed : Boolean
+operations
+  requestPass()
+end
+
+abstract class TrafficLightOpC < OpC
+attributes
+  aSelf : TrafficLight
+end
+
+abstract class SnapshotItem
+end
+
+aggregation PredSuccButton between
+  Button[0..1] role predButton redefines pred
+  Button[0..1] role succButton redefines succ
+end
+
+constraints
+context Button inv validSnapshotLinking:
+  (self.succ.isDefined() implies (self.succ.snapshot = self.snapshot.succ()))
+
+context ButtonOpC inv aSelfDefined:
+  self.aSelf.isDefined()
+
+context ButtonOpC inv aSelfInPred:
+  (self.aSelf.snapshot = self.pred())
+
+context OpC inv assocClassBehavior:
+  (((self.pred->size() = 1) and (self.succ->size() = 1)) and OpC.allInstances()->forAll( op:OpC | (((self.pred = op.pred) and (self.succ = op.succ)) implies (self = op)) ))
+
+context Snapshot inv cycleFree:
+  Set{self}->closure( s:Snapshot | s.succ() )->excludes(self)
+
+context Snapshot inv oneFilmstrip:
+  ((Snapshot.allInstances()->select( s:Snapshot | s.pred().isUndefined() )->size() = 1) and (Snapshot.allInstances()->select( s:Snapshot | s.succ().isUndefined() )->size() = 1))
+
+context self : TrafficLight inv inv1:
+  ((self.pedLight = Color::Green) implies (self.carLight <> Color::Green))
+
+context self : TrafficLight inv inv2:
+  (self.button->size() >= 1)
+
+context TrafficLight inv validLinkingPedButtonTrafficLight:
+  self.button->forAll( c:Button | (c.snapshot = self.snapshot) )
+
+context TrafficLight inv validSnapshotLinking:
+  (self.succ.isDefined() implies (self.succ.snapshot = self.snapshot.succ()))
+
+context TrafficLightOpC inv aSelfDefined:
+  self.aSelf.isDefined()
+
+context TrafficLightOpC inv aSelfInPred:
+  (self.aSelf.snapshot = self.pred())
+
+context requestPass_ButtonOpC inv post_notClickAgain:
+  (aSelf.succ.pressed = true)
+
+context requestPass_ButtonOpC inv post_requestIsPassed:
+  (aSelf.succ.light.requested = true)
+
+context requestPass_ButtonOpC inv pre_buttonNotPressed:
+  (aSelf.pressed = false)
+
+context requestPass_ButtonOpC inv pre_pedLightIsRed:
+  (aSelf.light.pedLight = Color::Red)
+
+context switchCarLight_TrafficLightOpC inv post_switchCarLight:
+  (aSelf.succ.carLight <> aSelf.carLight)
+
+context switchPedLight_TrafficLightOpC inv post_returnRequest:
+  ((aSelf.succ.requested = false) and aSelf.succ.button->forAll( e:Button | (e.pressed = false) ))
+
+context switchPedLight_TrafficLightOpC inv post_switchPedLight:
+  (aSelf.succ.pedLight <> aSelf.pedLight)
+
+context switchPedLight_TrafficLightOpC inv pre_requestMustPassed:
+  (aSelf.requested = true)
+

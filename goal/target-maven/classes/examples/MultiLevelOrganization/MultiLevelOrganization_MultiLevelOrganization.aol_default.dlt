@@ -1,0 +1,1232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<diagram_Layout version="13">
+    <diagramOptions>
+        <autolayout>false</autolayout>
+        <antialiasing>true</antialiasing>
+        <showassocnames>false</showassocnames>
+        <showattributes>true</showattributes>
+        <showmultiplicities>true</showmultiplicities>
+        <showoperations>false</showoperations>
+        <showrolenames>true</showrolenames>
+        <showgrid>false</showgrid>
+    </diagramOptions>
+    <node height="44.0" id="agent::alice" sizeCalculated="false"
+        type="AolNode" width="219.0">
+        <name>agent::alice</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>36.0</x>
+            <y>36.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="44.0" id="agent::bob" sizeCalculated="false"
+        type="AolNode" width="205.0">
+        <name>agent::bob</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>281.0</x>
+            <y>36.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="56.0" id="group::/university" sizeCalculated="false"
+        type="AolNode" width="205.0">
+        <name>group::/university</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>912.0</x>
+            <y>125.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="66.0" id="play::/university/aliceMember"
+        sizeCalculated="false" type="AolNode" width="252.0">
+        <name>play::/university/aliceMember</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>658.0</x>
+            <y>245.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="66.0" id="play::/university/bobMember"
+        sizeCalculated="false" type="AolNode" width="238.0">
+        <name>play::/university/bobMember</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1132.0</x>
+            <y>250.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="56.0" id="group::/university/computerScience"
+        sizeCalculated="false" type="AolNode" width="226.0">
+        <name>group::/university/computerScience</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>893.0</x>
+            <y>343.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="66.0"
+        id="play::/university/computerScience/aliceDepartmentParty"
+        sizeCalculated="false" type="AolNode" width="273.0">
+        <name>play::/university/computerScience/aliceDepartmentParty</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>717.0</x>
+            <y>474.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="66.0"
+        id="play::/university/computerScience/bobDepartmentParty"
+        sizeCalculated="false" type="AolNode" width="259.0">
+        <name>play::/university/computerScience/bobDepartmentParty</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1064.0</x>
+            <y>466.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="56.0"
+        id="group::/university/computerScience/architectureMeeting"
+        sizeCalculated="false" type="AolNode" width="261.0">
+        <name>group::/university/computerScience/architectureMeeting</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>396.0</x>
+            <y>570.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0"
+        id="play::/university/computerScience/architectureMeeting/aliceOrganizer"
+        sizeCalculated="false" type="AolNode" width="210.0">
+        <name>play::/university/computerScience/architectureMeeting/aliceOrganizer</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>36.0</x>
+            <y>670.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="114.0"
+        id="play::/university/computerScience/architectureMeeting/aliceParticipant"
+        sizeCalculated="false" type="AolNode" width="238.0">
+        <name>play::/university/computerScience/architectureMeeting/aliceParticipant</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>272.0</x>
+            <y>670.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="114.0"
+        id="play::/university/computerScience/architectureMeeting/bobParticipant"
+        sizeCalculated="false" type="AolNode" width="224.0">
+        <name>play::/university/computerScience/architectureMeeting/bobParticipant</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>536.0</x>
+            <y>670.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="66.0"
+        id="entity::/university/computerScience/architectureMeeting/meeting1"
+        sizeCalculated="false" type="AolNode" width="231.0">
+        <name>entity::/university/computerScience/architectureMeeting/meeting1</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>786.0</x>
+            <y>670.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="56.0"
+        id="group::/university/computerScience/architectureMeeting/architecturePanel"
+        sizeCalculated="false" type="AolNode" width="247.0">
+        <name>group::/university/computerScience/architectureMeeting/architecturePanel</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>402.0</x>
+            <y>828.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0"
+        id="play::/university/computerScience/architectureMeeting/architecturePanel/aliceReviewer"
+        sizeCalculated="false" type="AolNode" width="259.0">
+        <name>play::/university/computerScience/architectureMeeting/architecturePanel/aliceReviewer</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>261.0</x>
+            <y>928.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="66.0"
+        id="entity::/university/computerScience/architectureMeeting/architecturePanel/architectureDocument"
+        sizeCalculated="false" type="AolNode" width="245.0">
+        <name>entity::/university/computerScience/architectureMeeting/architecturePanel/architectureDocument</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>546.0</x>
+            <y>928.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="56.0"
+        id="group::/university/computerScience/releaseMeeting"
+        sizeCalculated="false" type="AolNode" width="226.0">
+        <name>group::/university/computerScience/releaseMeeting</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1476.0</x>
+            <y>570.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0"
+        id="play::/university/computerScience/releaseMeeting/bobOrganizer"
+        sizeCalculated="false" type="AolNode" width="196.0">
+        <name>play::/university/computerScience/releaseMeeting/bobOrganizer</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1067.0</x>
+            <y>670.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="114.0"
+        id="play::/university/computerScience/releaseMeeting/aliceReleaseParticipant"
+        sizeCalculated="false" type="AolNode" width="287.0">
+        <name>play::/university/computerScience/releaseMeeting/aliceReleaseParticipant</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1289.0</x>
+            <y>670.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="114.0"
+        id="play::/university/computerScience/releaseMeeting/bobReleaseParticipant"
+        sizeCalculated="false" type="AolNode" width="273.0">
+        <name>play::/university/computerScience/releaseMeeting/bobReleaseParticipant</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1602.0</x>
+            <y>670.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="66.0"
+        id="entity::/university/computerScience/releaseMeeting/meeting2"
+        sizeCalculated="false" type="AolNode" width="210.0">
+        <name>entity::/university/computerScience/releaseMeeting/meeting2</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1901.0</x>
+            <y>670.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <edge type="AolEdge">
+        <source>entity::/university/computerScience/architectureMeeting/architecturePanel/architectureDocument</source>
+        <target>group::/university/computerScience/architectureMeeting/architecturePanel</target>
+        <name>entity_aggregation</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::ENTITY_AGGREGATION::entity::/university/computerScience/architectureMeeting/architecturePanel/architectureDocument::group::/university/computerScience/architectureMeeting/architecturePanel::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::ENTITY_AGGREGATION::entity::/university/computerScience/architectureMeeting/architecturePanel/architectureDocument::group::/university/computerScience/architectureMeeting/architecturePanel::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>entity::/university/computerScience/architectureMeeting/meeting1</source>
+        <target>group::/university/computerScience/architectureMeeting</target>
+        <name>entity_aggregation</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::ENTITY_AGGREGATION::entity::/university/computerScience/architectureMeeting/meeting1::group::/university/computerScience/architectureMeeting::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::ENTITY_AGGREGATION::entity::/university/computerScience/architectureMeeting/meeting1::group::/university/computerScience/architectureMeeting::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>entity::/university/computerScience/releaseMeeting/meeting2</source>
+        <target>group::/university/computerScience/releaseMeeting</target>
+        <name>entity_aggregation</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::ENTITY_AGGREGATION::entity::/university/computerScience/releaseMeeting/meeting2::group::/university/computerScience/releaseMeeting::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::ENTITY_AGGREGATION::entity::/university/computerScience/releaseMeeting/meeting2::group::/university/computerScience/releaseMeeting::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>play::/university/aliceMember</source>
+        <target>group::/university</target>
+        <name>play_composition</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::PLAY_COMPOSITION::play::/university/aliceMember::group::/university::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::PLAY_COMPOSITION::play::/university/aliceMember::group::/university::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>play::/university/bobMember</source>
+        <target>group::/university</target>
+        <name>play_composition</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::PLAY_COMPOSITION::play::/university/bobMember::group::/university::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::PLAY_COMPOSITION::play::/university/bobMember::group::/university::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>play::/university/computerScience/aliceDepartmentParty</source>
+        <target>group::/university/computerScience</target>
+        <name>play_composition</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::PLAY_COMPOSITION::play::/university/computerScience/aliceDepartmentParty::group::/university/computerScience::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::PLAY_COMPOSITION::play::/university/computerScience/aliceDepartmentParty::group::/university/computerScience::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>play::/university/computerScience/architectureMeeting/aliceOrganizer</source>
+        <target>group::/university/computerScience/architectureMeeting</target>
+        <name>play_composition</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::PLAY_COMPOSITION::play::/university/computerScience/architectureMeeting/aliceOrganizer::group::/university/computerScience/architectureMeeting::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::PLAY_COMPOSITION::play::/university/computerScience/architectureMeeting/aliceOrganizer::group::/university/computerScience/architectureMeeting::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>play::/university/computerScience/architectureMeeting/aliceParticipant</source>
+        <target>group::/university/computerScience/architectureMeeting</target>
+        <name>play_composition</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::PLAY_COMPOSITION::play::/university/computerScience/architectureMeeting/aliceParticipant::group::/university/computerScience/architectureMeeting::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::PLAY_COMPOSITION::play::/university/computerScience/architectureMeeting/aliceParticipant::group::/university/computerScience/architectureMeeting::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>play::/university/computerScience/architectureMeeting/architecturePanel/aliceReviewer</source>
+        <target>group::/university/computerScience/architectureMeeting/architecturePanel</target>
+        <name>play_composition</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::PLAY_COMPOSITION::play::/university/computerScience/architectureMeeting/architecturePanel/aliceReviewer::group::/university/computerScience/architectureMeeting/architecturePanel::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::PLAY_COMPOSITION::play::/university/computerScience/architectureMeeting/architecturePanel/aliceReviewer::group::/university/computerScience/architectureMeeting/architecturePanel::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>play::/university/computerScience/architectureMeeting/bobParticipant</source>
+        <target>group::/university/computerScience/architectureMeeting</target>
+        <name>play_composition</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::PLAY_COMPOSITION::play::/university/computerScience/architectureMeeting/bobParticipant::group::/university/computerScience/architectureMeeting::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::PLAY_COMPOSITION::play::/university/computerScience/architectureMeeting/bobParticipant::group::/university/computerScience/architectureMeeting::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>play::/university/computerScience/bobDepartmentParty</source>
+        <target>group::/university/computerScience</target>
+        <name>play_composition</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::PLAY_COMPOSITION::play::/university/computerScience/bobDepartmentParty::group::/university/computerScience::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::PLAY_COMPOSITION::play::/university/computerScience/bobDepartmentParty::group::/university/computerScience::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>play::/university/computerScience/releaseMeeting/aliceReleaseParticipant</source>
+        <target>group::/university/computerScience/releaseMeeting</target>
+        <name>play_composition</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::PLAY_COMPOSITION::play::/university/computerScience/releaseMeeting/aliceReleaseParticipant::group::/university/computerScience/releaseMeeting::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::PLAY_COMPOSITION::play::/university/computerScience/releaseMeeting/aliceReleaseParticipant::group::/university/computerScience/releaseMeeting::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>play::/university/computerScience/releaseMeeting/bobOrganizer</source>
+        <target>group::/university/computerScience/releaseMeeting</target>
+        <name>play_composition</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::PLAY_COMPOSITION::play::/university/computerScience/releaseMeeting/bobOrganizer::group::/university/computerScience/releaseMeeting::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::PLAY_COMPOSITION::play::/university/computerScience/releaseMeeting/bobOrganizer::group::/university/computerScience/releaseMeeting::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>play::/university/computerScience/releaseMeeting/bobReleaseParticipant</source>
+        <target>group::/university/computerScience/releaseMeeting</target>
+        <name>play_composition</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::PLAY_COMPOSITION::play::/university/computerScience/releaseMeeting/bobReleaseParticipant::group::/university/computerScience/releaseMeeting::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::PLAY_COMPOSITION::play::/university/computerScience/releaseMeeting/bobReleaseParticipant::group::/university/computerScience/releaseMeeting::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>play::/university/aliceMember</source>
+        <target>agent::alice</target>
+        <name>played_by</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::PLAYED_BY::play::/university/aliceMember::agent::alice::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::PLAYED_BY::play::/university/aliceMember::agent::alice::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>play::/university/bobMember</source>
+        <target>agent::bob</target>
+        <name>played_by</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::PLAYED_BY::play::/university/bobMember::agent::bob::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::PLAYED_BY::play::/university/bobMember::agent::bob::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>play::/university/computerScience/aliceDepartmentParty</source>
+        <target>agent::alice</target>
+        <name>played_by</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::PLAYED_BY::play::/university/computerScience/aliceDepartmentParty::agent::alice::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::PLAYED_BY::play::/university/computerScience/aliceDepartmentParty::agent::alice::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>play::/university/computerScience/architectureMeeting/aliceOrganizer</source>
+        <target>agent::alice</target>
+        <name>played_by</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::PLAYED_BY::play::/university/computerScience/architectureMeeting/aliceOrganizer::agent::alice::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::PLAYED_BY::play::/university/computerScience/architectureMeeting/aliceOrganizer::agent::alice::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>play::/university/computerScience/architectureMeeting/aliceParticipant</source>
+        <target>agent::alice</target>
+        <name>played_by</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::PLAYED_BY::play::/university/computerScience/architectureMeeting/aliceParticipant::agent::alice::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::PLAYED_BY::play::/university/computerScience/architectureMeeting/aliceParticipant::agent::alice::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>play::/university/computerScience/architectureMeeting/architecturePanel/aliceReviewer</source>
+        <target>agent::alice</target>
+        <name>played_by</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::PLAYED_BY::play::/university/computerScience/architectureMeeting/architecturePanel/aliceReviewer::agent::alice::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::PLAYED_BY::play::/university/computerScience/architectureMeeting/architecturePanel/aliceReviewer::agent::alice::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>play::/university/computerScience/architectureMeeting/bobParticipant</source>
+        <target>agent::bob</target>
+        <name>played_by</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::PLAYED_BY::play::/university/computerScience/architectureMeeting/bobParticipant::agent::bob::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::PLAYED_BY::play::/university/computerScience/architectureMeeting/bobParticipant::agent::bob::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>play::/university/computerScience/bobDepartmentParty</source>
+        <target>agent::bob</target>
+        <name>played_by</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::PLAYED_BY::play::/university/computerScience/bobDepartmentParty::agent::bob::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::PLAYED_BY::play::/university/computerScience/bobDepartmentParty::agent::bob::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>play::/university/computerScience/releaseMeeting/aliceReleaseParticipant</source>
+        <target>agent::alice</target>
+        <name>played_by</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::PLAYED_BY::play::/university/computerScience/releaseMeeting/aliceReleaseParticipant::agent::alice::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::PLAYED_BY::play::/university/computerScience/releaseMeeting/aliceReleaseParticipant::agent::alice::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>play::/university/computerScience/releaseMeeting/bobOrganizer</source>
+        <target>agent::bob</target>
+        <name>played_by</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::PLAYED_BY::play::/university/computerScience/releaseMeeting/bobOrganizer::agent::bob::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::PLAYED_BY::play::/university/computerScience/releaseMeeting/bobOrganizer::agent::bob::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>play::/university/computerScience/releaseMeeting/bobReleaseParticipant</source>
+        <target>agent::bob</target>
+        <name>played_by</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::PLAYED_BY::play::/university/computerScience/releaseMeeting/bobReleaseParticipant::agent::bob::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::PLAYED_BY::play::/university/computerScience/releaseMeeting/bobReleaseParticipant::agent::bob::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>group::/university/computerScience/architectureMeeting/architecturePanel</source>
+        <target>group::/university/computerScience/architectureMeeting</target>
+        <name>subgroup_composition</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::SUBGROUP_COMPOSITION::group::/university/computerScience/architectureMeeting/architecturePanel::group::/university/computerScience/architectureMeeting::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::SUBGROUP_COMPOSITION::group::/university/computerScience/architectureMeeting/architecturePanel::group::/university/computerScience/architectureMeeting::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>group::/university/computerScience/architectureMeeting</source>
+        <target>group::/university/computerScience</target>
+        <name>subgroup_composition</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::SUBGROUP_COMPOSITION::group::/university/computerScience/architectureMeeting::group::/university/computerScience::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::SUBGROUP_COMPOSITION::group::/university/computerScience/architectureMeeting::group::/university/computerScience::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>group::/university/computerScience/releaseMeeting</source>
+        <target>group::/university/computerScience</target>
+        <name>subgroup_composition</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::SUBGROUP_COMPOSITION::group::/university/computerScience/releaseMeeting::group::/university/computerScience::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::SUBGROUP_COMPOSITION::group::/university/computerScience/releaseMeeting::group::/university/computerScience::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="AolEdge">
+        <source>group::/university/computerScience</source>
+        <target>group::/university</target>
+        <name>subgroup_composition</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="aol::SUBGROUP_COMPOSITION::group::/university/computerScience::group::/university::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="aol::SUBGROUP_COMPOSITION::group::/university/computerScience::group::/university::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+</diagram_Layout>

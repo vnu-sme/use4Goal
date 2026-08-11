@@ -1,0 +1,120 @@
+model SoftwareSystem
+
+-- Classes
+class System
+attributes
+    id : Integer
+    freeMemory : Integer init = 10
+    loadedApps : Set(Application) init = Set{}
+    installedApps : Set(Application) init = Set{}
+    runningApps : Set(Application) init = Set{}
+operations
+    load(app : Application)
+    begin
+        self.loadedApps := self.loadedApps->including(app);
+        self.freeMemory := self.freeMemory - app.size;
+    end
+
+    install()
+    begin
+        self.installedApps := self.installedApps->union(self.loadedApps);
+        self.loadedApps := self.loadedApps->reject(true)->excluding(null);
+    end
+
+    run(app : Application)
+    begin
+        self.runningApps := self.runningApps->including(app);
+    end
+
+    stop(app : Application)
+    begin
+        self.runningApps := self.runningApps->excluding(app);
+    end
+end
+
+class Application
+attributes
+    id : Integer
+    size : Integer
+end
+
+-- Associations
+association SystemApplication between
+    System[1] role system
+    Application[0..*] role apps
+end
+
+-- Invariants
+constraints
+
+-- These invariants ensure that the system maintains logical and consistent states regarding memory and application sets. They prevent negative memory, overlapping app states, oversized collections, and null references.
+context System
+    inv memoryConstraint: self.freeMemory >= 0
+    inv notLoadedAndInstalled: self.loadedApps->intersection(self.installedApps)->isEmpty()
+    inv sets: let appNumber: Integer = self.apps->size() in
+        (self.loadedApps->size() <= appNumber and
+        self.installedApps->size() <= appNumber and
+        self.runningApps->size() <= appNumber)
+    inv notContainsNull:
+        not self.loadedApps->includes(null) and
+        not self.installedApps->includes(null) and
+        not self.runningApps->includes(null)
+
+
+-- Ensures that each application has a valid size greater than zero.
+context Application
+    inv sizeConstraint: self.size > 0
+
+-- The app must not already exist in any collection and enough free memory must be available. After loading, memory decreases and the app is added to loadedApps while others remain unchanged.
+context System::load(app: Application)
+    pre notLoaded: not self.loadedApps->includes(app) and
+                    not self.installedApps->includes(app) and
+                    not self.runningApps->includes(app)
+    pre enoughMemory: self.freeMemory >= app.size
+    post loaded: self.loadedApps = self.loadedApps@pre->including(app)
+    post freeMemory: self.freeMemory = self.freeMemory@pre - app.size
+    post unchanged:
+        self.apps->forAll(app |
+            app.size = app.size@pre and
+            app.id = app.id@pre)
+    post sameInstalledAndRunning:
+        self.installedApps = self.installedApps@pre and
+        self.runningApps = self.runningApps@pre
+
+-- Installation requires at least one loaded app, moves them to installedApps, clears the loaded list, and keeps memory and running apps unchanged.
+context System::install()
+    pre hasLoadedApps: self.loadedApps->notEmpty()
+    post installed: self.installedApps = self.installedApps@pre->union(self.loadedApps@pre)
+    post loadedAppsEmpty: self.loadedApps = self.loadedApps@pre->reject(true)->excluding(null)
+    post sameRunning: self.runningApps = self.runningApps@pre
+    post sameMemory: self.freeMemory = self.freeMemory@pre
+    post unchanged:
+        self.apps->forAll(app |
+            app.size = app.size@pre and
+            app.id = app.id@pre)
+
+-- The app must be installed and not already running. After execution, the app is added to runningApps while other collections and memory remain unchanged.
+context System::run(app : Application)
+    pre isInstalled: self.installedApps->includes(app)
+    pre notRunning: not self.runningApps->includes(app)
+    post running: self.runningApps = self.runningApps@pre->including(app)
+    post sameLoaded: self.loadedApps = self.loadedApps@pre
+    post sameInstalled: self.installedApps = self.installedApps@pre
+    post sameMemory: self.freeMemory = self.freeMemory@pre
+    post unchanged:
+        self.apps->forAll(app |
+            app.size = app.size@pre and
+            app.id = app.id@pre)
+
+-- The app must be both running and installed. After stopping, it is removed from runningApps while others and memory remain unchanged.
+context System::stop(app : Application)
+    pre isRunning: self.runningApps->includes(app)
+            and self.installedApps->includes(app)
+    post notRunning: self.runningApps = self.runningApps@pre->excluding(app)
+    post sameInstalled: self.installedApps = self.installedApps@pre
+    post sameLoaded: self.loadedApps = self.loadedApps@pre
+    post sameMemory: self.freeMemory = self.freeMemory@pre
+    post unchanged:
+        self.apps->forAll(app |
+            app.size = app.size@pre and
+            app.id = app.id@pre)

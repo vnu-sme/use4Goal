@@ -1,0 +1,65 @@
+model VendingMachineSystem
+
+-- Classes
+class VendingMachine
+attributes
+    totalMoney : Integer init = 0
+    selectedItem : Item init = null
+operations
+    insertMoney(money : Integer)
+    begin
+        self.totalMoney := self.totalMoney + money;
+    end
+
+    selectItem(item : Item)
+    begin
+        self.selectedItem := item;
+    end
+
+    dispenseItem()
+    begin
+        if self.totalMoney >= self.selectedItem.price then
+            self.totalMoney := self.totalMoney - self.selectedItem.price;
+            self.selectedItem.stock := self.selectedItem.stock - 1;
+            self.selectedItem := undefined;
+        else
+            -- do nothing
+        end
+    end
+end
+
+class Item
+attributes
+    id : Integer
+    price : Integer
+    stock : Integer
+end
+
+-- Associations
+association VendingMachineItem between
+    VendingMachine[1] role machine
+    Item[1..*] role items
+end
+
+constraints
+context VendingMachine
+    inv moneyConstraint: self.totalMoney >= 0
+
+context Item
+    inv priceConstraint: self.price > 0
+    inv stockConstraint: self.stock >= 0
+
+context VendingMachine::insertMoney(money: Integer)
+    pre validMoney: money > 0
+    post moneyInserted: self.totalMoney = self.totalMoney@pre + money
+
+context VendingMachine::selectItem(item: Item)
+    pre itemAvailable: item.stock > 0
+    post itemSelected: self.selectedItem = item
+
+context VendingMachine::dispenseItem()
+    pre itemSelected: self.selectedItem <> null
+    pre enoughMoney: self.totalMoney >= self.selectedItem.price
+    post itemDispensed: self.selectedItem.stock = self.selectedItem.stock@pre - 1
+    post moneyUpdated: self.totalMoney = self.totalMoney@pre - self.selectedItem.price
+    post itemNullified: self.selectedItem = OclAny

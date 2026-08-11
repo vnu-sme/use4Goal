@@ -1,0 +1,989 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<diagram_Layout version="13">
+    <diagramOptions>
+        <autolayout>false</autolayout>
+        <antialiasing>false</antialiasing>
+        <showassocnames>false</showassocnames>
+        <showattributes>true</showattributes>
+        <showmultiplicities>false</showmultiplicities>
+        <showoperations>false</showoperations>
+        <showrolenames>true</showrolenames>
+        <showgrid>false</showgrid>
+        <ShowStates>false</ShowStates>
+    </diagramOptions>
+    <node id="snapshot2" sizeCalculated="true" type="Object">
+        <name>snapshot2</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>198.0872023308309</x>
+            <y>129.61682976017386</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node id="snapshot1" sizeCalculated="true" type="Object">
+        <name>snapshot1</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>511.34125594824377</x>
+            <y>116.37521817399673</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node id="system2" sizeCalculated="true" type="Object">
+        <name>system2</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>202.74134450892146</x>
+            <y>252.52244393321206</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node id="system1" sizeCalculated="true" type="Object">
+        <name>system1</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>500.54437781743854</x>
+            <y>258.3611348606904</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node id="load_systemopc1" sizeCalculated="true" type="Object">
+        <name>load_systemopc1</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>324.71921539420794</x>
+            <y>27.83809831569306</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node id="application1" sizeCalculated="true" type="Object">
+        <name>application1</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>185.45417335268576</x>
+            <y>372.5352378474411</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node id="application2" sizeCalculated="true" type="Object">
+        <name>application2</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>508.35666879719054</x>
+            <y>386.5229286824399</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="20.0" id="Filmstrip::DiamondNode" kind="link"
+        sizeCalculated="false" type="DiamondNode" width="40.0">
+        <name>Filmstrip</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyInBetween">
+            <userOffsetX>0.0</userOffsetX>
+            <userOffsetY>0.0</userOffsetY>
+            <offsetX>0.0</offsetX>
+            <offsetY>0.0</offsetY>
+            <related length="3">
+                <related0>snapshot2</related0>
+                <related1>load_systemopc1</related1>
+                <related2>snapshot1</related2>
+            </related>
+        </strategy>
+        <connectedNode>snapshot2</connectedNode>
+        <connectedNode>snapshot1</connectedNode>
+        <connectedNode>load_systemopc1</connectedNode>
+        <edgeproperty id="Filmstrip::DiamondNode::AssociationName"
+            sizeCalculated="true" type="associationName"
+            userDefined="false" visible="true">
+            <name>Filmstrip</name>
+            <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToCorner">
+                <userOffsetX>0.0</userOffsetX>
+                <userOffsetY>0.0</userOffsetY>
+                <basisDeltaX>ABSOLUTE</basisDeltaX>
+                <deltaX>0.0</deltaX>
+                <maxDeltaX>1.7976931348623157E308</maxDeltaX>
+                <basisDeltaY>ABSOLUTE</basisDeltaY>
+                <deltaY>10.0</deltaY>
+                <maxDeltaY>1.7976931348623157E308</maxDeltaY>
+                <corner>NORTH</corner>
+                <relativeNodeId>Filmstrip::DiamondNode</relativeNodeId>
+            </strategy>
+            <hidden>false</hidden>
+        </edgeproperty>
+        <edge type="HalfEdge">
+            <source>Filmstrip</source>
+            <target>load_systemopc1</target>
+            <name>operationCall</name>
+            <properties>
+                <edgeproperty
+                    id="[Filmstrip : (operationCall:load_systemopc1, pred:snapshot2, succ:snapshot1)]::operationCall::target::rolename"
+                    sizeCalculated="true" type="rolename"
+                    userDefined="false" visible="true">
+                    <name>operationCall</name>
+                    <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                        <userOffsetX>0.0</userOffsetX>
+                        <userOffsetY>0.0</userOffsetY>
+                        <attached>[Filmstrip : (operationCall:load_systemopc1, pred:snapshot2, succ:snapshot1)]::operationCall::WayPoint::1</attached>
+                        <offset_x>8</offset_x>
+                        <offset_y>8</offset_y>
+                        <placement>TOP</placement>
+                    </strategy>
+                    <hidden>false</hidden>
+                </edgeproperty>
+                <edgeproperty
+                    id="[Filmstrip : (operationCall:load_systemopc1, pred:snapshot2, succ:snapshot1)]::operationCall::target::multiplicity"
+                    sizeCalculated="true" type="multiplicity"
+                    userDefined="false" visible="true">
+                    <name>0..1</name>
+                    <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                        <userOffsetX>0.0</userOffsetX>
+                        <userOffsetY>0.0</userOffsetY>
+                        <attached>[Filmstrip : (operationCall:load_systemopc1, pred:snapshot2, succ:snapshot1)]::operationCall::WayPoint::1</attached>
+                        <offset_x>8</offset_x>
+                        <offset_y>8</offset_y>
+                        <placement>BOTTOM</placement>
+                    </strategy>
+                    <hidden>false</hidden>
+                </edgeproperty>
+            </properties>
+            <waypoints>
+                <edgeproperty
+                    id="[Filmstrip : (operationCall:load_systemopc1, pred:snapshot2, succ:snapshot1)]::operationCall::WayPoint::0"
+                    sizeCalculated="true" type="WayPoint"
+                    userDefined="false" visible="true">
+                    <name>0</name>
+                    <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                        <userOffsetX>0.0</userOffsetX>
+                        <userOffsetY>0.0</userOffsetY>
+                    </strategy>
+                    <id>0</id>
+                    <specialid>1</specialid>
+                    <hidden>false</hidden>
+                </edgeproperty>
+                <edgeproperty
+                    id="[Filmstrip : (operationCall:load_systemopc1, pred:snapshot2, succ:snapshot1)]::operationCall::WayPoint::1"
+                    sizeCalculated="true" type="WayPoint"
+                    userDefined="false" visible="true">
+                    <name>1</name>
+                    <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                        <userOffsetX>0.0</userOffsetX>
+                        <userOffsetY>0.0</userOffsetY>
+                    </strategy>
+                    <id>1</id>
+                    <specialid>2</specialid>
+                    <hidden>false</hidden>
+                </edgeproperty>
+            </waypoints>
+            <hidden>false</hidden>
+        </edge>
+        <edge type="HalfEdge">
+            <source>Filmstrip</source>
+            <target>snapshot2</target>
+            <name>pred</name>
+            <properties>
+                <edgeproperty
+                    id="[Filmstrip : (operationCall:load_systemopc1, pred:snapshot2, succ:snapshot1)]::pred::target::multiplicity"
+                    sizeCalculated="true" type="multiplicity"
+                    userDefined="false" visible="true">
+                    <name>0..1</name>
+                    <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                        <userOffsetX>0.0</userOffsetX>
+                        <userOffsetY>0.0</userOffsetY>
+                        <attached>[Filmstrip : (operationCall:load_systemopc1, pred:snapshot2, succ:snapshot1)]::pred::WayPoint::1</attached>
+                        <offset_x>8</offset_x>
+                        <offset_y>8</offset_y>
+                        <placement>BOTTOM</placement>
+                    </strategy>
+                    <hidden>false</hidden>
+                </edgeproperty>
+                <edgeproperty
+                    id="[Filmstrip : (operationCall:load_systemopc1, pred:snapshot2, succ:snapshot1)]::pred::target::rolename"
+                    sizeCalculated="true" type="rolename"
+                    userDefined="false" visible="true">
+                    <name>pred</name>
+                    <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                        <userOffsetX>0.0</userOffsetX>
+                        <userOffsetY>0.0</userOffsetY>
+                        <attached>[Filmstrip : (operationCall:load_systemopc1, pred:snapshot2, succ:snapshot1)]::pred::WayPoint::1</attached>
+                        <offset_x>8</offset_x>
+                        <offset_y>8</offset_y>
+                        <placement>TOP</placement>
+                    </strategy>
+                    <hidden>false</hidden>
+                </edgeproperty>
+            </properties>
+            <waypoints>
+                <edgeproperty
+                    id="[Filmstrip : (operationCall:load_systemopc1, pred:snapshot2, succ:snapshot1)]::pred::WayPoint::0"
+                    sizeCalculated="true" type="WayPoint"
+                    userDefined="false" visible="true">
+                    <name>0</name>
+                    <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                        <userOffsetX>0.0</userOffsetX>
+                        <userOffsetY>0.0</userOffsetY>
+                    </strategy>
+                    <id>0</id>
+                    <specialid>1</specialid>
+                    <hidden>false</hidden>
+                </edgeproperty>
+                <edgeproperty
+                    id="[Filmstrip : (operationCall:load_systemopc1, pred:snapshot2, succ:snapshot1)]::pred::WayPoint::1"
+                    sizeCalculated="true" type="WayPoint"
+                    userDefined="false" visible="true">
+                    <name>1</name>
+                    <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                        <userOffsetX>0.0</userOffsetX>
+                        <userOffsetY>0.0</userOffsetY>
+                    </strategy>
+                    <id>1</id>
+                    <specialid>2</specialid>
+                    <hidden>false</hidden>
+                </edgeproperty>
+            </waypoints>
+            <hidden>false</hidden>
+        </edge>
+        <edge type="HalfEdge">
+            <source>Filmstrip</source>
+            <target>snapshot1</target>
+            <name>succ</name>
+            <properties>
+                <edgeproperty
+                    id="[Filmstrip : (operationCall:load_systemopc1, pred:snapshot2, succ:snapshot1)]::succ::target::rolename"
+                    sizeCalculated="true" type="rolename"
+                    userDefined="false" visible="true">
+                    <name>succ</name>
+                    <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                        <userOffsetX>0.0</userOffsetX>
+                        <userOffsetY>0.0</userOffsetY>
+                        <attached>[Filmstrip : (operationCall:load_systemopc1, pred:snapshot2, succ:snapshot1)]::succ::WayPoint::1</attached>
+                        <offset_x>8</offset_x>
+                        <offset_y>8</offset_y>
+                        <placement>TOP</placement>
+                    </strategy>
+                    <hidden>false</hidden>
+                </edgeproperty>
+                <edgeproperty
+                    id="[Filmstrip : (operationCall:load_systemopc1, pred:snapshot2, succ:snapshot1)]::succ::target::multiplicity"
+                    sizeCalculated="true" type="multiplicity"
+                    userDefined="false" visible="true">
+                    <name>0..1</name>
+                    <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                        <userOffsetX>0.0</userOffsetX>
+                        <userOffsetY>0.0</userOffsetY>
+                        <attached>[Filmstrip : (operationCall:load_systemopc1, pred:snapshot2, succ:snapshot1)]::succ::WayPoint::1</attached>
+                        <offset_x>8</offset_x>
+                        <offset_y>8</offset_y>
+                        <placement>BOTTOM</placement>
+                    </strategy>
+                    <hidden>false</hidden>
+                </edgeproperty>
+            </properties>
+            <waypoints>
+                <edgeproperty
+                    id="[Filmstrip : (operationCall:load_systemopc1, pred:snapshot2, succ:snapshot1)]::succ::WayPoint::0"
+                    sizeCalculated="true" type="WayPoint"
+                    userDefined="false" visible="true">
+                    <name>0</name>
+                    <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                        <userOffsetX>0.0</userOffsetX>
+                        <userOffsetY>0.0</userOffsetY>
+                    </strategy>
+                    <id>0</id>
+                    <specialid>1</specialid>
+                    <hidden>false</hidden>
+                </edgeproperty>
+                <edgeproperty
+                    id="[Filmstrip : (operationCall:load_systemopc1, pred:snapshot2, succ:snapshot1)]::succ::WayPoint::1"
+                    sizeCalculated="true" type="WayPoint"
+                    userDefined="false" visible="true">
+                    <name>1</name>
+                    <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                        <userOffsetX>0.0</userOffsetX>
+                        <userOffsetY>0.0</userOffsetY>
+                    </strategy>
+                    <id>1</id>
+                    <specialid>2</specialid>
+                    <hidden>false</hidden>
+                </edgeproperty>
+            </waypoints>
+            <hidden>false</hidden>
+        </edge>
+        <hidden>false</hidden>
+    </node>
+    <edge type="BinaryEdge">
+        <source>snapshot2</source>
+        <target>system2</target>
+        <name>SnapshotSystem</name>
+        <properties>
+            <edgeproperty
+                id="[SnapshotSystem : (snapshotSystem:snapshot2, system:system2)]::target::multiplicity"
+                sizeCalculated="true" type="multiplicity"
+                userDefined="false" visible="true">
+                <name>*</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>[SnapshotSystem : (snapshotSystem:snapshot2, system:system2)]::WayPoint::1</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>BOTTOM</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[SnapshotSystem : (snapshotSystem:snapshot2, system:system2)]::target::rolename"
+                sizeCalculated="true" type="rolename"
+                userDefined="false" visible="true">
+                <name>system</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>[SnapshotSystem : (snapshotSystem:snapshot2, system:system2)]::WayPoint::1</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>TOP</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[SnapshotSystem : (snapshotSystem:snapshot2, system:system2)]::source::multiplicity"
+                sizeCalculated="true" type="multiplicity"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>[SnapshotSystem : (snapshotSystem:snapshot2, system:system2)]::WayPoint::0</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>BOTTOM</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[SnapshotSystem : (snapshotSystem:snapshot2, system:system2)]::source::rolename"
+                sizeCalculated="true" type="rolename"
+                userDefined="false" visible="true">
+                <name>snapshotSystem</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>[SnapshotSystem : (snapshotSystem:snapshot2, system:system2)]::WayPoint::0</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>TOP</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[SnapshotSystem : (snapshotSystem:snapshot2, system:system2)]::AssociationName"
+                sizeCalculated="true" type="associationName"
+                userDefined="false" visible="true">
+                <name>SnapshotSystem</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyInBetween">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <offsetX>0.0</offsetX>
+                    <offsetY>-10.0</offsetY>
+                    <related length="2">
+                        <related0>[SnapshotSystem : (snapshotSystem:snapshot2, system:system2)]::WayPoint::0</related0>
+                        <related1>[SnapshotSystem : (snapshotSystem:snapshot2, system:system2)]::WayPoint::1</related1>
+                    </related>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </properties>
+        <waypoints>
+            <edgeproperty
+                id="[SnapshotSystem : (snapshotSystem:snapshot2, system:system2)]::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[SnapshotSystem : (snapshotSystem:snapshot2, system:system2)]::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+        <linkValue>[SnapshotSystem : (snapshotSystem:snapshot2, system:system2)]</linkValue>
+    </edge>
+    <edge type="BinaryEdge">
+        <source>application1</source>
+        <target>application2</target>
+        <name>PredSuccApplication</name>
+        <properties>
+            <edgeproperty
+                id="[PredSuccApplication : (predApplication:application1, succApplication:application2)]::target::rolename"
+                sizeCalculated="true" type="rolename"
+                userDefined="false" visible="true">
+                <name>succApplication</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>[PredSuccApplication : (predApplication:application1, succApplication:application2)]::WayPoint::1</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>TOP</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[PredSuccApplication : (predApplication:application1, succApplication:application2)]::target::multiplicity"
+                sizeCalculated="true" type="multiplicity"
+                userDefined="false" visible="true">
+                <name>0..1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>[PredSuccApplication : (predApplication:application1, succApplication:application2)]::WayPoint::1</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>BOTTOM</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[PredSuccApplication : (predApplication:application1, succApplication:application2)]::source::multiplicity"
+                sizeCalculated="true" type="multiplicity"
+                userDefined="false" visible="true">
+                <name>0..1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>[PredSuccApplication : (predApplication:application1, succApplication:application2)]::WayPoint::0</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>BOTTOM</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[PredSuccApplication : (predApplication:application1, succApplication:application2)]::source::rolename"
+                sizeCalculated="true" type="rolename"
+                userDefined="false" visible="true">
+                <name>predApplication</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>[PredSuccApplication : (predApplication:application1, succApplication:application2)]::WayPoint::0</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>TOP</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[PredSuccApplication : (predApplication:application1, succApplication:application2)]::AssociationName"
+                sizeCalculated="true" type="associationName"
+                userDefined="false" visible="true">
+                <name>PredSuccApplication</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyInBetween">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <offsetX>0.0</offsetX>
+                    <offsetY>-10.0</offsetY>
+                    <related length="2">
+                        <related0>[PredSuccApplication : (predApplication:application1, succApplication:application2)]::WayPoint::0</related0>
+                        <related1>[PredSuccApplication : (predApplication:application1, succApplication:application2)]::WayPoint::1</related1>
+                    </related>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </properties>
+        <waypoints>
+            <edgeproperty
+                id="[PredSuccApplication : (predApplication:application1, succApplication:application2)]::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[PredSuccApplication : (predApplication:application1, succApplication:application2)]::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+        <linkValue>[PredSuccApplication : (predApplication:application1, succApplication:application2)]</linkValue>
+    </edge>
+    <edge type="BinaryEdge">
+        <source>snapshot1</source>
+        <target>system1</target>
+        <name>SnapshotSystem</name>
+        <properties>
+            <edgeproperty
+                id="[SnapshotSystem : (snapshotSystem:snapshot1, system:system1)]::target::multiplicity"
+                sizeCalculated="true" type="multiplicity"
+                userDefined="false" visible="true">
+                <name>*</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>[SnapshotSystem : (snapshotSystem:snapshot1, system:system1)]::WayPoint::1</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>BOTTOM</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[SnapshotSystem : (snapshotSystem:snapshot1, system:system1)]::target::rolename"
+                sizeCalculated="true" type="rolename"
+                userDefined="false" visible="true">
+                <name>system</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>[SnapshotSystem : (snapshotSystem:snapshot1, system:system1)]::WayPoint::1</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>TOP</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[SnapshotSystem : (snapshotSystem:snapshot1, system:system1)]::source::rolename"
+                sizeCalculated="true" type="rolename"
+                userDefined="false" visible="true">
+                <name>snapshotSystem</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>[SnapshotSystem : (snapshotSystem:snapshot1, system:system1)]::WayPoint::0</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>TOP</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[SnapshotSystem : (snapshotSystem:snapshot1, system:system1)]::source::multiplicity"
+                sizeCalculated="true" type="multiplicity"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>[SnapshotSystem : (snapshotSystem:snapshot1, system:system1)]::WayPoint::0</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>BOTTOM</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[SnapshotSystem : (snapshotSystem:snapshot1, system:system1)]::AssociationName"
+                sizeCalculated="true" type="associationName"
+                userDefined="false" visible="true">
+                <name>SnapshotSystem</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyInBetween">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <offsetX>0.0</offsetX>
+                    <offsetY>-10.0</offsetY>
+                    <related length="2">
+                        <related0>[SnapshotSystem : (snapshotSystem:snapshot1, system:system1)]::WayPoint::0</related0>
+                        <related1>[SnapshotSystem : (snapshotSystem:snapshot1, system:system1)]::WayPoint::1</related1>
+                    </related>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </properties>
+        <waypoints>
+            <edgeproperty
+                id="[SnapshotSystem : (snapshotSystem:snapshot1, system:system1)]::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[SnapshotSystem : (snapshotSystem:snapshot1, system:system1)]::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+        <linkValue>[SnapshotSystem : (snapshotSystem:snapshot1, system:system1)]</linkValue>
+    </edge>
+    <edge type="BinaryEdge">
+        <source>snapshot1</source>
+        <target>application2</target>
+        <name>SnapshotApplication</name>
+        <properties>
+            <edgeproperty
+                id="[SnapshotApplication : (application:application2, snapshotApplication:snapshot1)]::target::rolename"
+                sizeCalculated="true" type="rolename"
+                userDefined="false" visible="true">
+                <name>application</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>[SnapshotApplication : (application:application2, snapshotApplication:snapshot1)]::WayPoint::1</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>TOP</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[SnapshotApplication : (application:application2, snapshotApplication:snapshot1)]::target::multiplicity"
+                sizeCalculated="true" type="multiplicity"
+                userDefined="false" visible="true">
+                <name>*</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>[SnapshotApplication : (application:application2, snapshotApplication:snapshot1)]::WayPoint::1</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>BOTTOM</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[SnapshotApplication : (application:application2, snapshotApplication:snapshot1)]::source::multiplicity"
+                sizeCalculated="true" type="multiplicity"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>[SnapshotApplication : (application:application2, snapshotApplication:snapshot1)]::WayPoint::0</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>BOTTOM</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[SnapshotApplication : (application:application2, snapshotApplication:snapshot1)]::source::rolename"
+                sizeCalculated="true" type="rolename"
+                userDefined="false" visible="true">
+                <name>snapshotApplication</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>[SnapshotApplication : (application:application2, snapshotApplication:snapshot1)]::WayPoint::0</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>TOP</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[SnapshotApplication : (application:application2, snapshotApplication:snapshot1)]::AssociationName"
+                sizeCalculated="true" type="associationName"
+                userDefined="false" visible="true">
+                <name>SnapshotApplication</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyInBetween">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <offsetX>0.0</offsetX>
+                    <offsetY>-10.0</offsetY>
+                    <related length="2">
+                        <related0>[SnapshotApplication : (application:application2, snapshotApplication:snapshot1)]::WayPoint::0</related0>
+                        <related1>[SnapshotApplication : (application:application2, snapshotApplication:snapshot1)]::WayPoint::1</related1>
+                    </related>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </properties>
+        <waypoints>
+            <edgeproperty
+                id="[SnapshotApplication : (application:application2, snapshotApplication:snapshot1)]::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[SnapshotApplication : (application:application2, snapshotApplication:snapshot1)]::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+        <linkValue>[SnapshotApplication : (application:application2, snapshotApplication:snapshot1)]</linkValue>
+    </edge>
+    <edge type="BinaryEdge">
+        <source>snapshot2</source>
+        <target>application1</target>
+        <name>SnapshotApplication</name>
+        <properties>
+            <edgeproperty
+                id="[SnapshotApplication : (application:application1, snapshotApplication:snapshot2)]::target::rolename"
+                sizeCalculated="true" type="rolename"
+                userDefined="false" visible="true">
+                <name>application</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>[SnapshotApplication : (application:application1, snapshotApplication:snapshot2)]::WayPoint::1</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>TOP</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[SnapshotApplication : (application:application1, snapshotApplication:snapshot2)]::target::multiplicity"
+                sizeCalculated="true" type="multiplicity"
+                userDefined="false" visible="true">
+                <name>*</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>[SnapshotApplication : (application:application1, snapshotApplication:snapshot2)]::WayPoint::1</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>BOTTOM</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[SnapshotApplication : (application:application1, snapshotApplication:snapshot2)]::source::rolename"
+                sizeCalculated="true" type="rolename"
+                userDefined="false" visible="true">
+                <name>snapshotApplication</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>[SnapshotApplication : (application:application1, snapshotApplication:snapshot2)]::WayPoint::0</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>TOP</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[SnapshotApplication : (application:application1, snapshotApplication:snapshot2)]::source::multiplicity"
+                sizeCalculated="true" type="multiplicity"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>[SnapshotApplication : (application:application1, snapshotApplication:snapshot2)]::WayPoint::0</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>BOTTOM</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[SnapshotApplication : (application:application1, snapshotApplication:snapshot2)]::AssociationName"
+                sizeCalculated="true" type="associationName"
+                userDefined="false" visible="true">
+                <name>SnapshotApplication</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyInBetween">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <offsetX>0.0</offsetX>
+                    <offsetY>-10.0</offsetY>
+                    <related length="2">
+                        <related0>[SnapshotApplication : (application:application1, snapshotApplication:snapshot2)]::WayPoint::0</related0>
+                        <related1>[SnapshotApplication : (application:application1, snapshotApplication:snapshot2)]::WayPoint::1</related1>
+                    </related>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </properties>
+        <waypoints>
+            <edgeproperty
+                id="[SnapshotApplication : (application:application1, snapshotApplication:snapshot2)]::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[SnapshotApplication : (application:application1, snapshotApplication:snapshot2)]::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+        <linkValue>[SnapshotApplication : (application:application1, snapshotApplication:snapshot2)]</linkValue>
+    </edge>
+    <edge type="BinaryEdge">
+        <source>system2</source>
+        <target>system1</target>
+        <name>PredSuccSystem</name>
+        <properties>
+            <edgeproperty
+                id="[PredSuccSystem : (predSystem:system2, succSystem:system1)]::target::rolename"
+                sizeCalculated="true" type="rolename"
+                userDefined="false" visible="true">
+                <name>succSystem</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>[PredSuccSystem : (predSystem:system2, succSystem:system1)]::WayPoint::1</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>TOP</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[PredSuccSystem : (predSystem:system2, succSystem:system1)]::target::multiplicity"
+                sizeCalculated="true" type="multiplicity"
+                userDefined="false" visible="true">
+                <name>0..1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>[PredSuccSystem : (predSystem:system2, succSystem:system1)]::WayPoint::1</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>BOTTOM</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[PredSuccSystem : (predSystem:system2, succSystem:system1)]::source::multiplicity"
+                sizeCalculated="true" type="multiplicity"
+                userDefined="false" visible="true">
+                <name>0..1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>[PredSuccSystem : (predSystem:system2, succSystem:system1)]::WayPoint::0</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>BOTTOM</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[PredSuccSystem : (predSystem:system2, succSystem:system1)]::source::rolename"
+                sizeCalculated="true" type="rolename"
+                userDefined="false" visible="true">
+                <name>predSystem</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>[PredSuccSystem : (predSystem:system2, succSystem:system1)]::WayPoint::0</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>TOP</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[PredSuccSystem : (predSystem:system2, succSystem:system1)]::AssociationName"
+                sizeCalculated="true" type="associationName"
+                userDefined="false" visible="true">
+                <name>PredSuccSystem</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyInBetween">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <offsetX>0.0</offsetX>
+                    <offsetY>-10.0</offsetY>
+                    <related length="2">
+                        <related0>[PredSuccSystem : (predSystem:system2, succSystem:system1)]::WayPoint::0</related0>
+                        <related1>[PredSuccSystem : (predSystem:system2, succSystem:system1)]::WayPoint::1</related1>
+                    </related>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </properties>
+        <waypoints>
+            <edgeproperty
+                id="[PredSuccSystem : (predSystem:system2, succSystem:system1)]::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="[PredSuccSystem : (predSystem:system2, succSystem:system1)]::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+        <linkValue>[PredSuccSystem : (predSystem:system2, succSystem:system1)]</linkValue>
+    </edge>
+</diagram_Layout>

@@ -1,27 +1,49 @@
 istar IncidentResponse {
 
   role Coordinator {
-    goal IncidentHandled
-    task TriageIncident > IncidentHandled ocl {[
+    goal IncidentHandled : Achieve
+    activation {[
+      true
+    ]}
+    condition {[
+      self.triaged
+      and EvidencePacket.allInstances()->forAll(e | e.complete)
+      and ChangeRequest.allInstances()->forAll(c | c.deployed)
+      and Service.allInstances()->forAll(s | s.restored)
+      and AuditTrail.allInstances()->forAll(a | a.signed)
+    ]}
+    task TriageIncident > IncidentHandled
+    pre {[
+      not self.triaged
+    ]}
+    post {[
       self.triaged and IncidentCase.allInstances()->exists(i | i.reported)
     ]}
-    goal EvidenceCollected > IncidentHandled
-    goal EvidenceReviewed > forall Analyst EvidenceCollected
-    goal RemediationDone > IncidentHandled
-    goal ServiceRestored > pick Technician RemediationDone
-    goal ClosureDone > IncidentHandled
-    goal ClosureApproved > pick Auditor ClosureDone
+    goal EvidenceCollected : Achieve > IncidentHandled
+    goal EvidenceReviewed : Achieve > forall Analyst EvidenceCollected
+    goal RemediationDone : Achieve > IncidentHandled
+    goal ServiceRestored : Achieve > pick Technician RemediationDone
+    goal ClosureDone : Achieve > IncidentHandled
+    goal ClosureApproved : Achieve > pick Auditor ClosureDone
   }
 
   role Analyst {
-    task AnalyzeEvidence ocl {[
+    task AnalyzeEvidence
+    pre {[
+      not self.reportReady
+    ]}
+    post {[
       self.reportReady
       and EvidencePacket.allInstances()->exists(e | e.complete)
     ]}
   }
 
   role Technician {
-    task RepairService ocl {[
+    task RepairService
+    pre {[
+      not self.fixApplied
+    ]}
+    post {[
       self.fixApplied
       and Service.allInstances()->exists(s | s.restored)
       and ChangeRequest.allInstances()->exists(c | c.deployed)
@@ -29,7 +51,11 @@ istar IncidentResponse {
   }
 
   role Auditor {
-    task AuditClosure ocl {[
+    task AuditClosure
+    pre {[
+      not self.auditApproved
+    ]}
+    post {[
       self.auditApproved
       and AuditTrail.allInstances()->exists(a | a.signed)
     ]}

@@ -4,10 +4,10 @@ actor Organizer   -> pool MeetingOrganization lane Organizer
 actor Secretary   -> pool MeetingOrganization lane Secretary
 actor Participant -> pool MeetingOrganization lane Participant
 
-map DecideMeetingDetails       -> node decideMeetingDetails
-map CollectFromCalendar        -> node checkCalendar
-map HaveSecretaryCallPP        -> node requestSecretaryCall
-map ChooseTimeAndDate          -> node chooseTimeAndDate
-map AnnounceMeeting            -> node announceMeeting
-map CollectConstraintsByPhone  -> node collectConstraintsByPhone
-map Participate                -> node participate
+map DecideDetails        -> node decideMeetingDetails
+map CollectFromCalendar  -> node checkCalendar
+map SecretaryRequested   -> node requestSecretaryCall
+map ChooseMeetingTime    -> node chooseTimeAndDate
+map NotifyParticipant    -> node announceMeeting
+map CollectByPhone       -> node collectConstraintsByPhone
+map AttendMeeting        -> node participate

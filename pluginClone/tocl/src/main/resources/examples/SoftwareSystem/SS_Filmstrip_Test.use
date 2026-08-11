@@ -1,0 +1,561 @@
+model POS
+
+
+composition SnapshotCashPayment between
+  Snapshot[1] role snapshotCashPayment
+  CashPayment[*]
+end
+
+composition SnapshotStore between
+  Snapshot[1] role snapshotStore
+  Store[*]
+end
+
+aggregation PredSuccItem between
+  Item[0..1] role predItem
+  Item[0..1] role succItem
+end
+
+composition SnapshotDate between
+  Snapshot[1] role snapshotDate
+  Date[*]
+end
+
+composition SnapshotSale between
+  Snapshot[1] role snapshotSale
+  Sale[*]
+end
+
+composition SnapshotRegister between
+  Snapshot[1] role snapshotRegister
+  Register[*]
+end
+
+composition SnapshotCreditCard between
+  Snapshot[1] role snapshotCreditCard
+  CreditCard[*]
+end
+
+composition SnapshotCustomer between
+  Snapshot[1] role snapshotCustomer
+  Customer[*]
+end
+
+aggregation PredSuccGiftCertPayment between
+  GiftCertPayment[0..1] role predGiftCertPayment
+  GiftCertPayment[0..1] role succGiftCertPayment
+end
+
+aggregation PredSuccStore between
+  Store[0..1] role predStore
+  Store[0..1] role succStore
+end
+
+composition SnapshotSalesLineItem between
+  Snapshot[1] role snapshotSalesLineItem
+  SalesLineItem[*]
+end
+
+class Snapshot
+operations
+  pred() : Snapshot = 
+    if (self.pred->size() = 1) then self.pred->any( $elem0:Snapshot | true ) else null endif
+  succ() : Snapshot = 
+    if (self.succ->size() = 1) then self.succ->any( $elem0:Snapshot | true ) else null endif
+end
+
+composition SnapshotProductCatalog between
+  Snapshot[1] role snapshotProductCatalog
+  ProductCatalog[*]
+end
+
+aggregation PredSuccCreditCard between
+  CreditCard[0..1] role predCreditCard
+  CreditCard[0..1] role succCreditCard
+end
+
+aggregation PredSuccDate between
+  Date[0..1] role predDate
+  Date[0..1] role succDate
+end
+
+composition SnapshotCreditPayment between
+  Snapshot[1] role snapshotCreditPayment
+  CreditPayment[*]
+end
+
+aggregation PredSuccProductCatalog between
+  ProductCatalog[0..1] role predProductCatalog
+  ProductCatalog[0..1] role succProductCatalog
+end
+
+aggregation PredSuccCreditPayment between
+  CreditPayment[0..1] role predCreditPayment
+  CreditPayment[0..1] role succCreditPayment
+end
+
+composition SnapshotAuthService between
+  Snapshot[1] role snapshotAuthService
+  AuthService[*]
+end
+
+association Filmstrip between
+  Snapshot[0..1] role pred
+  Snapshot[0..1] role succ
+  OperationCall[0..1]
+end
+
+aggregation PredSuccRegister between
+  Register[0..1] role predRegister
+  Register[0..1] role succRegister
+end
+
+aggregation PredSuccGiftCertificate between
+  GiftCertificate[0..1] role predGiftCertificate
+  GiftCertificate[0..1] role succGiftCertificate
+end
+
+aggregation PredSuccCustomer between
+  Customer[0..1] role predCustomer
+  Customer[0..1] role succCustomer
+end
+
+abstract class OperationCall
+operations
+  pred() : Snapshot = 
+    if (self.pred->size() = 1) then self.pred->any( $elem0:Snapshot | true ) else null endif
+  succ() : Snapshot = 
+    if (self.succ->size() = 1) then self.succ->any( $elem0:Snapshot | true ) else null endif
+end
+
+composition SnapshotItem between
+  Snapshot[1] role snapshotItem
+  Item[*]
+end
+
+aggregation PredSuccCashier between
+  Cashier[0..1] role predCashier
+  Cashier[0..1] role succCashier
+end
+
+aggregation PredSuccSale between
+  Sale[0..1] role predSale
+  Sale[0..1] role succSale
+end
+
+composition SnapshotCashier between
+  Snapshot[1] role snapshotCashier
+  Cashier[*]
+end
+
+aggregation PredSuccPayment between
+  Payment[0..1] role predPayment
+  Payment[0..1] role succPayment
+end
+
+aggregation PredSuccAuthService between
+  AuthService[0..1] role predAuthService
+  AuthService[0..1] role succAuthService
+end
+
+composition SnapshotGiftCertPayment between
+  Snapshot[1] role snapshotGiftCertPayment
+  GiftCertPayment[*]
+end
+
+composition SnapshotGiftCertificate between
+  Snapshot[1] role snapshotGiftCertificate
+  GiftCertificate[*]
+end
+
+composition SnapshotPayment between
+  Snapshot[1] role snapshotPayment
+  Payment[*]
+end
+
+aggregation PredSuccSalesLineItem between
+  SalesLineItem[0..1] role predSalesLineItem
+  SalesLineItem[0..1] role succSalesLineItem
+end
+
+aggregation PredSuccProductDescription between
+  ProductDescription[0..1] role predProductDescription
+  ProductDescription[0..1] role succProductDescription
+end
+
+composition SnapshotProductDescription between
+  Snapshot[1] role snapshotProductDescription
+  ProductDescription[*]
+end
+
+aggregation PredSuccCashPayment between
+  CashPayment[0..1] role predCashPayment
+  CashPayment[0..1] role succCashPayment
+end
+
+class Date
+attributes
+  value : String
+end
+
+class Customer
+attributes
+  name : String
+end
+
+class Cashier
+attributes
+  name : String
+end
+
+class Sale
+attributes
+  id : String
+  date : Date
+  total : Real
+  isComplete : Boolean
+end
+
+class Register
+end
+
+class Store
+attributes
+  address : String
+  name : String
+end
+
+class Item
+attributes
+  id : String
+end
+
+class ProductDescription
+attributes
+  desc : String
+  price : Real
+  tax : Real
+  upc : String
+end
+
+class ProductCatalog
+end
+
+class SalesLineItem
+attributes
+  quantity : Integer
+end
+
+class Payment
+attributes
+  amount : Real
+end
+
+class CashPayment < Payment
+attributes
+  amountTendered : Real
+end
+
+class CreditPayment < Payment
+end
+
+class GiftCertPayment < Payment
+end
+
+class GiftCertificate
+attributes
+  id : String
+  amount : Real
+end
+
+class CreditCard
+attributes
+  number : String
+  expireDate : String
+end
+
+class AuthService
+attributes
+  name : String
+  address : String
+end
+
+association ProvidedWith between
+  Store[*]
+  AuthService[*]
+end
+
+association Stocks between
+  Store[1]
+  Item[*]
+end
+
+association RecordsSaleOf between
+  SalesLineItem[0..1]
+  Item[1..*]
+end
+
+association ContainedIn between
+  Sale[1]
+  SalesLineItem[1..*]
+end
+
+association Describes between
+  ProductDescription[1] role prdDesc
+  Item[*]
+end
+
+association DescribedBy between
+  SalesLineItem[*]
+  ProductDescription[1] role productDesc
+end
+
+association Contains between
+  ProductCatalog[1] role prdtCtlg
+  ProductDescription[1..*] role prdtDesc
+end
+
+association UsedBy between
+  ProductCatalog[1] role prdtCtlg
+  Store[*]
+end
+
+association Houses between
+  Store[1]
+  Register[1..*]
+end
+
+association CapturedOn between
+  Sale[0..1]
+  Register[1]
+end
+
+association LogsCompleted between
+  Store[0..1]
+  Sale[*]
+end
+
+association IsFor between
+  Sale[*]
+  Customer[1]
+end
+
+association WorksOn between
+  Cashier[1]
+  Register[1]
+end
+
+association Approves between
+  AuthService[1]
+  CreditPayment[*] role payment
+end
+
+association PaidBy between
+  Sale[1]
+  Payment[1]
+end
+
+association Logs between
+  Store[1]
+  CreditPayment[*] role accountsReceivable
+end
+
+association PaidWith between
+  GiftCertPayment[0..1] role payment
+  GiftCertificate[1] role giftCert
+end
+
+association CheckedBy between
+  CreditPayment[*] role payment
+  CreditCard[1]
+end
+
+constraints
+context AuthService inv validLinkingApproves:
+  self.payment->forAll( c:CreditPayment | (c.snapshotCreditPayment = self.snapshotAuthService) )
+
+context AuthService inv validSnapshotLinking:
+  (self.succAuthService.isDefined() implies (self.succAuthService.snapshotAuthService = self.snapshotAuthService.succ()))
+
+context CashPayment inv validSnapshotLinking:
+  (self.succCashPayment.isDefined() implies (self.succCashPayment.snapshotCashPayment = self.snapshotCashPayment.succ()))
+
+context Cashier inv validLinkingWorksOn:
+  (self.register.isDefined() implies (self.snapshotCashier = self.register.snapshotRegister))
+
+context Cashier inv validSnapshotLinking:
+  (self.succCashier.isDefined() implies (self.succCashier.snapshotCashier = self.snapshotCashier.succ()))
+
+context CreditCard inv validSnapshotLinking:
+  (self.succCreditCard.isDefined() implies (self.succCreditCard.snapshotCreditCard = self.snapshotCreditCard.succ()))
+
+context CreditPayment inv validLinkingCheckedBy:
+  (self.creditCard.isDefined() implies (self.snapshotCreditPayment = self.creditCard.snapshotCreditCard))
+
+context CreditPayment inv validSnapshotLinking:
+  (self.succCreditPayment.isDefined() implies (self.succCreditPayment.snapshotCreditPayment = self.snapshotCreditPayment.succ()))
+
+context Customer inv validSnapshotLinking:
+  (self.succCustomer.isDefined() implies (self.succCustomer.snapshotCustomer = self.snapshotCustomer.succ()))
+
+context Date inv validSnapshotLinking:
+  (self.succDate.isDefined() implies (self.succDate.snapshotDate = self.snapshotDate.succ()))
+
+context GiftCertPayment inv validLinkingPaidWith:
+  (self.giftCert.isDefined() implies (self.snapshotGiftCertPayment = self.giftCert.snapshotGiftCertificate))
+
+context GiftCertPayment inv validSnapshotLinking:
+  (self.succGiftCertPayment.isDefined() implies (self.succGiftCertPayment.snapshotGiftCertPayment = self.snapshotGiftCertPayment.succ()))
+
+context GiftCertificate inv validSnapshotLinking:
+  (self.succGiftCertificate.isDefined() implies (self.succGiftCertificate.snapshotGiftCertificate = self.snapshotGiftCertificate.succ()))
+
+context Item inv validSnapshotLinking:
+  (self.succItem.isDefined() implies (self.succItem.snapshotItem = self.snapshotItem.succ()))
+
+context OperationCall inv assocClassBehavior:
+  (((self.pred->size() = 1) and (self.succ->size() = 1)) and OperationCall.allInstances()->forAll( op:OperationCall | (((self.pred = op.pred) and (self.succ = op.succ)) implies (self = op)) ))
+
+context Payment inv validSnapshotLinking:
+  (self.succPayment.isDefined() implies (self.succPayment.snapshotPayment = self.snapshotPayment.succ()))
+
+context ProductCatalog inv validLinkingContains:
+  self.prdtDesc->forAll( c:ProductDescription | (c.snapshotProductDescription = self.snapshotProductCatalog) )
+
+context ProductCatalog inv validLinkingUsedBy:
+  self.store->forAll( c:Store | (c.snapshotStore = self.snapshotProductCatalog) )
+
+context ProductCatalog inv validSnapshotLinking:
+  (self.succProductCatalog.isDefined() implies (self.succProductCatalog.snapshotProductCatalog = self.snapshotProductCatalog.succ()))
+
+context ProductDescription inv validLinkingDescribes:
+  self.item->forAll( c:Item | (c.snapshotItem = self.snapshotProductDescription) )
+
+context ProductDescription inv validSnapshotLinking:
+  (self.succProductDescription.isDefined() implies (self.succProductDescription.snapshotProductDescription = self.snapshotProductDescription.succ()))
+
+context Register inv validSnapshotLinking:
+  (self.succRegister.isDefined() implies (self.succRegister.snapshotRegister = self.snapshotRegister.succ()))
+
+context Sale inv validLinkingCapturedOn:
+  (self.register.isDefined() implies (self.snapshotSale = self.register.snapshotRegister))
+
+context Sale inv validLinkingContainedIn:
+  self.salesLineItem->forAll( c:SalesLineItem | (c.snapshotSalesLineItem = self.snapshotSale) )
+
+context Sale inv validLinkingIsFor:
+  (self.customer.isDefined() implies (self.snapshotSale = self.customer.snapshotCustomer))
+
+context Sale inv validLinkingPaidBy:
+  (self.payment.isDefined() implies (self.snapshotSale = self.payment.snapshotPayment))
+
+context Sale inv validSnapshotLinking:
+  (self.succSale.isDefined() implies (self.succSale.snapshotSale = self.snapshotSale.succ()))
+
+context SalesLineItem inv validLinkingDescribedBy:
+  (self.productDesc.isDefined() implies (self.snapshotSalesLineItem = self.productDesc.snapshotProductDescription))
+
+context SalesLineItem inv validLinkingRecordsSaleOf:
+  self.item->forAll( c:Item | (c.snapshotItem = self.snapshotSalesLineItem) )
+
+context SalesLineItem inv validSnapshotLinking:
+  (self.succSalesLineItem.isDefined() implies (self.succSalesLineItem.snapshotSalesLineItem = self.snapshotSalesLineItem.succ()))
+
+context Snapshot inv cycleFree:
+  Set{self.succ()}->closure( s:Snapshot | s.succ() )->excludes(self)
+
+context Snapshot inv oneFilmstrip:
+  ((Snapshot.allInstances()->select( s:Snapshot | s.pred().isUndefined() )->size() = 1) and (Snapshot.allInstances()->select( s:Snapshot | s.succ().isUndefined() )->size() = 1))
+
+context Store inv validLinkingHouses:
+  self.register->forAll( c:Register | (c.snapshotRegister = self.snapshotStore) )
+
+context Store inv validLinkingLogs:
+  self.accountsReceivable->forAll( c:CreditPayment | (c.snapshotCreditPayment = self.snapshotStore) )
+
+context Store inv validLinkingLogsCompleted:
+  self.sale->forAll( c:Sale | (c.snapshotSale = self.snapshotStore) )
+
+context Store inv validLinkingProvidedWith:
+  self.authService->forAll( c:AuthService | (c.snapshotAuthService = self.snapshotStore) )
+
+context Store inv validLinkingStocks:
+  self.item->forAll( c:Item | (c.snapshotItem = self.snapshotStore) )
+
+context Store inv validSnapshotLinking:
+  (self.succStore.isDefined() implies (self.succStore.snapshotStore = self.snapshotStore.succ()))
+
+context AuthService
+inv AuthServiceSameId: self.succAuthService.isDefined() implies self.id = self.succAuthService.id
+context CashPayment
+inv CashPaymentSameId: self.succCashPayment.isDefined() implies self.id = self.succCashPayment.id
+context Cashier
+inv CashierSameId: self.succCashier.isDefined() implies self.id = self.succCashier.id
+context CreditCard
+inv CreditCardSameId: self.succCreditCard.isDefined() implies self.id = self.succCreditCard.id
+context CreditPayment
+inv CreditPaymentSameId: self.succCreditPayment.isDefined() implies self.id = self.succCreditPayment.id
+context Customer
+inv CustomerSameId: self.succCustomer.isDefined() implies self.id = self.succCustomer.id
+context Date
+inv DateSameId: self.succDate.isDefined() implies self.id = self.succDate.id
+context GiftCertPayment
+inv GiftCertPaymentSameId: self.succGiftCertPayment.isDefined() implies self.id = self.succGiftCertPayment.id
+context GiftCertificate
+inv GiftCertificateSameId: self.succGiftCertificate.isDefined() implies self.id = self.succGiftCertificate.id
+context Item
+inv ItemSameId: self.succItem.isDefined() implies self.id = self.succItem.id
+context Payment
+inv PaymentSameId: self.succPayment.isDefined() implies self.id = self.succPayment.id
+context ProductCatalog
+inv ProductCatalogSameId: self.succProductCatalog.isDefined() implies self.id = self.succProductCatalog.id
+context ProductDescription
+inv ProductDescriptionSameId: self.succProductDescription.isDefined() implies self.id = self.succProductDescription.id
+context Register
+inv RegisterSameId: self.succRegister.isDefined() implies self.id = self.succRegister.id
+context Sale
+inv SaleSameId: self.succSale.isDefined() implies self.id = self.succSale.id
+context SalesLineItem
+inv SalesLineItemSameId: self.succSalesLineItem.isDefined() implies self.id = self.succSalesLineItem.id
+context Store
+inv StoreSameId: self.succStore.isDefined() implies self.id = self.succStore.id
+
+context AuthService
+inv AuthServiceDiffId: self.snapshotAuthService.authService->forAll(o | o <> self implies o.id <> self.id)
+context CashPayment
+inv CashPaymentDiffId: self.snapshotCashPayment.cashPayment->forAll(o | o <> self implies o.id <> self.id)
+context Cashier
+inv CashierDiffId: self.snapshotCashier.cashier->forAll(o | o <> self implies o.id <> self.id)
+context CreditCard
+inv CreditCardDiffId: self.snapshotCreditCard.creditCard->forAll(o | o <> self implies o.id <> self.id)
+context CreditPayment
+inv CreditPaymentDiffId: self.snapshotCreditPayment.creditPayment->forAll(o | o <> self implies o.id <> self.id)
+context Customer
+inv CustomerDiffId: self.snapshotCustomer.customer->forAll(o | o <> self implies o.id <> self.id)
+context Date
+inv DateDiffId: self.snapshotDate.date->forAll(o | o <> self implies o.id <> self.id)
+context GiftCertPayment
+inv GiftCertPaymentDiffId: self.snapshotGiftCertPayment.giftCertPayment->forAll(o | o <> self implies o.id <> self.id)
+context GiftCertificate
+inv GiftCertificateDiffId: self.snapshotGiftCertificate.giftCertificate->forAll(o | o <> self implies o.id <> self.id)
+context Item
+inv ItemDiffId: self.snapshotItem.item->forAll(o | o <> self implies o.id <> self.id)
+context Payment
+inv PaymentDiffId: self.snapshotPayment.payment->forAll(o | o <> self implies o.id <> self.id)
+context ProductCatalog
+inv ProductCatalogDiffId: self.snapshotProductCatalog.productCatalog->forAll(o | o <> self implies o.id <> self.id)
+context ProductDescription
+inv ProductDescriptionDiffId: self.snapshotProductDescription.productDescription->forAll(o | o <> self implies o.id <> self.id)
+context Register
+inv RegisterDiffId: self.snapshotRegister.register->forAll(o | o <> self implies o.id <> self.id)
+context Sale
+inv SaleDiffId: self.snapshotSale.sale->forAll(o | o <> self implies o.id <> self.id)
+context SalesLineItem
+inv SalesLineItemDiffId: self.snapshotSalesLineItem.salesLineItem->forAll(o | o <> self implies o.id <> self.id)
+context Store
+inv StoreDiffId: self.snapshotStore.store->forAll(o | o <> self implies o.id <> self.id)
+
+context Application
+inv livenessBecomesTrue:
+    self.system.loadedApps->includes(self) implies
+    (let CS:Snapshot = self.snapshotApplication in Set{CS}->closure(s | s.succ())->excluding(null)->exists(s | (let currentObject = s.application->any(o | o.id = self.id) in let previousObject = s.pred().application->any(o | o.id = self.id) in not (previousObject.system.installedApps->includes(previousObject)) and (currentObject.system.installedApps->includes(currentObject)))))

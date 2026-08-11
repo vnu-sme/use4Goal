@@ -1,0 +1,87 @@
+model IncidentResponseShadow
+
+class Person
+attributes
+  name : String
+end
+
+class Incident
+attributes
+  reported : Boolean
+end
+
+class Service
+attributes
+  restored : Boolean
+end
+
+class EvidencePacket
+attributes
+  complete : Boolean
+end
+
+class ChangeRequest
+attributes
+  deployed : Boolean
+end
+
+class AuditTrail
+attributes
+  signed : Boolean
+end
+
+-- Deliberately unrelated entity: the bridge must ignore it when deriving actors.
+class ArchiveBox
+attributes
+  sealed : Boolean
+end
+
+association IncidentService between
+  Incident [1] role servicedIncident
+  Service  [1] role service
+end
+
+association IncidentEvidence between
+  Incident       [1] role evidencedIncident
+  EvidencePacket [1] role evidence
+end
+
+association IncidentChangeRequest between
+  Incident      [1] role changedIncident
+  ChangeRequest [1] role changeRequest
+end
+
+association IncidentAuditTrail between
+  Incident   [1] role auditedIncident
+  AuditTrail [1] role auditTrail
+end
+
+abstract associationclass Role between
+  Incident [*] role actorIncident
+  Person   [*] role actorPerson
+end
+
+abstract associationclass Agent between
+  Incident [*] role agentIncident
+  Person   [*] role agentPerson
+end
+
+associationclass Coordinator < Agent
+attributes
+  triaged : Boolean
+end
+
+associationclass Analyst < Role
+attributes
+  reportReady : Boolean
+end
+
+associationclass Technician < Role
+attributes
+  fixApplied : Boolean
+end
+
+associationclass Auditor < Agent
+attributes
+  auditApproved : Boolean
+end

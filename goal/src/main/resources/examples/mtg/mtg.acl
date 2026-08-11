@@ -1,68 +1,41 @@
-// Migrated to the Class/Relationship-based ACL grammar. Behavioral role links
-// from the old language have no structural equivalent and were removed:
-// - link authority Organizer -> Secretary: authority/communication/
-//   acquaintance links were removed from ACL (behavioral, not structural).
-// Structural relations involving an Entity are represented explicitly by
-// association, aggregation, or composition declarations.
-
 acl v2.0 MeetingSchedulerShadow {
-  enum TimetableStatus    { notRequested, requested, collected }
-  enum TimetableChannel   { none, calendar, phone }
-  enum NotificationStatus { notSent, sent }
-  enum AttendanceStatus   { unknown, attended, absent }
+  enum TimetableChannel { none, calendar, phone }
 
-  entity PhoneContact {
-    number : String;
-  }
-
-  entity Meeting {
-    detailsDecided : Boolean;
-    timeChosen     : Boolean;
-  }
-
-  abstract role MeetingParty {
+  // Root Role state belongs to the MeetingParty occurrence shared by its play chain.
+  role MeetingParty {
     name : String;
+    phone : String;
+    hasCalendar : Boolean;
   }
 
-  role Initiator   extends MeetingParty;
-  role Organizer   extends MeetingParty;
-  role Secretary   extends MeetingParty;
+  // Child roles contain state acquired in one MeetingUnit.
+  role Initiator extends MeetingParty;
+  role Organizer extends MeetingParty;
+  role Secretary extends MeetingParty;
   role Participant extends MeetingParty {
-    hasCalendar      : Boolean;
-    timetable        : TimetableStatus;
+    timetableCollected : Boolean;
     timetableChannel : TimetableChannel;
-    notified         : NotificationStatus;
-    attendance       : AttendanceStatus;
+    notified : Boolean;
+    attended : Boolean;
+  }
+
+  // Role-to-Role associations keep their Role endpoints.
+  association knowsPhoneOf {
+    MeetingParty [*] role knower;
+    MeetingParty [*] role knownContact;
   }
 
   group MeetingUnit {
-    role Initiator    [1..1];
-    role Organizer    [1..1];
-    role Secretary    [0..1];
-    role Participant  [2..*];
+    detailsDecided : Boolean;
+    timeChosen : Boolean;
 
-    compatibility Initiator <-> Participant
-      scope intra-group
-      type compatible;
+    Initiator [1];
+    Organizer [1];
+    Secretary [0..1];
+    Participant [2..*];
 
-    compatibility Organizer <-> Secretary
-      scope intra-group
-      type compatible;
-
+    Initiator compatible Participant;
+    Organizer compatible Secretary;
   }
 
-  association know {
-    MeetingParty [1];
-    PhoneContact [*];
-  }
-
-  association meetingUnitMeetings {
-    MeetingUnit [1];
-    Meeting [*];
-  }
-
-  composition phoneContacts {
-    MeetingParty [1];
-    PhoneContact [*];
-  }
 }

@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+    <uml:Model xmi:type="uml:Model" xmi:id="SteamBoiler" name="SteamBoiler">
+    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="SteamBoiler_Integer" name="Integer"/>
+    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="SteamBoiler_UnlimitedNatural" name="UnlimitedNatural"/>
+    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="SteamBoiler_Real" name="Real"/>
+    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="SteamBoiler_Boolean" name="Boolean"/>
+    <packagedElement xmi:type="uml:PrimitiveType" xmi:id="SteamBoiler_String" name="String"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="SteamBoiler_ControlProgram" name="ControlProgram">
+      <ownedAttribute xmi:id="SteamBoiler_ControlProgram_failureDetected" name="failureDetected" type="SteamBoiler_Boolean"/>
+      <ownedAttribute xmi:id="SteamBoiler_ControlProgram_mode" name="mode" type="SteamBoiler_Mode"/>
+      <ownedAttribute xmi:id="SteamBoiler_ControlProgram_pumpControllerFailure" name="pumpControllerFailure" type="SteamBoiler_Boolean"/>
+      <ownedAttribute xmi:id="SteamBoiler_ControlProgram_pumpFailure" name="pumpFailure" type="SteamBoiler_Boolean"/>
+      <ownedAttribute xmi:id="SteamBoiler_ControlProgram_ready" name="ready" type="SteamBoiler_Boolean"/>
+      <ownedAttribute xmi:id="SteamBoiler_ControlProgram_smdFailure" name="smdFailure" type="SteamBoiler_Boolean"/>
+      <ownedAttribute xmi:id="SteamBoiler_ControlProgram_wlmdFailure" name="wlmdFailure" type="SteamBoiler_Boolean"/>
+      <ownedOperation xmi:id="SteamBoiler_ControlProgram_startOperation" name="startOperation" isQuery="false" precondition="SteamBoiler_ControlProgram_startOperation_pre1"  postcondition="SteamBoiler_ControlProgram_startOperation_post1">
+        <ownedRule xmi:id="SteamBoiler_ControlProgram_startOperation_pre1" name="pre1">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="SteamBoiler_ControlProgram_startOperation_pre1_specification">
+            <body>(self.ready = false)</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="SteamBoiler_ControlProgram_startOperation_post1" name="post1">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="SteamBoiler_ControlProgram_startOperation_post1_specification">
+            <body>(self.ready = true)</body>
+          </specification>
+        </ownedRule>
+      </ownedOperation>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="SteamBoiler_PhysicalUnit" name="PhysicalUnit">
+      <ownedAttribute xmi:id="SteamBoiler_PhysicalUnit_ready" name="ready" type="SteamBoiler_Boolean"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="SteamBoiler_Pump" name="Pump">
+      <ownedAttribute xmi:id="SteamBoiler_Pump_capacity" name="capacity" type="SteamBoiler_Real"/>
+      <ownedAttribute xmi:id="SteamBoiler_Pump_mode" name="mode" type="SteamBoiler_State"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="SteamBoiler_PumpController" name="PumpController">
+      <ownedAttribute xmi:id="SteamBoiler_PumpController_circulating" name="circulating" type="SteamBoiler_Boolean"/>
+      <ownedOperation xmi:id="SteamBoiler_PumpController_closePump" name="closePump" isQuery="false" precondition="SteamBoiler_PumpController_closePump_pre1"  postcondition="SteamBoiler_PumpController_closePump_post1">
+        <ownedRule xmi:id="SteamBoiler_PumpController_closePump_pre1" name="pre1">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="SteamBoiler_PumpController_closePump_pre1_specification">
+            <body>(self.pump.mode = State::on)</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="SteamBoiler_PumpController_closePump_post1" name="post1">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="SteamBoiler_PumpController_closePump_post1_specification">
+            <body>(self.pump.mode = State::off)</body>
+          </specification>
+        </ownedRule>
+      </ownedOperation>
+      <ownedOperation xmi:id="SteamBoiler_PumpController_openPump" name="openPump" isQuery="false" precondition="SteamBoiler_PumpController_openPump_pre1"  postcondition="SteamBoiler_PumpController_openPump_post1">
+        <ownedRule xmi:id="SteamBoiler_PumpController_openPump_pre1" name="pre1">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="SteamBoiler_PumpController_openPump_pre1_specification">
+            <body>(self.pump.mode = State::off)</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="SteamBoiler_PumpController_openPump_post1" name="post1">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="SteamBoiler_PumpController_openPump_post1_specification">
+            <body>(self.pump.mode = State::on)</body>
+          </specification>
+        </ownedRule>
+      </ownedOperation>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="SteamBoiler_SteamBoiler" name="SteamBoiler">
+      <ownedAttribute xmi:id="SteamBoiler_SteamBoiler_capacity" name="capacity" type="SteamBoiler_Real"/>
+      <ownedAttribute xmi:id="SteamBoiler_SteamBoiler_maximalLimit" name="maximalLimit" type="SteamBoiler_Real"/>
+      <ownedAttribute xmi:id="SteamBoiler_SteamBoiler_maximalNormal" name="maximalNormal" type="SteamBoiler_Real"/>
+      <ownedAttribute xmi:id="SteamBoiler_SteamBoiler_maximumDecrease" name="maximumDecrease" type="SteamBoiler_Real"/>
+      <ownedAttribute xmi:id="SteamBoiler_SteamBoiler_maximumIncrease" name="maximumIncrease" type="SteamBoiler_Real"/>
+      <ownedAttribute xmi:id="SteamBoiler_SteamBoiler_minimalLimit" name="minimalLimit" type="SteamBoiler_Real"/>
+      <ownedAttribute xmi:id="SteamBoiler_SteamBoiler_minimalNormal" name="minimalNormal" type="SteamBoiler_Real"/>
+      <ownedAttribute xmi:id="SteamBoiler_SteamBoiler_valveOpen" name="valveOpen" type="SteamBoiler_ValveState"/>
+      <ownedOperation xmi:id="SteamBoiler_SteamBoiler_openValve" name="openValve" isQuery="false" precondition="SteamBoiler_SteamBoiler_openValve_pre1"  postcondition="SteamBoiler_SteamBoiler_openValve_post1">
+        <ownedRule xmi:id="SteamBoiler_SteamBoiler_openValve_pre1" name="pre1">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="SteamBoiler_SteamBoiler_openValve_pre1_specification">
+            <body>(self.valveOpen = ValveState::closed)</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="SteamBoiler_SteamBoiler_openValve_post1" name="post1">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="SteamBoiler_SteamBoiler_openValve_post1_specification">
+            <body>(self.valveOpen = ValveState::open)</body>
+          </specification>
+        </ownedRule>
+      </ownedOperation>
+      <ownedRule xmi:id="SteamBoiler_SteamBoiler_ValveOpenInv" name="ValveOpenInv">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="SteamBoiler_SteamBoiler_ValveOpenInv_specification">
+          <body>((self.valveOpen = ValveState::open) implies (self.program.mode = Mode::Initialization))</body>
+        </specification>
+      </ownedRule>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="SteamBoiler_SteamMeasurementDevice" name="SteamMeasurementDevice">
+      <ownedAttribute xmi:id="SteamBoiler_SteamMeasurementDevice_evaporationRate" name="evaporationRate" type="SteamBoiler_Real"/>
+      <ownedOperation xmi:id="SteamBoiler_SteamMeasurementDevice_getSteam" name="getSteam" isQuery="false" precondition="SteamBoiler_SteamMeasurementDevice_getSteam_pre1"  postcondition="SteamBoiler_SteamMeasurementDevice_getSteam_post1">
+        <ownedParameter xmi:id="SteamBoiler_SteamMeasurementDevice_getSteam_result" name="result" type="SteamBoiler_Real" upper="1" direction="return">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="SteamBoiler_SteamMeasurementDevice_getSteam_result" value="0"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="SteamBoiler_SteamMeasurementDevice_getSteam_result" value="1"/>
+        </ownedParameter>
+        <ownedRule xmi:id="SteamBoiler_SteamMeasurementDevice_getSteam_pre1" name="pre1">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="SteamBoiler_SteamMeasurementDevice_getSteam_pre1_specification">
+            <body>(self.program.mode = Mode::Normal)</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="SteamBoiler_SteamMeasurementDevice_getSteam_post1" name="post1">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="SteamBoiler_SteamMeasurementDevice_getSteam_post1_specification">
+            <body>(self.evaporationRate = result)</body>
+          </specification>
+        </ownedRule>
+      </ownedOperation>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="SteamBoiler_WaterLevelMeasurementDevice" name="WaterLevelMeasurementDevice">
+      <ownedAttribute xmi:id="SteamBoiler_WaterLevelMeasurementDevice_waterLevel" name="waterLevel" type="SteamBoiler_Real"/>
+      <ownedOperation xmi:id="SteamBoiler_WaterLevelMeasurementDevice_getLevel" name="getLevel" isQuery="false" precondition="SteamBoiler_WaterLevelMeasurementDevice_getLevel_pre1"  postcondition="SteamBoiler_WaterLevelMeasurementDevice_getLevel_post1">
+        <ownedParameter xmi:id="SteamBoiler_WaterLevelMeasurementDevice_getLevel_result" name="result" type="SteamBoiler_Real" upper="1" direction="return">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="SteamBoiler_WaterLevelMeasurementDevice_getLevel_result" value="0"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="SteamBoiler_WaterLevelMeasurementDevice_getLevel_result" value="1"/>
+        </ownedParameter>
+        <ownedRule xmi:id="SteamBoiler_WaterLevelMeasurementDevice_getLevel_pre1" name="pre1">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="SteamBoiler_WaterLevelMeasurementDevice_getLevel_pre1_specification">
+            <body>(self.program.mode = Mode::Normal)</body>
+          </specification>
+        </ownedRule>
+        <ownedRule xmi:id="SteamBoiler_WaterLevelMeasurementDevice_getLevel_post1" name="post1">
+          <specification xmi:type="uml:OpaqueExpression" xmi:id="SteamBoiler_WaterLevelMeasurementDevice_getLevel_post1_specification">
+            <body>(self.waterLevel = result)</body>
+          </specification>
+        </ownedRule>
+      </ownedOperation>
+      <ownedRule xmi:id="SteamBoiler_WaterLevelMeasurementDevice_WaterLevelLimit" name="WaterLevelLimit">
+        <specification xmi:type="uml:OpaqueExpression" xmi:id="SteamBoiler_WaterLevelMeasurementDevice_WaterLevelLimit_specification">
+          <body>(self.waterLevel &lt;= self.sb.capacity)</body>
+        </specification>
+      </ownedRule>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="SteamBoiler_State" name="State">
+      <ownedLiteral xmi:id="SteamBoiler_State_on" name="on"/>
+      <ownedLiteral xmi:id="SteamBoiler_State_off" name="off"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="SteamBoiler_Mode" name="Mode">
+      <ownedLiteral xmi:id="SteamBoiler_Mode_Normal" name="Normal"/>
+      <ownedLiteral xmi:id="SteamBoiler_Mode_Initialization" name="Initialization"/>
+      <ownedLiteral xmi:id="SteamBoiler_Mode_Degraded" name="Degraded"/>
+      <ownedLiteral xmi:id="SteamBoiler_Mode_Rescue" name="Rescue"/>
+      <ownedLiteral xmi:id="SteamBoiler_Mode_EmergencyStop" name="EmergencyStop"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Enumeration" xmi:id="SteamBoiler_ValveState" name="ValveState">
+      <ownedLiteral xmi:id="SteamBoiler_ValveState_open" name="open"/>
+      <ownedLiteral xmi:id="SteamBoiler_ValveState_closed" name="closed"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="SteamBoiler_ControlProgramPump" name="ControlProgramPump" memberEnd="SteamBoiler_ControlProgramPump_program SteamBoiler_ControlProgramPump_pump">
+      <ownedEnd xmi:id="SteamBoiler_ControlProgramPump_program" name="program" type="SteamBoiler_ControlProgram" association="SteamBoiler_ControlProgramPump">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="SteamBoiler_ControlProgramPump_program_lower" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="SteamBoiler_ControlProgramPump_program_upper" value="1"/>
+      </ownedEnd>
+      <ownedEnd xmi:id="SteamBoiler_ControlProgramPump_pump" name="pump" type="SteamBoiler_Pump" association="SteamBoiler_ControlProgramPump">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="SteamBoiler_ControlProgramPump_pump_lower" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="SteamBoiler_ControlProgramPump_pump_upper" value="1"/>
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="SteamBoiler_ControlProgramPumpControler" name="ControlProgramPumpControler" memberEnd="SteamBoiler_ControlProgramPumpControler_program SteamBoiler_ControlProgramPumpControler_PC">
+      <ownedEnd xmi:id="SteamBoiler_ControlProgramPumpControler_program" name="program" type="SteamBoiler_ControlProgram" association="SteamBoiler_ControlProgramPumpControler">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="SteamBoiler_ControlProgramPumpControler_program_lower" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="SteamBoiler_ControlProgramPumpControler_program_upper" value="1"/>
+      </ownedEnd>
+      <ownedEnd xmi:id="SteamBoiler_ControlProgramPumpControler_PC" name="PC" type="SteamBoiler_PumpController" association="SteamBoiler_ControlProgramPumpControler">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="SteamBoiler_ControlProgramPumpControler_PC_lower" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="SteamBoiler_ControlProgramPumpControler_PC_upper" value="1"/>
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="SteamBoiler_ControlProgramSMD" name="ControlProgramSMD" memberEnd="SteamBoiler_ControlProgramSMD_program SteamBoiler_ControlProgramSMD_smd">
+      <ownedEnd xmi:id="SteamBoiler_ControlProgramSMD_program" name="program" type="SteamBoiler_ControlProgram" association="SteamBoiler_ControlProgramSMD">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="SteamBoiler_ControlProgramSMD_program_lower" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="SteamBoiler_ControlProgramSMD_program_upper" value="1"/>
+      </ownedEnd>
+      <ownedEnd xmi:id="SteamBoiler_ControlProgramSMD_smd" name="smd" type="SteamBoiler_SteamMeasurementDevice" association="SteamBoiler_ControlProgramSMD">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="SteamBoiler_ControlProgramSMD_smd_lower" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="SteamBoiler_ControlProgramSMD_smd_upper" value="1"/>
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="SteamBoiler_ControlProgramWLMD" name="ControlProgramWLMD" memberEnd="SteamBoiler_ControlProgramWLMD_program SteamBoiler_ControlProgramWLMD_wlmd">
+      <ownedEnd xmi:id="SteamBoiler_ControlProgramWLMD_program" name="program" type="SteamBoiler_ControlProgram" association="SteamBoiler_ControlProgramWLMD">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="SteamBoiler_ControlProgramWLMD_program_lower" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="SteamBoiler_ControlProgramWLMD_program_upper" value="1"/>
+      </ownedEnd>
+      <ownedEnd xmi:id="SteamBoiler_ControlProgramWLMD_wlmd" name="wlmd" type="SteamBoiler_WaterLevelMeasurementDevice" association="SteamBoiler_ControlProgramWLMD">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="SteamBoiler_ControlProgramWLMD_wlmd_lower" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="SteamBoiler_ControlProgramWLMD_wlmd_upper" value="1"/>
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="SteamBoiler_PumpControllerPump" name="PumpControllerPump" memberEnd="SteamBoiler_PumpControllerPump_controller SteamBoiler_PumpControllerPump_pump">
+      <ownedEnd xmi:id="SteamBoiler_PumpControllerPump_controller" name="controller" type="SteamBoiler_PumpController" association="SteamBoiler_PumpControllerPump">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="SteamBoiler_PumpControllerPump_controller_lower" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="SteamBoiler_PumpControllerPump_controller_upper" value="1"/>
+      </ownedEnd>
+      <ownedEnd xmi:id="SteamBoiler_PumpControllerPump_pump" name="pump" type="SteamBoiler_Pump" association="SteamBoiler_PumpControllerPump">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="SteamBoiler_PumpControllerPump_pump_lower" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="SteamBoiler_PumpControllerPump_pump_upper" value="1"/>
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="SteamBoiler_SteamBoilerControlProgram" name="SteamBoilerControlProgram" memberEnd="SteamBoiler_SteamBoilerControlProgram_sb SteamBoiler_SteamBoilerControlProgram_program">
+      <ownedEnd xmi:id="SteamBoiler_SteamBoilerControlProgram_sb" name="sb" type="SteamBoiler_SteamBoiler" association="SteamBoiler_SteamBoilerControlProgram">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="SteamBoiler_SteamBoilerControlProgram_sb_lower" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="SteamBoiler_SteamBoilerControlProgram_sb_upper" value="1"/>
+      </ownedEnd>
+      <ownedEnd xmi:id="SteamBoiler_SteamBoilerControlProgram_program" name="program" type="SteamBoiler_ControlProgram" association="SteamBoiler_SteamBoilerControlProgram">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="SteamBoiler_SteamBoilerControlProgram_program_lower" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="SteamBoiler_SteamBoilerControlProgram_program_upper" value="1"/>
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="SteamBoiler_SteamBoilerPump" name="SteamBoilerPump" memberEnd="SteamBoiler_SteamBoilerPump_sb SteamBoiler_SteamBoilerPump_pump">
+      <ownedEnd xmi:id="SteamBoiler_SteamBoilerPump_sb" name="sb" type="SteamBoiler_SteamBoiler" association="SteamBoiler_SteamBoilerPump">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="SteamBoiler_SteamBoilerPump_sb_lower" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="SteamBoiler_SteamBoilerPump_sb_upper" value="1"/>
+      </ownedEnd>
+      <ownedEnd xmi:id="SteamBoiler_SteamBoilerPump_pump" name="pump" type="SteamBoiler_Pump" association="SteamBoiler_SteamBoilerPump">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="SteamBoiler_SteamBoilerPump_pump_lower" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="SteamBoiler_SteamBoilerPump_pump_upper" value="1"/>
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="SteamBoiler_SteamBoilerSMD" name="SteamBoilerSMD" memberEnd="SteamBoiler_SteamBoilerSMD_sb SteamBoiler_SteamBoilerSMD_smd">
+      <ownedEnd xmi:id="SteamBoiler_SteamBoilerSMD_sb" name="sb" type="SteamBoiler_SteamBoiler" association="SteamBoiler_SteamBoilerSMD">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="SteamBoiler_SteamBoilerSMD_sb_lower" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="SteamBoiler_SteamBoilerSMD_sb_upper" value="1"/>
+      </ownedEnd>
+      <ownedEnd xmi:id="SteamBoiler_SteamBoilerSMD_smd" name="smd" type="SteamBoiler_SteamMeasurementDevice" association="SteamBoiler_SteamBoilerSMD">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="SteamBoiler_SteamBoilerSMD_smd_lower" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="SteamBoiler_SteamBoilerSMD_smd_upper" value="1"/>
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="SteamBoiler_SteamBoilerWLMD" name="SteamBoilerWLMD" memberEnd="SteamBoiler_SteamBoilerWLMD_sb SteamBoiler_SteamBoilerWLMD_wlmd">
+      <ownedEnd xmi:id="SteamBoiler_SteamBoilerWLMD_sb" name="sb" type="SteamBoiler_SteamBoiler" association="SteamBoiler_SteamBoilerWLMD">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="SteamBoiler_SteamBoilerWLMD_sb_lower" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="SteamBoiler_SteamBoilerWLMD_sb_upper" value="1"/>
+      </ownedEnd>
+      <ownedEnd xmi:id="SteamBoiler_SteamBoilerWLMD_wlmd" name="wlmd" type="SteamBoiler_WaterLevelMeasurementDevice" association="SteamBoiler_SteamBoilerWLMD">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="SteamBoiler_SteamBoilerWLMD_wlmd_lower" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="SteamBoiler_SteamBoilerWLMD_wlmd_upper" value="1"/>
+      </ownedEnd>
+    </packagedElement>
+    </uml:Model></xmi:XMI>

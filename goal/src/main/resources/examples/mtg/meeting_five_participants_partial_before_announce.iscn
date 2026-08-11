@@ -8,17 +8,17 @@ scenario MeetingOrganization_FiveParticipants_PartialBeforeAnnounce for "mtg.ist
     instance alex    : Secretary;
     instance xing, amr, naya, bao, chloe : Participant;
 
-    fire DecideMeetingDetails;
-    fire ChooseTimeAndDate;
+    fire DecideDetails;
+    fire ChooseMeetingTime;
 
     fire xing.CollectFromCalendar;
     fire amr.CollectFromCalendar;
-    fire alex.CollectConstraintsByPhone for naya;
-    fire alex.CollectConstraintsByPhone for bao;
-    fire alex.CollectConstraintsByPhone for chloe;
+    fire alex.CollectByPhone for naya;
+    fire alex.CollectByPhone for bao;
+    fire alex.CollectByPhone for chloe;
 
     aggregate EveryTimetableCollected : all of Participant over TimetableCollected;
-    aggregate EveryoneNotified        : all of Participant over AnnounceMeeting;
-    aggregate EveryoneAttended        : all of Participant over MeetingAttendedByParticipant;
-    aggregate MeetingFullyOrganized   : all of Participant over HaveMeetingOrganized;
+    aggregate EveryoneNotified        : all of Participant over NotifyParticipant;
+    aggregate EveryoneAttended        : all of Participant over ParticipantAttended;
+    aggregate MeetingFullyOrganized   : all of Participant over MeetingOrganized;
 }

@@ -1,0 +1,2 @@
+context Elevator
+inv sometimeCloseSinceRequested: sometime isCalled(closeDoor()) since self.isRequested = true

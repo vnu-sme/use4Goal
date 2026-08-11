@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?use version="5.1.0"?>
+<plugin name="FRSL Plugin" version="1.0">
+    <actions>
+    	<action label="FRSL compiler" icon="images/frsl.png"
+			class="org.vnu.sme.frsl.actions.ActionOpenFRSL"
+			tooltip="FRSL Parser"
+			menu="FRSL plugin"
+			menuitem="FRSL Parser"
+			toolbaritem="FRSL Parser"
+			id="org.vnu.sme.frsl.actions.ActionOpenFRSL">
+		</action>
+    </actions>
+</plugin>

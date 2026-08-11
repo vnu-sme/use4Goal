@@ -17,7 +17,7 @@ acl v2.0 IncidentResponseShadow {
     signed : Boolean;
   }
 
-  abstract role ResponseParty {
+  role ResponseParty {
     name : String;
   }
 
@@ -37,22 +37,22 @@ acl v2.0 IncidentResponseShadow {
     triaged : Boolean;
   }
 
-  relationship AnalystProducesEvidence {
+  association AnalystProducesEvidence {
     Analyst        [*] analysts;
     EvidencePacket [*] evidence;
   }
 
-  relationship TechnicianDeploysChange {
+  association TechnicianDeploysChange {
     Technician    [*] technicians;
     ChangeRequest [*] changes;
   }
 
-  relationship AuditorSignsTrail {
+  association AuditorSignsTrail {
     Auditor    [*] auditors;
     AuditTrail [*] auditTrails;
   }
 
-  relationship ChangeRestoresService {
+  association ChangeRestoresService {
     ChangeRequest [*] changeRequests;
     Service       [1] affectedService;
   }
@@ -66,11 +66,26 @@ acl v2.0 IncidentResponseShadow {
     Analyst        [1..*];
     Technician     [1..*];
     Auditor        [0..1];
-    Service        [1..*];
-    EvidencePacket [0..*];
-    ChangeRequest  [0..*];
-    AuditTrail     [0..*];
+    Analyst compatible Auditor;
   }
 
-  compatibility Analyst <-> Auditor scope intra-group type compatible;
+  composition incidentServices {
+    IncidentCase [1] role incident;
+    Service [1..*] role services;
+  }
+
+  composition incidentEvidence {
+    IncidentCase [1] role incident;
+    EvidencePacket [0..*] role evidence;
+  }
+
+  composition incidentChanges {
+    IncidentCase [1] role incident;
+    ChangeRequest [0..*] role changes;
+  }
+
+  composition incidentAuditTrails {
+    IncidentCase [1] role incident;
+    AuditTrail [0..*] role auditTrails;
+  }
 }

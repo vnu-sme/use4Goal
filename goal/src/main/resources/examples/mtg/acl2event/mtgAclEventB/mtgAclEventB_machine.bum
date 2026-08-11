@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.machineFile org.eventb.core.configuration="org.eventb.core.fwd" version="5">
+  <org.eventb.core.seesContext name="n0" org.eventb.core.target="mtgAclEventB_ctx"/>
+  <org.eventb.core.variable name="n1" org.eventb.core.identifier="AGENTS"/>
+  <org.eventb.core.variable name="n2" org.eventb.core.identifier="G_MeetingUnit"/>
+  <org.eventb.core.variable name="n3" org.eventb.core.identifier="R_MeetingParty"/>
+  <org.eventb.core.variable name="n4" org.eventb.core.identifier="R_Initiator"/>
+  <org.eventb.core.variable name="n5" org.eventb.core.identifier="R_Organizer"/>
+  <org.eventb.core.variable name="n6" org.eventb.core.identifier="R_Secretary"/>
+  <org.eventb.core.variable name="n7" org.eventb.core.identifier="R_Participant"/>
+  <org.eventb.core.variable name="n8" org.eventb.core.identifier="MeetingUnit_detailsDecided"/>
+  <org.eventb.core.variable name="n9" org.eventb.core.identifier="MeetingUnit_timeChosen"/>
+  <org.eventb.core.variable name="n10" org.eventb.core.identifier="MeetingParty_name"/>
+  <org.eventb.core.variable name="n11" org.eventb.core.identifier="MeetingParty_phone"/>
+  <org.eventb.core.variable name="n12" org.eventb.core.identifier="MeetingParty_hasCalendar"/>
+  <org.eventb.core.variable name="n13" org.eventb.core.identifier="Participant_timetableCollected"/>
+  <org.eventb.core.variable name="n14" org.eventb.core.identifier="Participant_timetableChannel"/>
+  <org.eventb.core.variable name="n15" org.eventb.core.identifier="Participant_notified"/>
+  <org.eventb.core.variable name="n16" org.eventb.core.identifier="Participant_attended"/>
+  <org.eventb.core.variable name="n17" org.eventb.core.identifier="knowsPhoneOf"/>
+  <org.eventb.core.variable name="n18" org.eventb.core.identifier="owns_Initiator"/>
+  <org.eventb.core.variable name="n19" org.eventb.core.identifier="owns_Organizer"/>
+  <org.eventb.core.variable name="n20" org.eventb.core.identifier="owns_Secretary"/>
+  <org.eventb.core.variable name="n21" org.eventb.core.identifier="owns_Participant"/>
+  <org.eventb.core.variable name="n22" org.eventb.core.identifier="plays_MeetingParty"/>
+  <org.eventb.core.variable name="n23" org.eventb.core.identifier="plays_Initiator"/>
+  <org.eventb.core.variable name="n24" org.eventb.core.identifier="plays_Organizer"/>
+  <org.eventb.core.variable name="n25" org.eventb.core.identifier="plays_Secretary"/>
+  <org.eventb.core.variable name="n26" org.eventb.core.identifier="plays_Participant"/>
+  <org.eventb.core.invariant name="n27" org.eventb.core.label="inv_type_AGENTS" org.eventb.core.predicate="AGENTS ⊆ AGENT_ID"/>
+  <org.eventb.core.invariant name="n28" org.eventb.core.label="inv_type_G_MeetingUnit" org.eventb.core.predicate="G_MeetingUnit ⊆ G_MeetingUnit_ID"/>
+  <org.eventb.core.invariant name="n29" org.eventb.core.label="inv_type_R_MeetingParty" org.eventb.core.predicate="R_MeetingParty ⊆ R_MeetingParty_ID"/>
+  <org.eventb.core.invariant name="n30" org.eventb.core.label="inv_type_R_Initiator" org.eventb.core.predicate="R_Initiator ⊆ R_Initiator_ID"/>
+  <org.eventb.core.invariant name="n31" org.eventb.core.label="inv_type_R_Organizer" org.eventb.core.predicate="R_Organizer ⊆ R_Organizer_ID"/>
+  <org.eventb.core.invariant name="n32" org.eventb.core.label="inv_type_R_Secretary" org.eventb.core.predicate="R_Secretary ⊆ R_Secretary_ID"/>
+  <org.eventb.core.invariant name="n33" org.eventb.core.label="inv_type_R_Participant" org.eventb.core.predicate="R_Participant ⊆ R_Participant_ID"/>
+  <org.eventb.core.invariant name="n34" org.eventb.core.label="inv_type_MeetingUnit_detailsDecided" org.eventb.core.predicate="MeetingUnit_detailsDecided ∈ G_MeetingUnit → BOOL"/>
+  <org.eventb.core.invariant name="n35" org.eventb.core.label="inv_type_MeetingUnit_timeChosen" org.eventb.core.predicate="MeetingUnit_timeChosen ∈ G_MeetingUnit → BOOL"/>
+  <org.eventb.core.invariant name="n36" org.eventb.core.label="inv_type_MeetingParty_name" org.eventb.core.predicate="MeetingParty_name ∈ R_MeetingParty → STRING"/>
+  <org.eventb.core.invariant name="n37" org.eventb.core.label="inv_type_MeetingParty_phone" org.eventb.core.predicate="MeetingParty_phone ∈ R_MeetingParty → STRING"/>
+  <org.eventb.core.invariant name="n38" org.eventb.core.label="inv_type_MeetingParty_hasCalendar" org.eventb.core.predicate="MeetingParty_hasCalendar ∈ R_MeetingParty → BOOL"/>
+  <org.eventb.core.invariant name="n39" org.eventb.core.label="inv_type_Participant_timetableCollected" org.eventb.core.predicate="Participant_timetableCollected ∈ R_Participant → BOOL"/>
+  <org.eventb.core.invariant name="n40" org.eventb.core.label="inv_type_Participant_timetableChannel" org.eventb.core.predicate="Participant_timetableChannel ∈ R_Participant → TIMETABLECHANNEL"/>
+  <org.eventb.core.invariant name="n41" org.eventb.core.label="inv_type_Participant_notified" org.eventb.core.predicate="Participant_notified ∈ R_Participant → BOOL"/>
+  <org.eventb.core.invariant name="n42" org.eventb.core.label="inv_type_Participant_attended" org.eventb.core.predicate="Participant_attended ∈ R_Participant → BOOL"/>
+  <org.eventb.core.invariant name="n43" org.eventb.core.label="inv_type_knowsPhoneOf" org.eventb.core.predicate="knowsPhoneOf ∈ R_MeetingParty ↔ R_MeetingParty"/>
+  <org.eventb.core.invariant name="n44" org.eventb.core.label="inv_type_owns_Initiator" org.eventb.core.predicate="owns_Initiator ∈ G_MeetingUnit ↔ R_Initiator"/>
+  <org.eventb.core.invariant name="n45" org.eventb.core.label="inv_card_owns_Initiator_min" org.eventb.core.predicate="∀x·x∈G_MeetingUnit ⇒ owns_Initiator[{x}] ≠ ∅"/>
+  <org.eventb.core.invariant name="n46" org.eventb.core.label="inv_card_owns_Initiator_max" org.eventb.core.predicate="∀x·x∈G_MeetingUnit ⇒ (∀y1,y2·(y1∈owns_Initiator[{x}] ∧ y2∈owns_Initiator[{x}]) ⇒ (y1=y2))"/>
+  <org.eventb.core.invariant name="n47" org.eventb.core.label="inv_owner_total_owns_Initiator" org.eventb.core.predicate="∀member·member∈R_Initiator ⇒ owns_Initiator∼[{member}] ≠ ∅"/>
+  <org.eventb.core.invariant name="n48" org.eventb.core.label="inv_owner_unique_owns_Initiator" org.eventb.core.predicate="∀member·member∈R_Initiator ⇒ (∀y1,y2·(y1∈owns_Initiator∼[{member}] ∧ y2∈owns_Initiator∼[{member}]) ⇒ (y1=y2))"/>
+  <org.eventb.core.invariant name="n49" org.eventb.core.label="inv_type_owns_Organizer" org.eventb.core.predicate="owns_Organizer ∈ G_MeetingUnit ↔ R_Organizer"/>
+  <org.eventb.core.invariant name="n50" org.eventb.core.label="inv_card_owns_Organizer_min" org.eventb.core.predicate="∀x·x∈G_MeetingUnit ⇒ owns_Organizer[{x}] ≠ ∅"/>
+  <org.eventb.core.invariant name="n51" org.eventb.core.label="inv_card_owns_Organizer_max" org.eventb.core.predicate="∀x·x∈G_MeetingUnit ⇒ (∀y1,y2·(y1∈owns_Organizer[{x}] ∧ y2∈owns_Organizer[{x}]) ⇒ (y1=y2))"/>
+  <org.eventb.core.invariant name="n52" org.eventb.core.label="inv_owner_total_owns_Organizer" org.eventb.core.predicate="∀member·member∈R_Organizer ⇒ owns_Organizer∼[{member}] ≠ ∅"/>
+  <org.eventb.core.invariant name="n53" org.eventb.core.label="inv_owner_unique_owns_Organizer" org.eventb.core.predicate="∀member·member∈R_Organizer ⇒ (∀y1,y2·(y1∈owns_Organizer∼[{member}] ∧ y2∈owns_Organizer∼[{member}]) ⇒ (y1=y2))"/>
+  <org.eventb.core.invariant name="n54" org.eventb.core.label="inv_type_owns_Secretary" org.eventb.core.predicate="owns_Secretary ∈ G_MeetingUnit ↔ R_Secretary"/>
+  <org.eventb.core.invariant name="n55" org.eventb.core.label="inv_card_owns_Secretary_max" org.eventb.core.predicate="∀x·x∈G_MeetingUnit ⇒ (∀y1,y2·(y1∈owns_Secretary[{x}] ∧ y2∈owns_Secretary[{x}]) ⇒ (y1=y2))"/>
+  <org.eventb.core.invariant name="n56" org.eventb.core.label="inv_owner_total_owns_Secretary" org.eventb.core.predicate="∀member·member∈R_Secretary ⇒ owns_Secretary∼[{member}] ≠ ∅"/>
+  <org.eventb.core.invariant name="n57" org.eventb.core.label="inv_owner_unique_owns_Secretary" org.eventb.core.predicate="∀member·member∈R_Secretary ⇒ (∀y1,y2·(y1∈owns_Secretary∼[{member}] ∧ y2∈owns_Secretary∼[{member}]) ⇒ (y1=y2))"/>
+  <org.eventb.core.invariant name="n58" org.eventb.core.label="inv_type_owns_Participant" org.eventb.core.predicate="owns_Participant ∈ G_MeetingUnit ↔ R_Participant"/>
+  <org.eventb.core.invariant name="n59" org.eventb.core.label="inv_card_owns_Participant_min" org.eventb.core.predicate="∀x·x∈G_MeetingUnit ⇒ (∃y1,y2·y1∈owns_Participant[{x}] ∧ y2∈owns_Participant[{x}] ∧ y1≠y2)"/>
+  <org.eventb.core.invariant name="n60" org.eventb.core.label="inv_owner_total_owns_Participant" org.eventb.core.predicate="∀member·member∈R_Participant ⇒ owns_Participant∼[{member}] ≠ ∅"/>
+  <org.eventb.core.invariant name="n61" org.eventb.core.label="inv_owner_unique_owns_Participant" org.eventb.core.predicate="∀member·member∈R_Participant ⇒ (∀y1,y2·(y1∈owns_Participant∼[{member}] ∧ y2∈owns_Participant∼[{member}]) ⇒ (y1=y2))"/>
+  <org.eventb.core.invariant name="n62" org.eventb.core.label="inv_type_plays_MeetingParty" org.eventb.core.predicate="plays_MeetingParty ∈ AGENTS ↔ R_MeetingParty"/>
+  <org.eventb.core.invariant name="n63" org.eventb.core.label="inv_play_total_plays_MeetingParty" org.eventb.core.predicate="∀child·child∈R_MeetingParty ⇒ plays_MeetingParty∼[{child}] ≠ ∅"/>
+  <org.eventb.core.invariant name="n64" org.eventb.core.label="inv_play_unique_plays_MeetingParty" org.eventb.core.predicate="∀child·child∈R_MeetingParty ⇒ (∀y1,y2·(y1∈plays_MeetingParty∼[{child}] ∧ y2∈plays_MeetingParty∼[{child}]) ⇒ (y1=y2))"/>
+  <org.eventb.core.invariant name="n65" org.eventb.core.label="inv_type_plays_Initiator" org.eventb.core.predicate="plays_Initiator ∈ R_MeetingParty ↔ R_Initiator"/>
+  <org.eventb.core.invariant name="n66" org.eventb.core.label="inv_play_total_plays_Initiator" org.eventb.core.predicate="∀child·child∈R_Initiator ⇒ plays_Initiator∼[{child}] ≠ ∅"/>
+  <org.eventb.core.invariant name="n67" org.eventb.core.label="inv_play_unique_plays_Initiator" org.eventb.core.predicate="∀child·child∈R_Initiator ⇒ (∀y1,y2·(y1∈plays_Initiator∼[{child}] ∧ y2∈plays_Initiator∼[{child}]) ⇒ (y1=y2))"/>
+  <org.eventb.core.invariant name="n68" org.eventb.core.label="inv_type_plays_Organizer" org.eventb.core.predicate="plays_Organizer ∈ R_MeetingParty ↔ R_Organizer"/>
+  <org.eventb.core.invariant name="n69" org.eventb.core.label="inv_play_total_plays_Organizer" org.eventb.core.predicate="∀child·child∈R_Organizer ⇒ plays_Organizer∼[{child}] ≠ ∅"/>
+  <org.eventb.core.invariant name="n70" org.eventb.core.label="inv_play_unique_plays_Organizer" org.eventb.core.predicate="∀child·child∈R_Organizer ⇒ (∀y1,y2·(y1∈plays_Organizer∼[{child}] ∧ y2∈plays_Organizer∼[{child}]) ⇒ (y1=y2))"/>
+  <org.eventb.core.invariant name="n71" org.eventb.core.label="inv_type_plays_Secretary" org.eventb.core.predicate="plays_Secretary ∈ R_MeetingParty ↔ R_Secretary"/>
+  <org.eventb.core.invariant name="n72" org.eventb.core.label="inv_play_total_plays_Secretary" org.eventb.core.predicate="∀child·child∈R_Secretary ⇒ plays_Secretary∼[{child}] ≠ ∅"/>
+  <org.eventb.core.invariant name="n73" org.eventb.core.label="inv_play_unique_plays_Secretary" org.eventb.core.predicate="∀child·child∈R_Secretary ⇒ (∀y1,y2·(y1∈plays_Secretary∼[{child}] ∧ y2∈plays_Secretary∼[{child}]) ⇒ (y1=y2))"/>
+  <org.eventb.core.invariant name="n74" org.eventb.core.label="inv_type_plays_Participant" org.eventb.core.predicate="plays_Participant ∈ R_MeetingParty ↔ R_Participant"/>
+  <org.eventb.core.invariant name="n75" org.eventb.core.label="inv_play_total_plays_Participant" org.eventb.core.predicate="∀child·child∈R_Participant ⇒ plays_Participant∼[{child}] ≠ ∅"/>
+  <org.eventb.core.invariant name="n76" org.eventb.core.label="inv_play_unique_plays_Participant" org.eventb.core.predicate="∀child·child∈R_Participant ⇒ (∀y1,y2·(y1∈plays_Participant∼[{child}] ∧ y2∈plays_Participant∼[{child}]) ⇒ (y1=y2))"/>
+  <org.eventb.core.invariant name="n77" org.eventb.core.label="inv_no_duplicate_agent_MeetingUnit_Initiator" org.eventb.core.predicate="∀g,r1,r2·g↦r1∈owns_Initiator ∧ g↦r2∈owns_Initiator ∧ plays_MeetingParty∼[plays_Initiator∼[{r1}]] = plays_MeetingParty∼[plays_Initiator∼[{r2}]] ⇒ r1=r2"/>
+  <org.eventb.core.invariant name="n78" org.eventb.core.label="inv_no_duplicate_agent_MeetingUnit_Organizer" org.eventb.core.predicate="∀g,r1,r2·g↦r1∈owns_Organizer ∧ g↦r2∈owns_Organizer ∧ plays_MeetingParty∼[plays_Organizer∼[{r1}]] = plays_MeetingParty∼[plays_Organizer∼[{r2}]] ⇒ r1=r2"/>
+  <org.eventb.core.invariant name="n79" org.eventb.core.label="inv_no_duplicate_agent_MeetingUnit_Secretary" org.eventb.core.predicate="∀g,r1,r2·g↦r1∈owns_Secretary ∧ g↦r2∈owns_Secretary ∧ plays_MeetingParty∼[plays_Secretary∼[{r1}]] = plays_MeetingParty∼[plays_Secretary∼[{r2}]] ⇒ r1=r2"/>
+  <org.eventb.core.invariant name="n80" org.eventb.core.label="inv_no_duplicate_agent_MeetingUnit_Participant" org.eventb.core.predicate="∀g,r1,r2·g↦r1∈owns_Participant ∧ g↦r2∈owns_Participant ∧ plays_MeetingParty∼[plays_Participant∼[{r1}]] = plays_MeetingParty∼[plays_Participant∼[{r2}]] ⇒ r1=r2"/>
+  <org.eventb.core.invariant name="n81" org.eventb.core.label="inv_incompatible_MeetingUnit_Initiator_Organizer" org.eventb.core.predicate="∀g,r1,r2·g↦r1∈owns_Initiator ∧ g↦r2∈owns_Organizer ⇒ plays_MeetingParty∼[plays_Initiator∼[{r1}]] ∩ plays_MeetingParty∼[plays_Organizer∼[{r2}]] = ∅"/>
+  <org.eventb.core.invariant name="n82" org.eventb.core.label="inv_incompatible_MeetingUnit_Initiator_Secretary" org.eventb.core.predicate="∀g,r1,r2·g↦r1∈owns_Initiator ∧ g↦r2∈owns_Secretary ⇒ plays_MeetingParty∼[plays_Initiator∼[{r1}]] ∩ plays_MeetingParty∼[plays_Secretary∼[{r2}]] = ∅"/>
+  <org.eventb.core.invariant name="n83" org.eventb.core.label="inv_incompatible_MeetingUnit_Organizer_Participant" org.eventb.core.predicate="∀g,r1,r2·g↦r1∈owns_Organizer ∧ g↦r2∈owns_Participant ⇒ plays_MeetingParty∼[plays_Organizer∼[{r1}]] ∩ plays_MeetingParty∼[plays_Participant∼[{r2}]] = ∅"/>
+  <org.eventb.core.invariant name="n84" org.eventb.core.label="inv_incompatible_MeetingUnit_Secretary_Participant" org.eventb.core.predicate="∀g,r1,r2·g↦r1∈owns_Secretary ∧ g↦r2∈owns_Participant ⇒ plays_MeetingParty∼[plays_Secretary∼[{r1}]] ∩ plays_MeetingParty∼[plays_Participant∼[{r2}]] = ∅"/>
+  <org.eventb.core.event name="n85" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="INITIALISATION">
+    <org.eventb.core.action name="n86" org.eventb.core.label="act_init_AGENTS" org.eventb.core.assignment="AGENTS ≔ ∅"/>
+    <org.eventb.core.action name="n87" org.eventb.core.label="act_init_G_MeetingUnit" org.eventb.core.assignment="G_MeetingUnit ≔ ∅"/>
+    <org.eventb.core.action name="n88" org.eventb.core.label="act_init_R_MeetingParty" org.eventb.core.assignment="R_MeetingParty ≔ ∅"/>
+    <org.eventb.core.action name="n89" org.eventb.core.label="act_init_R_Initiator" org.eventb.core.assignment="R_Initiator ≔ ∅"/>
+    <org.eventb.core.action name="n90" org.eventb.core.label="act_init_R_Organizer" org.eventb.core.assignment="R_Organizer ≔ ∅"/>
+    <org.eventb.core.action name="n91" org.eventb.core.label="act_init_R_Secretary" org.eventb.core.assignment="R_Secretary ≔ ∅"/>
+    <org.eventb.core.action name="n92" org.eventb.core.label="act_init_R_Participant" org.eventb.core.assignment="R_Participant ≔ ∅"/>
+    <org.eventb.core.action name="n93" org.eventb.core.label="act_init_MeetingUnit_detailsDecided" org.eventb.core.assignment="MeetingUnit_detailsDecided ≔ ∅"/>
+    <org.eventb.core.action name="n94" org.eventb.core.label="act_init_MeetingUnit_timeChosen" org.eventb.core.assignment="MeetingUnit_timeChosen ≔ ∅"/>
+    <org.eventb.core.action name="n95" org.eventb.core.label="act_init_MeetingParty_name" org.eventb.core.assignment="MeetingParty_name ≔ ∅"/>
+    <org.eventb.core.action name="n96" org.eventb.core.label="act_init_MeetingParty_phone" org.eventb.core.assignment="MeetingParty_phone ≔ ∅"/>
+    <org.eventb.core.action name="n97" org.eventb.core.label="act_init_MeetingParty_hasCalendar" org.eventb.core.assignment="MeetingParty_hasCalendar ≔ ∅"/>
+    <org.eventb.core.action name="n98" org.eventb.core.label="act_init_Participant_timetableCollected" org.eventb.core.assignment="Participant_timetableCollected ≔ ∅"/>
+    <org.eventb.core.action name="n99" org.eventb.core.label="act_init_Participant_timetableChannel" org.eventb.core.assignment="Participant_timetableChannel ≔ ∅"/>
+    <org.eventb.core.action name="n100" org.eventb.core.label="act_init_Participant_notified" org.eventb.core.assignment="Participant_notified ≔ ∅"/>
+    <org.eventb.core.action name="n101" org.eventb.core.label="act_init_Participant_attended" org.eventb.core.assignment="Participant_attended ≔ ∅"/>
+    <org.eventb.core.action name="n102" org.eventb.core.label="act_init_knowsPhoneOf" org.eventb.core.assignment="knowsPhoneOf ≔ ∅"/>
+    <org.eventb.core.action name="n103" org.eventb.core.label="act_init_owns_Initiator" org.eventb.core.assignment="owns_Initiator ≔ ∅"/>
+    <org.eventb.core.action name="n104" org.eventb.core.label="act_init_owns_Organizer" org.eventb.core.assignment="owns_Organizer ≔ ∅"/>
+    <org.eventb.core.action name="n105" org.eventb.core.label="act_init_owns_Secretary" org.eventb.core.assignment="owns_Secretary ≔ ∅"/>
+    <org.eventb.core.action name="n106" org.eventb.core.label="act_init_owns_Participant" org.eventb.core.assignment="owns_Participant ≔ ∅"/>
+    <org.eventb.core.action name="n107" org.eventb.core.label="act_init_plays_MeetingParty" org.eventb.core.assignment="plays_MeetingParty ≔ ∅"/>
+    <org.eventb.core.action name="n108" org.eventb.core.label="act_init_plays_Initiator" org.eventb.core.assignment="plays_Initiator ≔ ∅"/>
+    <org.eventb.core.action name="n109" org.eventb.core.label="act_init_plays_Organizer" org.eventb.core.assignment="plays_Organizer ≔ ∅"/>
+    <org.eventb.core.action name="n110" org.eventb.core.label="act_init_plays_Secretary" org.eventb.core.assignment="plays_Secretary ≔ ∅"/>
+    <org.eventb.core.action name="n111" org.eventb.core.label="act_init_plays_Participant" org.eventb.core.assignment="plays_Participant ≔ ∅"/>
+  </org.eventb.core.event>
+</org.eventb.core.machineFile>

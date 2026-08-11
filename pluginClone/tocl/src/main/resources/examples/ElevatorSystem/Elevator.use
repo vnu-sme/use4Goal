@@ -1,0 +1,82 @@
+model ElevatorSystem
+
+enum DoorState {Open, Closed}
+
+class Pair
+attributes
+    index : Integer
+    floor : Integer
+end
+
+class Elevator
+attributes
+    id : Integer
+    currentFloor : Integer
+    targetFloor : Integer --first floor from queue -- could be removed
+    doorState : DoorState
+    --waitingQueue : Set(Pair)
+    waitingQueue : Sequence(Integer)
+    queue : Sequence(Integer)
+operations
+    move()
+    openDoor()
+    closeDoor()
+    addTargetFloor(newTargetFloor: Integer)
+end
+
+class FloorButton
+attributes
+    id : Integer
+    floor : Integer
+operations
+    press()
+end
+
+association ElevatorButton between
+    Elevator[1] role elevator
+    FloorButton[0..*] role buttons
+end
+
+constraints
+context Elevator
+    inv targetFloorValid: self.targetFloor > 0
+    inv currentFloorValid: self.currentFloor > 0
+    -- this ties the system to a scenario
+    --inv exactlyTwoFloorButtons: self.buttons->size() = 3
+    --inv uniqueFloorNumbers: self.buttons->collect(floor)->asSet() = Set{1, 2, 3}
+
+context FloorButton
+    inv floorValid: self.floor > 0
+
+context FloorButton::press()
+    post floorAdded:
+        if self.elevator.waitingQueue@pre->excludes(self.floor) then
+             self.elevator.waitingQueue = self.elevator.waitingQueue@pre->including(self.floor)
+        else
+             self.elevator.waitingQueue = self.elevator.waitingQueue@pre
+        endif
+
+context Elevator::addTargetFloor(newTargetFloor: Integer)
+    pre newTargetFloorValid: newTargetFloor > 0
+    post targetFloorAdded:
+        if self.waitingQueue@pre->includes(newTargetFloor) then
+            self.waitingQueue = self.waitingQueue@pre and self.queue->exists(p | p.floor = newTargetFloor)
+        else
+            self.waitingQueue = self.waitingQueue@pre->including(newTargetFloor)
+        endif
+
+context Elevator::move()
+    pre doorClosed: self.doorState = #Closed
+    pre hasRequests: self.waitingQueue->notEmpty()
+    pre hasTargetFloor: self.targetFloor = self.queue->any(true)
+    --post targetReached: self.currentFloor = self.targetFloor and self.targetFloor = self.waitingQueue@pre->at(1)
+    --post queueUpdated: self.waitingQueue = self.waitingQueue@pre->excluding(self.waitingQueue@pre->at(1))
+
+context Elevator::openDoor()
+    pre doorClosed: self.doorState = #Closed
+    pre atRequestedFloor: self.currentFloor = self.targetFloor
+    post doorOpened: self.doorState = #Open
+
+context Elevator::closeDoor()
+    pre doorOpened: self.doorState = #Open
+    post doorClosed: self.doorState = #Closed

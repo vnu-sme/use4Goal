@@ -1,0 +1,9 @@
+context ControlProgram
+inv SB2: self.mode = # Initialization implies always self.mode = #Initialization until (PhysicalUnit.allInstances()->forAll(u: PhysicalUnit | u.ready))
+
+-- context ControlProgram inv SB2:
+-- not(self.mode = # Initialization implies (let CS:Snapshot = self.getCurrentSnapshot()
+-- in let FS:Set(Snapshot) = CS.getPost()
+-- in let FSQ:Set(Snapshot) = FS->select(s | (PhysicalUnit.allInstances->forAll(u: PhysicalUnit | u.ready)))
+-- in let FSP:Set(Snapshot) = FS->including(CS)->select(s | self.atSnapshot(s).mode = # Initialization)
+-- in if (FSQ->size()>0) then (if (FSP->size()>0) then (FSQ->exists(s | FSP-(s.getPost()->including(s)) = FS->including(CS)-(s.getPost()->including(s)))) else false endif) else (FSP = FS->including(CS)) endif))

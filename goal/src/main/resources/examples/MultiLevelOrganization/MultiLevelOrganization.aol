@@ -1,0 +1,98 @@
+aol v1.0 MultiLevelSnapshot for "MultiLevelOrganization.acl" {
+  agent Person as alice {
+    name = "Alice";
+    phone = "0999999";
+  }
+
+  agent Person as bob {
+    name = "Bob";
+    phone = "0888888";
+  }
+
+  group Organization as university {
+    play OrganizationMember as aliceMember by alice {
+      email = "alice@example.org";
+      membershipActive = true;
+    }
+
+    play OrganizationMember as bobMember by bob {
+      email = "bob@example.org";
+      membershipActive = true;
+    }
+
+    group Department as computerScience {
+      play MeetingParty as aliceDepartmentParty by alice {
+        hasCalendar = true;
+      }
+
+      play MeetingParty as bobDepartmentParty by bob {
+        hasCalendar = false;
+      }
+
+      group MeetingUnit as architectureMeeting {
+        title = "Architecture Review";
+        detailsDecided = true;
+
+        play Organizer as aliceOrganizer by alice {
+          agendaPrepared = true;
+          meetingAnnounced = true;
+        }
+
+        play Participant as aliceParticipant by alice {
+          invitationAccepted = true;
+          response = accepted;
+          notified = true;
+          attendance = attended;
+        }
+
+        play Participant as bobParticipant by bob {
+          invitationAccepted = true;
+          response = accepted;
+          notified = true;
+          attendance = attended;
+        }
+
+        group ReviewPanel as architecturePanel {
+          reviewClosed = true;
+
+          play TechnicalReviewer as aliceReviewer by alice {
+            reviewStatus = submitted;
+            conflictDeclared = false;
+          }
+
+          entity Document as architectureDocument {
+            title = "System Architecture";
+            uri = "docs/system-architecture.pdf";
+          }
+        }
+      }
+
+      group MeetingUnit as releaseMeeting {
+        title = "Release Planning";
+        detailsDecided = false;
+
+        play Organizer as bobOrganizer by bob {
+          agendaPrepared = true;
+          meetingAnnounced = false;
+        }
+
+        play Participant as aliceReleaseParticipant by alice {
+          invitationAccepted = false;
+          response = pending;
+          notified = true;
+          attendance = unknown;
+        }
+
+        play Participant as bobReleaseParticipant by bob {
+          invitationAccepted = true;
+          response = accepted;
+          notified = true;
+          attendance = unknown;
+        }
+
+      }
+    }
+  }
+
+  link reviewsDocument : aliceReviewer -> architectureDocument;
+}

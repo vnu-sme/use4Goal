@@ -39,7 +39,7 @@ acl v2.0 SystemOJS {
   role Viewer;
   role Guest;
 
-  abstract role GroupMember {
+  role GroupMember {
     description : String;
   }
   role Member specializes GroupMember;
@@ -70,6 +70,8 @@ acl v2.0 SystemOJS {
 
     Journal   [1..*];
     GroupUser [1..*];
+
+    GroupMember compatible Author;
   }
 
   group Journal {
@@ -81,6 +83,8 @@ acl v2.0 SystemOJS {
     Viewer  [0..*];
     Guest   [0..*];
     Section [1..*];
+
+    Viewer compatible Author;
   }
 
   group GroupUser {
@@ -103,10 +107,6 @@ acl v2.0 SystemOJS {
     Edit             [1..*];
     Review           [1..*];
   }
-
-  // Compatibility relations explicitly shown with dashed notation.
-  compatibility Viewer <-> Author scope inter-group extends-subgroups true;
-  compatibility GroupMember <-> Author scope inter-group extends-subgroups true;
 
   association reviewBelongsToRound {
     Review [1..*];

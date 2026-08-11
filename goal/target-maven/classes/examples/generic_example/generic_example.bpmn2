@@ -1,0 +1,32 @@
+// BPMN 2.0 Example — Generic/abstract conformance-checking test model
+// Transcribed from example/Data/bpmn/process_model.bpmn (Signavio-exported real BPMN).
+// Node names (e1..e8) kept exactly as in the source real BPMN's map.csv (event -> task label);
+// re-labelled below with both the eN id and the TN name from map.csv for cross-reference.
+//
+// Flow (verified against the source XML's sourceRef/targetRef pairs):
+//   start -> e6 -> AND-split(e2, e3) -> AND-join -> e4 -> e5 -> e7 -> XOR-split(e8 | e1) -> end
+
+model GenericExample {
+
+  pool GenericProcess {
+    name "Generic Process"
+    lane main_lane {
+      name "Main"
+      start start1 { trigger none }      task e6 { name "T6" }      gateway gw_split { type and }      task e2 { name "T2" }      task e3 { name "T3" }      gateway gw_join { type and }      task e4 { name "T4" }      task e5 { name "T5" }      task e7 { name "T7" }      gateway gw_choice { type xor }      task e8 { name "T8" }      task e1 { name "T1" }      end end1 { trigger none }      end end2 { trigger none }    }
+
+    flow start1 -> e6
+    flow e6 -> gw_split
+    flow gw_split -> e2
+    flow gw_split -> e3
+    flow e2 -> gw_join
+    flow e3 -> gw_join
+    flow gw_join -> e4
+    flow e4 -> e5
+    flow e5 -> e7
+    flow e7 -> gw_choice
+    flow gw_choice -> e8
+    flow gw_choice -> e1
+    flow e8 -> end1
+    flow e1 -> end2
+  }
+}

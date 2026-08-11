@@ -1,0 +1,114 @@
+// Richest instance: 2 Departments (one with 2 Teams, one with none), full
+// AuditCommittee, several compatibility pairs exercised (TeamMember/TeamLead,
+// Auditor/SeniorAuditor, Auditor/ComplianceOfficer), every
+// association/aggregation/composition relation linked at least once,
+// including the composition-only Milestone entity.
+
+aol v1.0 EnterpriseFull for "enterprise.acl" {
+
+  agent Executive     as alice { name = "Alice Nguyen"; email = "alice@acme.example"; employeeId = "E001"; hireDate = "2010-03-01"; managementLevel = 5; budgetAuthority = 500000.0; title = "Chair"; }
+  agent Executive     as carol { name = "Carol Le";     email = "carol@acme.example"; employeeId = "E003"; hireDate = "2012-09-20"; managementLevel = 5; budgetAuthority = 450000.0; title = "CFO"; }
+  agent Executive     as liz   { name = "Liz Kim";      email = "liz@acme.example";   employeeId = "E008"; hireDate = "2014-11-05"; managementLevel = 5; budgetAuthority = 400000.0; title = "CTO"; }
+  agent SeniorManager as bob   { name = "Bob Tran";     email = "bob@acme.example";   employeeId = "E002"; hireDate = "2011-06-15"; managementLevel = 4; budgetAuthority = 200000.0; }
+  agent SeniorManager as nancy { name = "Nancy Vu";     email = "nancy@acme.example"; employeeId = "E009"; hireDate = "2015-08-22"; managementLevel = 4; budgetAuthority = 180000.0; }
+  agent Employee       as dave  { name = "Dave Pham";   email = "dave@acme.example";  employeeId = "E004"; hireDate = "2013-01-10"; }
+  agent Employee       as erin  { name = "Erin Vo";     email = "erin@acme.example";  employeeId = "E005"; hireDate = "2019-04-01"; }
+  agent Employee       as frank { name = "Frank Do";    email = "frank@acme.example"; employeeId = "E006"; hireDate = "2020-02-11"; }
+  agent Employee       as gina  { name = "Gina Ho";     email = "gina@acme.example";  employeeId = "E007"; hireDate = "2021-07-19"; }
+  agent Employee       as oscar { name = "Oscar An";    email = "oscar@acme.example"; employeeId = "E010"; hireDate = "2022-03-14"; }
+  agent Person         as heidi { name = "Heidi Bui";   email = "heidi@contractor.example"; }
+  agent Reviewer       as ivan  { name = "Ivan Dang";   email = "ivan@acme.example";  reviewLevel = 3; }
+  agent Reviewer       as judy  { name = "Judy Mai";    email = "judy@acme.example";  reviewLevel = 2; }
+  agent Reviewer       as kevin { name = "Kevin Ly";    email = "kevin@acme.example"; reviewLevel = 4; }
+
+  group Corporation as corp1 {
+    name = "Acme Global";
+    foundedYear = 1998;
+
+    play BoardMember as board_alice by alice { votingRights = true; }
+    play BoardMember as board_carol by carol { votingRights = true; }
+    play BoardMember as board_liz   by liz   { votingRights = false; }
+
+    entity Contract as contract_hq { value = 2500000.0; signedDate = "2024-01-15"; }
+
+    group Department as dept1 {
+      budgetCode = "ENG-01";
+
+      play DepartmentHead as head_dept1 by bob { departmentGoals = "Ship platform v3"; }
+      play Contractor as contractor_heidi by heidi { contractEndDate = "2026-12-31"; dailyRate = 650.0; }
+
+      entity Budget as budget_dept1 { amount = 3000000.0; currency = "USD"; }
+
+      group Team as team1 {
+        teamName = "Platform";
+        sprintLength = 14;
+
+        // TeamLead extends TeamMember: dave needs both occurrences, and the
+        // co-occupancy needs the explicit TeamMember<->TeamLead compatibility.
+        play TeamMember as member_dave_t1  by dave  { taskCount = 4; }
+        play TeamLead   as lead_dave_t1    by dave  { teamBudget = 120000.0; }
+        play TeamMember as member_erin_t1  by erin  { taskCount = 7; }
+        play TeamMember as member_frank_t1 by frank { taskCount = 5; }
+
+        entity Deliverable as deliv_platform { dueDate = "2026-03-01"; status = InProgress; }
+      }
+
+      group Team as team2 {
+        teamName = "Mobile";
+        sprintLength = 7;
+
+        play TeamMember as member_oscar_t2 by oscar { taskCount = 6; }
+        play TeamLead   as lead_oscar_t2   by oscar { teamBudget = 60000.0; }
+        play TeamMember as member_gina_t2  by gina  { taskCount = 2; }
+
+        entity Deliverable as deliv_mobile { dueDate = "2026-04-15"; status = Planned; }
+      }
+    }
+
+    group Department as dept2 {
+      budgetCode = "OPS-01";
+
+      play DepartmentHead as head_dept2 by nancy { departmentGoals = "Reduce incident MTTR"; }
+
+      entity Budget as budget_dept2 { amount = 900000.0; currency = "USD"; }
+    }
+
+    group AuditCommittee as audit1 {
+      // SeniorAuditor extends Auditor: kevin needs both occurrences, and the
+      // co-occupancy needs the explicit Auditor<->SeniorAuditor compatibility.
+      play Auditor       as auditor_kevin       by kevin { certificationId = "CIA-2001"; }
+      play SeniorAuditor as senior_auditor_kevin by kevin { leadAudits = 12; }
+      play Auditor as auditor_ivan by ivan { certificationId = "CIA-1001"; }
+      play Auditor as auditor_judy by judy { certificationId = "CIA-1002"; }
+      // ivan also plays ComplianceOfficer here: exercises the
+      // Auditor<->ComplianceOfficer compatibility.
+      play ComplianceOfficer as compliance_ivan by ivan { specialization = "Financial controls"; }
+    }
+  }
+
+  // Document is reached only through the explicit `auditDocuments`
+  // composition, not a Group member list -- see enterprise.acl's comment on
+  // why Document/Budget can't both use the legacy member-list form.
+  entity Document as doc_policy   { title = "Audit Policy 2026";   version = 3; classification = Internal; }
+  entity Document as doc_findings { title = "Q1 Findings Report"; version = 1; classification = Confidential; }
+
+  entity Milestone as milestone_alpha { name = "Alpha release"; dueDate = "2026-02-01"; }
+  entity Milestone as milestone_beta  { name = "Beta release";  dueDate = "2026-02-20"; }
+
+  // ---- role-to-role associations ----
+  link mentors: alice -> bob, nancy;
+  link mentors: bob -> dave;
+  link reportsTo: member_erin_t1 -> lead_dave_t1;
+  link reportsTo: member_frank_t1 -> lead_dave_t1;
+  link reportsTo: member_gina_t2 -> lead_oscar_t2;
+  link reviewsWork: auditor_ivan -> member_erin_t1, member_frank_t1;
+  link collaboratesWith: member_erin_t1 -> contractor_heidi;
+  link escalatesTo: head_dept1 -> board_alice;
+  link assignedTo: deliv_platform -> member_erin_t1, member_frank_t1;
+
+  // ---- aggregation / composition ----
+  link contractFunding: dept1 -> contract_hq;
+  link reviewedBy: doc_findings -> auditor_ivan, senior_auditor_kevin;
+  link deliverableMilestones: deliv_platform -> milestone_alpha, milestone_beta;
+  link auditDocuments: audit1 -> doc_policy, doc_findings;
+}

@@ -1,0 +1,54 @@
+model ATMMachine
+
+-- Classes
+class ATM
+attributes
+    isCardInserted : Boolean init = false
+    isPinEntered : Boolean init = false
+    transactionType : String init = ""
+operations
+    insertCard()
+    enterPin()
+    selectTransaction()
+    performTransaction()
+    ejectCard()
+end
+
+class CardReader
+attributes
+    cardPresent : Boolean init = false
+operations
+    readCard()
+    ejectCard()
+end
+
+class Account
+attributes
+    balance : Integer
+    pin : Integer
+operations
+    checkBalance()
+    withdraw()
+    deposit()
+end
+
+-- Associations
+association ATMCardReader between ATM[1] role atm CardReader[1] role cardReader end
+
+association ATMAccount between ATM[1] role atm Account[0..1] role account end
+
+-- Constraints context ATM inv cardInserted: self.isCardInserted implies self.cardReader.cardPresent inv pinEntered: self.isPinEntered implies self.isCardInserted
+
+context CardReader inv cardStatus: self.cardPresent implies self.atm.isCardInserted
+
+context Account inv balanceNonNegative: self.balance >= 0
+
+context ATM::insertCard() pre: not self.isCardInserted post: self.isCardInserted = true post: self.cardReader.cardPresent = true
+
+context ATM::enterPin() pre: self.isCardInserted pre: not self.isPinEntered post: self.isPinEntered = true
+
+context ATM::selectTransaction() pre: self.isPinEntered post: self.transactionType <> ""
+
+context ATM::performTransaction() pre: self.transactionType <> "" post: -- transaction-specific logic can be added here
+
+context ATM::ejectCard() pre: self.isCardInserted post: not self.isCardInserted post: not self.cardReader.cardPresent post: not self.isPinEntered post: self.transactionType = ""

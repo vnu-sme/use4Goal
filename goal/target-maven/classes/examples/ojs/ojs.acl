@@ -1,0 +1,152 @@
+// Full ACL example reconstructed from page "example by ACL (OJS)".
+// Group names follow the organizational hierarchy in the drawing. The data
+// class named Submission is called SubmissionRecord because ACL uses one
+// shared namespace and the drawing also contains a Group named Submission.
+
+acl v2.0 SystemOJS {
+  enum Recommendation { accept, minorRevision, majorRevision, reject }
+  enum EditorDecision { accept, revisionsRequired, reject }
+
+  entity Issue {
+    volume : Integer required;
+  }
+
+  entity PublishedArticle {
+    publishedID : Integer required;
+    DOI         : String required;
+    pageNumbers : String;
+  }
+
+  entity ArticleFile {
+    fileID   : Integer required;
+    fileName : String required;
+    filePath : String required;
+    fileType : String required;
+  }
+
+  entity SubmissionRecord {
+    submissionID : Integer required;
+    title        : String required;
+    summary      : String;
+  }
+
+  entity ReviewRound {
+    roundNumber    : Integer required;
+    editorDecision : EditorDecision;
+  }
+
+  role Admin;
+  role Viewer;
+  role Guest;
+
+  abstract role GroupMember {
+    description : String;
+  }
+  role Member specializes GroupMember;
+  role Main specializes GroupMember;
+
+  role SectionEditor {
+    sectionEditorID : Integer required;
+  }
+
+  role Author;
+
+  role Edit {
+    editorID     : Integer required;
+    dateNotified : String;
+  }
+
+  role Review {
+    reviewID       : Integer required;
+    dateAssigned   : String;
+    dateDue        : String;
+    recommendation : Recommendation;
+  }
+
+  // Root of the complete system shown in the page.
+  group OJS {
+    systemName : String required;
+    baseUrl    : String;
+
+    Journal   [1..*];
+    GroupUser [1..*];
+  }
+
+  group Journal {
+    journalID   : Integer required;
+    title       : String required;
+    description : String;
+
+    Admin   [1..*];
+    Viewer  [0..*];
+    Guest   [0..*];
+    Section [1..*];
+
+    Viewer compatible Author;
+    GroupMember compatible Author;
+  }
+
+  group GroupUser {
+    title  : String;
+    Member [0..*];
+    Main   [1];
+  }
+
+  group Section {
+    sectionID : Integer required;
+    title     : String required;
+
+    SectionEditor [1..*];
+    Submission    [0..*];
+  }
+
+  group Submission {
+
+    Author           [1];
+    Edit             [1..*];
+    Review           [1..*];
+  }
+
+  association reviewBelongsToRound {
+    Review [1..*];
+    ReviewRound [1];
+  }
+
+  association issuePublishesArticle {
+    Issue [1];
+    PublishedArticle [*];
+  }
+
+  // Entity is associated with its organizational context explicitly. It is
+  // not a Group member and no composition is inferred.
+  composition journalIssues {
+    Journal [1];
+    Issue [*];
+  }
+
+  association submissionContextRecord {
+    Submission [1];
+    SubmissionRecord [1];
+  }
+
+  association submissionContextPublication {
+    Submission [1];
+    PublishedArticle [0..1];
+  }
+
+  association submissionUsesFile {
+    SubmissionRecord [1];
+    ArticleFile [1..*];
+  }
+
+  association submissionPublication {
+    SubmissionRecord [1];
+    PublishedArticle [0..1];
+  }
+
+  association submissionReviewRounds {
+    SubmissionRecord [1];
+    ReviewRound [1..*];
+  }
+
+}

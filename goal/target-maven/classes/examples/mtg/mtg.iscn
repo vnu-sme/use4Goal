@@ -1,0 +1,68 @@
+// i* Scenario — one state of mtg.istar's instances, replicating example/extenral/mtg.pl's
+// concrete cast exactly: initiator(abdul), organizer(matilda), secretary(alex), and 3
+// potential_participant: xing, amr, naya (see doc/concept-domain-model-vs-scenario.md).
+//
+// This is now an execution trace, not a full state dump: the scenario declares the cast and
+// fires only real tasks/actions. Delegated goals such as HaveSecretaryCallPP and
+// MeetingAttendedByParticipant are inferred by the scenario evaluator from mtg.istar's
+// dependency links after the dependee's task is fulfilled.
+//
+// abdul/matilda/alex are declared as instances too (not just xing/amr/naya) so they exist as
+// real objects in the MM — org.vnu.sme.goal.istarscenario.mm.ScenarioInstance(name, actorType)
+// — the same way istar's own mm has type-level classes (Actor, Role, Agent, Goal, Task); an
+// .iscn needs the instance-level counterpart (amr : Participant, matilda : Organizer, ...) as
+// first-class objects, not names buried inside a Map. Being singleton in this cast, their own
+// actions still stay unqualified (broadcast to every Participant instance's private trace —
+// see mtg.istar's note on why each instance needs its own full-model trace); qualifying them
+// would remove those facts from the participants' traces instead of adding a redundant one.
+// Each declared instance still gets its own computed state, so abdul/matilda/alex's own traces
+// exist too — sparser, since only the broadcast facts reach them, which is a legitimate
+// partial state (see doc/concept-domain-model-vs-scenario.md, §1.3), not a bug.
+//
+// mtg.pl's poss/2 facts decide
+// which OR-branch of TimetableCollected is feasible per participant:
+//   maintainsCallendar(amr). maintainsCallendar(xing).   -- but NOT naya
+//   hasPhoneNumber(alex, naya/amr/xing).                  -- alex can call all 3
+// so naya's is collected via the secretary, xing's and amr's straight from their calendars —
+// not injected for effect, it falls out of mtg.pl's own facts, and is exactly why 'all over
+// QuickScheduling' FAILS below while 'any over Inclusivity' HOLDS.
+
+scenario MeetingSchedulerAbdul for "mtg.istar" {
+    instance abdul   : Initiator;
+    instance matilda : Organizer;
+    instance alex    : Secretary;
+    instance xing, amr, naya : Participant;
+
+    fire DecideMeetingDetails;
+    fire ChooseTimeAndDate;
+
+    // xing, amr: the organizer's own action (no Dependency involved) — a genuine fire.
+    fire xing.CollectFromCalendar;
+    fire amr.CollectFromCalendar;
+
+    // naya: alex performs the secretary task for this participant; the delegated organizer
+    // goal is inferred through dependency as HaveSecretaryCallPP(matilda, alex, naya).
+    fire alex.CollectConstraintsByPhone for naya;
+
+    fire xing.AnnounceMeeting;
+    fire amr.AnnounceMeeting;
+    fire naya.AnnounceMeeting;
+
+    // Each participant's own action is fired; the initiator's delegated attendance goal is inferred.
+    fire xing.Participate;
+    fire amr.Participate;
+    fire naya.Participate;
+
+    // 'of Participant' restricts each check to the 3 Participant instances — abdul/matilda/alex
+    // are declared instances too (see above) but their own state is a different, much sparser
+    // slice (only the broadcast facts reach them); without the filter these checks would range
+    // over all 6 declared instances and dilute what "every participant" is actually asking.
+    aggregate EveryTimetableCollected : all of Participant over TimetableCollected;
+    aggregate EveryoneNotified        : all of Participant over AnnounceMeeting;
+    aggregate EveryoneAttended        : all of Participant over MeetingAttendedByParticipant;
+    aggregate MeetingFullyOrganized   : all of Participant over HaveMeetingOrganized;
+
+    // The organizer's two quality preferences split along the same calendar/phone divide:
+    aggregate SomeInclusivityViaSecretary : any of Participant over Inclusivity;      // naya's branch -> holds
+    aggregate UniversalQuickScheduling    : all of Participant over QuickScheduling;  // naya has none -> fails
+}

@@ -1,0 +1,26 @@
+
+
+actor Airline -> pool AirlineClaimProcess
+
+map RetrieveArrivalTimeFromBooking          -> node retrieveBookingTime
+map RetrieveDoorOpenTime                    -> node retrieveDoorOpenTime
+map CalculateDelayAtArrival                 -> node calculateDelay
+map RetrieveInfoFromInternalSystems         -> node retrieveInternalSystemsInfo
+map RegisterJudgementCriteriaAndTypeOfEC    -> node registerJudgementCriteria
+map RecordJustificationForExclusion         -> node recordJustificationExclusionA
+map ApproveCompensation                     -> node approveCompensation
+map DenyCompensation                        -> node denyCompensation
+map DocumentAndSaveFileCase                 -> node documentAndSaveFileCase
+
+# Not mapped (silent BPMN routing steps, map(n) = epsilon):
+#   start1, gw_split, gw_join, gw_afterCalc, gw_afterInfo, gw_afterRegister, end1
+# Not mapped — duplicate occurrence in the source Petri net (see .bpmn2 header comment):
+#   recordJustificationExclusionB is the SAME i* task (RecordJustificationForExclusion) reached
+#   via a different branch (was mapped from t10, while recordJustificationExclusionA is t14) —
+#   ElementMapping is 1:1, so only one BPMN occurrence can be the mapped node; the other is
+#   left silent here. Re-map to B instead of A if the "extraordinary circumstance" branch
+#   coming straight out of gw_afterCalc is the one you want to trace.
+# Not mapped (i* elements satisfied only via AND/OR propagation, never directly):
+#   DelayAtArrivalMeasured, ClaimRequestEvaluated, CircumstancesDocumented, AnalyzeInternalSystems,
+#   DocumentAdditionalInfoForExtraordinaryCircumstances, RetrieveScheduledArrivalTime,
+#   RetrieveActualArrivalTime, MakeCompensationDecision

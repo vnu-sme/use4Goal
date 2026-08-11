@@ -1,0 +1,7 @@
+-- if the pedestrian light is green, there exists a previous snapshot where the requested attribute is true
+context TrafficLight
+inv TL2: self.pedLight = #Green implies sometimePast self.requested
+
+-- OCL translation
+-- context TrafficLight
+-- inv TL2: self.pedLight = Color::Green implies (let CS:Snapshot = self.snapshot in CS.pred()->closure(pred)->including(CS)->exists(s | s.trafficlight.requested))

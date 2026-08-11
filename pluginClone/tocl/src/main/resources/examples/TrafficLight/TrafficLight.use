@@ -1,0 +1,53 @@
+model TrafficLight
+
+enum Color {Green, Red}
+
+class TrafficLight
+attributes
+    requested : Boolean
+    pedLight : Color
+    carLight : Color
+    -- try add Id
+    id : Integer
+operations
+    switchCarLight() 
+    switchPedLight() 
+end
+
+class Button
+attributes
+    pressed : Boolean
+    id : Integer
+operations
+    requestPass()
+end
+
+association PedButtonTrafficLight between
+    TrafficLight[1] role light
+    Button[1..*] role button
+end
+
+constraints
+-- When the car light is switched, its color must change from the previous one.
+context TrafficLight::switchCarLight() 
+    post switchCarLight: self.carLight <> self.carLight@pre
+
+-- The pedestrian light can only be switched if there is a crossing request. After switching, the request is cleared, all buttons are reset, and the pedestrian light changes color.
+context TrafficLight::switchPedLight()
+    pre requestMustPassed: self.requested = true
+    post returnRequest: self.requested = false and self.button->forAll(e | e.pressed = false)
+    post switchPedLight: self.pedLight <> self.pedLight@pre
+
+-- Only press the crossing button if it has not already been pressed and the pedestrian light is red. After pressing, the button is marked as pressed and a crossing request is made.
+context Button::requestPass()
+    pre buttonNotPressed: self.pressed = false
+    pre pedLightIsRed: self.light.pedLight=#Red
+    post notClickAgain: self.pressed = true
+    post requestIsPassed: self.light.requested=true
+
+-- At any time, the car light and the pedestrian light must not have the same color.
+context TrafficLight
+    inv : self.pedLight = #Green implies self.carLight <> #Green
+
+context TrafficLight
+    inv : button -> size() >= 1

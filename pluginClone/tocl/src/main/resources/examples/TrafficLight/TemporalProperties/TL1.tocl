@@ -1,0 +1,16 @@
+-- The car light and the pedestrian light can not be green simultaneously
+context TrafficLight
+-- inv TL1: always not (self.carLight = #Green and self.pedLight = #Green)
+
+-- Filmstrip
+-- context TrafficLight
+-- inv TL1: Set{self.snapshotTrafficLight}->closure(s:Snapshot | s.succ())->forAll(s | not (s.trafficLight->any(tl | tl.id = self.id).carLight = #Green and s.trafficLight->any(tl | tl.id = self.id).pedLight = #Green))
+
+--context TrafficLight
+--inv TL: let CS: Snapshot = self.snapshotTrafficLight in Set{CS}->closure(s:Snapshot | s.succ())->forAll(s | not (s.trafficLight->any(tl | tl.id = self.id).carLight = #Green and s.trafficLight->any(tl | tl.id = self.id).pedLight = #Green))
+
+-- Set{trafficlight1.snapshotTrafficLight}->closure(s:Snapshot | s.succ())->forAll(s | not (s.trafficLight->any(tl | tl.id = trafficlight1.id).carLight = #Green and s.trafficLight->any(tl | tl.id = trafficlight1.id).pedLight = #Green))
+
+-- STM
+-- context TrafficLight
+-- inv TL1: not((let CS:Snapshot = self.getCurrentSnapshot() in CS.getPost()->including(CS)->forAll(s | not (self.atSnapshot(s).carLight = #Green and self.atSnapshot(s).pedLight = #Green))))

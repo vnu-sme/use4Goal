@@ -1,0 +1,45 @@
+model IncidentResponseProcess {
+  pool IncidentCaseProcess {
+    lane Coordinator {
+      start reported { trigger none }
+      task triage {
+        post {[ Coordinator.allInstances()->forAll(r | r.triaged) ]}
+        effect {[ for r in Coordinator.allInstances() do r.triaged := true; end ]}
+      }
+    }
+    lane Analyst {
+      task analyze {
+        post {[ Analyst.allInstances()->forAll(r | r.reportReady) ]}
+        effect {[
+          for r in Analyst.allInstances() do r.reportReady := true; end;
+          for e in EvidencePacket.allInstances() do e.complete := true; end;
+        ]}
+      }
+    }
+    lane Technician {
+      task repair {
+        post {[ Service.allInstances()->forAll(s | s.restored) ]}
+        effect {[
+          for r in Technician.allInstances() do r.fixApplied := true; end;
+          for c in ChangeRequest.allInstances() do c.deployed := true; end;
+          for s in Service.allInstances() do s.restored := true; end;
+        ]}
+      }
+    }
+    lane Auditor {
+      task audit {
+        post {[ Auditor.allInstances()->forAll(r | r.auditApproved) ]}
+        effect {[
+          for r in Auditor.allInstances() do r.auditApproved := true; end;
+          for a in AuditTrail.allInstances() do a.signed := true; end;
+        ]}
+      }
+      end closed { trigger none }
+    }
+    flow reported -> triage
+    flow triage -> analyze
+    flow analyze -> repair
+    flow repair -> audit
+    flow audit -> closed
+  }
+}

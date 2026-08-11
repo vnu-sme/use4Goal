@@ -1,0 +1,41 @@
+--context Elevator
+--inv sometimeBeforeHalf1: (let FS:Snapshot = Snapshot.allInstances()->select(s | OperationCall.allInstances()->select(op | op.pred->any(true) = s)->exists(op | op.oclIsTypeOf(move_ElevatorOpC)))->any(true) in Set{FS}->closure(s | s.succ())->exists(s | s.elevator->any(o | self.id = o.id).currentFloor = s.elevator->any(o | self.id = o.id).targetFloor))
+
+--context Elevator
+--inv sometimeBinaryBeforeIsCalled: (let FS:Snapshot = Snapshot.allInstances()->select(s | s.elevator->any(o | self.id = o.id).currentFloor <> s.elevator->any(o | self.id = o.id).targetFloor)->any(true) in Set{FS}->closure(s | s.succ())->exists(s | OperationCall.allInstances()->select(op | op.pred->any(true) = s)->exists(op | op.oclIsTypeOf(move_ElevatorOpC))))
+
+--context Elevator
+--inv nextPressMove: self.isRequested = true implies OperationCall.allInstances()->select(op | op.pred->any(true) = self.snapshotElevator)->exists(op | op.oclIsTypeOf(move_ElevatorOpC))
+
+--context Elevator
+--inv sometimeCloseSinceOpen: (let PS:Snapshot = Snapshot.allInstances()->select(s | OperationCall.allInstances()->select(op | op.pred->any(true) = s)->exists(op | op.oclIsTypeOf(closeDoor_ElevatorOpC)))->any(true) in Set{PS}->closure(s | s.pred())->exists(s | OperationCall.allInstances()->select(op | op.pred->any(true) = s)->exists(op | op.oclIsTypeOf(openDoor_ElevatorOpC))))
+
+--context Elevator
+--inv sometimeCloseIsCalled: OperationCall.allInstances()->select(op | op.pred->any(true) = self.snapshotElevator)->exists(op | op.oclIsTypeOf(move_ElevatorOpC)) implies (let CS:Snapshot = self.snapshotElevator in Set{CS}->closure(s | s.succ())->exists(s | OperationCall.allInstances()->select(op | op.pred->any(true) = s)->exists(op | op.oclIsTypeOf(closeDoor_ElevatorOpC))))
+
+--context Elevator
+--inv sometimeDoorOpenSinceMove: (let PS:Snapshot = Snapshot.allInstances()->select(s | s.elevator->any(o | self.id = o.id).doorState = #Open)->any(true) in Set{PS}->closure(s | s.pred())->exists(s | OperationCall.allInstances()->select(op | op.pred->any(true) = s)->exists(op | op.oclIsTypeOf(move_ElevatorOpC))))
+
+--context Elevator
+--inv sometimeCloseSinceRequested: (let PS:Snapshot = Snapshot.allInstances()->select(s | OperationCall.allInstances()->select(op | op.pred->any(true) = s)->exists(op | op.oclIsTypeOf(closeDoor_ElevatorOpC)))->any(true) in Set{PS}->closure(s | s.pred())->exists(s | s.elevator->any(o | self.id = o.id).isRequested = true))
+
+--context Elevator
+--inv openPreviousMove: self.doorState = #Open implies OperationCall.allInstances()->select(op | op.pred->any(true) = self.snapshotElevator.pred())->exists(op | op.oclIsTypeOf(openDoor_ElevatorOpC))
+
+--context Elevator
+--inv sometimePast: OperationCall.allInstances()->select(op | op.pred->any(true) = self.snapshotElevator)->exists(op | op.oclIsTypeOf(closeDoor_ElevatorOpC)) implies (let CS:Snapshot = self.snapshotElevator in Set{CS.pred()}->closure(s | s.pred())->exists(s | OperationCall.allInstances()->select(op | op.pred->any(true) = s)->exists(op | op.oclIsTypeOf(move_ElevatorOpC))))
+
+--context Elevator
+--inv alwaysStateCloseUntilOpen: (let FSQ:Snapshot = Snapshot.allInstances()->select(s | OperationCall.allInstances()->select(op | op.pred->any(true) = s)->exists(op | op.oclIsTypeOf(openDoor_ElevatorOpC)))->any(true) in Set{FSQ}->closure(s | s.pred())->excluding(null)->forAll(s | s.elevator->any(true).doorState = #Closed))
+
+--context Elevator
+--inv sometimeOpenIsCalled: (let CS:Snapshot = self.snapshotElevator in Set{CS}->closure(s | s.succ())->exists(s | OperationCall.allInstances()->select(op | op.pred->any(true) = s)->exists(op | op.oclIsTypeOf(openDoor_ElevatorOpC))))
+
+--context Elevator
+--inv sometimeBefore: (let FSQ:Set(Snapshot) = Snapshot.allInstances()->select(s | OperationCall.allInstances()->exists(op | op.pred() = s and op.oclIsTypeOf(closeDoor_ElevatorOpC)))in FSQ->forAll(s | Set{s}->closure(s_1 | s_1.pred())->exists(s | OperationCall.allInstances()->exists(op | op.pred() = s and op.oclIsTypeOf(move_ElevatorOpC)))))
+
+--context Elevator
+--inv betweenAnd: OperationCall.allInstances()->exists(op | op.pred() = self.snapshotElevator and op.oclIsTypeOf(move_ElevatorOpC)) implies ((let FSQ:Set(Snapshot) = Snapshot.allInstances()->select(s | OperationCall.allInstances()->exists(op | op.pred() = s and op.oclIsTypeOf(closeDoor_ElevatorOpC)))in FSQ->forAll(s | Set{s}->closure(s_1 | s_1.pred())->exists(s | OperationCall.allInstances()->exists(op | op.pred() = s and op.oclIsTypeOf(openDoor_ElevatorOpC))))))
+
+--context Elevator
+--inv becomesTrueEvent: OperationCall.allInstances()->exists(op | op.pred() = self.snapshotElevator and op.oclIsTypeOf(move_ElevatorOpC)) implies (let CS:Snapshot = self.snapshotElevator in Set{CS}->closure(s | s.succ())->exists(s | (let currentObject = s.elevator->any(o | o.id = self.id) in let nextObject = s.succ().elevator->any(o | o.id = self.id) in not (currentObject.doorState = #Open) and (nextObject.doorState = #Open))))

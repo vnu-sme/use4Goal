@@ -1,0 +1,12 @@
+A More Suitable Sequence
+Here’s how an elevator typically works:
+
+press() → move() → openDoor() → [addTargetFloor() calls] → closeDoor() → move() → ...
+
+press(): Someone calls the elevator from a floor.
+move(): The elevator travels to that floor.
+openDoor(): The doors open to let passengers board.
+addTargetFloor(): Passengers select their destination floors while the doors are open or shortly after boarding.
+closeDoor(): The doors close once everyone is inside and destinations are set.
+move(): The elevator moves to the next requested floor.
+...

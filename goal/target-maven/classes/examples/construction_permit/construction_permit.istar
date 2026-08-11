@@ -1,0 +1,22 @@
+// iStar 2.0 Example — Construction Permit Approval
+// Paired case study for i*/BPMN2 conformance checking (see doc/paper/conformance-istar-bpmn2.md)
+// Business rules mirror the running example of Caballero-Villalobos et al. (2026),
+// "Aligning processes with high-level requirements", adapted to this project's .istar syntax.
+
+istar ConstructionPermitApproval {
+
+  role Applicant {
+    task SubmitApplication
+  }
+
+  agent Municipality {
+    goal ApplicationProcessed
+    goal ApplicationAssessed > ApplicationProcessed
+    goal ApplicationClosed   > ApplicationProcessed
+    task Approve > or ApplicationClosed > make  CityBusinessGrowthSupported
+    task Deny    > or ApplicationClosed > break CityBusinessGrowthSupported
+    quality CityBusinessGrowthSupported
+  }
+
+  depend Applicant -> goal ApplicationProcessed -> Municipality
+}

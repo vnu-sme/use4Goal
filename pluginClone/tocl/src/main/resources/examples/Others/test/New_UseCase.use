@@ -1,0 +1,43 @@
+model LibraryManagement
+
+class Book
+attributes
+    title : String
+    author : String
+    isbn : String
+    isAvailable : Boolean
+operations
+    borrow() : Boolean
+    returnBook() : Boolean
+end
+
+class Member
+attributes
+    name : String
+    memberId : Integer
+operations
+    borrowBook(b : Book) : Boolean
+    returnBook(b : Book) : Boolean
+end
+
+association BorrowedBooks between
+    Member[1] role member
+    Book[0..*] role books
+end
+
+constraints
+context Book::borrow() : Boolean
+pre pre1: self.isAvailable = true
+post post1: self.isAvailable = false
+
+context Book::returnBook() : Boolean
+pre pre1: self.isAvailable = false
+post post1: self.isAvailable = true
+
+context Member::borrowBook(b : Book) : Boolean
+pre pre1: b.isAvailable = true
+post post1: b.isAvailable = false
+
+context Member::returnBook(b : Book) : Boolean
+pre pre1: b.isAvailable = false
+post post1: b.isAvailable = true

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?use version="7.1.1" ?>
+<plugin name="GoalModel Plugin" version="3.0">
+    <actions>
+        <action label="Formal Verification Workspace"
+                icon="images/conformance.png"
+                class="org.vnu.sme.goal.verification.action.ActionOpenFormalVerification"
+                tooltip="Validate ACL, iStar and BPMN; generate and inspect an Event-B project"
+                menu="GoalModel Plugin"
+                menuitem="Formal Verification Workspace"
+                toolbaritem="Formal Verification"
+                id="org.vnu.sme.goal.verification.action.ActionOpenFormalVerification">
+        </action>
+        <action label="iStar Model Viewer"
+                icon="images/istar.png"
+                class="org.vnu.sme.goal.istar.action.ActionOpenIStar"
+                tooltip="iStar 2.0 Strategic Rationale Diagram Viewer"
+                menu="GoalModel Plugin"
+                menuitem="iStar Model Viewer"
+                toolbaritem="iStar Viewer"
+                id="org.vnu.sme.goal.istar.action.ActionOpenIStar">
+        </action>
+        <action label="ACL Model Viewer"
+                icon="images/acl.png"
+                class="org.vnu.sme.goal.acl.action.ActionOpenAcl"
+                tooltip="Open an ACL v2.0 multi-agent state model"
+                menu="GoalModel Plugin"
+                menuitem="ACL Model Viewer"
+                toolbaritem="ACL Viewer"
+                id="org.vnu.sme.goal.acl.action.ActionOpenAcl">
+        </action>
+        <action label="AOL Object Model Viewer"
+                icon="images/acl.png"
+                class="org.vnu.sme.goal.aol.action.ActionOpenAol"
+                tooltip="Validate and inspect an AOL object model against its ACL structural model"
+                menu="GoalModel Plugin"
+                menuitem="AOL Object Model Viewer"
+                toolbaritem="AOL Viewer"
+                id="org.vnu.sme.goal.aol.action.ActionOpenAol">
+        </action>
+        <action label="BPMN Model Viewer"
+                icon="images/bpmn2.png"
+                class="org.vnu.sme.goal.bpmn2.action.ActionOpenBpmn2"
+                tooltip="BPMN 2.0 Collaboration Diagram Viewer"
+                menu="GoalModel Plugin"
+                menuitem="BPMN Model Viewer"
+                toolbaritem="BPMN Viewer"
+                id="org.vnu.sme.goal.bpmn2.action.ActionOpenBpmn2">
+        </action>
+    </actions>
+</plugin>

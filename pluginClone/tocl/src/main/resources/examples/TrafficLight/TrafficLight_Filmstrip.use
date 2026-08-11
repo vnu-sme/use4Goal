@@ -1,0 +1,169 @@
+model TrafficLight
+
+enum Color {
+  Green, Red
+ };
+
+class requestPass_ButtonOpC < ButtonOpC
+end
+
+association Filmstrip between
+  Snapshot[0..1] role pred
+  Snapshot[0..1] role succ
+  OperationCall[0..1]
+end
+
+class switchCarLight_TrafficLightOpC < TrafficLightOpC
+end
+
+composition SnapshotButton between
+  Snapshot[1] role snapshotButton
+  Button[*]
+end
+
+class Snapshot
+operations
+  pred() : Snapshot = 
+    if (self.pred->size() = 1) then self.pred->any( $elem0:Snapshot | true ) else null endif
+  succ() : Snapshot = 
+    if (self.succ->size() = 1) then self.succ->any( $elem0:Snapshot | true ) else null endif
+end
+
+abstract class ButtonOpC < OperationCall
+attributes
+  aSelf : Button
+end
+
+aggregation PredSuccTrafficLight between
+  TrafficLight[0..1] role predTrafficLight
+  TrafficLight[0..1] role succTrafficLight
+end
+
+class switchPedLight_TrafficLightOpC < TrafficLightOpC
+end
+
+composition SnapshotTrafficLight between
+  Snapshot[1] role snapshotTrafficLight
+  TrafficLight[*]
+end
+
+abstract class TrafficLightOpC < OperationCall
+attributes
+  aSelf : TrafficLight
+end
+
+abstract class OperationCall
+operations
+  pred() : Snapshot = 
+    if (self.pred->size() = 1) then self.pred->any( $elem0:Snapshot | true ) else null endif
+  succ() : Snapshot = 
+    if (self.succ->size() = 1) then self.succ->any( $elem0:Snapshot | true ) else null endif
+end
+
+aggregation PredSuccButton between
+  Button[0..1] role predButton
+  Button[0..1] role succButton
+end
+
+class TrafficLight
+attributes
+  requested : Boolean
+  pedLight : Color
+  carLight : Color
+  id : Integer
+operations
+  switchCarLight()
+  switchPedLight()
+end
+
+class Button
+attributes
+  pressed : Boolean
+  id : Integer
+operations
+  requestPass()
+end
+
+association PedButtonTrafficLight between
+  TrafficLight[1] role light
+  Button[1..*]
+end
+
+constraints
+context Button inv validSnapshotLinking:
+  (self.succButton.isDefined() implies (self.succButton.snapshotButton = self.snapshotButton.succ()))
+
+context ButtonOpC inv aSelfDefined:
+  self.aSelf.isDefined()
+
+context ButtonOpC inv aSelfInPred:
+  (self.aSelf.snapshotButton = self.pred())
+
+context OperationCall inv assocClassBehavior:
+  (((self.pred->size() = 1) and (self.succ->size() = 1)) and OperationCall.allInstances()->forAll( op:OperationCall | (((self.pred = op.pred) and (self.succ = op.succ)) implies (self = op)) ))
+
+context Snapshot inv cycleFree:
+  Set{self.succ()}->closure( s:Snapshot | s.succ() )->excludes(self)
+
+context Snapshot inv oneFilmstrip:
+  ((Snapshot.allInstances()->select( s:Snapshot | s.pred().isUndefined() )->size() = 1) and (Snapshot.allInstances()->select( s:Snapshot | s.succ().isUndefined() )->size() = 1))
+
+context TrafficLight inv validLinkingPedButtonTrafficLight:
+  self.button->forAll( c:Button | (c.snapshotButton = self.snapshotTrafficLight) )
+
+context TrafficLight inv validSnapshotLinking:
+  (self.succTrafficLight.isDefined() implies (self.succTrafficLight.snapshotTrafficLight = self.snapshotTrafficLight.succ()))
+
+context TrafficLightOpC inv aSelfDefined:
+  self.aSelf.isDefined()
+
+context TrafficLightOpC inv aSelfInPred:
+  (self.aSelf.snapshotTrafficLight = self.pred())
+
+context requestPass_ButtonOpC inv post_notClickAgain:
+  (aSelf.succButton.pressed = true)
+
+context requestPass_ButtonOpC inv post_requestIsPassed:
+  (aSelf.succButton.light.requested = true)
+
+context requestPass_ButtonOpC inv pre_buttonNotPressed:
+  (aSelf.pressed = false)
+
+context requestPass_ButtonOpC inv pre_pedLightIsRed:
+  (aSelf.light.pedLight = Color::Red)
+
+context switchCarLight_TrafficLightOpC inv post_switchCarLight:
+  (aSelf.succTrafficLight.carLight <> aSelf.succTrafficLight.predTrafficLight.carLight)
+
+context switchPedLight_TrafficLightOpC inv post_returnRequest:
+  ((aSelf.succTrafficLight.requested = false) and aSelf.succTrafficLight.button->forAll( e:Button | (e.pressed = false) ))
+
+context switchPedLight_TrafficLightOpC inv post_switchPedLight:
+  (aSelf.succTrafficLight.pedLight <> aSelf.succTrafficLight.predTrafficLight.pedLight)
+
+context switchPedLight_TrafficLightOpC inv pre_requestMustPassed:
+  (aSelf.requested = true)
+
+context self : TrafficLight inv NoSimultGreen:
+  ((self.pedLight = Color::Green) implies (self.carLight <> Color::Green))
+
+context Button
+inv ButtonSameId: self.succButton.isDefined() implies self.id = self.succButton.id
+context TrafficLight
+inv TrafficLightSameId: self.succTrafficLight.isDefined() implies self.id = self.succTrafficLight.id
+
+context Button
+inv ButtonDiffId: self.snapshotButton.button->forAll(o | o <> self implies o.id <> self.id)
+context TrafficLight
+inv TrafficLightDiffId: self.snapshotTrafficLight.trafficLight->forAll(o | o <> self implies o.id <> self.id)
+
+context TrafficLight
+-- When the traffic light receives a request, at some point in time, the pedestrian light will be turned on.
+inv TL1: self.requested = true implies (let CS:Snapshot = self.snapshotTrafficLight in Set{CS}->closure(s | s.succ())->excluding(null)->exists(s | switchPedLight_TrafficLightOpC.allInstances()->exists(op | op.succ() = s)))
+-- When the pedestrian light is turned on, it will change to green.
+inv TL2: switchPedLight_TrafficLightOpC.allInstances()->exists(op | op.succ() = self.snapshotTrafficLight) implies (let currentObject = self.snapshotTrafficLight.trafficLight->any(o | o.id = self.id) in let previousObject = self.snapshotTrafficLight.pred().trafficLight->any(o | o.id = self.id) in not (previousObject.pedLight = #Green) and (currentObject.pedLight = #Green))
+
+
+context Button
+-- When the button is pressed, a request to change the light will be sent to the traffic light.
+inv TL3: requestPass_ButtonOpC.allInstances()->exists(op | op.succ() = self.snapshotButton) implies (let currentObject = self.snapshotButton.button->any(o | o.id = self.id) in let previousObject = self.snapshotButton.pred().button->any(o | o.id = self.id) in not (previousObject.light.requested = true and previousObject.pressed = true) and (currentObject.light.requested = true and currentObject.pressed = true))

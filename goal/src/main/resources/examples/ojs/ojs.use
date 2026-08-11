@@ -1,7 +1,9 @@
 -- Generated from ACL. Regenerate instead of editing this file.
--- ACL classes/generalizations map directly to USE classes/generalizations.
--- Agent--Role and Role--Group are ordinary associations; no association classes are generated.
--- Compatibility remains a constraint for a later OCL translation.
+-- Role 'extends' is a play chain (Owner[1]--Role[mult] association), not USE
+-- generalization: no two Role classes are ever related by '<'. Agent is an empty
+-- class. Every play association is parent[1]--child[0..*].
+-- Compatibility is 'inv NoConflict_<R1>_<R2>' on the nearest shared play-chain
+-- ancestor; every Owner-target Role also gets 'inv NoSelfConflict_<R>'.
 
 model SystemOJS
 
@@ -54,15 +56,15 @@ end
 class Guest
 end
 
-abstract class GroupMember
+class GroupMember
 attributes
   description : String
 end
 
-class Member < GroupMember
+class Member
 end
 
-class Main < GroupMember
+class Main
 end
 
 class SectionEditor
@@ -154,6 +156,56 @@ association submissionReviewRounds between
   ReviewRound[1..*] role target_submissionReviewRounds
 end
 
+association Agent_plays_Admin between
+  Agent[1] role source_Agent_plays_Admin
+  Admin[0..*] role target_Agent_plays_Admin
+end
+
+association Agent_plays_Viewer between
+  Agent[1] role source_Agent_plays_Viewer
+  Viewer[0..*] role target_Agent_plays_Viewer
+end
+
+association Agent_plays_Guest between
+  Agent[1] role source_Agent_plays_Guest
+  Guest[0..*] role target_Agent_plays_Guest
+end
+
+association Agent_plays_GroupMember between
+  Agent[1] role source_Agent_plays_GroupMember
+  GroupMember[0..*] role target_Agent_plays_GroupMember
+end
+
+association GroupMember_plays_Member between
+  GroupMember[1] role source_GroupMember_plays_Member
+  Member[0..*] role target_GroupMember_plays_Member
+end
+
+association GroupMember_plays_Main between
+  GroupMember[1] role source_GroupMember_plays_Main
+  Main[0..*] role target_GroupMember_plays_Main
+end
+
+association Agent_plays_SectionEditor between
+  Agent[1] role source_Agent_plays_SectionEditor
+  SectionEditor[0..*] role target_Agent_plays_SectionEditor
+end
+
+association Agent_plays_Author between
+  Agent[1] role source_Agent_plays_Author
+  Author[0..*] role target_Agent_plays_Author
+end
+
+association Agent_plays_Edit between
+  Agent[1] role source_Agent_plays_Edit
+  Edit[0..*] role target_Agent_plays_Edit
+end
+
+association Agent_plays_Review between
+  Agent[1] role source_Agent_plays_Review
+  Review[0..*] role target_Agent_plays_Review
+end
+
 composition Owner_OJS_Journal between
   OJS[1] role source_Owner_OJS_Journal
   Journal[1..*] role target_Owner_OJS_Journal
@@ -164,32 +216,17 @@ composition Owner_OJS_GroupUser between
   GroupUser[1..*] role target_Owner_OJS_GroupUser
 end
 
-association Agent_plays_Admin between
-  Agent[1] role source_Agent_plays_Admin
-  Admin[0..*] role target_Agent_plays_Admin
-end
-
-association Admin_in_Journal between
+composition Admin_in_Journal between
   Journal[1] role source_Admin_in_Journal
   Admin[1..*] role target_Admin_in_Journal
 end
 
-association Agent_plays_Viewer between
-  Agent[1] role source_Agent_plays_Viewer
-  Viewer[0..*] role target_Agent_plays_Viewer
-end
-
-association Viewer_in_Journal between
+composition Viewer_in_Journal between
   Journal[1] role source_Viewer_in_Journal
   Viewer[0..*] role target_Viewer_in_Journal
 end
 
-association Agent_plays_Guest between
-  Agent[1] role source_Agent_plays_Guest
-  Guest[0..*] role target_Agent_plays_Guest
-end
-
-association Guest_in_Journal between
+composition Guest_in_Journal between
   Journal[1] role source_Guest_in_Journal
   Guest[0..*] role target_Guest_in_Journal
 end
@@ -199,32 +236,17 @@ composition Owner_Journal_Section between
   Section[1..*] role target_Owner_Journal_Section
 end
 
-association Agent_plays_Member between
-  Agent[1] role source_Agent_plays_Member
-  Member[0..*] role target_Agent_plays_Member
-end
-
-association Member_in_GroupUser between
+composition Member_in_GroupUser between
   GroupUser[1] role source_Member_in_GroupUser
   Member[0..*] role target_Member_in_GroupUser
 end
 
-association Agent_plays_Main between
-  Agent[1] role source_Agent_plays_Main
-  Main[0..*] role target_Agent_plays_Main
-end
-
-association Main_in_GroupUser between
+composition Main_in_GroupUser between
   GroupUser[1] role source_Main_in_GroupUser
   Main[1] role target_Main_in_GroupUser
 end
 
-association Agent_plays_SectionEditor between
-  Agent[1] role source_Agent_plays_SectionEditor
-  SectionEditor[0..*] role target_Agent_plays_SectionEditor
-end
-
-association SectionEditor_in_Section between
+composition SectionEditor_in_Section between
   Section[1] role source_SectionEditor_in_Section
   SectionEditor[1..*] role target_SectionEditor_in_Section
 end
@@ -234,35 +256,238 @@ composition Owner_Section_Submission between
   Submission[0..*] role target_Owner_Section_Submission
 end
 
-association Agent_plays_Author between
-  Agent[1] role source_Agent_plays_Author
-  Author[0..*] role target_Agent_plays_Author
-end
-
-association Author_in_Submission between
+composition Author_in_Submission between
   Submission[1] role source_Author_in_Submission
   Author[1] role target_Author_in_Submission
 end
 
-association Agent_plays_Edit between
-  Agent[1] role source_Agent_plays_Edit
-  Edit[0..*] role target_Agent_plays_Edit
-end
-
-association Edit_in_Submission between
+composition Edit_in_Submission between
   Submission[1] role source_Edit_in_Submission
   Edit[1..*] role target_Edit_in_Submission
 end
 
-association Agent_plays_Review between
-  Agent[1] role source_Agent_plays_Review
-  Review[0..*] role target_Agent_plays_Review
-end
-
-association Review_in_Submission between
+composition Review_in_Submission between
   Submission[1] role source_Review_in_Submission
   Review[1..*] role target_Review_in_Submission
 end
 
--- ACL Compatibility/OCL: Viewer <-> Author, compatible, inter-group, extends-subgroups
--- ACL Compatibility/OCL: GroupMember <-> Author, compatible, inter-group, extends-subgroups
+constraints
+
+context Agent inv NoSelfConflict_Admin:
+  self.target_Agent_plays_Admin->forAll(r1, r2 : Admin |
+    r1 <> r2 implies r1.source_Admin_in_Journal <> r2.source_Admin_in_Journal)
+
+context Agent inv NoSelfConflict_Viewer:
+  self.target_Agent_plays_Viewer->forAll(r1, r2 : Viewer |
+    r1 <> r2 implies r1.source_Viewer_in_Journal <> r2.source_Viewer_in_Journal)
+
+context Agent inv NoSelfConflict_Guest:
+  self.target_Agent_plays_Guest->forAll(r1, r2 : Guest |
+    r1 <> r2 implies r1.source_Guest_in_Journal <> r2.source_Guest_in_Journal)
+
+context GroupMember inv NoSelfConflict_Member:
+  self.target_GroupMember_plays_Member->forAll(r1, r2 : Member |
+    r1 <> r2 implies r1.source_Member_in_GroupUser <> r2.source_Member_in_GroupUser)
+
+context GroupMember inv NoSelfConflict_Main:
+  self.target_GroupMember_plays_Main->forAll(r1, r2 : Main |
+    r1 <> r2 implies r1.source_Main_in_GroupUser <> r2.source_Main_in_GroupUser)
+
+context Agent inv NoSelfConflict_SectionEditor:
+  self.target_Agent_plays_SectionEditor->forAll(r1, r2 : SectionEditor |
+    r1 <> r2 implies r1.source_SectionEditor_in_Section <> r2.source_SectionEditor_in_Section)
+
+context Agent inv NoSelfConflict_Author:
+  self.target_Agent_plays_Author->forAll(r1, r2 : Author |
+    r1 <> r2 implies r1.source_Author_in_Submission <> r2.source_Author_in_Submission)
+
+context Agent inv NoSelfConflict_Edit:
+  self.target_Agent_plays_Edit->forAll(r1, r2 : Edit |
+    r1 <> r2 implies r1.source_Edit_in_Submission <> r2.source_Edit_in_Submission)
+
+context Agent inv NoSelfConflict_Review:
+  self.target_Agent_plays_Review->forAll(r1, r2 : Review |
+    r1 <> r2 implies r1.source_Review_in_Submission <> r2.source_Review_in_Submission)
+
+context Agent inv NoConflict_Admin_Viewer:
+self.target_Agent_plays_Admin->forAll(r1 : Admin |
+self.target_Agent_plays_Viewer->forAll(r2 : Viewer |
+      not (r1.source_Admin_in_Journal = r2.source_Viewer_in_Journal or r1.source_Admin_in_Journal.source_Owner_OJS_Journal = r2.source_Viewer_in_Journal.source_Owner_OJS_Journal)))
+
+context Agent inv NoConflict_Admin_Guest:
+self.target_Agent_plays_Admin->forAll(r1 : Admin |
+self.target_Agent_plays_Guest->forAll(r2 : Guest |
+      not (r1.source_Admin_in_Journal = r2.source_Guest_in_Journal or r1.source_Admin_in_Journal.source_Owner_OJS_Journal = r2.source_Guest_in_Journal.source_Owner_OJS_Journal)))
+
+context Agent inv NoConflict_Admin_Member:
+self.target_Agent_plays_Admin->forAll(r1 : Admin |
+self.target_Agent_plays_GroupMember->forAll(r2_a0 : GroupMember |
+r2_a0.target_GroupMember_plays_Member->forAll(r2 : Member |
+      not (r1.source_Admin_in_Journal.source_Owner_OJS_Journal = r2.source_Member_in_GroupUser.source_Owner_OJS_GroupUser))))
+
+context Agent inv NoConflict_Admin_Main:
+self.target_Agent_plays_Admin->forAll(r1 : Admin |
+self.target_Agent_plays_GroupMember->forAll(r2_a0 : GroupMember |
+r2_a0.target_GroupMember_plays_Main->forAll(r2 : Main |
+      not (r1.source_Admin_in_Journal.source_Owner_OJS_Journal = r2.source_Main_in_GroupUser.source_Owner_OJS_GroupUser))))
+
+context Agent inv NoConflict_Admin_SectionEditor:
+self.target_Agent_plays_Admin->forAll(r1 : Admin |
+self.target_Agent_plays_SectionEditor->forAll(r2 : SectionEditor |
+      not (r1.source_Admin_in_Journal = r2.source_SectionEditor_in_Section.source_Owner_Journal_Section or r1.source_Admin_in_Journal.source_Owner_OJS_Journal = r2.source_SectionEditor_in_Section.source_Owner_Journal_Section.source_Owner_OJS_Journal)))
+
+context Agent inv NoConflict_Admin_Author:
+self.target_Agent_plays_Admin->forAll(r1 : Admin |
+self.target_Agent_plays_Author->forAll(r2 : Author |
+      not (r1.source_Admin_in_Journal = r2.source_Author_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section or r1.source_Admin_in_Journal.source_Owner_OJS_Journal = r2.source_Author_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section.source_Owner_OJS_Journal)))
+
+context Agent inv NoConflict_Admin_Edit:
+self.target_Agent_plays_Admin->forAll(r1 : Admin |
+self.target_Agent_plays_Edit->forAll(r2 : Edit |
+      not (r1.source_Admin_in_Journal = r2.source_Edit_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section or r1.source_Admin_in_Journal.source_Owner_OJS_Journal = r2.source_Edit_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section.source_Owner_OJS_Journal)))
+
+context Agent inv NoConflict_Admin_Review:
+self.target_Agent_plays_Admin->forAll(r1 : Admin |
+self.target_Agent_plays_Review->forAll(r2 : Review |
+      not (r1.source_Admin_in_Journal = r2.source_Review_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section or r1.source_Admin_in_Journal.source_Owner_OJS_Journal = r2.source_Review_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section.source_Owner_OJS_Journal)))
+
+context Agent inv NoConflict_Viewer_Guest:
+self.target_Agent_plays_Viewer->forAll(r1 : Viewer |
+self.target_Agent_plays_Guest->forAll(r2 : Guest |
+      not (r1.source_Viewer_in_Journal = r2.source_Guest_in_Journal or r1.source_Viewer_in_Journal.source_Owner_OJS_Journal = r2.source_Guest_in_Journal.source_Owner_OJS_Journal)))
+
+context Agent inv NoConflict_Viewer_Member:
+self.target_Agent_plays_Viewer->forAll(r1 : Viewer |
+self.target_Agent_plays_GroupMember->forAll(r2_a0 : GroupMember |
+r2_a0.target_GroupMember_plays_Member->forAll(r2 : Member |
+      not (r1.source_Viewer_in_Journal.source_Owner_OJS_Journal = r2.source_Member_in_GroupUser.source_Owner_OJS_GroupUser))))
+
+context Agent inv NoConflict_Viewer_Main:
+self.target_Agent_plays_Viewer->forAll(r1 : Viewer |
+self.target_Agent_plays_GroupMember->forAll(r2_a0 : GroupMember |
+r2_a0.target_GroupMember_plays_Main->forAll(r2 : Main |
+      not (r1.source_Viewer_in_Journal.source_Owner_OJS_Journal = r2.source_Main_in_GroupUser.source_Owner_OJS_GroupUser))))
+
+context Agent inv NoConflict_Viewer_SectionEditor:
+self.target_Agent_plays_Viewer->forAll(r1 : Viewer |
+self.target_Agent_plays_SectionEditor->forAll(r2 : SectionEditor |
+      not (r1.source_Viewer_in_Journal = r2.source_SectionEditor_in_Section.source_Owner_Journal_Section or r1.source_Viewer_in_Journal.source_Owner_OJS_Journal = r2.source_SectionEditor_in_Section.source_Owner_Journal_Section.source_Owner_OJS_Journal)))
+
+context Agent inv NoConflict_Viewer_Author:
+self.target_Agent_plays_Viewer->forAll(r1 : Viewer |
+self.target_Agent_plays_Author->forAll(r2 : Author |
+      not (r1.source_Viewer_in_Journal = r2.source_Author_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section or r1.source_Viewer_in_Journal.source_Owner_OJS_Journal = r2.source_Author_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section.source_Owner_OJS_Journal) or (r1.source_Viewer_in_Journal = r2.source_Author_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section)))
+
+context Agent inv NoConflict_Viewer_Edit:
+self.target_Agent_plays_Viewer->forAll(r1 : Viewer |
+self.target_Agent_plays_Edit->forAll(r2 : Edit |
+      not (r1.source_Viewer_in_Journal = r2.source_Edit_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section or r1.source_Viewer_in_Journal.source_Owner_OJS_Journal = r2.source_Edit_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section.source_Owner_OJS_Journal)))
+
+context Agent inv NoConflict_Viewer_Review:
+self.target_Agent_plays_Viewer->forAll(r1 : Viewer |
+self.target_Agent_plays_Review->forAll(r2 : Review |
+      not (r1.source_Viewer_in_Journal = r2.source_Review_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section or r1.source_Viewer_in_Journal.source_Owner_OJS_Journal = r2.source_Review_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section.source_Owner_OJS_Journal)))
+
+context Agent inv NoConflict_Guest_Member:
+self.target_Agent_plays_Guest->forAll(r1 : Guest |
+self.target_Agent_plays_GroupMember->forAll(r2_a0 : GroupMember |
+r2_a0.target_GroupMember_plays_Member->forAll(r2 : Member |
+      not (r1.source_Guest_in_Journal.source_Owner_OJS_Journal = r2.source_Member_in_GroupUser.source_Owner_OJS_GroupUser))))
+
+context Agent inv NoConflict_Guest_Main:
+self.target_Agent_plays_Guest->forAll(r1 : Guest |
+self.target_Agent_plays_GroupMember->forAll(r2_a0 : GroupMember |
+r2_a0.target_GroupMember_plays_Main->forAll(r2 : Main |
+      not (r1.source_Guest_in_Journal.source_Owner_OJS_Journal = r2.source_Main_in_GroupUser.source_Owner_OJS_GroupUser))))
+
+context Agent inv NoConflict_Guest_SectionEditor:
+self.target_Agent_plays_Guest->forAll(r1 : Guest |
+self.target_Agent_plays_SectionEditor->forAll(r2 : SectionEditor |
+      not (r1.source_Guest_in_Journal = r2.source_SectionEditor_in_Section.source_Owner_Journal_Section or r1.source_Guest_in_Journal.source_Owner_OJS_Journal = r2.source_SectionEditor_in_Section.source_Owner_Journal_Section.source_Owner_OJS_Journal)))
+
+context Agent inv NoConflict_Guest_Author:
+self.target_Agent_plays_Guest->forAll(r1 : Guest |
+self.target_Agent_plays_Author->forAll(r2 : Author |
+      not (r1.source_Guest_in_Journal = r2.source_Author_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section or r1.source_Guest_in_Journal.source_Owner_OJS_Journal = r2.source_Author_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section.source_Owner_OJS_Journal)))
+
+context Agent inv NoConflict_Guest_Edit:
+self.target_Agent_plays_Guest->forAll(r1 : Guest |
+self.target_Agent_plays_Edit->forAll(r2 : Edit |
+      not (r1.source_Guest_in_Journal = r2.source_Edit_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section or r1.source_Guest_in_Journal.source_Owner_OJS_Journal = r2.source_Edit_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section.source_Owner_OJS_Journal)))
+
+context Agent inv NoConflict_Guest_Review:
+self.target_Agent_plays_Guest->forAll(r1 : Guest |
+self.target_Agent_plays_Review->forAll(r2 : Review |
+      not (r1.source_Guest_in_Journal = r2.source_Review_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section or r1.source_Guest_in_Journal.source_Owner_OJS_Journal = r2.source_Review_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section.source_Owner_OJS_Journal)))
+
+context GroupMember inv NoConflict_Member_Main:
+self.target_GroupMember_plays_Member->forAll(r1 : Member |
+self.target_GroupMember_plays_Main->forAll(r2 : Main |
+      not (r1.source_Member_in_GroupUser = r2.source_Main_in_GroupUser or r1.source_Member_in_GroupUser.source_Owner_OJS_GroupUser = r2.source_Main_in_GroupUser.source_Owner_OJS_GroupUser)))
+
+context Agent inv NoConflict_Member_SectionEditor:
+self.target_Agent_plays_GroupMember->forAll(r1_a0 : GroupMember |
+r1_a0.target_GroupMember_plays_Member->forAll(r1 : Member |
+self.target_Agent_plays_SectionEditor->forAll(r2 : SectionEditor |
+      not (r1.source_Member_in_GroupUser.source_Owner_OJS_GroupUser = r2.source_SectionEditor_in_Section.source_Owner_Journal_Section.source_Owner_OJS_Journal))))
+
+context Agent inv NoConflict_Member_Edit:
+self.target_Agent_plays_GroupMember->forAll(r1_a0 : GroupMember |
+r1_a0.target_GroupMember_plays_Member->forAll(r1 : Member |
+self.target_Agent_plays_Edit->forAll(r2 : Edit |
+      not (r1.source_Member_in_GroupUser.source_Owner_OJS_GroupUser = r2.source_Edit_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section.source_Owner_OJS_Journal))))
+
+context Agent inv NoConflict_Member_Review:
+self.target_Agent_plays_GroupMember->forAll(r1_a0 : GroupMember |
+r1_a0.target_GroupMember_plays_Member->forAll(r1 : Member |
+self.target_Agent_plays_Review->forAll(r2 : Review |
+      not (r1.source_Member_in_GroupUser.source_Owner_OJS_GroupUser = r2.source_Review_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section.source_Owner_OJS_Journal))))
+
+context Agent inv NoConflict_Main_SectionEditor:
+self.target_Agent_plays_GroupMember->forAll(r1_a0 : GroupMember |
+r1_a0.target_GroupMember_plays_Main->forAll(r1 : Main |
+self.target_Agent_plays_SectionEditor->forAll(r2 : SectionEditor |
+      not (r1.source_Main_in_GroupUser.source_Owner_OJS_GroupUser = r2.source_SectionEditor_in_Section.source_Owner_Journal_Section.source_Owner_OJS_Journal))))
+
+context Agent inv NoConflict_Main_Edit:
+self.target_Agent_plays_GroupMember->forAll(r1_a0 : GroupMember |
+r1_a0.target_GroupMember_plays_Main->forAll(r1 : Main |
+self.target_Agent_plays_Edit->forAll(r2 : Edit |
+      not (r1.source_Main_in_GroupUser.source_Owner_OJS_GroupUser = r2.source_Edit_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section.source_Owner_OJS_Journal))))
+
+context Agent inv NoConflict_Main_Review:
+self.target_Agent_plays_GroupMember->forAll(r1_a0 : GroupMember |
+r1_a0.target_GroupMember_plays_Main->forAll(r1 : Main |
+self.target_Agent_plays_Review->forAll(r2 : Review |
+      not (r1.source_Main_in_GroupUser.source_Owner_OJS_GroupUser = r2.source_Review_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section.source_Owner_OJS_Journal))))
+
+context Agent inv NoConflict_SectionEditor_Author:
+self.target_Agent_plays_SectionEditor->forAll(r1 : SectionEditor |
+self.target_Agent_plays_Author->forAll(r2 : Author |
+      not (r1.source_SectionEditor_in_Section = r2.source_Author_in_Submission.source_Owner_Section_Submission or r1.source_SectionEditor_in_Section.source_Owner_Journal_Section = r2.source_Author_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section or r1.source_SectionEditor_in_Section.source_Owner_Journal_Section.source_Owner_OJS_Journal = r2.source_Author_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section.source_Owner_OJS_Journal)))
+
+context Agent inv NoConflict_SectionEditor_Edit:
+self.target_Agent_plays_SectionEditor->forAll(r1 : SectionEditor |
+self.target_Agent_plays_Edit->forAll(r2 : Edit |
+      not (r1.source_SectionEditor_in_Section = r2.source_Edit_in_Submission.source_Owner_Section_Submission or r1.source_SectionEditor_in_Section.source_Owner_Journal_Section = r2.source_Edit_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section or r1.source_SectionEditor_in_Section.source_Owner_Journal_Section.source_Owner_OJS_Journal = r2.source_Edit_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section.source_Owner_OJS_Journal)))
+
+context Agent inv NoConflict_SectionEditor_Review:
+self.target_Agent_plays_SectionEditor->forAll(r1 : SectionEditor |
+self.target_Agent_plays_Review->forAll(r2 : Review |
+      not (r1.source_SectionEditor_in_Section = r2.source_Review_in_Submission.source_Owner_Section_Submission or r1.source_SectionEditor_in_Section.source_Owner_Journal_Section = r2.source_Review_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section or r1.source_SectionEditor_in_Section.source_Owner_Journal_Section.source_Owner_OJS_Journal = r2.source_Review_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section.source_Owner_OJS_Journal)))
+
+context Agent inv NoConflict_Author_Edit:
+self.target_Agent_plays_Author->forAll(r1 : Author |
+self.target_Agent_plays_Edit->forAll(r2 : Edit |
+      not (r1.source_Author_in_Submission = r2.source_Edit_in_Submission or r1.source_Author_in_Submission.source_Owner_Section_Submission = r2.source_Edit_in_Submission.source_Owner_Section_Submission or r1.source_Author_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section = r2.source_Edit_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section or r1.source_Author_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section.source_Owner_OJS_Journal = r2.source_Edit_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section.source_Owner_OJS_Journal)))
+
+context Agent inv NoConflict_Author_Review:
+self.target_Agent_plays_Author->forAll(r1 : Author |
+self.target_Agent_plays_Review->forAll(r2 : Review |
+      not (r1.source_Author_in_Submission = r2.source_Review_in_Submission or r1.source_Author_in_Submission.source_Owner_Section_Submission = r2.source_Review_in_Submission.source_Owner_Section_Submission or r1.source_Author_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section = r2.source_Review_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section or r1.source_Author_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section.source_Owner_OJS_Journal = r2.source_Review_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section.source_Owner_OJS_Journal)))
+
+context Agent inv NoConflict_Edit_Review:
+self.target_Agent_plays_Edit->forAll(r1 : Edit |
+self.target_Agent_plays_Review->forAll(r2 : Review |
+      not (r1.source_Edit_in_Submission = r2.source_Review_in_Submission or r1.source_Edit_in_Submission.source_Owner_Section_Submission = r2.source_Review_in_Submission.source_Owner_Section_Submission or r1.source_Edit_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section = r2.source_Review_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section or r1.source_Edit_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section.source_Owner_OJS_Journal = r2.source_Review_in_Submission.source_Owner_Section_Submission.source_Owner_Journal_Section.source_Owner_OJS_Journal)))
+

@@ -2,113 +2,208 @@
 <?use version="7.1.1" ?>
 <plugin name="GoalModel Plugin" version="3.0">
     <actions>
-        <action label="iStar 2.0 Viewer"
+        <action label="Formal Verification Workspace"
+                icon="images/conformance.png"
+                class="org.vnu.sme.goal.feature.conformance.ActionOpenFormalVerification"
+                tooltip="Validate ACL, iStar and BPMN; generate and inspect an Event-B project"
+                menu="GoalModel Plugin"
+                menuitem="Formal Verification Workspace"
+                toolbaritem="Formal Verification"
+                id="org.vnu.sme.goal.feature.conformance.ActionOpenFormalVerification">
+        </action>
+        <action label="iStar Model Viewer"
                 icon="images/istar.png"
-                class="org.vnu.sme.goal.istar.action.ActionOpenIStar"
+                class="org.vnu.sme.goal.feature.openistar.ActionOpenIStar"
                 tooltip="iStar 2.0 Strategic Rationale Diagram Viewer"
                 menu="GoalModel Plugin"
-                menuitem="iStar 2.0 Viewer"
-                toolbaritem="iStar 2.0 Viewer"
-                id="org.vnu.sme.goal.istar.action.ActionOpenIStar">
+                menuitem="iStar Model Viewer"
+                toolbaritem="iStar Viewer"
+                id="org.vnu.sme.goal.feature.openistar.ActionOpenIStar">
         </action>
-        <action label="i* Scenario Viewer"
-                icon="images/istar-scenario.png"
-                class="org.vnu.sme.goal.iscn.action.ActionOpenIStarScenario"
-                tooltip="Run an i* satisfaction scenario (.iscn) against its goal model"
+        <action label="iStar BPMN Trace Verifier"
+                icon="images/istar.png"
+                class="org.vnu.sme.goal.feature.istartrace.ActionOpenIStarTraceStepper"
+                tooltip="Verify an existing .bpmntrace directly against ACL and iStar markings"
                 menu="GoalModel Plugin"
-                menuitem="i* Scenario Viewer"
-                toolbaritem="i* Scenario Viewer"
-                id="org.vnu.sme.goal.iscn.action.ActionOpenIStarScenario">
+                menuitem="iStar BPMN Trace Verifier"
+                toolbaritem="iStar Trace Verifier"
+                id="org.vnu.sme.goal.feature.istartrace.ActionOpenIStarTraceStepper">
         </action>
-        <action label="i* + USE Scenario Viewer"
-                icon="images/istar-scenario.png"
-                class="org.vnu.sme.goal.istarusebridge.action.ActionOpenIStarUseScenario"
-                tooltip="Replay a .soil script against a .use structure and evaluate an i* goal model's OCL guards against it"
-                menu="GoalModel Plugin"
-                menuitem="i* + USE Scenario Viewer"
-                toolbaritem="i* + USE Scenario Viewer"
-                id="org.vnu.sme.goal.istarusebridge.action.ActionOpenIStarUseScenario">
-        </action>
-        <action label="ACL v2.0 Viewer"
+        <action label="ACL Model Viewer"
                 icon="images/acl.png"
-                class="org.vnu.sme.goal.acl.action.ActionOpenAcl"
+                class="org.vnu.sme.goal.feature.openacl.ActionOpenAcl"
                 tooltip="Open an ACL v2.0 multi-agent state model"
                 menu="GoalModel Plugin"
-                menuitem="ACL v2.0 Viewer"
-                toolbaritem="ACL v2.0 Viewer"
-                id="org.vnu.sme.goal.acl.action.ActionOpenAcl">
+                menuitem="ACL Model Viewer"
+                toolbaritem="ACL Viewer"
+                id="org.vnu.sme.goal.feature.openacl.ActionOpenAcl">
         </action>
-        <action label="Export ACL to USE"
+        <action label="AOL Object Model Viewer"
                 icon="images/acl.png"
-                class="org.vnu.sme.goal.acl.action.ActionExportAclToUse"
-                tooltip="Validate an ACL specification and export a USE class model (.use)"
+                class="org.vnu.sme.goal.feature.openaol.ActionOpenAol"
+                tooltip="Validate and inspect an AOL object model against its ACL structural model"
                 menu="GoalModel Plugin"
-                menuitem="Export ACL to USE"
-                toolbaritem="Export ACL to USE"
-                id="org.vnu.sme.goal.acl.action.ActionExportAclToUse">
-        </action>
-        <action label="AOL Viewer"
-                icon="images/acl.png"
-                class="org.vnu.sme.goal.aol.action.ActionOpenAol"
-                tooltip="Validate and view an AOL object snapshot (.aol) against its ACL structural specification"
-                menu="GoalModel Plugin"
-                menuitem="AOL Viewer"
+                menuitem="AOL Object Model Viewer"
                 toolbaritem="AOL Viewer"
-                id="org.vnu.sme.goal.aol.action.ActionOpenAol">
+                id="org.vnu.sme.goal.feature.openaol.ActionOpenAol">
         </action>
-        <action label="BPMN 2.0 Viewer"
+        <action label="BPMN Model Viewer"
                 icon="images/bpmn2.png"
-                class="org.vnu.sme.goal.bpmn2.action.ActionOpenBpmn2"
+                class="org.vnu.sme.goal.feature.openbpmn.ActionOpenBpmn"
                 tooltip="BPMN 2.0 Collaboration Diagram Viewer"
                 menu="GoalModel Plugin"
-                menuitem="BPMN 2.0 Viewer"
-                toolbaritem="BPMN 2.0 Viewer"
-                id="org.vnu.sme.goal.bpmn2.action.ActionOpenBpmn2">
+                menuitem="BPMN Model Viewer"
+                toolbaritem="BPMN Viewer"
+                id="org.vnu.sme.goal.feature.openbpmn.ActionOpenBpmn">
         </action>
-        <action label="BPMN Scenario Viewer"
+        <action label="BPMN Scenario from AOL"
                 icon="images/bpmn2-scenario.png"
-                class="org.vnu.sme.goal.bpmn2scenario.action.ActionOpenBpmn2Scenario"
-                tooltip="Run a BPMN scenario (.bscn) against its process model"
+                class="org.vnu.sme.goal.feature.bpmnscenario.ActionOpenBpmnScenario"
+                tooltip="Run a BPMN 2.0 process seeded by a concrete AOL population and save the execution trace to a file"
                 menu="GoalModel Plugin"
-                menuitem="BPMN Scenario Viewer"
-                toolbaritem="BPMN Scenario Viewer"
-                id="org.vnu.sme.goal.bpmn2scenario.action.ActionOpenBpmn2Scenario">
+                menuitem="BPMN Scenario from AOL"
+                toolbaritem="BPMN Scenario"
+                id="org.vnu.sme.goal.feature.bpmnscenario.ActionOpenBpmnScenario">
         </action>
-        <action label="DCR Graph Viewer"
+        <action label="BPMN Trace Viewer"
+                icon="images/bpmn2-scenario.png"
+                class="org.vnu.sme.goal.feature.bpmnscenario.ActionOpenBpmnAolTraceViewer"
+                tooltip="Open a .bpmntrace file and step through it (diagram or table view)"
+                menu="GoalModel Plugin"
+                menuitem="BPMN Trace Viewer"
+                toolbaritem="BPMN Trace Viewer"
+                id="org.vnu.sme.goal.feature.bpmnscenario.ActionOpenBpmnAolTraceViewer">
+        </action>
+        <action label="iStar + ACL → USE/TOCL Generator"
+                icon="images/istar.png"
+                class="org.vnu.sme.goal.feature.istaruseocl.ActionOpenIStarUseOcl"
+                tooltip="Translate an ACL structural model + iStar goal model into a unified USE class diagram and TOCL goal properties"
+                menu="GoalModel Plugin"
+                menuitem="iStar + ACL → USE/TOCL Generator"
+                toolbaritem="iStar→USE/TOCL"
+                id="org.vnu.sme.goal.feature.istaruseocl.ActionOpenIStarUseOcl">
+        </action>
+        <action label="iStar + ACL → USE/OCL (Folder)"
+                icon="images/istar.png"
+                class="org.vnu.sme.goal.feature.istaruseocl.ActionOpenIStarUseOclFolder"
+                tooltip="Translate an ACL structural model + iStar goal model into USE/OCL, written into a chosen output folder"
+                menu="GoalModel Plugin"
+                menuitem="iStar + ACL → USE/OCL (Folder)"
+                toolbaritem="iStar→USE/OCL (Folder)"
+                id="org.vnu.sme.goal.feature.istaruseocl.ActionOpenIStarUseOclFolder">
+        </action>
+        <action label="BPMN + ACL → USE/OCL (Folder)"
+                icon="images/bpmn2.png"
+                class="org.vnu.sme.goal.feature.bpmnuseocl.ActionOpenBpmnUseOcl"
+                tooltip="Translate an ACL structural model + BPMN process model into USE/OCL, written into a chosen output folder"
+                menu="GoalModel Plugin"
+                menuitem="BPMN + ACL → USE/OCL (Folder)"
+                toolbaritem="BPMN→USE/OCL (Folder)"
+                id="org.vnu.sme.goal.feature.bpmnuseocl.ActionOpenBpmnUseOcl">
+        </action>
+
+        <!-- The actions below exist in source and compile, but are not yet ready to
+             show up in the tool menu: kept commented out on purpose. Uncomment an
+             entry once its feature is ready to expose. -->
+        <action label="Export ACL to USE"
+                icon="images/acl.png"
+                class="org.vnu.sme.goal.feature.exportacltouse.ActionExportAclToUse"
+                tooltip="Validate an ACL structural model and export it as a USE class model"
+                menu="GoalModel Plugin"
+                menuitem="Export ACL to USE"
+                toolbaritem="ACL→USE"
+                id="org.vnu.sme.goal.feature.exportacltouse.ActionExportAclToUse">
+        </action>
+        <action label="acl2eventB"
+                icon="images/conformance.png"
+                class="org.vnu.sme.goal.feature.exportacltoeventb.ActionAcl2EventB"
+                tooltip="Translate one ACL structural model into a UML-B-style Rodin Event-B project"
+                menu="GoalModel Plugin"
+                menuitem="acl2eventB"
+                toolbaritem="acl2eventB"
+                id="org.vnu.sme.goal.feature.exportacltoeventb.ActionAcl2EventB">
+        </action>
+        <action label="aclBpmn2eventB"
+                icon="images/conformance.png"
+                class="org.vnu.sme.goal.feature.exportaclbpmntoeventb.ActionAclBpmn2EventB"
+                tooltip="Extend the UML-B-style ACL Event-B project with BPMN process state and events"
+                menu="GoalModel Plugin"
+                menuitem="aclBpmn2eventB"
+                toolbaritem="aclBpmn2eventB"
+                id="org.vnu.sme.goal.feature.exportaclbpmntoeventb.ActionAclBpmn2EventB">
+        </action>
+        <action label="aclIstar2eventB"
+                icon="images/conformance.png"
+                class="org.vnu.sme.goal.feature.exportaclistartoeventb.ActionAclIStar2EventB"
+                tooltip="Extend the UML-B-style ACL Event-B project with iStar intentional and Quality state"
+                menu="GoalModel Plugin"
+                menuitem="aclIstar2eventB"
+                toolbaritem="aclIstar2eventB"
+                id="org.vnu.sme.goal.feature.exportaclistartoeventb.ActionAclIStar2EventB">
+        </action>
+        <!--
+        <action label="DCR Model Viewer"
                 icon="images/dcr.png"
-                class="org.vnu.sme.goal.dcr.action.ActionOpenDcr"
-                tooltip="Dynamic Condition Response Graph Viewer"
+                class="org.vnu.sme.goal.feature.opendcr.ActionOpenDcr"
+                tooltip="Dynamic Condition Response graph viewer"
                 menu="GoalModel Plugin"
-                menuitem="DCR Graph Viewer"
-                toolbaritem="DCR Graph Viewer"
-                id="org.vnu.sme.goal.dcr.action.ActionOpenDcr">
+                menuitem="DCR Model Viewer"
+                toolbaritem="DCR Viewer"
+                id="org.vnu.sme.goal.feature.opendcr.ActionOpenDcr">
         </action>
-        <action label="Complete i*/BPMN2 Conformance Flow"
+        -->
+        <!--
+        <action label="Check Conformance"
                 icon="images/conformance.png"
-                class="org.vnu.sme.goal.conformance.action.ActionRunConformanceFlow"
-                tooltip="Run ACL -> AOL -> iStar -> ISCN -> BPMN2/OCL -> conformance in dependency order"
+                class="org.vnu.sme.goal.feature.conformance.ActionCheckConformance"
+                tooltip="Check ACL/BPMN/iStar conformance for a concrete trace"
                 menu="GoalModel Plugin"
-                menuitem="Complete i*/BPMN2 Conformance Flow"
-                toolbaritem="Complete Conformance Flow"
-                id="org.vnu.sme.goal.conformance.action.ActionRunConformanceFlow">
+                menuitem="Check Conformance"
+                toolbaritem="Check Conformance"
+                id="org.vnu.sme.goal.feature.conformance.ActionCheckConformance">
         </action>
-        <action label="i*/BPMN2 Conformance Checker"
+        -->
+        <!--
+        <action label="Step Conformance"
                 icon="images/conformance.png"
-                class="org.vnu.sme.goal.conformance.action.ActionCheckConformance"
-                tooltip="Check conformance from ACL + initial SOIL + i* goals + BPMN2/OCL process"
+                class="org.vnu.sme.goal.feature.conformance.ActionStepConformance"
+                tooltip="Step through a concrete trace, checking conformance at each state"
                 menu="GoalModel Plugin"
-                menuitem="i*/BPMN2 Conformance Checker"
-                toolbaritem="Conformance Checker"
-                id="org.vnu.sme.goal.conformance.action.ActionCheckConformance">
-        </action>
-        <action label="Step-by-step Conformance Debugger"
-                icon="images/conformance.png"
-                class="org.vnu.sme.goal.conformance.action.ActionStepConformance"
-                tooltip="Inspect SOIL/BPMN execution, USE snapshots, and i* goal satisfaction one checkpoint at a time"
-                menu="GoalModel Plugin"
-                menuitem="Step-by-step Conformance Debugger"
+                menuitem="Step Conformance"
                 toolbaritem="Step Conformance"
-                id="org.vnu.sme.goal.conformance.action.ActionStepConformance">
+                id="org.vnu.sme.goal.feature.conformance.ActionStepConformance">
         </action>
+        -->
+        <action label="aclBpmnIstar2eventB"
+                icon="images/conformance.png"
+                class="org.vnu.sme.goal.feature.exporteventb.ActionExportEventB"
+                tooltip="Translate ACL + BPMN + iStar into one synchronized Rodin Event-B project"
+                menu="GoalModel Plugin"
+                menuitem="aclBpmnIstar2eventB"
+                toolbaritem="aclBpmnIstar2eventB"
+                id="org.vnu.sme.goal.feature.exporteventb.ActionExportEventB">
+        </action>
+        <!--
+        <action label="iStar Scenario Viewer"
+                icon="images/istar-scenario.png"
+                class="org.vnu.sme.goal.feature.openistarscenario.ActionOpenIStarScenario"
+                tooltip="Open an .iscn instance-level scenario against its .istar goal model"
+                menu="GoalModel Plugin"
+                menuitem="iStar Scenario Viewer"
+                toolbaritem="iStar Scenario"
+                id="org.vnu.sme.goal.feature.openistarscenario.ActionOpenIStarScenario">
+        </action>
+        -->
+        <!--
+        <action label="iStar + ACL Live Scenario"
+                icon="images/istar.png"
+                class="org.vnu.sme.goal.feature.istarusescenario.ActionOpenIStarUseScenario"
+                tooltip="Run an iStar+ACL trace/scenario session against a live USE model"
+                menu="GoalModel Plugin"
+                menuitem="iStar + ACL Live Scenario"
+                toolbaritem="iStar Live Scenario"
+                id="org.vnu.sme.goal.feature.istarusescenario.ActionOpenIStarUseScenario">
+        </action>
+        -->
     </actions>
 </plugin>

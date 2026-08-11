@@ -1,0 +1,40 @@
+// Smallest valid population: exactly the minimum cardinality of every
+// mandatory member (BoardMember>=3, DepartmentHead=1, Auditor>=2,
+// ComplianceOfficer=1), nothing optional instantiated (no Team, no
+// Contractor, no Contract/Document/Budget-bearing detail beyond the
+// required Budget[1], no links). Useful as a boundary/smoke-test fixture.
+
+aol v1.0 EnterpriseMinimal for "enterprise.acl" {
+
+  agent Executive     as alice { name = "Alice Nguyen"; email = "alice@acme.example"; employeeId = "E001"; hireDate = "2010-03-01"; managementLevel = 5; budgetAuthority = 500000.0; title = "Chair"; }
+  agent Executive     as bob   { name = "Bob Tran";     email = "bob@acme.example";   employeeId = "E002"; hireDate = "2011-06-15"; managementLevel = 5; budgetAuthority = 450000.0; title = "CFO"; }
+  agent Executive     as carol { name = "Carol Le";     email = "carol@acme.example"; employeeId = "E003"; hireDate = "2012-09-20"; managementLevel = 5; budgetAuthority = 400000.0; title = "CTO"; }
+  agent SeniorManager as dave  { name = "Dave Pham";    email = "dave@acme.example";  employeeId = "E004"; hireDate = "2013-01-10"; managementLevel = 4; budgetAuthority = 150000.0; }
+  agent Reviewer       as erin  { name = "Erin Vo";     email = "erin@acme.example";  reviewLevel = 2; }
+  agent Reviewer       as frank { name = "Frank Do";    email = "frank@acme.example"; reviewLevel = 3; }
+
+  group Corporation as corp1 {
+    name = "Minimal Co";
+    foundedYear = 2020;
+
+    play BoardMember as board_alice by alice { votingRights = true; }
+    play BoardMember as board_bob   by bob   { votingRights = true; }
+    play BoardMember as board_carol by carol { votingRights = true; }
+
+    group Department as dept1 {
+      budgetCode = "GEN-01";
+
+      play DepartmentHead as head_dept1 by dave { departmentGoals = "Keep the lights on"; }
+
+      entity Budget as budget_dept1 { amount = 100000.0; currency = "USD"; }
+    }
+
+    group AuditCommittee as audit1 {
+      play Auditor as auditor_erin  by erin  { certificationId = "CIA-3001"; }
+      play Auditor as auditor_frank by frank { certificationId = "CIA-3002"; }
+      // erin also plays ComplianceOfficer: exercises the Auditor<->
+      // ComplianceOfficer compatibility with the minimum possible headcount.
+      play ComplianceOfficer as compliance_erin by erin { specialization = "General"; }
+    }
+  }
+}

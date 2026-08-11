@@ -1,0 +1,132 @@
+-- TOCL constraints generated from MeetingScheduler.istar
+-- Each 'context C inv Name:' block encodes one iStar GoalType property.
+-- Operators used: always, sometime, alwaysPast, not, implies
+
+-- Initiator::MeetingOrganized [ACHIEVE]
+context Initiator
+inv ACHIEVE_MeetingOrganized:
+  always (
+    self.MeetingOrganized_activation
+    implies
+    sometime self.MeetingOrganized_condition
+  )
+
+-- Initiator::MeetingScheduled [ACHIEVE]
+context Initiator
+inv ACHIEVE_MeetingScheduled:
+  always (
+    self.MeetingScheduled_activation
+    implies
+    sometime self.MeetingScheduled_condition
+  )
+
+-- Initiator::ParticipantsAttended [ACHIEVE]
+context Initiator
+inv ACHIEVE_ParticipantsAttended:
+  always (
+    self.ParticipantsAttended_activation
+    implies
+    sometime self.ParticipantsAttended_condition
+  )
+
+-- Initiator::OrganizerScheduledMeeting [ACHIEVE]
+context Initiator
+inv ACHIEVE_OrganizerScheduledMeeting:
+  always (
+    self.OrganizerScheduledMeeting_activation
+    implies
+    sometime self.OrganizerScheduledMeeting_condition
+  )
+
+-- Initiator::ParticipantAttended [ACHIEVE]
+context Initiator
+inv ACHIEVE_ParticipantAttended:
+  always (
+    self.ParticipantAttended_activation
+    implies
+    sometime self.ParticipantAttended_condition
+  )
+
+-- Tasks of Initiator — pre/post OCL is in the .use file as def helpers:
+--   self.DecideDetails_preHolds : Boolean
+--   self.DecideDetails_postHolds : Boolean
+
+-- Organizer::ChosenTimeHasDetails [MAINTAIN]
+context Organizer
+inv MAINTAIN_ChosenTimeHasDetails:
+  always (
+    self.ChosenTimeHasDetails_activation
+    implies
+    always self.ChosenTimeHasDetails_condition
+  )
+
+-- Organizer::SchedulingCompleted [ACHIEVE]
+context Organizer
+inv ACHIEVE_SchedulingCompleted:
+  always (
+    self.SchedulingCompleted_activation
+    implies
+    sometime self.SchedulingCompleted_condition
+  )
+
+-- Organizer::TimetablesCollected [ACHIEVE]
+context Organizer
+inv ACHIEVE_TimetablesCollected:
+  always (
+    self.TimetablesCollected_activation
+    implies
+    sometime self.TimetablesCollected_condition
+  )
+
+-- Organizer::ParticipantsNotified [SUSTAIN]
+context Organizer
+inv SUSTAIN_ParticipantsNotified:
+  always (
+    sometime self.ParticipantsNotified_condition
+    implies
+    alwaysPast self.ParticipantsNotified_condition
+  )
+
+-- Organizer::TimetableCollected [ACHIEVE]
+context Organizer
+inv ACHIEVE_TimetableCollected:
+  always (
+    self.TimetableCollected_activation
+    implies
+    sometime self.TimetableCollected_condition
+  )
+
+-- Organizer::ContactedByPhone [ACHIEVE]
+context Organizer
+inv ACHIEVE_ContactedByPhone:
+  always (
+    self.ContactedByPhone_activation
+    implies
+    sometime self.ContactedByPhone_condition
+  )
+
+-- Organizer::SecretaryRequested [ACHIEVE]
+context Organizer
+inv ACHIEVE_SecretaryRequested:
+  always (
+    self.SecretaryRequested_activation
+    implies
+    sometime self.SecretaryRequested_condition
+  )
+
+-- Tasks of Organizer — pre/post OCL is in the .use file as def helpers:
+--   self.ChooseMeetingTime_preHolds : Boolean
+--   self.ChooseMeetingTime_postHolds : Boolean
+--   self.CollectFromCalendar_preHolds : Boolean
+--   self.CollectFromCalendar_postHolds : Boolean
+--   self.NotifyParticipant_preHolds : Boolean
+--   self.NotifyParticipant_postHolds : Boolean
+
+-- Tasks of Secretary — pre/post OCL is in the .use file as def helpers:
+--   self.CollectByPhone_preHolds : Boolean
+--   self.CollectByPhone_postHolds : Boolean
+
+-- Tasks of Participant — pre/post OCL is in the .use file as def helpers:
+--   self.AttendMeeting_preHolds : Boolean
+--   self.AttendMeeting_postHolds : Boolean
+

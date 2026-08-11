@@ -1,0 +1,111 @@
+
+istar MeetingScheduler {
+  role Initiator {
+    goal HaveMeetingOrganized : Achieve
+    trigger {[
+      not self.source_Initiator_in_MeetingUnit.detailsDecided
+    ]}
+
+    task DecideMeetingDetails > HaveMeetingOrganized
+    pre {[
+      not self.source_Initiator_in_MeetingUnit.detailsDecided
+    ]}
+    post {[
+      self.source_Initiator_in_MeetingUnit.detailsDecided
+    ]}
+
+    goal HaveSchedulingPerformed : Achieve            > HaveMeetingOrganized
+
+    goal MeetingAttended : Achieve                    > HaveMeetingOrganized
+
+    goal HaveSchedulingPerformedByOrganizer : Achieve > pick Organizer HaveSchedulingPerformed satisfy {[
+      self.source_Organizer_in_MeetingUnit.detailsDecided
+      and self.source_Organizer_in_MeetingUnit.timeChosen
+    ]}
+
+    goal MeetingAttendedByParticipant : Achieve > forall Participant MeetingAttended satisfy {[
+      self.attended
+    ]}
+  }
+
+  role Organizer {
+    goal HaveMeetingScheduled : Achieve
+    trigger {[
+      self.source_Organizer_in_MeetingUnit.detailsDecided
+      and not self.source_Organizer_in_MeetingUnit.timeChosen
+    ]}
+    goal TimetablesCollected : Achieve > HaveMeetingScheduled
+    task ChooseTimeAndDate   > HaveMeetingScheduled
+    pre {[
+      self.source_Organizer_in_MeetingUnit.detailsDecided
+      and self.source_Organizer_in_MeetingUnit.target_Participant_in_MeetingUnit
+        ->forAll(p | p.timetableCollected)
+    ]}
+    post {[
+      self.source_Organizer_in_MeetingUnit.timeChosen
+    ]}
+    goal MeetingAnnounced : Achieve > HaveMeetingScheduled
+
+    goal TimetableCollected : Achieve > forall Participant TimetablesCollected satisfy {[
+      self.timetableCollected
+    ]}
+    goal HavePPCalled : Achieve > or TimetableCollected > make Inclusivity satisfy {[
+      not self.source_Agent_plays_Participant.hasCalendar
+      and self.timetableCollected
+      and self.timetableChannel = #phone
+    ]}
+    task CollectFromCalendar > or TimetableCollected > make QuickScheduling
+    pre {[
+      self.source_Agent_plays_Participant.hasCalendar and not self.timetableCollected
+    ]}
+    post {[
+      self.source_Agent_plays_Participant.hasCalendar
+      and self.timetableCollected
+      and self.timetableChannel = #calendar
+    ]}
+    goal HaveSecretaryCallPP : Achieve > pick Secretary HavePPCalled
+
+    task AnnounceMeeting     > forall Participant MeetingAnnounced
+    pre {[
+      self.source_Participant_in_MeetingUnit.timeChosen
+    ]}
+    post {[
+      self.notified
+    ]}
+
+    quality Inclusivity
+    quality QuickScheduling
+  }
+
+  role Secretary {
+    task CollectConstraintsByPhone
+    pre {[
+      self.source_Secretary_in_MeetingUnit.target_Participant_in_MeetingUnit
+        ->exists(p | not p.source_Agent_plays_Participant.hasCalendar and not p.timetableCollected)
+      and self.source_Secretary_in_MeetingUnit.target_Participant_in_MeetingUnit
+        ->select(p | not p.source_Agent_plays_Participant.hasCalendar)->forAll(p |
+          p.source_Agent_plays_Participant.phone <> ''
+          and self.source_Agent_plays_Secretary.knownContact
+            ->includes(p.source_Agent_plays_Participant))
+    ]}
+    post {[
+      self.source_Secretary_in_MeetingUnit.target_Participant_in_MeetingUnit
+        ->select(p | not p.source_Agent_plays_Participant.hasCalendar)
+        ->forAll(p | p.timetableCollected and p.timetableChannel = #phone)
+    ]}
+  }
+
+  role Participant {
+    task Participate
+    pre {[
+      self.notified
+    ]}
+    post {[
+      self.attended
+    ]}
+  }
+
+  depend Initiator.HaveSchedulingPerformedByOrganizer -> task ChooseTimeAndDate -> Organizer.HaveMeetingScheduled
+  depend Organizer.HaveSecretaryCallPP -> task CollectConstraintsByPhone -> Secretary.CollectConstraintsByPhone
+  depend Initiator.MeetingAttendedByParticipant -> task Participate -> Participant.Participate
+}

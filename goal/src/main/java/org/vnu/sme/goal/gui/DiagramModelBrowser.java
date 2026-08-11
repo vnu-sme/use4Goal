@@ -6,16 +6,16 @@ import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.tree.*;
 
-import org.vnu.sme.goal.acl.mm.*;
-import org.vnu.sme.goal.bpmn2.mm.Activity;
-import org.vnu.sme.goal.bpmn2.mm.Bpmn2Model;
-import org.vnu.sme.goal.bpmn2.mm.FlowElement;
-import org.vnu.sme.goal.bpmn2.mm.SubProcess;
-import org.vnu.sme.goal.istar.mm.Actor;
-import org.vnu.sme.goal.istar.mm.Goal;
-import org.vnu.sme.goal.istar.mm.GoalModel;
-import org.vnu.sme.goal.istar.mm.IntentionalElement;
-import org.vnu.sme.goal.istar.mm.Obstacle;
+import org.vnu.sme.goal.dsl.acl.mm.*;
+import org.vnu.sme.goal.dsl.bpmn.mm.Activity;
+import org.vnu.sme.goal.dsl.bpmn.mm.BpmnModel;
+import org.vnu.sme.goal.dsl.bpmn.mm.FlowElement;
+import org.vnu.sme.goal.dsl.bpmn.mm.SubProcess;
+import org.vnu.sme.goal.dsl.istar.mm.Actor;
+import org.vnu.sme.goal.dsl.istar.mm.Goal;
+import org.vnu.sme.goal.dsl.istar.mm.GoalModel;
+import org.vnu.sme.goal.dsl.istar.mm.IntentionalElement;
+import org.vnu.sme.goal.dsl.istar.mm.Obstacle;
 
 /** Read-only tree browser for the Goal plugin's diagram models. */
 @SuppressWarnings("serial")
@@ -44,7 +44,7 @@ public final class DiagramModelBrowser extends JPanel {
         tree.setSelectionRow(0);
     }
 
-    public static DiagramModelBrowser forBpmn(Bpmn2Model model) {
+    public static DiagramModelBrowser forBpmn(BpmnModel model) {
         DefaultMutableTreeNode root = node("BPMN: " + model.name(), "BPMN collaboration model",
                 "Model", model.name());
         DefaultMutableTreeNode processes = group(root, "Processes", model.processes().size());
@@ -93,11 +93,13 @@ public final class DiagramModelBrowser extends JPanel {
         return new DiagramModelBrowser(root);
     }
 
-    public static DiagramModelBrowser forAol(org.vnu.sme.goal.aol.mm.AolModel model) {
+    public static DiagramModelBrowser forAol(org.vnu.sme.goal.dsl.aol.mm.AolModel model) {
         DefaultMutableTreeNode root = node("AOL: " + model.name(), "AOL object snapshot",
                 "Version", model.version(), "ACL file", model.aclFile());
         DefaultMutableTreeNode agents = group(root, "Agents", model.agents().size());
-        model.agents().forEach(a -> agents.add(node(a, "Agent identity")));
+        model.agents().forEach(a -> agents.add(node(a, "Agent identity",
+                "Profile role", model.agentProfileRoles().get(a),
+                "Attributes", model.agentAttributeValues().getOrDefault(a, java.util.Map.of()))));
         DefaultMutableTreeNode groups = group(root, "Group instances", model.groupInstances().size());
         model.groupInstances().forEach(g -> groups.add(aolGroup(g)));
         return new DiagramModelBrowser(root);
@@ -167,7 +169,7 @@ public final class DiagramModelBrowser extends JPanel {
         return result;
     }
 
-    private static DefaultMutableTreeNode aolGroup(org.vnu.sme.goal.aol.mm.AolGroupInstance value) {
+    private static DefaultMutableTreeNode aolGroup(org.vnu.sme.goal.dsl.aol.mm.AolGroupInstance value) {
         DefaultMutableTreeNode result = node(value.typeName() + " as " + value.instanceId(), "AOL group instance");
         DefaultMutableTreeNode plays = group(result, "Plays", value.plays().size());
         value.plays().forEach(p -> plays.add(node(p.roleType() + " as " + p.instanceId() + " by " + p.agentId(),
@@ -188,19 +190,19 @@ public final class DiagramModelBrowser extends JPanel {
 
     private static DefaultMutableTreeNode attribute(AclAttribute value) {
         return node("Attribute: " + value.name(), "Attribute", "Type", value.type().sourceName(),
-                "Required", value.required(), "Mutable", value.mutable(), "Default", value.defaultValue().orElse(null));
+                "Optional", value.optional(), "Mutable", value.mutable(), "Default", value.defaultValue().orElse(null));
     }
 
     private static DefaultMutableTreeNode iStarElement(IntentionalElement element) {
         String type = element.getClass().getSimpleName();
         if (element instanceof Goal goal) type += " (" + goal.goalType() + ")";
         if (element instanceof Obstacle obstacle) type += " (" + obstacle.type() + ")";
-        var contract = element instanceof org.vnu.sme.goal.istar.mm.GoalTaskElement value ? value : null;
+        var contract = element instanceof org.vnu.sme.goal.dsl.istar.mm.GoalTaskElement value ? value : null;
         return node(type + ": " + element.id(), "iStar intentional element",
                 "Pre OCL", contract == null ? null : contract.preconditions().stream()
-                        .map(org.vnu.sme.goal.istar.mm.IStarOclConstraint::oclBody).reduce((a, b) -> a + " and " + b).orElse(null),
+                        .map(org.vnu.sme.goal.dsl.istar.mm.IStarOclConstraint::oclBody).reduce((a, b) -> a + " and " + b).orElse(null),
                 "Post OCL", contract == null ? null : contract.postconditions().stream()
-                        .map(org.vnu.sme.goal.istar.mm.IStarOclConstraint::oclBody).reduce((a, b) -> a + " and " + b).orElse(null));
+                        .map(org.vnu.sme.goal.dsl.istar.mm.IStarOclConstraint::oclBody).reduce((a, b) -> a + " and " + b).orElse(null));
     }
 
     private static void addRelationGroup(DefaultMutableTreeNode parent, String label, List<?> values) {
@@ -209,24 +211,24 @@ public final class DiagramModelBrowser extends JPanel {
     }
 
     private static String relationLabel(Object value) {
-        if (value instanceof org.vnu.sme.goal.istar.mm.AndRefinement v)
+        if (value instanceof org.vnu.sme.goal.dsl.istar.mm.AndRefinement v)
             return "AND: " + String.join(", ", v.children()) + " -> " + v.parent();
-        if (value instanceof org.vnu.sme.goal.istar.mm.OrRefinement v)
+        if (value instanceof org.vnu.sme.goal.dsl.istar.mm.OrRefinement v)
             return "OR: " + v.child() + " -> " + v.parent();
-        if (value instanceof org.vnu.sme.goal.istar.mm.ParameterRefinement v)
+        if (value instanceof org.vnu.sme.goal.dsl.istar.mm.ParameterRefinement v)
             return value.getClass().getSimpleName() + ": " + v.child() + " -> " + v.parent()
                     + " [" + v.actorType() + "]";
-        if (value instanceof org.vnu.sme.goal.istar.mm.Contribution v)
+        if (value instanceof org.vnu.sme.goal.dsl.istar.mm.Contribution v)
             return v.element() + " -" + v.type().label() + "-> " + v.quality();
-        if (value instanceof org.vnu.sme.goal.istar.mm.Qualification v)
+        if (value instanceof org.vnu.sme.goal.dsl.istar.mm.Qualification v)
             return v.quality() + " -> " + v.element();
-        if (value instanceof org.vnu.sme.goal.istar.mm.NeededBy v)
+        if (value instanceof org.vnu.sme.goal.dsl.istar.mm.NeededBy v)
             return v.resource() + " -> " + v.task();
-        if (value instanceof org.vnu.sme.goal.istar.mm.Obstruction v)
+        if (value instanceof org.vnu.sme.goal.dsl.istar.mm.Obstruction v)
             return v.obstacle() + " -> " + v.element();
-        if (value instanceof org.vnu.sme.goal.istar.mm.Resolution v)
+        if (value instanceof org.vnu.sme.goal.dsl.istar.mm.Resolution v)
             return v.element() + " -> " + v.obstacle();
-        if (value instanceof org.vnu.sme.goal.istar.mm.Association v)
+        if (value instanceof org.vnu.sme.goal.dsl.istar.mm.Association v)
             return v.actor() + " -" + v.kind() + "-> " + v.target();
         return String.valueOf(value);
     }

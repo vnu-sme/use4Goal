@@ -1,0 +1,5 @@
+-- there exists self.carLight = #Green before self.pedLight = #Green
+context TrafficLight
+inv TL_SB: sometime self.carLight = #Green before self.pedLight = #Green
+
+-- let CS:Snapshot = self.snapshotTrafficLight in let FS:Set(Snapshot) = Set{CS.succ()}->closure(s | s.succ())->excluding(null) in let FSQ:Set(Snapshot) = FS->select(s | s.trafficLight->any(o | self.id = o.id).pedLight = #Green ) in let FSP:Set(Snapshot) = FS->including(CS)->select(s | s.trafficLight->any(o | self.id = o.id).carLight = #Green ) in if (FSQ->size() > 0) then (if (FSP->size() > 0) then (FSP->exists(s1 | FSQ->forAll(s2 | Set{s1.succ()}->closure(o | o.succ())->size() > Set{s2.succ()}->closure(o | o.succ())->size()))) else false endif) else FSP->size() > 0 endif

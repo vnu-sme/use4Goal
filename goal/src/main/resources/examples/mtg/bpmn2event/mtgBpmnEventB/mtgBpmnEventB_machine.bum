@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.machineFile org.eventb.core.configuration="org.eventb.core.fwd" version="5">
+  <org.eventb.core.seesContext name="n0" org.eventb.core.target="mtgBpmnEventB_ctx"/>
+  <org.eventb.core.variable name="n1" org.eventb.core.identifier="AGENTS"/>
+  <org.eventb.core.variable name="n2" org.eventb.core.identifier="G_MeetingUnit"/>
+  <org.eventb.core.variable name="n3" org.eventb.core.identifier="R_MeetingParty"/>
+  <org.eventb.core.variable name="n4" org.eventb.core.identifier="R_Initiator"/>
+  <org.eventb.core.variable name="n5" org.eventb.core.identifier="R_Organizer"/>
+  <org.eventb.core.variable name="n6" org.eventb.core.identifier="R_Secretary"/>
+  <org.eventb.core.variable name="n7" org.eventb.core.identifier="R_Participant"/>
+  <org.eventb.core.variable name="n8" org.eventb.core.identifier="MeetingUnit_detailsDecided"/>
+  <org.eventb.core.variable name="n9" org.eventb.core.identifier="MeetingUnit_timeChosen"/>
+  <org.eventb.core.variable name="n10" org.eventb.core.identifier="MeetingParty_name"/>
+  <org.eventb.core.variable name="n11" org.eventb.core.identifier="MeetingParty_phone"/>
+  <org.eventb.core.variable name="n12" org.eventb.core.identifier="MeetingParty_hasCalendar"/>
+  <org.eventb.core.variable name="n13" org.eventb.core.identifier="Participant_timetableCollected"/>
+  <org.eventb.core.variable name="n14" org.eventb.core.identifier="Participant_timetableChannel"/>
+  <org.eventb.core.variable name="n15" org.eventb.core.identifier="Participant_notified"/>
+  <org.eventb.core.variable name="n16" org.eventb.core.identifier="Participant_attended"/>
+  <org.eventb.core.variable name="n17" org.eventb.core.identifier="knowsPhoneOf"/>
+  <org.eventb.core.variable name="n18" org.eventb.core.identifier="owns_Initiator"/>
+  <org.eventb.core.variable name="n19" org.eventb.core.identifier="owns_Organizer"/>
+  <org.eventb.core.variable name="n20" org.eventb.core.identifier="owns_Secretary"/>
+  <org.eventb.core.variable name="n21" org.eventb.core.identifier="owns_Participant"/>
+  <org.eventb.core.variable name="n22" org.eventb.core.identifier="plays_MeetingParty"/>
+  <org.eventb.core.variable name="n23" org.eventb.core.identifier="plays_Initiator"/>
+  <org.eventb.core.variable name="n24" org.eventb.core.identifier="plays_Organizer"/>
+  <org.eventb.core.variable name="n25" org.eventb.core.identifier="plays_Secretary"/>
+  <org.eventb.core.variable name="n26" org.eventb.core.identifier="plays_Participant"/>
+  <org.eventb.core.variable name="n27" org.eventb.core.identifier="PI_MeetingOrganization"/>
+  <org.eventb.core.variable name="n28" org.eventb.core.identifier="processState_MeetingOrganization"/>
+  <org.eventb.core.variable name="n29" org.eventb.core.identifier="processScope_MeetingOrganization"/>
+  <org.eventb.core.variable name="n30" org.eventb.core.identifier="tk_MeetingOrganization_start_meeting_decideMeetingDetails_1"/>
+  <org.eventb.core.variable name="n31" org.eventb.core.identifier="tk_MeetingOrganization_decideMeetingDetails_checkCalendar_2"/>
+  <org.eventb.core.variable name="n32" org.eventb.core.identifier="tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3"/>
+  <org.eventb.core.variable name="n33" org.eventb.core.identifier="tk_MeetingOrganization_phoneCollectionRequired_requestSecretaryCall_4"/>
+  <org.eventb.core.variable name="n34" org.eventb.core.identifier="tk_MeetingOrganization_phoneCollectionRequired_timetableCollectionComplete_5"/>
+  <org.eventb.core.variable name="n35" org.eventb.core.identifier="tk_MeetingOrganization_requestSecretaryCall_collectConstraintsByPhone_6"/>
+  <org.eventb.core.variable name="n36" org.eventb.core.identifier="tk_MeetingOrganization_collectConstraintsByPhone_timetableCollectionComplete_7"/>
+  <org.eventb.core.variable name="n37" org.eventb.core.identifier="tk_MeetingOrganization_timetableCollectionComplete_chooseTimeAndDate_8"/>
+  <org.eventb.core.variable name="n38" org.eventb.core.identifier="tk_MeetingOrganization_chooseTimeAndDate_announceMeeting_9"/>
+  <org.eventb.core.variable name="n39" org.eventb.core.identifier="tk_MeetingOrganization_announceMeeting_participate_10"/>
+  <org.eventb.core.variable name="n40" org.eventb.core.identifier="tk_MeetingOrganization_participate_end_meeting_11"/>
+  <org.eventb.core.invariant name="n41" org.eventb.core.label="inv_type_AGENTS" org.eventb.core.predicate="AGENTS ⊆ AGENT_ID"/>
+  <org.eventb.core.invariant name="n42" org.eventb.core.label="inv_type_G_MeetingUnit" org.eventb.core.predicate="G_MeetingUnit ⊆ G_MeetingUnit_ID"/>
+  <org.eventb.core.invariant name="n43" org.eventb.core.label="inv_type_R_MeetingParty" org.eventb.core.predicate="R_MeetingParty ⊆ R_MeetingParty_ID"/>
+  <org.eventb.core.invariant name="n44" org.eventb.core.label="inv_type_R_Initiator" org.eventb.core.predicate="R_Initiator ⊆ R_Initiator_ID"/>
+  <org.eventb.core.invariant name="n45" org.eventb.core.label="inv_type_R_Organizer" org.eventb.core.predicate="R_Organizer ⊆ R_Organizer_ID"/>
+  <org.eventb.core.invariant name="n46" org.eventb.core.label="inv_type_R_Secretary" org.eventb.core.predicate="R_Secretary ⊆ R_Secretary_ID"/>
+  <org.eventb.core.invariant name="n47" org.eventb.core.label="inv_type_R_Participant" org.eventb.core.predicate="R_Participant ⊆ R_Participant_ID"/>
+  <org.eventb.core.invariant name="n48" org.eventb.core.label="inv_type_MeetingUnit_detailsDecided" org.eventb.core.predicate="MeetingUnit_detailsDecided ∈ G_MeetingUnit → BOOL"/>
+  <org.eventb.core.invariant name="n49" org.eventb.core.label="inv_type_MeetingUnit_timeChosen" org.eventb.core.predicate="MeetingUnit_timeChosen ∈ G_MeetingUnit → BOOL"/>
+  <org.eventb.core.invariant name="n50" org.eventb.core.label="inv_type_MeetingParty_name" org.eventb.core.predicate="MeetingParty_name ∈ R_MeetingParty → STRING"/>
+  <org.eventb.core.invariant name="n51" org.eventb.core.label="inv_type_MeetingParty_phone" org.eventb.core.predicate="MeetingParty_phone ∈ R_MeetingParty → STRING"/>
+  <org.eventb.core.invariant name="n52" org.eventb.core.label="inv_type_MeetingParty_hasCalendar" org.eventb.core.predicate="MeetingParty_hasCalendar ∈ R_MeetingParty → BOOL"/>
+  <org.eventb.core.invariant name="n53" org.eventb.core.label="inv_type_Participant_timetableCollected" org.eventb.core.predicate="Participant_timetableCollected ∈ R_Participant → BOOL"/>
+  <org.eventb.core.invariant name="n54" org.eventb.core.label="inv_type_Participant_timetableChannel" org.eventb.core.predicate="Participant_timetableChannel ∈ R_Participant → TIMETABLECHANNEL"/>
+  <org.eventb.core.invariant name="n55" org.eventb.core.label="inv_type_Participant_notified" org.eventb.core.predicate="Participant_notified ∈ R_Participant → BOOL"/>
+  <org.eventb.core.invariant name="n56" org.eventb.core.label="inv_type_Participant_attended" org.eventb.core.predicate="Participant_attended ∈ R_Participant → BOOL"/>
+  <org.eventb.core.invariant name="n57" org.eventb.core.label="inv_type_knowsPhoneOf" org.eventb.core.predicate="knowsPhoneOf ∈ R_MeetingParty ↔ R_MeetingParty"/>
+  <org.eventb.core.invariant name="n58" org.eventb.core.label="inv_type_owns_Initiator" org.eventb.core.predicate="owns_Initiator ∈ G_MeetingUnit ↔ R_Initiator"/>
+  <org.eventb.core.invariant name="n59" org.eventb.core.label="inv_card_owns_Initiator_min" org.eventb.core.predicate="∀x·x∈G_MeetingUnit ⇒ owns_Initiator[{x}] ≠ ∅"/>
+  <org.eventb.core.invariant name="n60" org.eventb.core.label="inv_card_owns_Initiator_max" org.eventb.core.predicate="∀x·x∈G_MeetingUnit ⇒ (∀y1,y2·(y1∈owns_Initiator[{x}] ∧ y2∈owns_Initiator[{x}]) ⇒ (y1=y2))"/>
+  <org.eventb.core.invariant name="n61" org.eventb.core.label="inv_owner_total_owns_Initiator" org.eventb.core.predicate="∀member·member∈R_Initiator ⇒ owns_Initiator∼[{member}] ≠ ∅"/>
+  <org.eventb.core.invariant name="n62" org.eventb.core.label="inv_owner_unique_owns_Initiator" org.eventb.core.predicate="∀member·member∈R_Initiator ⇒ (∀y1,y2·(y1∈owns_Initiator∼[{member}] ∧ y2∈owns_Initiator∼[{member}]) ⇒ (y1=y2))"/>
+  <org.eventb.core.invariant name="n63" org.eventb.core.label="inv_type_owns_Organizer" org.eventb.core.predicate="owns_Organizer ∈ G_MeetingUnit ↔ R_Organizer"/>
+  <org.eventb.core.invariant name="n64" org.eventb.core.label="inv_card_owns_Organizer_min" org.eventb.core.predicate="∀x·x∈G_MeetingUnit ⇒ owns_Organizer[{x}] ≠ ∅"/>
+  <org.eventb.core.invariant name="n65" org.eventb.core.label="inv_card_owns_Organizer_max" org.eventb.core.predicate="∀x·x∈G_MeetingUnit ⇒ (∀y1,y2·(y1∈owns_Organizer[{x}] ∧ y2∈owns_Organizer[{x}]) ⇒ (y1=y2))"/>
+  <org.eventb.core.invariant name="n66" org.eventb.core.label="inv_owner_total_owns_Organizer" org.eventb.core.predicate="∀member·member∈R_Organizer ⇒ owns_Organizer∼[{member}] ≠ ∅"/>
+  <org.eventb.core.invariant name="n67" org.eventb.core.label="inv_owner_unique_owns_Organizer" org.eventb.core.predicate="∀member·member∈R_Organizer ⇒ (∀y1,y2·(y1∈owns_Organizer∼[{member}] ∧ y2∈owns_Organizer∼[{member}]) ⇒ (y1=y2))"/>
+  <org.eventb.core.invariant name="n68" org.eventb.core.label="inv_type_owns_Secretary" org.eventb.core.predicate="owns_Secretary ∈ G_MeetingUnit ↔ R_Secretary"/>
+  <org.eventb.core.invariant name="n69" org.eventb.core.label="inv_card_owns_Secretary_max" org.eventb.core.predicate="∀x·x∈G_MeetingUnit ⇒ (∀y1,y2·(y1∈owns_Secretary[{x}] ∧ y2∈owns_Secretary[{x}]) ⇒ (y1=y2))"/>
+  <org.eventb.core.invariant name="n70" org.eventb.core.label="inv_owner_total_owns_Secretary" org.eventb.core.predicate="∀member·member∈R_Secretary ⇒ owns_Secretary∼[{member}] ≠ ∅"/>
+  <org.eventb.core.invariant name="n71" org.eventb.core.label="inv_owner_unique_owns_Secretary" org.eventb.core.predicate="∀member·member∈R_Secretary ⇒ (∀y1,y2·(y1∈owns_Secretary∼[{member}] ∧ y2∈owns_Secretary∼[{member}]) ⇒ (y1=y2))"/>
+  <org.eventb.core.invariant name="n72" org.eventb.core.label="inv_type_owns_Participant" org.eventb.core.predicate="owns_Participant ∈ G_MeetingUnit ↔ R_Participant"/>
+  <org.eventb.core.invariant name="n73" org.eventb.core.label="inv_card_owns_Participant_min" org.eventb.core.predicate="∀x·x∈G_MeetingUnit ⇒ (∃y1,y2·y1∈owns_Participant[{x}] ∧ y2∈owns_Participant[{x}] ∧ y1≠y2)"/>
+  <org.eventb.core.invariant name="n74" org.eventb.core.label="inv_owner_total_owns_Participant" org.eventb.core.predicate="∀member·member∈R_Participant ⇒ owns_Participant∼[{member}] ≠ ∅"/>
+  <org.eventb.core.invariant name="n75" org.eventb.core.label="inv_owner_unique_owns_Participant" org.eventb.core.predicate="∀member·member∈R_Participant ⇒ (∀y1,y2·(y1∈owns_Participant∼[{member}] ∧ y2∈owns_Participant∼[{member}]) ⇒ (y1=y2))"/>
+  <org.eventb.core.invariant name="n76" org.eventb.core.label="inv_type_plays_MeetingParty" org.eventb.core.predicate="plays_MeetingParty ∈ AGENTS ↔ R_MeetingParty"/>
+  <org.eventb.core.invariant name="n77" org.eventb.core.label="inv_play_total_plays_MeetingParty" org.eventb.core.predicate="∀child·child∈R_MeetingParty ⇒ plays_MeetingParty∼[{child}] ≠ ∅"/>
+  <org.eventb.core.invariant name="n78" org.eventb.core.label="inv_play_unique_plays_MeetingParty" org.eventb.core.predicate="∀child·child∈R_MeetingParty ⇒ (∀y1,y2·(y1∈plays_MeetingParty∼[{child}] ∧ y2∈plays_MeetingParty∼[{child}]) ⇒ (y1=y2))"/>
+  <org.eventb.core.invariant name="n79" org.eventb.core.label="inv_type_plays_Initiator" org.eventb.core.predicate="plays_Initiator ∈ R_MeetingParty ↔ R_Initiator"/>
+  <org.eventb.core.invariant name="n80" org.eventb.core.label="inv_play_total_plays_Initiator" org.eventb.core.predicate="∀child·child∈R_Initiator ⇒ plays_Initiator∼[{child}] ≠ ∅"/>
+  <org.eventb.core.invariant name="n81" org.eventb.core.label="inv_play_unique_plays_Initiator" org.eventb.core.predicate="∀child·child∈R_Initiator ⇒ (∀y1,y2·(y1∈plays_Initiator∼[{child}] ∧ y2∈plays_Initiator∼[{child}]) ⇒ (y1=y2))"/>
+  <org.eventb.core.invariant name="n82" org.eventb.core.label="inv_type_plays_Organizer" org.eventb.core.predicate="plays_Organizer ∈ R_MeetingParty ↔ R_Organizer"/>
+  <org.eventb.core.invariant name="n83" org.eventb.core.label="inv_play_total_plays_Organizer" org.eventb.core.predicate="∀child·child∈R_Organizer ⇒ plays_Organizer∼[{child}] ≠ ∅"/>
+  <org.eventb.core.invariant name="n84" org.eventb.core.label="inv_play_unique_plays_Organizer" org.eventb.core.predicate="∀child·child∈R_Organizer ⇒ (∀y1,y2·(y1∈plays_Organizer∼[{child}] ∧ y2∈plays_Organizer∼[{child}]) ⇒ (y1=y2))"/>
+  <org.eventb.core.invariant name="n85" org.eventb.core.label="inv_type_plays_Secretary" org.eventb.core.predicate="plays_Secretary ∈ R_MeetingParty ↔ R_Secretary"/>
+  <org.eventb.core.invariant name="n86" org.eventb.core.label="inv_play_total_plays_Secretary" org.eventb.core.predicate="∀child·child∈R_Secretary ⇒ plays_Secretary∼[{child}] ≠ ∅"/>
+  <org.eventb.core.invariant name="n87" org.eventb.core.label="inv_play_unique_plays_Secretary" org.eventb.core.predicate="∀child·child∈R_Secretary ⇒ (∀y1,y2·(y1∈plays_Secretary∼[{child}] ∧ y2∈plays_Secretary∼[{child}]) ⇒ (y1=y2))"/>
+  <org.eventb.core.invariant name="n88" org.eventb.core.label="inv_type_plays_Participant" org.eventb.core.predicate="plays_Participant ∈ R_MeetingParty ↔ R_Participant"/>
+  <org.eventb.core.invariant name="n89" org.eventb.core.label="inv_play_total_plays_Participant" org.eventb.core.predicate="∀child·child∈R_Participant ⇒ plays_Participant∼[{child}] ≠ ∅"/>
+  <org.eventb.core.invariant name="n90" org.eventb.core.label="inv_play_unique_plays_Participant" org.eventb.core.predicate="∀child·child∈R_Participant ⇒ (∀y1,y2·(y1∈plays_Participant∼[{child}] ∧ y2∈plays_Participant∼[{child}]) ⇒ (y1=y2))"/>
+  <org.eventb.core.invariant name="n91" org.eventb.core.label="inv_no_duplicate_agent_MeetingUnit_Initiator" org.eventb.core.predicate="∀g,r1,r2·g↦r1∈owns_Initiator ∧ g↦r2∈owns_Initiator ∧ plays_MeetingParty∼[plays_Initiator∼[{r1}]] = plays_MeetingParty∼[plays_Initiator∼[{r2}]] ⇒ r1=r2"/>
+  <org.eventb.core.invariant name="n92" org.eventb.core.label="inv_no_duplicate_agent_MeetingUnit_Organizer" org.eventb.core.predicate="∀g,r1,r2·g↦r1∈owns_Organizer ∧ g↦r2∈owns_Organizer ∧ plays_MeetingParty∼[plays_Organizer∼[{r1}]] = plays_MeetingParty∼[plays_Organizer∼[{r2}]] ⇒ r1=r2"/>
+  <org.eventb.core.invariant name="n93" org.eventb.core.label="inv_no_duplicate_agent_MeetingUnit_Secretary" org.eventb.core.predicate="∀g,r1,r2·g↦r1∈owns_Secretary ∧ g↦r2∈owns_Secretary ∧ plays_MeetingParty∼[plays_Secretary∼[{r1}]] = plays_MeetingParty∼[plays_Secretary∼[{r2}]] ⇒ r1=r2"/>
+  <org.eventb.core.invariant name="n94" org.eventb.core.label="inv_no_duplicate_agent_MeetingUnit_Participant" org.eventb.core.predicate="∀g,r1,r2·g↦r1∈owns_Participant ∧ g↦r2∈owns_Participant ∧ plays_MeetingParty∼[plays_Participant∼[{r1}]] = plays_MeetingParty∼[plays_Participant∼[{r2}]] ⇒ r1=r2"/>
+  <org.eventb.core.invariant name="n95" org.eventb.core.label="inv_incompatible_MeetingUnit_Initiator_Organizer" org.eventb.core.predicate="∀g,r1,r2·g↦r1∈owns_Initiator ∧ g↦r2∈owns_Organizer ⇒ plays_MeetingParty∼[plays_Initiator∼[{r1}]] ∩ plays_MeetingParty∼[plays_Organizer∼[{r2}]] = ∅"/>
+  <org.eventb.core.invariant name="n96" org.eventb.core.label="inv_incompatible_MeetingUnit_Initiator_Secretary" org.eventb.core.predicate="∀g,r1,r2·g↦r1∈owns_Initiator ∧ g↦r2∈owns_Secretary ⇒ plays_MeetingParty∼[plays_Initiator∼[{r1}]] ∩ plays_MeetingParty∼[plays_Secretary∼[{r2}]] = ∅"/>
+  <org.eventb.core.invariant name="n97" org.eventb.core.label="inv_incompatible_MeetingUnit_Organizer_Participant" org.eventb.core.predicate="∀g,r1,r2·g↦r1∈owns_Organizer ∧ g↦r2∈owns_Participant ⇒ plays_MeetingParty∼[plays_Organizer∼[{r1}]] ∩ plays_MeetingParty∼[plays_Participant∼[{r2}]] = ∅"/>
+  <org.eventb.core.invariant name="n98" org.eventb.core.label="inv_incompatible_MeetingUnit_Secretary_Participant" org.eventb.core.predicate="∀g,r1,r2·g↦r1∈owns_Secretary ∧ g↦r2∈owns_Participant ⇒ plays_MeetingParty∼[plays_Secretary∼[{r1}]] ∩ plays_MeetingParty∼[plays_Participant∼[{r2}]] = ∅"/>
+  <org.eventb.core.invariant name="n99" org.eventb.core.label="inv_type_PI_MeetingOrganization" org.eventb.core.predicate="PI_MeetingOrganization ⊆ PI_MeetingOrganization_ID"/>
+  <org.eventb.core.invariant name="n100" org.eventb.core.label="inv_type_processState_MeetingOrganization" org.eventb.core.predicate="processState_MeetingOrganization ∈ PI_MeetingOrganization → PROCESS_STATE"/>
+  <org.eventb.core.invariant name="n101" org.eventb.core.label="inv_type_processScope_MeetingOrganization" org.eventb.core.predicate="processScope_MeetingOrganization ∈ PI_MeetingOrganization → G_MeetingUnit"/>
+  <org.eventb.core.invariant name="n102" org.eventb.core.label="inv_type_tk_MeetingOrganization_start_meeting_decideMeetingDetails_1" org.eventb.core.predicate="tk_MeetingOrganization_start_meeting_decideMeetingDetails_1 ∈ PI_MeetingOrganization → ℕ"/>
+  <org.eventb.core.invariant name="n103" org.eventb.core.label="inv_type_tk_MeetingOrganization_decideMeetingDetails_checkCalendar_2" org.eventb.core.predicate="tk_MeetingOrganization_decideMeetingDetails_checkCalendar_2 ∈ PI_MeetingOrganization → ℕ"/>
+  <org.eventb.core.invariant name="n104" org.eventb.core.label="inv_type_tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3" org.eventb.core.predicate="tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3 ∈ PI_MeetingOrganization → ℕ"/>
+  <org.eventb.core.invariant name="n105" org.eventb.core.label="inv_type_tk_MeetingOrganization_phoneCollectionRequired_requestSecretaryCall_4" org.eventb.core.predicate="tk_MeetingOrganization_phoneCollectionRequired_requestSecretaryCall_4 ∈ PI_MeetingOrganization → ℕ"/>
+  <org.eventb.core.invariant name="n106" org.eventb.core.label="inv_type_tk_MeetingOrganization_phoneCollectionRequired_timetableCollectionComplete_5" org.eventb.core.predicate="tk_MeetingOrganization_phoneCollectionRequired_timetableCollectionComplete_5 ∈ PI_MeetingOrganization → ℕ"/>
+  <org.eventb.core.invariant name="n107" org.eventb.core.label="inv_type_tk_MeetingOrganization_requestSecretaryCall_collectConstraintsByPhone_6" org.eventb.core.predicate="tk_MeetingOrganization_requestSecretaryCall_collectConstraintsByPhone_6 ∈ PI_MeetingOrganization → ℕ"/>
+  <org.eventb.core.invariant name="n108" org.eventb.core.label="inv_type_tk_MeetingOrganization_collectConstraintsByPhone_timetableCollectionComplete_7" org.eventb.core.predicate="tk_MeetingOrganization_collectConstraintsByPhone_timetableCollectionComplete_7 ∈ PI_MeetingOrganization → ℕ"/>
+  <org.eventb.core.invariant name="n109" org.eventb.core.label="inv_type_tk_MeetingOrganization_timetableCollectionComplete_chooseTimeAndDate_8" org.eventb.core.predicate="tk_MeetingOrganization_timetableCollectionComplete_chooseTimeAndDate_8 ∈ PI_MeetingOrganization → ℕ"/>
+  <org.eventb.core.invariant name="n110" org.eventb.core.label="inv_type_tk_MeetingOrganization_chooseTimeAndDate_announceMeeting_9" org.eventb.core.predicate="tk_MeetingOrganization_chooseTimeAndDate_announceMeeting_9 ∈ PI_MeetingOrganization → ℕ"/>
+  <org.eventb.core.invariant name="n111" org.eventb.core.label="inv_type_tk_MeetingOrganization_announceMeeting_participate_10" org.eventb.core.predicate="tk_MeetingOrganization_announceMeeting_participate_10 ∈ PI_MeetingOrganization → ℕ"/>
+  <org.eventb.core.invariant name="n112" org.eventb.core.label="inv_type_tk_MeetingOrganization_participate_end_meeting_11" org.eventb.core.predicate="tk_MeetingOrganization_participate_end_meeting_11 ∈ PI_MeetingOrganization → ℕ"/>
+  <org.eventb.core.event name="n113" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="INITIALISATION">
+    <org.eventb.core.action name="n114" org.eventb.core.label="act_init_AGENTS" org.eventb.core.assignment="AGENTS ≔ ∅"/>
+    <org.eventb.core.action name="n115" org.eventb.core.label="act_init_G_MeetingUnit" org.eventb.core.assignment="G_MeetingUnit ≔ ∅"/>
+    <org.eventb.core.action name="n116" org.eventb.core.label="act_init_R_MeetingParty" org.eventb.core.assignment="R_MeetingParty ≔ ∅"/>
+    <org.eventb.core.action name="n117" org.eventb.core.label="act_init_R_Initiator" org.eventb.core.assignment="R_Initiator ≔ ∅"/>
+    <org.eventb.core.action name="n118" org.eventb.core.label="act_init_R_Organizer" org.eventb.core.assignment="R_Organizer ≔ ∅"/>
+    <org.eventb.core.action name="n119" org.eventb.core.label="act_init_R_Secretary" org.eventb.core.assignment="R_Secretary ≔ ∅"/>
+    <org.eventb.core.action name="n120" org.eventb.core.label="act_init_R_Participant" org.eventb.core.assignment="R_Participant ≔ ∅"/>
+    <org.eventb.core.action name="n121" org.eventb.core.label="act_init_MeetingUnit_detailsDecided" org.eventb.core.assignment="MeetingUnit_detailsDecided ≔ ∅"/>
+    <org.eventb.core.action name="n122" org.eventb.core.label="act_init_MeetingUnit_timeChosen" org.eventb.core.assignment="MeetingUnit_timeChosen ≔ ∅"/>
+    <org.eventb.core.action name="n123" org.eventb.core.label="act_init_MeetingParty_name" org.eventb.core.assignment="MeetingParty_name ≔ ∅"/>
+    <org.eventb.core.action name="n124" org.eventb.core.label="act_init_MeetingParty_phone" org.eventb.core.assignment="MeetingParty_phone ≔ ∅"/>
+    <org.eventb.core.action name="n125" org.eventb.core.label="act_init_MeetingParty_hasCalendar" org.eventb.core.assignment="MeetingParty_hasCalendar ≔ ∅"/>
+    <org.eventb.core.action name="n126" org.eventb.core.label="act_init_Participant_timetableCollected" org.eventb.core.assignment="Participant_timetableCollected ≔ ∅"/>
+    <org.eventb.core.action name="n127" org.eventb.core.label="act_init_Participant_timetableChannel" org.eventb.core.assignment="Participant_timetableChannel ≔ ∅"/>
+    <org.eventb.core.action name="n128" org.eventb.core.label="act_init_Participant_notified" org.eventb.core.assignment="Participant_notified ≔ ∅"/>
+    <org.eventb.core.action name="n129" org.eventb.core.label="act_init_Participant_attended" org.eventb.core.assignment="Participant_attended ≔ ∅"/>
+    <org.eventb.core.action name="n130" org.eventb.core.label="act_init_knowsPhoneOf" org.eventb.core.assignment="knowsPhoneOf ≔ ∅"/>
+    <org.eventb.core.action name="n131" org.eventb.core.label="act_init_owns_Initiator" org.eventb.core.assignment="owns_Initiator ≔ ∅"/>
+    <org.eventb.core.action name="n132" org.eventb.core.label="act_init_owns_Organizer" org.eventb.core.assignment="owns_Organizer ≔ ∅"/>
+    <org.eventb.core.action name="n133" org.eventb.core.label="act_init_owns_Secretary" org.eventb.core.assignment="owns_Secretary ≔ ∅"/>
+    <org.eventb.core.action name="n134" org.eventb.core.label="act_init_owns_Participant" org.eventb.core.assignment="owns_Participant ≔ ∅"/>
+    <org.eventb.core.action name="n135" org.eventb.core.label="act_init_plays_MeetingParty" org.eventb.core.assignment="plays_MeetingParty ≔ ∅"/>
+    <org.eventb.core.action name="n136" org.eventb.core.label="act_init_plays_Initiator" org.eventb.core.assignment="plays_Initiator ≔ ∅"/>
+    <org.eventb.core.action name="n137" org.eventb.core.label="act_init_plays_Organizer" org.eventb.core.assignment="plays_Organizer ≔ ∅"/>
+    <org.eventb.core.action name="n138" org.eventb.core.label="act_init_plays_Secretary" org.eventb.core.assignment="plays_Secretary ≔ ∅"/>
+    <org.eventb.core.action name="n139" org.eventb.core.label="act_init_plays_Participant" org.eventb.core.assignment="plays_Participant ≔ ∅"/>
+    <org.eventb.core.action name="n140" org.eventb.core.label="act_init_PI_MeetingOrganization" org.eventb.core.assignment="PI_MeetingOrganization ≔ ∅"/>
+    <org.eventb.core.action name="n141" org.eventb.core.label="act_init_processState_MeetingOrganization" org.eventb.core.assignment="processState_MeetingOrganization ≔ ∅"/>
+    <org.eventb.core.action name="n142" org.eventb.core.label="act_init_processScope_MeetingOrganization" org.eventb.core.assignment="processScope_MeetingOrganization ≔ ∅"/>
+    <org.eventb.core.action name="n143" org.eventb.core.label="act_init_tk_MeetingOrganization_start_meeting_decideMeetingDetails_1" org.eventb.core.assignment="tk_MeetingOrganization_start_meeting_decideMeetingDetails_1 ≔ ∅"/>
+    <org.eventb.core.action name="n144" org.eventb.core.label="act_init_tk_MeetingOrganization_decideMeetingDetails_checkCalendar_2" org.eventb.core.assignment="tk_MeetingOrganization_decideMeetingDetails_checkCalendar_2 ≔ ∅"/>
+    <org.eventb.core.action name="n145" org.eventb.core.label="act_init_tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3" org.eventb.core.assignment="tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3 ≔ ∅"/>
+    <org.eventb.core.action name="n146" org.eventb.core.label="act_init_tk_MeetingOrganization_phoneCollectionRequired_requestSecretaryCall_4" org.eventb.core.assignment="tk_MeetingOrganization_phoneCollectionRequired_requestSecretaryCall_4 ≔ ∅"/>
+    <org.eventb.core.action name="n147" org.eventb.core.label="act_init_tk_MeetingOrganization_phoneCollectionRequired_timetableCollectionComplete_5" org.eventb.core.assignment="tk_MeetingOrganization_phoneCollectionRequired_timetableCollectionComplete_5 ≔ ∅"/>
+    <org.eventb.core.action name="n148" org.eventb.core.label="act_init_tk_MeetingOrganization_requestSecretaryCall_collectConstraintsByPhone_6" org.eventb.core.assignment="tk_MeetingOrganization_requestSecretaryCall_collectConstraintsByPhone_6 ≔ ∅"/>
+    <org.eventb.core.action name="n149" org.eventb.core.label="act_init_tk_MeetingOrganization_collectConstraintsByPhone_timetableCollectionComplete_7" org.eventb.core.assignment="tk_MeetingOrganization_collectConstraintsByPhone_timetableCollectionComplete_7 ≔ ∅"/>
+    <org.eventb.core.action name="n150" org.eventb.core.label="act_init_tk_MeetingOrganization_timetableCollectionComplete_chooseTimeAndDate_8" org.eventb.core.assignment="tk_MeetingOrganization_timetableCollectionComplete_chooseTimeAndDate_8 ≔ ∅"/>
+    <org.eventb.core.action name="n151" org.eventb.core.label="act_init_tk_MeetingOrganization_chooseTimeAndDate_announceMeeting_9" org.eventb.core.assignment="tk_MeetingOrganization_chooseTimeAndDate_announceMeeting_9 ≔ ∅"/>
+    <org.eventb.core.action name="n152" org.eventb.core.label="act_init_tk_MeetingOrganization_announceMeeting_participate_10" org.eventb.core.assignment="tk_MeetingOrganization_announceMeeting_participate_10 ≔ ∅"/>
+    <org.eventb.core.action name="n153" org.eventb.core.label="act_init_tk_MeetingOrganization_participate_end_meeting_11" org.eventb.core.assignment="tk_MeetingOrganization_participate_end_meeting_11 ≔ ∅"/>
+  </org.eventb.core.event>
+  <org.eventb.core.event name="n154" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="start_meeting">
+    <org.eventb.core.parameter name="n155" org.eventb.core.identifier="pid"/>
+    <org.eventb.core.parameter name="n156" org.eventb.core.identifier="self"/>
+    <org.eventb.core.parameter name="n157" org.eventb.core.identifier="performer"/>
+    <org.eventb.core.guard name="n158" org.eventb.core.label="grd_fresh_pid" org.eventb.core.predicate="pid ∈ PI_MeetingOrganization_ID ∖ PI_MeetingOrganization"/>
+    <org.eventb.core.guard name="n159" org.eventb.core.label="grd_self" org.eventb.core.predicate="self ∈ G_MeetingUnit"/>
+    <org.eventb.core.guard name="n160" org.eventb.core.label="grd_performer" org.eventb.core.predicate="self ↦ performer ∈ owns_Initiator"/>
+    <org.eventb.core.guard name="n161" org.eventb.core.label="grd_pre_1" org.eventb.core.predicate="((¬(MeetingUnit_detailsDecided[{self}] = {TRUE})) ∧ (¬(MeetingUnit_timeChosen[{self}] = {TRUE}))) ∧ ((∀p·p∈owns_Participant[{self}] ⇒ ((((¬(Participant_timetableCollected[{p}] = {TRUE})) ∧ (Participant_timetableChannel[{p}] = {none})) ∧ (¬(Participant_notified[{p}] = {TRUE}))) ∧ (¬(Participant_attended[{p}] = {TRUE})))))"/>
+    <org.eventb.core.guard name="n162" org.eventb.core.label="grd_state_type" org.eventb.core.predicate="(processState_MeetingOrganization ∪ {pid ↦ active}) ∈ (PI_MeetingOrganization ∪ {pid}) → PROCESS_STATE"/>
+    <org.eventb.core.guard name="n163" org.eventb.core.label="grd_scope_type" org.eventb.core.predicate="(processScope_MeetingOrganization ∪ {pid ↦ self}) ∈ (PI_MeetingOrganization ∪ {pid}) → G_MeetingUnit"/>
+    <org.eventb.core.guard name="n164" org.eventb.core.label="grd_token_type_1" org.eventb.core.predicate="(tk_MeetingOrganization_start_meeting_decideMeetingDetails_1 ∪ {pid ↦ 1}) ∈ (PI_MeetingOrganization ∪ {pid}) → ℕ"/>
+    <org.eventb.core.guard name="n165" org.eventb.core.label="grd_token_type_2" org.eventb.core.predicate="(tk_MeetingOrganization_decideMeetingDetails_checkCalendar_2 ∪ {pid ↦ 0}) ∈ (PI_MeetingOrganization ∪ {pid}) → ℕ"/>
+    <org.eventb.core.guard name="n166" org.eventb.core.label="grd_token_type_3" org.eventb.core.predicate="(tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3 ∪ {pid ↦ 0}) ∈ (PI_MeetingOrganization ∪ {pid}) → ℕ"/>
+    <org.eventb.core.guard name="n167" org.eventb.core.label="grd_token_type_4" org.eventb.core.predicate="(tk_MeetingOrganization_phoneCollectionRequired_requestSecretaryCall_4 ∪ {pid ↦ 0}) ∈ (PI_MeetingOrganization ∪ {pid}) → ℕ"/>
+    <org.eventb.core.guard name="n168" org.eventb.core.label="grd_token_type_5" org.eventb.core.predicate="(tk_MeetingOrganization_phoneCollectionRequired_timetableCollectionComplete_5 ∪ {pid ↦ 0}) ∈ (PI_MeetingOrganization ∪ {pid}) → ℕ"/>
+    <org.eventb.core.guard name="n169" org.eventb.core.label="grd_token_type_6" org.eventb.core.predicate="(tk_MeetingOrganization_requestSecretaryCall_collectConstraintsByPhone_6 ∪ {pid ↦ 0}) ∈ (PI_MeetingOrganization ∪ {pid}) → ℕ"/>
+    <org.eventb.core.guard name="n170" org.eventb.core.label="grd_token_type_7" org.eventb.core.predicate="(tk_MeetingOrganization_collectConstraintsByPhone_timetableCollectionComplete_7 ∪ {pid ↦ 0}) ∈ (PI_MeetingOrganization ∪ {pid}) → ℕ"/>
+    <org.eventb.core.guard name="n171" org.eventb.core.label="grd_token_type_8" org.eventb.core.predicate="(tk_MeetingOrganization_timetableCollectionComplete_chooseTimeAndDate_8 ∪ {pid ↦ 0}) ∈ (PI_MeetingOrganization ∪ {pid}) → ℕ"/>
+    <org.eventb.core.guard name="n172" org.eventb.core.label="grd_token_type_9" org.eventb.core.predicate="(tk_MeetingOrganization_chooseTimeAndDate_announceMeeting_9 ∪ {pid ↦ 0}) ∈ (PI_MeetingOrganization ∪ {pid}) → ℕ"/>
+    <org.eventb.core.guard name="n173" org.eventb.core.label="grd_token_type_10" org.eventb.core.predicate="(tk_MeetingOrganization_announceMeeting_participate_10 ∪ {pid ↦ 0}) ∈ (PI_MeetingOrganization ∪ {pid}) → ℕ"/>
+    <org.eventb.core.guard name="n174" org.eventb.core.label="grd_token_type_11" org.eventb.core.predicate="(tk_MeetingOrganization_participate_end_meeting_11 ∪ {pid ↦ 0}) ∈ (PI_MeetingOrganization ∪ {pid}) → ℕ"/>
+    <org.eventb.core.action name="n175" org.eventb.core.label="act_create" org.eventb.core.assignment="PI_MeetingOrganization ≔ PI_MeetingOrganization ∪ {pid}"/>
+    <org.eventb.core.action name="n176" org.eventb.core.label="act_state" org.eventb.core.assignment="processState_MeetingOrganization ≔ processState_MeetingOrganization ∪ {pid ↦ active}"/>
+    <org.eventb.core.action name="n177" org.eventb.core.label="act_scope" org.eventb.core.assignment="processScope_MeetingOrganization ≔ processScope_MeetingOrganization ∪ {pid ↦ self}"/>
+    <org.eventb.core.action name="n178" org.eventb.core.label="act_token_1" org.eventb.core.assignment="tk_MeetingOrganization_start_meeting_decideMeetingDetails_1 ≔ tk_MeetingOrganization_start_meeting_decideMeetingDetails_1 ∪ {pid ↦ 1}"/>
+    <org.eventb.core.action name="n179" org.eventb.core.label="act_token_2" org.eventb.core.assignment="tk_MeetingOrganization_decideMeetingDetails_checkCalendar_2 ≔ tk_MeetingOrganization_decideMeetingDetails_checkCalendar_2 ∪ {pid ↦ 0}"/>
+    <org.eventb.core.action name="n180" org.eventb.core.label="act_token_3" org.eventb.core.assignment="tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3 ≔ tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3 ∪ {pid ↦ 0}"/>
+    <org.eventb.core.action name="n181" org.eventb.core.label="act_token_4" org.eventb.core.assignment="tk_MeetingOrganization_phoneCollectionRequired_requestSecretaryCall_4 ≔ tk_MeetingOrganization_phoneCollectionRequired_requestSecretaryCall_4 ∪ {pid ↦ 0}"/>
+    <org.eventb.core.action name="n182" org.eventb.core.label="act_token_5" org.eventb.core.assignment="tk_MeetingOrganization_phoneCollectionRequired_timetableCollectionComplete_5 ≔ tk_MeetingOrganization_phoneCollectionRequired_timetableCollectionComplete_5 ∪ {pid ↦ 0}"/>
+    <org.eventb.core.action name="n183" org.eventb.core.label="act_token_6" org.eventb.core.assignment="tk_MeetingOrganization_requestSecretaryCall_collectConstraintsByPhone_6 ≔ tk_MeetingOrganization_requestSecretaryCall_collectConstraintsByPhone_6 ∪ {pid ↦ 0}"/>
+    <org.eventb.core.action name="n184" org.eventb.core.label="act_token_7" org.eventb.core.assignment="tk_MeetingOrganization_collectConstraintsByPhone_timetableCollectionComplete_7 ≔ tk_MeetingOrganization_collectConstraintsByPhone_timetableCollectionComplete_7 ∪ {pid ↦ 0}"/>
+    <org.eventb.core.action name="n185" org.eventb.core.label="act_token_8" org.eventb.core.assignment="tk_MeetingOrganization_timetableCollectionComplete_chooseTimeAndDate_8 ≔ tk_MeetingOrganization_timetableCollectionComplete_chooseTimeAndDate_8 ∪ {pid ↦ 0}"/>
+    <org.eventb.core.action name="n186" org.eventb.core.label="act_token_9" org.eventb.core.assignment="tk_MeetingOrganization_chooseTimeAndDate_announceMeeting_9 ≔ tk_MeetingOrganization_chooseTimeAndDate_announceMeeting_9 ∪ {pid ↦ 0}"/>
+    <org.eventb.core.action name="n187" org.eventb.core.label="act_token_10" org.eventb.core.assignment="tk_MeetingOrganization_announceMeeting_participate_10 ≔ tk_MeetingOrganization_announceMeeting_participate_10 ∪ {pid ↦ 0}"/>
+    <org.eventb.core.action name="n188" org.eventb.core.label="act_token_11" org.eventb.core.assignment="tk_MeetingOrganization_participate_end_meeting_11 ≔ tk_MeetingOrganization_participate_end_meeting_11 ∪ {pid ↦ 0}"/>
+  </org.eventb.core.event>
+  <org.eventb.core.event name="n189" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="decideMeetingDetails">
+    <org.eventb.core.parameter name="n190" org.eventb.core.identifier="pid"/>
+    <org.eventb.core.parameter name="n191" org.eventb.core.identifier="self"/>
+    <org.eventb.core.parameter name="n192" org.eventb.core.identifier="performer"/>
+    <org.eventb.core.guard name="n193" org.eventb.core.label="grd_pid" org.eventb.core.predicate="pid ∈ PI_MeetingOrganization"/>
+    <org.eventb.core.guard name="n194" org.eventb.core.label="grd_active" org.eventb.core.predicate="processState_MeetingOrganization(pid)=active"/>
+    <org.eventb.core.guard name="n195" org.eventb.core.label="grd_self" org.eventb.core.predicate="self=processScope_MeetingOrganization(pid)"/>
+    <org.eventb.core.guard name="n196" org.eventb.core.label="grd_token_1" org.eventb.core.predicate="tk_MeetingOrganization_start_meeting_decideMeetingDetails_1(pid)&gt;0"/>
+    <org.eventb.core.guard name="n197" org.eventb.core.label="grd_performer" org.eventb.core.predicate="self ↦ performer ∈ owns_Initiator"/>
+    <org.eventb.core.guard name="n198" org.eventb.core.label="grd_token_type_1" org.eventb.core.predicate="(tk_MeetingOrganization_start_meeting_decideMeetingDetails_1  {pid ↦ tk_MeetingOrganization_start_meeting_decideMeetingDetails_1(pid)−1}) ∈ PI_MeetingOrganization → ℕ"/>
+    <org.eventb.core.guard name="n199" org.eventb.core.label="grd_token_type_2" org.eventb.core.predicate="(tk_MeetingOrganization_decideMeetingDetails_checkCalendar_2  {pid ↦ tk_MeetingOrganization_decideMeetingDetails_checkCalendar_2(pid)+1}) ∈ PI_MeetingOrganization → ℕ"/>
+    <org.eventb.core.guard name="n200" org.eventb.core.label="grd_effect_type_1" org.eventb.core.predicate="(MeetingUnit_detailsDecided  {self ↦ TRUE}) ∈ G_MeetingUnit → BOOL"/>
+    <org.eventb.core.action name="n201" org.eventb.core.label="act_consume_1" org.eventb.core.assignment="tk_MeetingOrganization_start_meeting_decideMeetingDetails_1 ≔ tk_MeetingOrganization_start_meeting_decideMeetingDetails_1  {pid ↦ tk_MeetingOrganization_start_meeting_decideMeetingDetails_1(pid)−1}"/>
+    <org.eventb.core.action name="n202" org.eventb.core.label="act_produce_2" org.eventb.core.assignment="tk_MeetingOrganization_decideMeetingDetails_checkCalendar_2 ≔ tk_MeetingOrganization_decideMeetingDetails_checkCalendar_2  {pid ↦ tk_MeetingOrganization_decideMeetingDetails_checkCalendar_2(pid)+1}"/>
+    <org.eventb.core.action name="n203" org.eventb.core.label="act_effect_1" org.eventb.core.assignment="MeetingUnit_detailsDecided ≔ MeetingUnit_detailsDecided  {self ↦ TRUE}"/>
+  </org.eventb.core.event>
+  <org.eventb.core.event name="n204" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="checkCalendar">
+    <org.eventb.core.parameter name="n205" org.eventb.core.identifier="pid"/>
+    <org.eventb.core.parameter name="n206" org.eventb.core.identifier="self"/>
+    <org.eventb.core.parameter name="n207" org.eventb.core.identifier="performer"/>
+    <org.eventb.core.guard name="n208" org.eventb.core.label="grd_pid" org.eventb.core.predicate="pid ∈ PI_MeetingOrganization"/>
+    <org.eventb.core.guard name="n209" org.eventb.core.label="grd_active" org.eventb.core.predicate="processState_MeetingOrganization(pid)=active"/>
+    <org.eventb.core.guard name="n210" org.eventb.core.label="grd_self" org.eventb.core.predicate="self=processScope_MeetingOrganization(pid)"/>
+    <org.eventb.core.guard name="n211" org.eventb.core.label="grd_token_1" org.eventb.core.predicate="tk_MeetingOrganization_decideMeetingDetails_checkCalendar_2(pid)&gt;0"/>
+    <org.eventb.core.guard name="n212" org.eventb.core.label="grd_performer" org.eventb.core.predicate="self ↦ performer ∈ owns_Organizer"/>
+    <org.eventb.core.guard name="n213" org.eventb.core.label="grd_pre_1" org.eventb.core.predicate="MeetingUnit_detailsDecided[{self}] = {TRUE}"/>
+    <org.eventb.core.guard name="n214" org.eventb.core.label="grd_token_type_1" org.eventb.core.predicate="(tk_MeetingOrganization_decideMeetingDetails_checkCalendar_2  {pid ↦ tk_MeetingOrganization_decideMeetingDetails_checkCalendar_2(pid)−1}) ∈ PI_MeetingOrganization → ℕ"/>
+    <org.eventb.core.guard name="n215" org.eventb.core.label="grd_token_type_2" org.eventb.core.predicate="(tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3  {pid ↦ tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3(pid)+1}) ∈ PI_MeetingOrganization → ℕ"/>
+    <org.eventb.core.guard name="n216" org.eventb.core.label="grd_effect_type_1" org.eventb.core.predicate="(Participant_timetableCollected  ({p·p∈owns_Participant[{self}] ∧ (MeetingParty_hasCalendar[plays_Participant∼[{p}]] = {TRUE})∣p} × {TRUE})) ∈ R_Participant → BOOL"/>
+    <org.eventb.core.guard name="n217" org.eventb.core.label="grd_effect_type_2" org.eventb.core.predicate="(Participant_timetableChannel  ({p·p∈owns_Participant[{self}] ∧ (MeetingParty_hasCalendar[plays_Participant∼[{p}]] = {TRUE})∣p} × {calendar})) ∈ R_Participant → TIMETABLECHANNEL"/>
+    <org.eventb.core.action name="n218" org.eventb.core.label="act_consume_1" org.eventb.core.assignment="tk_MeetingOrganization_decideMeetingDetails_checkCalendar_2 ≔ tk_MeetingOrganization_decideMeetingDetails_checkCalendar_2  {pid ↦ tk_MeetingOrganization_decideMeetingDetails_checkCalendar_2(pid)−1}"/>
+    <org.eventb.core.action name="n219" org.eventb.core.label="act_produce_2" org.eventb.core.assignment="tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3 ≔ tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3  {pid ↦ tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3(pid)+1}"/>
+    <org.eventb.core.action name="n220" org.eventb.core.label="act_effect_1" org.eventb.core.assignment="Participant_timetableCollected ≔ Participant_timetableCollected  ({p·p∈owns_Participant[{self}] ∧ (MeetingParty_hasCalendar[plays_Participant∼[{p}]] = {TRUE})∣p} × {TRUE})"/>
+    <org.eventb.core.action name="n221" org.eventb.core.label="act_effect_2" org.eventb.core.assignment="Participant_timetableChannel ≔ Participant_timetableChannel  ({p·p∈owns_Participant[{self}] ∧ (MeetingParty_hasCalendar[plays_Participant∼[{p}]] = {TRUE})∣p} × {calendar})"/>
+  </org.eventb.core.event>
+  <org.eventb.core.event name="n222" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="phoneCollectionRequired_to_requestSecretaryCall">
+    <org.eventb.core.parameter name="n223" org.eventb.core.identifier="pid"/>
+    <org.eventb.core.parameter name="n224" org.eventb.core.identifier="self"/>
+    <org.eventb.core.guard name="n225" org.eventb.core.label="grd_pid" org.eventb.core.predicate="pid ∈ PI_MeetingOrganization"/>
+    <org.eventb.core.guard name="n226" org.eventb.core.label="grd_active" org.eventb.core.predicate="processState_MeetingOrganization(pid)=active"/>
+    <org.eventb.core.guard name="n227" org.eventb.core.label="grd_self" org.eventb.core.predicate="self=processScope_MeetingOrganization(pid)"/>
+    <org.eventb.core.guard name="n228" org.eventb.core.label="grd_token_1" org.eventb.core.predicate="tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3(pid)&gt;0"/>
+    <org.eventb.core.guard name="n229" org.eventb.core.label="grd_pre_1" org.eventb.core.predicate="(∀p·p∈{selected1·selected1∈owns_Participant[{self}] ∧ (MeetingParty_hasCalendar[plays_Participant∼[{selected1}]] = {TRUE})∣selected1} ⇒ (Participant_timetableCollected[{p}] = {TRUE}))"/>
+    <org.eventb.core.guard name="n230" org.eventb.core.label="grd_branch" org.eventb.core.predicate="(∃p·p∈owns_Participant[{self}] ∧ (¬(MeetingParty_hasCalendar[plays_Participant∼[{p}]] = {TRUE})))"/>
+    <org.eventb.core.guard name="n231" org.eventb.core.label="grd_token_type_1" org.eventb.core.predicate="(tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3  {pid ↦ tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3(pid)−1}) ∈ PI_MeetingOrganization → ℕ"/>
+    <org.eventb.core.guard name="n232" org.eventb.core.label="grd_token_type_2" org.eventb.core.predicate="(tk_MeetingOrganization_phoneCollectionRequired_requestSecretaryCall_4  {pid ↦ tk_MeetingOrganization_phoneCollectionRequired_requestSecretaryCall_4(pid)+1}) ∈ PI_MeetingOrganization → ℕ"/>
+    <org.eventb.core.action name="n233" org.eventb.core.label="act_consume_1" org.eventb.core.assignment="tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3 ≔ tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3  {pid ↦ tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3(pid)−1}"/>
+    <org.eventb.core.action name="n234" org.eventb.core.label="act_produce_2" org.eventb.core.assignment="tk_MeetingOrganization_phoneCollectionRequired_requestSecretaryCall_4 ≔ tk_MeetingOrganization_phoneCollectionRequired_requestSecretaryCall_4  {pid ↦ tk_MeetingOrganization_phoneCollectionRequired_requestSecretaryCall_4(pid)+1}"/>
+  </org.eventb.core.event>
+  <org.eventb.core.event name="n235" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="phoneCollectionRequired_to_timetableCollectionComplete">
+    <org.eventb.core.parameter name="n236" org.eventb.core.identifier="pid"/>
+    <org.eventb.core.parameter name="n237" org.eventb.core.identifier="self"/>
+    <org.eventb.core.guard name="n238" org.eventb.core.label="grd_pid" org.eventb.core.predicate="pid ∈ PI_MeetingOrganization"/>
+    <org.eventb.core.guard name="n239" org.eventb.core.label="grd_active" org.eventb.core.predicate="processState_MeetingOrganization(pid)=active"/>
+    <org.eventb.core.guard name="n240" org.eventb.core.label="grd_self" org.eventb.core.predicate="self=processScope_MeetingOrganization(pid)"/>
+    <org.eventb.core.guard name="n241" org.eventb.core.label="grd_token_1" org.eventb.core.predicate="tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3(pid)&gt;0"/>
+    <org.eventb.core.guard name="n242" org.eventb.core.label="grd_pre_1" org.eventb.core.predicate="(∀p·p∈{selected1·selected1∈owns_Participant[{self}] ∧ (MeetingParty_hasCalendar[plays_Participant∼[{selected1}]] = {TRUE})∣selected1} ⇒ (Participant_timetableCollected[{p}] = {TRUE}))"/>
+    <org.eventb.core.guard name="n243" org.eventb.core.label="grd_branch" org.eventb.core.predicate="¬((∃p·p∈owns_Participant[{self}] ∧ (¬(MeetingParty_hasCalendar[plays_Participant∼[{p}]] = {TRUE}))))"/>
+    <org.eventb.core.guard name="n244" org.eventb.core.label="grd_token_type_1" org.eventb.core.predicate="(tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3  {pid ↦ tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3(pid)−1}) ∈ PI_MeetingOrganization → ℕ"/>
+    <org.eventb.core.guard name="n245" org.eventb.core.label="grd_token_type_2" org.eventb.core.predicate="(tk_MeetingOrganization_phoneCollectionRequired_timetableCollectionComplete_5  {pid ↦ tk_MeetingOrganization_phoneCollectionRequired_timetableCollectionComplete_5(pid)+1}) ∈ PI_MeetingOrganization → ℕ"/>
+    <org.eventb.core.action name="n246" org.eventb.core.label="act_consume_1" org.eventb.core.assignment="tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3 ≔ tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3  {pid ↦ tk_MeetingOrganization_checkCalendar_phoneCollectionRequired_3(pid)−1}"/>
+    <org.eventb.core.action name="n247" org.eventb.core.label="act_produce_2" org.eventb.core.assignment="tk_MeetingOrganization_phoneCollectionRequired_timetableCollectionComplete_5 ≔ tk_MeetingOrganization_phoneCollectionRequired_timetableCollectionComplete_5  {pid ↦ tk_MeetingOrganization_phoneCollectionRequired_timetableCollectionComplete_5(pid)+1}"/>
+  </org.eventb.core.event>
+  <org.eventb.core.event name="n248" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="requestSecretaryCall">
+    <org.eventb.core.parameter name="n249" org.eventb.core.identifier="pid"/>
+    <org.eventb.core.parameter name="n250" org.eventb.core.identifier="self"/>
+    <org.eventb.core.parameter name="n251" org.eventb.core.identifier="performer"/>
+    <org.eventb.core.guard name="n252" org.eventb.core.label="grd_pid" org.eventb.core.predicate="pid ∈ PI_MeetingOrganization"/>
+    <org.eventb.core.guard name="n253" org.eventb.core.label="grd_active" org.eventb.core.predicate="processState_MeetingOrganization(pid)=active"/>
+    <org.eventb.core.guard name="n254" org.eventb.core.label="grd_self" org.eventb.core.predicate="self=processScope_MeetingOrganization(pid)"/>
+    <org.eventb.core.guard name="n255" org.eventb.core.label="grd_token_1" org.eventb.core.predicate="tk_MeetingOrganization_phoneCollectionRequired_requestSecretaryCall_4(pid)&gt;0"/>
+    <org.eventb.core.guard name="n256" org.eventb.core.label="grd_performer" org.eventb.core.predicate="self ↦ performer ∈ owns_Organizer"/>
+    <org.eventb.core.guard name="n257" org.eventb.core.label="grd_pre_1" org.eventb.core.predicate="(((MeetingUnit_detailsDecided[{self}] = {TRUE}) ∧ ((∃p·p∈owns_Participant[{self}] ∧ (¬(MeetingParty_hasCalendar[plays_Participant∼[{p}]] = {TRUE}))))) ∧ (¬(owns_Secretary[{self}] = ∅))) ∧ ((∀p·p∈{selected1·selected1∈owns_Participant[{self}] ∧ (¬(MeetingParty_hasCalendar[plays_Participant∼[{selected1}]] = {TRUE}))∣selected1} ⇒ ((MeetingParty_phone[plays_Participant∼[{p}]] ≠ {EMPTY_STRING}) ∧ (plays_Participant∼[{p}] ⊆ knowsPhoneOf[plays_Secretary∼[owns_Secretary[{self}]]]))))"/>
+    <org.eventb.core.guard name="n258" org.eventb.core.label="grd_token_type_1" org.eventb.core.predicate="(tk_MeetingOrganization_phoneCollectionRequired_requestSecretaryCall_4  {pid ↦ tk_MeetingOrganization_phoneCollectionRequired_requestSecretaryCall_4(pid)−1}) ∈ PI_MeetingOrganization → ℕ"/>
+    <org.eventb.core.guard name="n259" org.eventb.core.label="grd_token_type_2" org.eventb.core.predicate="(tk_MeetingOrganization_requestSecretaryCall_collectConstraintsByPhone_6  {pid ↦ tk_MeetingOrganization_requestSecretaryCall_collectConstraintsByPhone_6(pid)+1}) ∈ PI_MeetingOrganization → ℕ"/>
+    <org.eventb.core.action name="n260" org.eventb.core.label="act_consume_1" org.eventb.core.assignment="tk_MeetingOrganization_phoneCollectionRequired_requestSecretaryCall_4 ≔ tk_MeetingOrganization_phoneCollectionRequired_requestSecretaryCall_4  {pid ↦ tk_MeetingOrganization_phoneCollectionRequired_requestSecretaryCall_4(pid)−1}"/>
+    <org.eventb.core.action name="n261" org.eventb.core.label="act_produce_2" org.eventb.core.assignment="tk_MeetingOrganization_requestSecretaryCall_collectConstraintsByPhone_6 ≔ tk_MeetingOrganization_requestSecretaryCall_collectConstraintsByPhone_6  {pid ↦ tk_MeetingOrganization_requestSecretaryCall_collectConstraintsByPhone_6(pid)+1}"/>
+  </org.eventb.core.event>
+  <org.eventb.core.event name="n262" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="collectConstraintsByPhone">
+    <org.eventb.core.parameter name="n263" org.eventb.core.identifier="pid"/>
+    <org.eventb.core.parameter name="n264" org.eventb.core.identifier="self"/>
+    <org.eventb.core.parameter name="n265" org.eventb.core.identifier="performer"/>
+    <org.eventb.core.guard name="n266" org.eventb.core.label="grd_pid" org.eventb.core.predicate="pid ∈ PI_MeetingOrganization"/>
+    <org.eventb.core.guard name="n267" org.eventb.core.label="grd_active" org.eventb.core.predicate="processState_MeetingOrganization(pid)=active"/>
+    <org.eventb.core.guard name="n268" org.eventb.core.label="grd_self" org.eventb.core.predicate="self=processScope_MeetingOrganization(pid)"/>
+    <org.eventb.core.guard name="n269" org.eventb.core.label="grd_token_1" org.eventb.core.predicate="tk_MeetingOrganization_requestSecretaryCall_collectConstraintsByPhone_6(pid)&gt;0"/>
+    <org.eventb.core.guard name="n270" org.eventb.core.label="grd_performer" org.eventb.core.predicate="self ↦ performer ∈ owns_Secretary"/>
+    <org.eventb.core.guard name="n271" org.eventb.core.label="grd_pre_1" org.eventb.core.predicate="(((∃p·p∈owns_Participant[{self}] ∧ (¬(MeetingParty_hasCalendar[plays_Participant∼[{p}]] = {TRUE})))) ∧ (¬(owns_Secretary[{self}] = ∅))) ∧ ((∀p·p∈{selected1·selected1∈owns_Participant[{self}] ∧ (¬(MeetingParty_hasCalendar[plays_Participant∼[{selected1}]] = {TRUE}))∣selected1} ⇒ ((MeetingParty_phone[plays_Participant∼[{p}]] ≠ {EMPTY_STRING}) ∧ (plays_Participant∼[{p}] ⊆ knowsPhoneOf[plays_Secretary∼[owns_Secretary[{self}]]]))))"/>
+    <org.eventb.core.guard name="n272" org.eventb.core.label="grd_token_type_1" org.eventb.core.predicate="(tk_MeetingOrganization_requestSecretaryCall_collectConstraintsByPhone_6  {pid ↦ tk_MeetingOrganization_requestSecretaryCall_collectConstraintsByPhone_6(pid)−1}) ∈ PI_MeetingOrganization → ℕ"/>
+    <org.eventb.core.guard name="n273" org.eventb.core.label="grd_token_type_2" org.eventb.core.predicate="(tk_MeetingOrganization_collectConstraintsByPhone_timetableCollectionComplete_7  {pid ↦ tk_MeetingOrganization_collectConstraintsByPhone_timetableCollectionComplete_7(pid)+1}) ∈ PI_MeetingOrganization → ℕ"/>
+    <org.eventb.core.guard name="n274" org.eventb.core.label="grd_effect_type_1" org.eventb.core.predicate="(Participant_timetableCollected  ({p·p∈owns_Participant[{self}] ∧ (¬(MeetingParty_hasCalendar[plays_Participant∼[{p}]] = {TRUE}))∣p} × {TRUE})) ∈ R_Participant → BOOL"/>
+    <org.eventb.core.guard name="n275" org.eventb.core.label="grd_effect_type_2" org.eventb.core.predicate="(Participant_timetableChannel  ({p·p∈owns_Participant[{self}] ∧ (¬(MeetingParty_hasCalendar[plays_Participant∼[{p}]] = {TRUE}))∣p} × {phone})) ∈ R_Participant → TIMETABLECHANNEL"/>
+    <org.eventb.core.action name="n276" org.eventb.core.label="act_consume_1" org.eventb.core.assignment="tk_MeetingOrganization_requestSecretaryCall_collectConstraintsByPhone_6 ≔ tk_MeetingOrganization_requestSecretaryCall_collectConstraintsByPhone_6  {pid ↦ tk_MeetingOrganization_requestSecretaryCall_collectConstraintsByPhone_6(pid)−1}"/>
+    <org.eventb.core.action name="n277" org.eventb.core.label="act_produce_2" org.eventb.core.assignment="tk_MeetingOrganization_collectConstraintsByPhone_timetableCollectionComplete_7 ≔ tk_MeetingOrganization_collectConstraintsByPhone_timetableCollectionComplete_7  {pid ↦ tk_MeetingOrganization_collectConstraintsByPhone_timetableCollectionComplete_7(pid)+1}"/>
+    <org.eventb.core.action name="n278" org.eventb.core.label="act_effect_1" org.eventb.core.assignment="Participant_timetableCollected ≔ Participant_timetableCollected  ({p·p∈owns_Participant[{self}] ∧ (¬(MeetingParty_hasCalendar[plays_Participant∼[{p}]] = {TRUE}))∣p} × {TRUE})"/>
+    <org.eventb.core.action name="n279" org.eventb.core.label="act_effect_2" org.eventb.core.assignment="Participant_timetableChannel ≔ Participant_timetableChannel  ({p·p∈owns_Participant[{self}] ∧ (¬(MeetingParty_hasCalendar[plays_Participant∼[{p}]] = {TRUE}))∣p} × {phone})"/>
+  </org.eventb.core.event>
+  <org.eventb.core.event name="n280" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="timetableCollectionComplete_from_phoneCollectionRequired">
+    <org.eventb.core.parameter name="n281" org.eventb.core.identifier="pid"/>
+    <org.eventb.core.parameter name="n282" org.eventb.core.identifier="self"/>
+    <org.eventb.core.guard name="n283" org.eventb.core.label="grd_pid" org.eventb.core.predicate="pid ∈ PI_MeetingOrganization"/>
+    <org.eventb.core.guard name="n284" org.eventb.core.label="grd_active" org.eventb.core.predicate="processState_MeetingOrganization(pid)=active"/>
+    <org.eventb.core.guard name="n285" org.eventb.core.label="grd_self" org.eventb.core.predicate="self=processScope_MeetingOrganization(pid)"/>
+    <org.eventb.core.guard name="n286" org.eventb.core.label="grd_token_1" org.eventb.core.predicate="tk_MeetingOrganization_phoneCollectionRequired_timetableCollectionComplete_5(pid)&gt;0"/>
+    <org.eventb.core.guard name="n287" org.eventb.core.label="grd_pre_1" org.eventb.core.predicate="(∀p·p∈owns_Participant[{self}] ⇒ (Participant_timetableCollected[{p}] = {TRUE}))"/>
+    <org.eventb.core.guard name="n288" org.eventb.core.label="grd_token_type_1" org.eventb.core.predicate="(tk_MeetingOrganization_phoneCollectionRequired_timetableCollectionComplete_5  {pid ↦ tk_MeetingOrganization_phoneCollectionRequired_timetableCollectionComplete_5(pid)−1}) ∈ PI_MeetingOrganization → ℕ"/>
+    <org.eventb.core.guard name="n289" org.eventb.core.label="grd_token_type_2" org.eventb.core.predicate="(tk_MeetingOrganization_timetableCollectionComplete_chooseTimeAndDate_8  {pid ↦ tk_MeetingOrganization_timetableCollectionComplete_chooseTimeAndDate_8(pid)+1}) ∈ PI_MeetingOrganization → ℕ"/>
+    <org.eventb.core.action name="n290" org.eventb.core.label="act_consume_1" org.eventb.core.assignment="tk_MeetingOrganization_phoneCollectionRequired_timetableCollectionComplete_5 ≔ tk_MeetingOrganization_phoneCollectionRequired_timetableCollectionComplete_5  {pid ↦ tk_MeetingOrganization_phoneCollectionRequired_timetableCollectionComplete_5(pid)−1}"/>
+    <org.eventb.core.action name="n291" org.eventb.core.label="act_produce_2" org.eventb.core.assignment="tk_MeetingOrganization_timetableCollectionComplete_chooseTimeAndDate_8 ≔ tk_MeetingOrganization_timetableCollectionComplete_chooseTimeAndDate_8  {pid ↦ tk_MeetingOrganization_timetableCollectionComplete_chooseTimeAndDate_8(pid)+1}"/>
+  </org.eventb.core.event>
+  <org.eventb.core.event name="n292" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="timetableCollectionComplete_from_collectConstraintsByPhone">
+    <org.eventb.core.parameter name="n293" org.eventb.core.identifier="pid"/>
+    <org.eventb.core.parameter name="n294" org.eventb.core.identifier="self"/>
+    <org.eventb.core.guard name="n295" org.eventb.core.label="grd_pid" org.eventb.core.predicate="pid ∈ PI_MeetingOrganization"/>
+    <org.eventb.core.guard name="n296" org.eventb.core.label="grd_active" org.eventb.core.predicate="processState_MeetingOrganization(pid)=active"/>
+    <org.eventb.core.guard name="n297" org.eventb.core.label="grd_self" org.eventb.core.predicate="self=processScope_MeetingOrganization(pid)"/>
+    <org.eventb.core.guard name="n298" org.eventb.core.label="grd_token_1" org.eventb.core.predicate="tk_MeetingOrganization_collectConstraintsByPhone_timetableCollectionComplete_7(pid)&gt;0"/>
+    <org.eventb.core.guard name="n299" org.eventb.core.label="grd_pre_1" org.eventb.core.predicate="(∀p·p∈owns_Participant[{self}] ⇒ (Participant_timetableCollected[{p}] = {TRUE}))"/>
+    <org.eventb.core.guard name="n300" org.eventb.core.label="grd_token_type_1" org.eventb.core.predicate="(tk_MeetingOrganization_collectConstraintsByPhone_timetableCollectionComplete_7  {pid ↦ tk_MeetingOrganization_collectConstraintsByPhone_timetableCollectionComplete_7(pid)−1}) ∈ PI_MeetingOrganization → ℕ"/>
+    <org.eventb.core.guard name="n301" org.eventb.core.label="grd_token_type_2" org.eventb.core.predicate="(tk_MeetingOrganization_timetableCollectionComplete_chooseTimeAndDate_8  {pid ↦ tk_MeetingOrganization_timetableCollectionComplete_chooseTimeAndDate_8(pid)+1}) ∈ PI_MeetingOrganization → ℕ"/>
+    <org.eventb.core.action name="n302" org.eventb.core.label="act_consume_1" org.eventb.core.assignment="tk_MeetingOrganization_collectConstraintsByPhone_timetableCollectionComplete_7 ≔ tk_MeetingOrganization_collectConstraintsByPhone_timetableCollectionComplete_7  {pid ↦ tk_MeetingOrganization_collectConstraintsByPhone_timetableCollectionComplete_7(pid)−1}"/>
+    <org.eventb.core.action name="n303" org.eventb.core.label="act_produce_2" org.eventb.core.assignment="tk_MeetingOrganization_timetableCollectionComplete_chooseTimeAndDate_8 ≔ tk_MeetingOrganization_timetableCollectionComplete_chooseTimeAndDate_8  {pid ↦ tk_MeetingOrganization_timetableCollectionComplete_chooseTimeAndDate_8(pid)+1}"/>
+  </org.eventb.core.event>
+  <org.eventb.core.event name="n304" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="chooseTimeAndDate">
+    <org.eventb.core.parameter name="n305" org.eventb.core.identifier="pid"/>
+    <org.eventb.core.parameter name="n306" org.eventb.core.identifier="self"/>
+    <org.eventb.core.parameter name="n307" org.eventb.core.identifier="performer"/>
+    <org.eventb.core.guard name="n308" org.eventb.core.label="grd_pid" org.eventb.core.predicate="pid ∈ PI_MeetingOrganization"/>
+    <org.eventb.core.guard name="n309" org.eventb.core.label="grd_active" org.eventb.core.predicate="processState_MeetingOrganization(pid)=active"/>
+    <org.eventb.core.guard name="n310" org.eventb.core.label="grd_self" org.eventb.core.predicate="self=processScope_MeetingOrganization(pid)"/>
+    <org.eventb.core.guard name="n311" org.eventb.core.label="grd_token_1" org.eventb.core.predicate="tk_MeetingOrganization_timetableCollectionComplete_chooseTimeAndDate_8(pid)&gt;0"/>
+    <org.eventb.core.guard name="n312" org.eventb.core.label="grd_performer" org.eventb.core.predicate="self ↦ performer ∈ owns_Organizer"/>
+    <org.eventb.core.guard name="n313" org.eventb.core.label="grd_pre_1" org.eventb.core.predicate="(∀p·p∈owns_Participant[{self}] ⇒ (Participant_timetableCollected[{p}] = {TRUE}))"/>
+    <org.eventb.core.guard name="n314" org.eventb.core.label="grd_token_type_1" org.eventb.core.predicate="(tk_MeetingOrganization_timetableCollectionComplete_chooseTimeAndDate_8  {pid ↦ tk_MeetingOrganization_timetableCollectionComplete_chooseTimeAndDate_8(pid)−1}) ∈ PI_MeetingOrganization → ℕ"/>
+    <org.eventb.core.guard name="n315" org.eventb.core.label="grd_token_type_2" org.eventb.core.predicate="(tk_MeetingOrganization_chooseTimeAndDate_announceMeeting_9  {pid ↦ tk_MeetingOrganization_chooseTimeAndDate_announceMeeting_9(pid)+1}) ∈ PI_MeetingOrganization → ℕ"/>
+    <org.eventb.core.guard name="n316" org.eventb.core.label="grd_effect_type_1" org.eventb.core.predicate="(MeetingUnit_timeChosen  {self ↦ TRUE}) ∈ G_MeetingUnit → BOOL"/>
+    <org.eventb.core.action name="n317" org.eventb.core.label="act_consume_1" org.eventb.core.assignment="tk_MeetingOrganization_timetableCollectionComplete_chooseTimeAndDate_8 ≔ tk_MeetingOrganization_timetableCollectionComplete_chooseTimeAndDate_8  {pid ↦ tk_MeetingOrganization_timetableCollectionComplete_chooseTimeAndDate_8(pid)−1}"/>
+    <org.eventb.core.action name="n318" org.eventb.core.label="act_produce_2" org.eventb.core.assignment="tk_MeetingOrganization_chooseTimeAndDate_announceMeeting_9 ≔ tk_MeetingOrganization_chooseTimeAndDate_announceMeeting_9  {pid ↦ tk_MeetingOrganization_chooseTimeAndDate_announceMeeting_9(pid)+1}"/>
+    <org.eventb.core.action name="n319" org.eventb.core.label="act_effect_1" org.eventb.core.assignment="MeetingUnit_timeChosen ≔ MeetingUnit_timeChosen  {self ↦ TRUE}"/>
+  </org.eventb.core.event>
+  <org.eventb.core.event name="n320" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="announceMeeting">
+    <org.eventb.core.parameter name="n321" org.eventb.core.identifier="pid"/>
+    <org.eventb.core.parameter name="n322" org.eventb.core.identifier="self"/>
+    <org.eventb.core.parameter name="n323" org.eventb.core.identifier="performer"/>
+    <org.eventb.core.guard name="n324" org.eventb.core.label="grd_pid" org.eventb.core.predicate="pid ∈ PI_MeetingOrganization"/>
+    <org.eventb.core.guard name="n325" org.eventb.core.label="grd_active" org.eventb.core.predicate="processState_MeetingOrganization(pid)=active"/>
+    <org.eventb.core.guard name="n326" org.eventb.core.label="grd_self" org.eventb.core.predicate="self=processScope_MeetingOrganization(pid)"/>
+    <org.eventb.core.guard name="n327" org.eventb.core.label="grd_token_1" org.eventb.core.predicate="tk_MeetingOrganization_chooseTimeAndDate_announceMeeting_9(pid)&gt;0"/>
+    <org.eventb.core.guard name="n328" org.eventb.core.label="grd_performer" org.eventb.core.predicate="self ↦ performer ∈ owns_Organizer"/>
+    <org.eventb.core.guard name="n329" org.eventb.core.label="grd_pre_1" org.eventb.core.predicate="MeetingUnit_timeChosen[{self}] = {TRUE}"/>
+    <org.eventb.core.guard name="n330" org.eventb.core.label="grd_token_type_1" org.eventb.core.predicate="(tk_MeetingOrganization_chooseTimeAndDate_announceMeeting_9  {pid ↦ tk_MeetingOrganization_chooseTimeAndDate_announceMeeting_9(pid)−1}) ∈ PI_MeetingOrganization → ℕ"/>
+    <org.eventb.core.guard name="n331" org.eventb.core.label="grd_token_type_2" org.eventb.core.predicate="(tk_MeetingOrganization_announceMeeting_participate_10  {pid ↦ tk_MeetingOrganization_announceMeeting_participate_10(pid)+1}) ∈ PI_MeetingOrganization → ℕ"/>
+    <org.eventb.core.guard name="n332" org.eventb.core.label="grd_effect_type_1" org.eventb.core.predicate="(Participant_notified  (owns_Participant[{self}] × {TRUE})) ∈ R_Participant → BOOL"/>
+    <org.eventb.core.action name="n333" org.eventb.core.label="act_consume_1" org.eventb.core.assignment="tk_MeetingOrganization_chooseTimeAndDate_announceMeeting_9 ≔ tk_MeetingOrganization_chooseTimeAndDate_announceMeeting_9  {pid ↦ tk_MeetingOrganization_chooseTimeAndDate_announceMeeting_9(pid)−1}"/>
+    <org.eventb.core.action name="n334" org.eventb.core.label="act_produce_2" org.eventb.core.assignment="tk_MeetingOrganization_announceMeeting_participate_10 ≔ tk_MeetingOrganization_announceMeeting_participate_10  {pid ↦ tk_MeetingOrganization_announceMeeting_participate_10(pid)+1}"/>
+    <org.eventb.core.action name="n335" org.eventb.core.label="act_effect_1" org.eventb.core.assignment="Participant_notified ≔ Participant_notified  (owns_Participant[{self}] × {TRUE})"/>
+  </org.eventb.core.event>
+  <org.eventb.core.event name="n336" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="participate">
+    <org.eventb.core.parameter name="n337" org.eventb.core.identifier="pid"/>
+    <org.eventb.core.parameter name="n338" org.eventb.core.identifier="self"/>
+    <org.eventb.core.parameter name="n339" org.eventb.core.identifier="performer"/>
+    <org.eventb.core.guard name="n340" org.eventb.core.label="grd_pid" org.eventb.core.predicate="pid ∈ PI_MeetingOrganization"/>
+    <org.eventb.core.guard name="n341" org.eventb.core.label="grd_active" org.eventb.core.predicate="processState_MeetingOrganization(pid)=active"/>
+    <org.eventb.core.guard name="n342" org.eventb.core.label="grd_self" org.eventb.core.predicate="self=processScope_MeetingOrganization(pid)"/>
+    <org.eventb.core.guard name="n343" org.eventb.core.label="grd_token_1" org.eventb.core.predicate="tk_MeetingOrganization_announceMeeting_participate_10(pid)&gt;0"/>
+    <org.eventb.core.guard name="n344" org.eventb.core.label="grd_performer" org.eventb.core.predicate="self ↦ performer ∈ owns_Participant"/>
+    <org.eventb.core.guard name="n345" org.eventb.core.label="grd_pre_1" org.eventb.core.predicate="(∀p·p∈owns_Participant[{self}] ⇒ (Participant_notified[{p}] = {TRUE}))"/>
+    <org.eventb.core.guard name="n346" org.eventb.core.label="grd_token_type_1" org.eventb.core.predicate="(tk_MeetingOrganization_announceMeeting_participate_10  {pid ↦ tk_MeetingOrganization_announceMeeting_participate_10(pid)−1}) ∈ PI_MeetingOrganization → ℕ"/>
+    <org.eventb.core.guard name="n347" org.eventb.core.label="grd_token_type_2" org.eventb.core.predicate="(tk_MeetingOrganization_participate_end_meeting_11  {pid ↦ tk_MeetingOrganization_participate_end_meeting_11(pid)+1}) ∈ PI_MeetingOrganization → ℕ"/>
+    <org.eventb.core.guard name="n348" org.eventb.core.label="grd_effect_type_1" org.eventb.core.predicate="(Participant_attended  (owns_Participant[{self}] × {TRUE})) ∈ R_Participant → BOOL"/>
+    <org.eventb.core.action name="n349" org.eventb.core.label="act_consume_1" org.eventb.core.assignment="tk_MeetingOrganization_announceMeeting_participate_10 ≔ tk_MeetingOrganization_announceMeeting_participate_10  {pid ↦ tk_MeetingOrganization_announceMeeting_participate_10(pid)−1}"/>
+    <org.eventb.core.action name="n350" org.eventb.core.label="act_produce_2" org.eventb.core.assignment="tk_MeetingOrganization_participate_end_meeting_11 ≔ tk_MeetingOrganization_participate_end_meeting_11  {pid ↦ tk_MeetingOrganization_participate_end_meeting_11(pid)+1}"/>
+    <org.eventb.core.action name="n351" org.eventb.core.label="act_effect_1" org.eventb.core.assignment="Participant_attended ≔ Participant_attended  (owns_Participant[{self}] × {TRUE})"/>
+  </org.eventb.core.event>
+  <org.eventb.core.event name="n352" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="end_meeting">
+    <org.eventb.core.parameter name="n353" org.eventb.core.identifier="pid"/>
+    <org.eventb.core.parameter name="n354" org.eventb.core.identifier="self"/>
+    <org.eventb.core.parameter name="n355" org.eventb.core.identifier="performer"/>
+    <org.eventb.core.guard name="n356" org.eventb.core.label="grd_pid" org.eventb.core.predicate="pid ∈ PI_MeetingOrganization"/>
+    <org.eventb.core.guard name="n357" org.eventb.core.label="grd_active" org.eventb.core.predicate="processState_MeetingOrganization(pid)=active"/>
+    <org.eventb.core.guard name="n358" org.eventb.core.label="grd_self" org.eventb.core.predicate="self=processScope_MeetingOrganization(pid)"/>
+    <org.eventb.core.guard name="n359" org.eventb.core.label="grd_token_1" org.eventb.core.predicate="tk_MeetingOrganization_participate_end_meeting_11(pid)&gt;0"/>
+    <org.eventb.core.guard name="n360" org.eventb.core.label="grd_performer" org.eventb.core.predicate="self ↦ performer ∈ owns_Organizer"/>
+    <org.eventb.core.guard name="n361" org.eventb.core.label="grd_token_type_1" org.eventb.core.predicate="(tk_MeetingOrganization_participate_end_meeting_11  {pid ↦ tk_MeetingOrganization_participate_end_meeting_11(pid)−1}) ∈ PI_MeetingOrganization → ℕ"/>
+    <org.eventb.core.guard name="n362" org.eventb.core.label="grd_complete_type" org.eventb.core.predicate="(processState_MeetingOrganization  {pid ↦ completed}) ∈ PI_MeetingOrganization → PROCESS_STATE"/>
+    <org.eventb.core.action name="n363" org.eventb.core.label="act_consume_1" org.eventb.core.assignment="tk_MeetingOrganization_participate_end_meeting_11 ≔ tk_MeetingOrganization_participate_end_meeting_11  {pid ↦ tk_MeetingOrganization_participate_end_meeting_11(pid)−1}"/>
+    <org.eventb.core.action name="n364" org.eventb.core.label="act_complete" org.eventb.core.assignment="processState_MeetingOrganization ≔ processState_MeetingOrganization  {pid ↦ completed}"/>
+  </org.eventb.core.event>
+</org.eventb.core.machineFile>

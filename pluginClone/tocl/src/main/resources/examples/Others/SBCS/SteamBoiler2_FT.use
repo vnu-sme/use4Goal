@@ -1,0 +1,386 @@
+model SteamBoiler
+
+enum State {
+  on, off
+ };
+enum ValveState {
+  open, closed
+ };
+enum Mode {
+  Normal, Initialization, Degraded, Rescue, EmergencyStop
+ };
+
+abstract class PumpControllerOpC < OperationCall
+attributes
+  aSelf : PumpController
+end
+
+class openPump_PumpControllerOpC < PumpControllerOpC
+end
+
+composition SnapshotSteamBoiler between
+  Snapshot[1] role snapshotSteamBoiler
+  SteamBoiler[*]
+end
+
+aggregation PredSuccWaterLevelMeasurementDevice between
+  WaterLevelMeasurementDevice[0..1] role predWaterLevelMeasurementDevice
+  WaterLevelMeasurementDevice[0..1] role succWaterLevelMeasurementDevice
+end
+
+association Filmstrip between
+  Snapshot[0..1] role pred
+  Snapshot[0..1] role succ
+  OperationCall[0..1]
+end
+
+composition SnapshotWaterLevelMeasurementDevice between
+  Snapshot[1] role snapshotWaterLevelMeasurementDevice
+  WaterLevelMeasurementDevice[*]
+end
+
+class getSteam_SteamMeasurementDeviceOpC < SteamMeasurementDeviceOpC
+attributes
+  result : Real
+end
+
+composition SnapshotControlProgram between
+  Snapshot[1] role snapshotControlProgram
+  ControlProgram[*]
+end
+
+aggregation PredSuccControlProgram between
+  ControlProgram[0..1] role predControlProgram
+  ControlProgram[0..1] role succControlProgram
+end
+
+aggregation PredSuccPumpController between
+  PumpController[0..1] role predPumpController
+  PumpController[0..1] role succPumpController
+end
+
+abstract class OperationCall
+operations
+  pred() : Snapshot = 
+    if (self.pred->size() = 1) then self.pred->any( $elem0:Snapshot | true ) else null endif
+  succ() : Snapshot = 
+    if (self.succ->size() = 1) then self.succ->any( $elem0:Snapshot | true ) else null endif
+end
+
+class startOperation_ControlProgramOpC < ControlProgramOpC
+end
+
+abstract class SteamBoilerOpC < OperationCall
+attributes
+  aSelf : SteamBoiler
+end
+
+composition SnapshotSteamMeasurementDevice between
+  Snapshot[1] role snapshotSteamMeasurementDevice
+  SteamMeasurementDevice[*]
+end
+
+abstract class WaterLevelMeasurementDeviceOpC < OperationCall
+attributes
+  aSelf : WaterLevelMeasurementDevice
+end
+
+composition SnapshotPhysicalUnit between
+  Snapshot[1] role snapshotPhysicalUnit
+  PhysicalUnit[*]
+end
+
+abstract class ControlProgramOpC < OperationCall
+attributes
+  aSelf : ControlProgram
+end
+
+class openValve_SteamBoilerOpC < SteamBoilerOpC
+end
+
+aggregation PredSuccSteamBoiler between
+  SteamBoiler[0..1] role predSteamBoiler
+  SteamBoiler[0..1] role succSteamBoiler
+end
+
+composition SnapshotPump between
+  Snapshot[1] role snapshotPump
+  Pump[*]
+end
+
+class Snapshot
+operations
+  pred() : Snapshot = 
+    if (self.pred->size() = 1) then self.pred->any( $elem0:Snapshot | true ) else null endif
+  succ() : Snapshot = 
+    if (self.succ->size() = 1) then self.succ->any( $elem0:Snapshot | true ) else null endif
+end
+
+composition SnapshotPumpController between
+  Snapshot[1] role snapshotPumpController
+  PumpController[*]
+end
+
+abstract class SteamMeasurementDeviceOpC < OperationCall
+attributes
+  aSelf : SteamMeasurementDevice
+end
+
+aggregation PredSuccPump between
+  Pump[0..1] role predPump
+  Pump[0..1] role succPump
+end
+
+class closePump_PumpControllerOpC < PumpControllerOpC
+end
+
+aggregation PredSuccPhysicalUnit between
+  PhysicalUnit[0..1] role predPhysicalUnit
+  PhysicalUnit[0..1] role succPhysicalUnit
+end
+
+aggregation PredSuccSteamMeasurementDevice between
+  SteamMeasurementDevice[0..1] role predSteamMeasurementDevice
+  SteamMeasurementDevice[0..1] role succSteamMeasurementDevice
+end
+
+class getLevel_WaterLevelMeasurementDeviceOpC < WaterLevelMeasurementDeviceOpC
+attributes
+  result : Real
+end
+
+class SteamBoiler
+attributes
+  capacity : Real
+  minimalNormal : Real
+  maximalNormal : Real
+  maximumDecrease : Real
+  maximumIncrease : Real
+  minimalLimit : Real
+  maximalLimit : Real
+  valveOpen : ValveState
+operations
+  openValve()
+end
+
+class WaterLevelMeasurementDevice
+attributes
+  waterLevel : Real
+operations
+  getLevel() : Real
+end
+
+class SteamMeasurementDevice
+attributes
+  evaporationRate : Real
+operations
+  getSteam() : Real
+end
+
+class Pump
+attributes
+  mode : State
+  capacity : Real
+end
+
+class PumpController
+attributes
+  circulating : Boolean
+operations
+  openPump()
+  closePump()
+end
+
+class PhysicalUnit
+attributes
+  ready : Boolean
+end
+
+class ControlProgram
+attributes
+  mode : Mode
+  ready : Boolean
+  failureDetected : Boolean
+  wlmdFailure : Boolean
+  smdFailure : Boolean
+  pumpFailure : Boolean
+  pumpControllerFailure : Boolean
+operations
+  startOperation()
+end
+
+association SteamBoilerControlProgram between
+  SteamBoiler[1] role sb
+  ControlProgram[1] role program
+end
+
+association SteamBoilerWLMD between
+  SteamBoiler[1] role sb
+  WaterLevelMeasurementDevice[1] role wlmd
+end
+
+association SteamBoilerSMD between
+  SteamBoiler[1] role sb
+  SteamMeasurementDevice[1] role smd
+end
+
+association SteamBoilerPump between
+  SteamBoiler[1] role sb
+  Pump[1]
+end
+
+association ControlProgramPump between
+  ControlProgram[1] role program
+  Pump[1]
+end
+
+association PumpControllerPump between
+  PumpController[1] role controller
+  Pump[1]
+end
+
+association ControlProgramPumpControler between
+  ControlProgram[1] role program
+  PumpController[1] role PC
+end
+
+association ControlProgramWLMD between
+  ControlProgram[1] role program
+  WaterLevelMeasurementDevice[1] role wlmd
+end
+
+association ControlProgramSMD between
+  ControlProgram[1] role program
+  SteamMeasurementDevice[1] role smd
+end
+
+constraints
+context ControlProgram inv validLinkingControlProgramPump:
+  (self.pump.isDefined() implies (self.snapshotControlProgram = self.pump.snapshotPump))
+
+context ControlProgram inv validLinkingControlProgramPumpControler:
+  (self.PC.isDefined() implies (self.snapshotControlProgram = self.PC.snapshotPumpController))
+
+context ControlProgram inv validLinkingControlProgramSMD:
+  (self.smd.isDefined() implies (self.snapshotControlProgram = self.smd.snapshotSteamMeasurementDevice))
+
+context ControlProgram inv validLinkingControlProgramWLMD:
+  (self.wlmd.isDefined() implies (self.snapshotControlProgram = self.wlmd.snapshotWaterLevelMeasurementDevice))
+
+context ControlProgram inv validSnapshotLinking:
+  (self.succControlProgram.isDefined() implies (self.succControlProgram.snapshotControlProgram = self.snapshotControlProgram.succ()))
+
+context ControlProgramOpC inv aSelfDefined:
+  self.aSelf.isDefined()
+
+context ControlProgramOpC inv aSelfInPred:
+  (self.aSelf.snapshotControlProgram = self.pred())
+
+context OperationCall inv assocClassBehavior:
+  (((self.pred->size() = 1) and (self.succ->size() = 1)) and OperationCall.allInstances()->forAll( op:OperationCall | (((self.pred = op.pred) and (self.succ = op.succ)) implies (self = op)) ))
+
+context PhysicalUnit inv validSnapshotLinking:
+  (self.succPhysicalUnit.isDefined() implies (self.succPhysicalUnit.snapshotPhysicalUnit = self.snapshotPhysicalUnit.succ()))
+
+context Pump inv validSnapshotLinking:
+  (self.succPump.isDefined() implies (self.succPump.snapshotPump = self.snapshotPump.succ()))
+
+context PumpController inv validLinkingPumpControllerPump:
+  (self.pump.isDefined() implies (self.snapshotPumpController = self.pump.snapshotPump))
+
+context PumpController inv validSnapshotLinking:
+  (self.succPumpController.isDefined() implies (self.succPumpController.snapshotPumpController = self.snapshotPumpController.succ()))
+
+context PumpControllerOpC inv aSelfDefined:
+  self.aSelf.isDefined()
+
+context PumpControllerOpC inv aSelfInPred:
+  (self.aSelf.snapshotPumpController = self.pred())
+
+context Snapshot inv cycleFree:
+  Set{self.succ()}->closure( s:Snapshot | s.succ() )->excludes(self)
+
+context Snapshot inv oneFilmstrip:
+  ((Snapshot.allInstances()->select( s:Snapshot | s.pred().isUndefined() )->size() = 1) and (Snapshot.allInstances()->select( s:Snapshot | s.succ().isUndefined() )->size() = 1))
+
+context SteamBoiler inv validLinkingSteamBoilerControlProgram:
+  (self.program.isDefined() implies (self.snapshotSteamBoiler = self.program.snapshotControlProgram))
+
+context SteamBoiler inv validLinkingSteamBoilerPump:
+  (self.pump.isDefined() implies (self.snapshotSteamBoiler = self.pump.snapshotPump))
+
+context SteamBoiler inv validLinkingSteamBoilerSMD:
+  (self.smd.isDefined() implies (self.snapshotSteamBoiler = self.smd.snapshotSteamMeasurementDevice))
+
+context SteamBoiler inv validLinkingSteamBoilerWLMD:
+  (self.wlmd.isDefined() implies (self.snapshotSteamBoiler = self.wlmd.snapshotWaterLevelMeasurementDevice))
+
+context SteamBoiler inv validSnapshotLinking:
+  (self.succSteamBoiler.isDefined() implies (self.succSteamBoiler.snapshotSteamBoiler = self.snapshotSteamBoiler.succ()))
+
+context SteamBoilerOpC inv aSelfDefined:
+  self.aSelf.isDefined()
+
+context SteamBoilerOpC inv aSelfInPred:
+  (self.aSelf.snapshotSteamBoiler = self.pred())
+
+context SteamMeasurementDevice inv validSnapshotLinking:
+  (self.succSteamMeasurementDevice.isDefined() implies (self.succSteamMeasurementDevice.snapshotSteamMeasurementDevice = self.snapshotSteamMeasurementDevice.succ()))
+
+context SteamMeasurementDeviceOpC inv aSelfDefined:
+  self.aSelf.isDefined()
+
+context SteamMeasurementDeviceOpC inv aSelfInPred:
+  (self.aSelf.snapshotSteamMeasurementDevice = self.pred())
+
+context WaterLevelMeasurementDevice inv validSnapshotLinking:
+  (self.succWaterLevelMeasurementDevice.isDefined() implies (self.succWaterLevelMeasurementDevice.snapshotWaterLevelMeasurementDevice = self.snapshotWaterLevelMeasurementDevice.succ()))
+
+context WaterLevelMeasurementDeviceOpC inv aSelfDefined:
+  self.aSelf.isDefined()
+
+context WaterLevelMeasurementDeviceOpC inv aSelfInPred:
+  (self.aSelf.snapshotWaterLevelMeasurementDevice = self.pred())
+
+context closePump_PumpControllerOpC inv post_post1:
+  (aSelf.succPumpController.pump.mode = State::off)
+
+context closePump_PumpControllerOpC inv pre_pre1:
+  (aSelf.pump.mode = State::on)
+
+context getLevel_WaterLevelMeasurementDeviceOpC inv post_post1:
+  (aSelf.succWaterLevelMeasurementDevice.waterLevel = result)
+
+context getLevel_WaterLevelMeasurementDeviceOpC inv pre_pre1:
+  (aSelf.program.mode = Mode::Normal)
+
+context getSteam_SteamMeasurementDeviceOpC inv post_post1:
+  (aSelf.succSteamMeasurementDevice.evaporationRate = result)
+
+context getSteam_SteamMeasurementDeviceOpC inv pre_pre1:
+  (aSelf.program.mode = Mode::Normal)
+
+context openPump_PumpControllerOpC inv post_post1:
+  (aSelf.succPumpController.pump.mode = State::on)
+
+context openPump_PumpControllerOpC inv pre_pre1:
+  (aSelf.pump.mode = State::off)
+
+context openValve_SteamBoilerOpC inv post_post1:
+  (aSelf.succSteamBoiler.valveOpen = ValveState::open)
+
+context openValve_SteamBoilerOpC inv pre_pre1:
+  (aSelf.valveOpen = ValveState::closed)
+
+context startOperation_ControlProgramOpC inv post_post1:
+  (aSelf.succControlProgram.ready = true)
+
+context startOperation_ControlProgramOpC inv pre_pre1:
+  (aSelf.ready = false)
+
+context self : WaterLevelMeasurementDevice inv WaterLevelLimit:
+  (self.waterLevel <= self.sb.capacity)
+
+context self : SteamBoiler inv ValveOpenInv:
+  ((self.valveOpen = ValveState::open) implies (self.program.mode = Mode::Initialization))
+

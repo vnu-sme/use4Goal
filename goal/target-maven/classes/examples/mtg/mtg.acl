@@ -1,0 +1,42 @@
+acl v2.0 MeetingSchedulerShadow {
+  enum TimetableChannel { none, calendar, phone }
+
+  // Persistent Agent profile. These values belong to the Agent object at runtime,
+  // not to any Initiator/Organizer/Secretary/Participant occurrence.
+  abstract role MeetingParty {
+    name : String;
+    phone : String;
+    hasCalendar : Boolean;
+  }
+
+  // Concrete roles contain only state acquired in one MeetingUnit.
+  role Initiator extends MeetingParty;
+  role Organizer extends MeetingParty;
+  role Secretary extends MeetingParty;
+  role Participant extends MeetingParty {
+    timetableCollected : Boolean;
+    timetableChannel : TimetableChannel;
+    notified : Boolean;
+    attended : Boolean;
+  }
+
+  // A profile-to-profile association is realized as an Agent-to-Agent link.
+  association knowsPhoneOf {
+    MeetingParty [*] role knower;
+    MeetingParty [*] role knownContact;
+  }
+
+  group MeetingUnit {
+    detailsDecided : Boolean;
+    timeChosen : Boolean;
+
+    role Initiator [1];
+    role Organizer [1];
+    role Secretary [0..1];
+    role Participant [2..*];
+
+    Initiator compatible Participant;
+    Organizer compatible Secretary;
+  }
+
+}

@@ -1,4 +1,4 @@
-package org.vnu.sme.goal.conformance;
+package org.vnu.sme.goal.verify.conformance;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -10,9 +10,10 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assumptions;
-import org.vnu.sme.goal.bpmn2.view.Bpmn2View;
-import org.vnu.sme.goal.bpmn2scenario.mm.Bpmn2ScenarioSnapshot;
-import org.vnu.sme.goal.istar.view.IStarView;
+import org.vnu.sme.goal.dsl.bpmn.view.BpmnView;
+import org.vnu.sme.goal.dsl.bpmnscenario.mm.BpmnScenarioSnapshot;
+import org.vnu.sme.goal.dsl.istar.view.IStarView;
+import org.vnu.sme.goal.trace.usetrace.IStarUseTraceEvaluator;
 
 class MtgScenarioConformanceTest {
     private static final Path BASE = Path.of("src/main/resources/examples/mtg");
@@ -23,19 +24,35 @@ class MtgScenarioConformanceTest {
         assertEquals(List.of("decideMeetingDetails", "checkCalendar", "chooseTimeAndDate",
                 "announceMeeting", "participate"), activityIds(session));
         assertTrue(session.ended());
-        assertTrue(session.rootGoalFailures().isEmpty());
+        assertTrue(session.rootGoalFailures().isEmpty(), () -> session.rootGoalFailures().toString());
     }
 
     @Test
     void mixedScenarioGeneratesPhoneThenCalendarTrace() throws Exception {
         var session = run("mtg_i1o1p4s1.soil", "mtg.bpmn2");
-        assertEquals(List.of("decideMeetingDetails", "requestSecretaryCall",
-                "collectConstraintsByPhone", "checkCalendar", "chooseTimeAndDate",
+        assertEquals(List.of("decideMeetingDetails", "checkCalendar", "requestSecretaryCall",
+                "collectConstraintsByPhone", "chooseTimeAndDate",
                 "announceMeeting", "participate"), activityIds(session));
         assertTrue(session.ended());
-        assertTrue(session.rootGoalFailures().isEmpty());
+        assertTrue(session.rootGoalFailures().isEmpty(), () -> session.rootGoalFailures().toString());
         assertTrue(session.frames().stream().anyMatch(frame -> !frame.stateDelta().isEmpty()));
         assertTrue(session.frames().stream().anyMatch(frame -> !frame.goalDelta().isEmpty()));
+    }
+
+    @Test
+    void collectByPhoneUsesTheSecretaryParticipantContextOccurrence() throws Exception {
+        var session = run("mtg_i1o1p4s1.soil", "mtg.bpmn2");
+        var finalFrame = session.frames().get(session.frames().size() - 1);
+        var instance = IStarUseTraceEvaluator.evaluate(session.goalModel(), finalFrame.checkpoint());
+        var contextualTasks = instance.instanceModel().allElements().keySet().stream()
+                .filter(id -> id.startsWith("CollectByPhone__"))
+                .toList();
+        assertFalse(contextualTasks.isEmpty());
+        assertTrue(contextualTasks.stream().anyMatch(id ->
+                instance.instanceMarking().goalTaskStatus(id)
+                        == org.vnu.sme.goal.verify.conformance.semantics.GoalTaskStatus.FULFILLED),
+                () -> contextualTasks.stream().map(id -> id + "="
+                        + instance.instanceMarking().goalTaskStatus(id)).toList().toString());
     }
 
     @Test
@@ -47,13 +64,13 @@ class MtgScenarioConformanceTest {
     }
 
     @Test
-    void oneShotCheckerUsesTheSameScenarioDrivenSemantics() {
+    void oneShotCheckerUsesTheSameScenarioDrivenSemantics() throws Exception {
         var good = AclBpmnIStarConformanceChecker.check(BASE.resolve("mtg.acl"),
                 BASE.resolve("mtg_i1o1p4s1.soil"), BASE.resolve("mtg.istar"), BASE.resolve("mtg.bpmn2"));
         var counterexample = AclBpmnIStarConformanceChecker.check(BASE.resolve("mtg.acl"),
                 BASE.resolve("mtg_i1o1p3s1.soil"), BASE.resolve("mtg.istar"),
                 BASE.resolve("mtg_goal_gap.bpmn2"));
-        assertTrue(good.conformant());
+        assertTrue(good.conformant(), () -> "Unexpected conformance errors: " + good.errors());
         assertFalse(counterexample.conformant());
         assertTrue(counterexample.bpmnFailures().isEmpty(), "the faulty BPMN still completes normally");
         assertFalse(counterexample.goalFailures().isEmpty());
@@ -68,9 +85,9 @@ class MtgScenarioConformanceTest {
             javax.swing.SwingUtilities.invokeAndWait(() -> {
                 var istar = new IStarView();
                 istar.setModel(session.goalModel());
-                var bpmn = new Bpmn2View();
+                var bpmn = new BpmnView();
                 bpmn.setModel(session.bpmnModel());
-                bpmn.setScenarioSnapshot(new Bpmn2ScenarioSnapshot(
+                bpmn.setScenarioSnapshot(new BpmnScenarioSnapshot(
                         java.util.Map.of("run", session.processIds().get(0)), java.util.Map.of(),
                         java.util.Map.of(), List.of(), List.of(), List.of(), List.of(), List.of()));
             });
@@ -91,7 +108,7 @@ class MtgScenarioConformanceTest {
     }
 
     @Test
-    void incidentResponseWasMigratedFromFinalSnapshotToExecutableInputScenario() {
+    void incidentResponseWasMigratedFromFinalSnapshotToExecutableInputScenario() throws Exception {
         Path base = Path.of("src/main/resources/examples/incident_response_acl");
         var result = AclBpmnIStarConformanceChecker.check(base.resolve("incident_response.acl"),
                 base.resolve("incident_response.soil"), base.resolve("incident_response.istar"),
@@ -102,7 +119,7 @@ class MtgScenarioConformanceTest {
     }
 
     @Test
-    void ojsNowHasAnExecutableInputScenarioInsteadOfOnlyAolFinalSnapshots() {
+    void ojsNowHasAnExecutableInputScenarioInsteadOfOnlyAolFinalSnapshots() throws Exception {
         Path base = Path.of("src/main/resources/examples/ojs");
         var result = AclBpmnIStarConformanceChecker.check(base.resolve("ojs.acl"),
                 base.resolve("ojs_input.soil"), base.resolve("ojs.istar"), base.resolve("ojs.bpmn2"));

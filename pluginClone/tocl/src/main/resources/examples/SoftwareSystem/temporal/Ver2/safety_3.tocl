@@ -1,0 +1,7 @@
+context System
+inv safety3:
+    self.installedApps->notEmpty() implies
+    self.installedApps->forAll(app |
+        sometimePast isCalled(load(app : Application))
+        at most 1 times
+    )

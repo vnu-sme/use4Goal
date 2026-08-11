@@ -1,0 +1,5 @@
+context FloorButton
+-- if the next FloorButton exists then it must have the same floor
+inv sameFloor: self.succFloorButton.isDefined() implies self.floor = self.succFloorButton.floor
+-- two different buttons in the same snapshot should have different floor number
+inv diffFloor: self.snapshotFloorButton.floorButton->forAll(c:FloorButton | c <> self implies c.floor <> self.floor)

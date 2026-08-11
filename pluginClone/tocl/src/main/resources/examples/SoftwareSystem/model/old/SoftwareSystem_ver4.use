@@ -1,0 +1,54 @@
+model SoftwareSystem
+
+enum State { NotInstalled, Installed, Running }
+
+-- Classes
+class System
+attributes
+    id : Integer
+    freeRam : Integer
+operations
+    install(app : Application)
+    run(app : Application)
+    stop(app : Application)
+end
+
+class Application
+attributes
+    id : Integer
+    size : Integer
+    state : State
+end
+
+-- Associations
+association SystemApplication between
+    System[1] role system
+    Application[0..*] role apps
+end
+
+-- Invariants
+constraints
+context System
+    inv memoryConstraint: self.freeRam >= 0
+    inv noDuplicateApps: self.apps->isUnique(app | app.id)
+
+context Application
+    inv sizeConstraint: self.size > 0
+
+context System::install(app : Application)
+    pre appNotInstalled: app.state = #NotInstalled
+    post appInstalled: app.state = #Installed
+    post unchanged: self.apps->forAll(app_1 | app_1.size = app_1.size@pre)
+
+context System::run(app : Application)
+    pre isInstalled: app.state = #Installed
+    pre enoughRam: self.freeRam >= app.size
+    post appRunning: app.state = #Running
+    post reducedRam: self.freeRam = self.freeRam@pre - app.size
+    post unchanged: self.apps->forAll(app_1 | app_1.size = app_1.size@pre)
+
+context System::stop(app : Application)
+    pre isRunning: app.state = #Running
+    post appStopped: app.state = #Installed
+    post increasedRam: self.freeRam = self.freeRam@pre + app.size
+    post unchanged: self.apps->forAll(app_1 | app_1.size = app_1.size@pre)

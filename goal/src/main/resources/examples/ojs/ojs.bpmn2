@@ -1,25 +1,18 @@
 model OJSReviewProcess {
   pool SubmissionProcess {
-    lane Review {
-      start submitted { trigger none }
-      task reviewSubmission {
-        post {[ Review.allInstances()->forAll(r | r.recommendation = Recommendation::accept) ]}
-        effect {[
-          for r in Review.allInstances() do r.recommendation := Recommendation::accept; end
-        ]}
-      }
-    }
-    lane SectionEditor {
-      task decideSubmission {
-        post {[ ReviewRound.allInstances()->forAll(r | r.editorDecision = EditorDecision::accept) ]}
-        effect {[
-          for r in ReviewRound.allInstances() do r.editorDecision := EditorDecision::accept; end
-        ]}
-      }
-      end decided { trigger none }
-    }
-    flow submitted -> reviewSubmission
-    flow reviewSubmission -> decideSubmission
-    flow decideSubmission -> decided
+    lane Review;
+    lane SectionEditor;
   }
+  start submitted { lane Review trigger none flow reviewSubmission }
+  activity reviewSubmission {
+    type task lane Review
+    post {[ Review.allInstances()->forAll(r | r.recommendation = Recommendation::accept) ]}
+    flow decideSubmission
+  }
+  activity decideSubmission {
+    type task lane SectionEditor
+    post {[ ReviewRound.allInstances()->forAll(r | r.editorDecision = EditorDecision::accept) ]}
+    flow decided
+  }
+  end decided { lane SectionEditor trigger none }
 }

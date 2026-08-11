@@ -1,0 +1,12 @@
+model ClaimHandlingDomain
+
+enum ClaimStatus {newClaim, approved, rejected}
+
+class Claim
+attributes
+  submitted  : Boolean
+  registered : Boolean
+  checked    : Boolean
+  eligible   : Boolean
+  status     : ClaimStatus
+end

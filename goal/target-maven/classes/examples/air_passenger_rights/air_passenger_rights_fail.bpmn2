@@ -1,0 +1,45 @@
+// BPMN 2.0 Example — Air Passenger Rights Delay Compensation Claim (DEFECTIVE VARIANT)
+// Transcribed from example/Data/air-passenger-rights/petri_net_fail.pnml.
+// Diff vs. petri_net.pnml: transition t10 ("Record justification for exclusion") and its
+// arcs are removed; the arc that used to go t15 -> p14 -> t10 -> p10 is rewired directly
+// t15 -> p10. In BPMN terms: the "extraordinary circumstance" branch coming out of
+// gw_afterCalc now skips straight to Approve Compensation WITHOUT ever recording the
+// justification for the exclusion — a plausible compliance defect, useful as a
+// non-compliant counterpart to air_passenger_rights.bpmn2 for testing the conformance checker.
+
+model AirPassengerRightsClaimFail {
+
+  pool AirlineClaimProcess {
+    name "Airline Claim Process"
+    lane assessment_lane {
+      name "Delay Assessment"
+      start start1 { trigger none }      gateway gw_split { type and }      task retrieveBookingTime { name "Retrieve Arrival Time From Booking" }      task retrieveDoorOpenTime { name "Retrieve Door Open Time" }      gateway gw_join { type and }      task calculateDelay { name "Calculate Delay At Arrival" }      gateway gw_afterCalc { type xor }      task retrieveInternalSystemsInfo { name "Retrieve Info From Internal Systems" }      gateway gw_afterInfo { type xor }      task registerJudgementCriteria { name "Register Judgement Criteria And Type Of EC" }      gateway gw_afterRegister { type xor }      task recordJustificationExclusionA { name "Record justification for exclusion (A)" }    }
+    lane decision_lane {
+      name "Compensation Decision"
+      task approveCompensation { name "Approve Compensation" }      task denyCompensation { name "Deny Compensation" }      task documentAndSaveFileCase { name "Document And Save File Case" }      end end1 { trigger none }    }
+
+    flow start1 -> gw_split
+    flow gw_split -> retrieveBookingTime
+    flow gw_split -> retrieveDoorOpenTime
+    flow retrieveBookingTime  -> gw_join
+    flow retrieveDoorOpenTime -> gw_join
+    flow gw_join -> calculateDelay
+    flow calculateDelay -> gw_afterCalc
+
+    flow gw_afterCalc -> retrieveInternalSystemsInfo
+    // DEFECT: skips recordJustificationExclusionB entirely — goes straight to Approve.
+    flow gw_afterCalc -> approveCompensation { name "extraordinary circumstance branch (no justification recorded)" }
+    flow retrieveInternalSystemsInfo -> gw_afterInfo
+    flow gw_afterInfo -> registerJudgementCriteria
+    flow gw_afterInfo -> recordJustificationExclusionA { name "extraordinary circumstance branch" }
+    flow registerJudgementCriteria -> gw_afterRegister
+    flow gw_afterRegister -> denyCompensation
+    flow gw_afterRegister -> approveCompensation
+
+    flow recordJustificationExclusionA -> denyCompensation
+
+    flow denyCompensation    -> documentAndSaveFileCase
+    flow approveCompensation -> documentAndSaveFileCase
+    flow documentAndSaveFileCase -> end1
+  }
+}

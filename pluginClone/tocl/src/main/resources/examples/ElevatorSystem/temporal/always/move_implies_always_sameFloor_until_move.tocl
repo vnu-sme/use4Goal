@@ -1,0 +1,4 @@
+context Elevator
+inv alwaysSameFloorBetweenTwoMoves: isCalled(move()) implies (always self.currentFloor = self.targetFloor until isCalled(move()))
+
+--

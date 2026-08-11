@@ -1,6 +1,6 @@
 grammar DCR;
 
-@header { package org.vnu.sme.goal.dcr.parser; }
+@header { package org.vnu.sme.goal.dsl.dcr.parser; }
 
 model : 'dcr' IDENT '{' statement* '}' EOF ;
 

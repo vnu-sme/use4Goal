@@ -1,0 +1,246 @@
+-- Generated from ACL. Regenerate instead of editing this file.
+-- Role 'extends' is a play chain (Owner[1]--Role[mult] association), not USE
+-- generalization: no two Role classes are ever related by '<'. Agent is an empty
+-- class. A Role's multiplicity toward its owner is [0..1] unless the Role is ever
+-- a Group member (Owner target), in which case it is [0..*] -- see
+-- ACL_OCL_SEMANTICS.md §3.4-§3.7 and ACL_TO_USE_OCL_CASES.md R1-R13.
+-- Compatibility is 'inv NoConflict_<R1>_<R2>' on the nearest shared play-chain
+-- ancestor; every Owner-target Role also gets 'inv NoSelfConflict_<R>'.
+
+model MeetingScheduler_Verification
+
+enum TimetableChannel {none, calendar, phone}
+
+class Agent
+end
+
+class MeetingParty
+attributes
+  name : String
+  phone : String
+  hasCalendar : Boolean
+end
+
+class Initiator
+operations
+  MeetingOrganized_activation() : Boolean =
+    true
+  MeetingOrganized_condition() : Boolean =
+    false
+  MeetingScheduled_activation() : Boolean =
+    true
+  MeetingScheduled_condition() : Boolean =
+    false
+  ParticipantsAttended_activation() : Boolean =
+    true
+  ParticipantsAttended_condition() : Boolean =
+    false
+  DecideDetails_preHolds() : Boolean =
+    not self.source_Initiator_in_MeetingUnit.detailsDecided
+  DecideDetails_postHolds() : Boolean =
+    self.source_Initiator_in_MeetingUnit.detailsDecided
+end
+
+class Organizer
+operations
+  OrganizerScheduledMeeting_activation() : Boolean =
+    true
+  OrganizerScheduledMeeting_condition() : Boolean =
+    false
+  ChosenTimeHasDetails_activation() : Boolean =
+    self.source_Organizer_in_MeetingUnit.timeChosen
+  ChosenTimeHasDetails_condition() : Boolean =
+    self.source_Organizer_in_MeetingUnit.detailsDecided
+  SchedulingCompleted_activation() : Boolean =
+    true
+  SchedulingCompleted_condition() : Boolean =
+    false
+  TimetablesCollected_activation() : Boolean =
+    true
+  TimetablesCollected_condition() : Boolean =
+    false
+  ParticipantsNotified_activation() : Boolean =
+    true
+  ParticipantsNotified_condition() : Boolean =
+    self.source_Organizer_in_MeetingUnit.target_Participant_in_MeetingUnit
+        ->forAll(participant | participant.notified)
+  ChooseMeetingTime_preHolds() : Boolean =
+    self.source_Organizer_in_MeetingUnit.detailsDecided
+      and self.source_Organizer_in_MeetingUnit.target_Participant_in_MeetingUnit
+        ->forAll(participant | participant.timetableCollected)
+  ChooseMeetingTime_postHolds() : Boolean =
+    self.source_Organizer_in_MeetingUnit.timeChosen
+end
+
+class Secretary
+operations
+  SecretaryRequested_activation() : Boolean =
+    self.source_MeetingParty_plays_Secretary.knownContact->includes(self.source_Secretary_in_MeetingUnit.target_Participant_in_MeetingUnit->any(any_Participant | true).source_MeetingParty_plays_Participant)
+  SecretaryRequested_condition() : Boolean =
+    false
+  CollectByPhone_preHolds() : Boolean =
+    self.source_Secretary_in_MeetingUnit.target_Participant_in_MeetingUnit->any(any_Participant | true).source_MeetingParty_plays_Participant.phone <> ''
+      and not self.source_Secretary_in_MeetingUnit.target_Participant_in_MeetingUnit->any(any_Participant | true).source_MeetingParty_plays_Participant.hasCalendar
+      and not self.source_Secretary_in_MeetingUnit.target_Participant_in_MeetingUnit->any(any_Participant | true).timetableCollected
+  CollectByPhone_postHolds() : Boolean =
+    self.source_Secretary_in_MeetingUnit.target_Participant_in_MeetingUnit->any(any_Participant | true).timetableCollected
+      and self.source_Secretary_in_MeetingUnit.target_Participant_in_MeetingUnit->any(any_Participant | true).timetableChannel = #phone
+end
+
+class Participant
+attributes
+  timetableCollected : Boolean
+  timetableChannel : TimetableChannel
+  notified : Boolean
+  attended : Boolean
+operations
+  ParticipantAttended_activation() : Boolean =
+    true
+  ParticipantAttended_condition() : Boolean =
+    self.attended
+  TimetableCollected_activation() : Boolean =
+    true
+  TimetableCollected_condition() : Boolean =
+    self.timetableCollected
+  ContactedByPhone_activation() : Boolean =
+    not self.source_MeetingParty_plays_Participant.hasCalendar
+  ContactedByPhone_condition() : Boolean =
+    self.timetableCollected
+      and self.timetableChannel = #phone
+  CollectFromCalendar_preHolds() : Boolean =
+    self.source_MeetingParty_plays_Participant.hasCalendar and not self.timetableCollected
+  CollectFromCalendar_postHolds() : Boolean =
+    self.source_MeetingParty_plays_Participant.hasCalendar
+      and self.timetableCollected
+      and self.timetableChannel = #calendar
+  NotifyParticipant_preHolds() : Boolean =
+    self.source_Participant_in_MeetingUnit.timeChosen
+  NotifyParticipant_postHolds() : Boolean =
+    self.notified
+  AttendMeeting_preHolds() : Boolean =
+    self.notified
+  AttendMeeting_postHolds() : Boolean =
+    self.attended
+end
+
+class MeetingUnit
+attributes
+  detailsDecided : Boolean
+  timeChosen : Boolean
+end
+
+association knowsPhoneOf between
+  MeetingParty[0..*] role knower
+  MeetingParty[0..*] role knownContact
+end
+
+association Agent_plays_MeetingParty between
+  Agent[1] role source_Agent_plays_MeetingParty
+  MeetingParty[0..1] role target_Agent_plays_MeetingParty
+end
+
+association MeetingParty_plays_Initiator between
+  MeetingParty[1] role source_MeetingParty_plays_Initiator
+  Initiator[0..*] role target_MeetingParty_plays_Initiator
+end
+
+association MeetingParty_plays_Organizer between
+  MeetingParty[1] role source_MeetingParty_plays_Organizer
+  Organizer[0..*] role target_MeetingParty_plays_Organizer
+end
+
+association MeetingParty_plays_Secretary between
+  MeetingParty[1] role source_MeetingParty_plays_Secretary
+  Secretary[0..*] role target_MeetingParty_plays_Secretary
+end
+
+association MeetingParty_plays_Participant between
+  MeetingParty[1] role source_MeetingParty_plays_Participant
+  Participant[0..*] role target_MeetingParty_plays_Participant
+end
+
+composition Initiator_in_MeetingUnit between
+  MeetingUnit[1] role source_Initiator_in_MeetingUnit
+  Initiator[1] role target_Initiator_in_MeetingUnit
+end
+
+composition Organizer_in_MeetingUnit between
+  MeetingUnit[1] role source_Organizer_in_MeetingUnit
+  Organizer[1] role target_Organizer_in_MeetingUnit
+end
+
+composition Secretary_in_MeetingUnit between
+  MeetingUnit[1] role source_Secretary_in_MeetingUnit
+  Secretary[0..1] role target_Secretary_in_MeetingUnit
+end
+
+composition Participant_in_MeetingUnit between
+  MeetingUnit[1] role source_Participant_in_MeetingUnit
+  Participant[2..*] role target_Participant_in_MeetingUnit
+end
+
+constraints
+
+context MeetingParty inv NoSelfConflict_Initiator:
+  self.target_MeetingParty_plays_Initiator->forAll(r1, r2 : Initiator |
+    r1 <> r2 implies r1.source_Initiator_in_MeetingUnit <> r2.source_Initiator_in_MeetingUnit)
+
+context MeetingParty inv NoSelfConflict_Organizer:
+  self.target_MeetingParty_plays_Organizer->forAll(r1, r2 : Organizer |
+    r1 <> r2 implies r1.source_Organizer_in_MeetingUnit <> r2.source_Organizer_in_MeetingUnit)
+
+context MeetingParty inv NoSelfConflict_Secretary:
+  self.target_MeetingParty_plays_Secretary->forAll(r1, r2 : Secretary |
+    r1 <> r2 implies r1.source_Secretary_in_MeetingUnit <> r2.source_Secretary_in_MeetingUnit)
+
+context MeetingParty inv NoSelfConflict_Participant:
+  self.target_MeetingParty_plays_Participant->forAll(r1, r2 : Participant |
+    r1 <> r2 implies r1.source_Participant_in_MeetingUnit <> r2.source_Participant_in_MeetingUnit)
+
+context MeetingParty inv NoConflict_Initiator_Organizer:
+self.target_MeetingParty_plays_Initiator->forAll(r1 : Initiator |
+self.target_MeetingParty_plays_Organizer->forAll(r2 : Organizer |
+      not (r1.source_Initiator_in_MeetingUnit = r2.source_Organizer_in_MeetingUnit)))
+
+context MeetingParty inv NoConflict_Initiator_Secretary:
+self.target_MeetingParty_plays_Initiator->forAll(r1 : Initiator |
+self.target_MeetingParty_plays_Secretary->forAll(r2 : Secretary |
+      not (r1.source_Initiator_in_MeetingUnit = r2.source_Secretary_in_MeetingUnit)))
+
+context MeetingParty inv NoConflict_Organizer_Participant:
+self.target_MeetingParty_plays_Organizer->forAll(r1 : Organizer |
+self.target_MeetingParty_plays_Participant->forAll(r2 : Participant |
+      not (r1.source_Organizer_in_MeetingUnit = r2.source_Participant_in_MeetingUnit)))
+
+context MeetingParty inv NoConflict_Secretary_Participant:
+self.target_MeetingParty_plays_Secretary->forAll(r1 : Secretary |
+self.target_MeetingParty_plays_Participant->forAll(r2 : Participant |
+      not (r1.source_Secretary_in_MeetingUnit = r2.source_Participant_in_MeetingUnit)))
+
+constraints
+
+-- ===== ACL compatibility constraints already included above =====
+
+-- ===== iStar Goal/Task activation/condition/pre/post are class operations, declared above on each host class (see USE 'operations' section) =====
+
+-- ===== Refinement structural invariants =====
+
+context Initiator
+  inv And_MeetingOrganized:
+    self.MeetingOrganized_condition() = (self.DecideDetails_postHolds() and self.MeetingScheduled_condition() and self.ParticipantsAttended_condition())
+
+context Organizer
+  inv And_SchedulingCompleted:
+    self.SchedulingCompleted_condition() = (self.TimetablesCollected_condition() and self.ChooseMeetingTime_postHolds() and self.ParticipantsNotified_condition())
+
+context Participant
+  inv Or_TimetableCollected_ContactedByPhone:
+    self.ContactedByPhone_condition() implies self.TimetableCollected_condition()
+
+context Participant
+  inv Or_TimetableCollected_CollectFromCalendar:
+    self.CollectFromCalendar_postHolds() implies self.TimetableCollected_condition()
+
+-- ===== TOCL temporal goal properties are in the companion .tocl file =====
+-- (load it via the TOCL plugin; see 'always'/'sometime'/'alwaysPast')
+

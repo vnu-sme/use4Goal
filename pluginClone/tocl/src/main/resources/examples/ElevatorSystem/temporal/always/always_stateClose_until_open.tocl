@@ -1,0 +1,3 @@
+-- the doorState is always #Close until the openDoor() operation is called
+context Elevator
+inv alwaysDoorCloseUntilOpen: always self.doorState = #Closed until isCalled(openDoor())

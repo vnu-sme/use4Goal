@@ -1,0 +1,4 @@
+-- The car light and the pedestrian light can not be green simultaneously
+context TrafficLight
+inv TL1: self.requested = true implies sometime becomesTrue(self.requested = false)
+

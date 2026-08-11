@@ -1,0 +1,5 @@
+context BankAccount
+inv BA1: sometime balance > 0
+
+-- context BankAccount inv BA1:
+-- not((let CS:Snapshot = self.getCurrentSnapshot() in CS.getPost()->including(CS)->exists(s | self.atSnapshot(s).balance > 0)))

@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:sTM="http://www.example.org/sTM">
+  <ecore:EPackage name="sTM" nsURI="http://www.example.org/sTM" nsPrefix="sTM">
+    <eAnnotations source="http://www.eclipse.org/OCL/Import">
+      <details key="ecore" value="http://www.eclipse.org/emf/2002/Ecore"/>
+    </eAnnotations>
+    <eClassifiers xsi:type="ecore:EClass" name="SnapshotClassifier" eSuperTypes="#/0/Classifier">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+        <details key="constraints" value="UniqueIds AcyclicScenario OneScenario SameSnapshot"/>
+      </eAnnotations>
+      <eOperations name="getNext" eType="#/0/SnapshotClassifier"/>
+      <eOperations name="getPost" ordered="false" upperBound="-1" eType="#/0/SnapshotClassifier"/>
+      <eOperations name="getPrevious" eType="#/0/SnapshotClassifier"/>
+      <eOperations name="getPre" ordered="false" upperBound="-1" eType="#/0/SnapshotClassifier"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="snapshotObjects" upperBound="-1"
+          eType="#/0/SnapshotComponent" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="nextT" eType="#/0/TransitionClass"
+          eOpposite="#/0/TransitionClass/beforeS"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="beforeT" eType="#/0/TransitionClass"
+          eOpposite="#/0/TransitionClass/nextS"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="isFirst" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Boolean"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="isLast" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Boolean"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="TransitionClass" eSuperTypes="#/0/NamedElement #/0/Classifier">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+        <details key="constraints" value="SameTrans"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="attributes" upperBound="-1"
+          eType="#/0/Property" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="constraints" upperBound="-1"
+          eType="#/0/Constraint" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="context" lowerBound="1"
+          eType="#/0/Property" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="isParentClass" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Boolean"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="transitionParent" lowerBound="1"
+          eType="#/0/TransitionClass" eOpposite="#/0/TransitionClass/transitionSubClasses"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="transitionSubClasses"
+          upperBound="-1" eType="#/0/TransitionClass" eOpposite="#/0/TransitionClass/transitionParent"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="beforeS" lowerBound="1"
+          eType="#/0/SnapshotClassifier" eOpposite="#/0/SnapshotClassifier/nextT"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="nextS" lowerBound="1"
+          eType="#/0/SnapshotClassifier" eOpposite="#/0/SnapshotClassifier/beforeT"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="postObjects" upperBound="-1"
+          eType="#/0/Property" containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="SnapshotComponent" eSuperTypes="#/0/Classifier">
+      <eOperations name="getNext" eType="#/0/SnapshotComponent"/>
+      <eOperations name="getPost" ordered="false" upperBound="-1" eType="#/0/SnapshotComponent"/>
+      <eOperations name="getPrevious" eType="#/0/SnapshotComponent"/>
+      <eOperations name="getPre" ordered="false" upperBound="-1" eType="#/0/SnapshotComponent"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="attributes" upperBound="-1"
+          eType="#/0/Property" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="constraints" upperBound="-1"
+          eType="#/0/Constraint" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="queryOperations" upperBound="-1"
+          eType="#/0/Operation" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="objectId" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Int"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="Association" eSuperTypes="#/0/TypedElement #/0/Classifier">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="ownedEnd" upperBound="-1"
+          eType="#/0/Property" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="memberEnd" lowerBound="2"
+          upperBound="-1" eType="#/0/Property" eOpposite="#/0/Property/association"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="Constraint" eSuperTypes="#/0/NamedElement">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="specification" lowerBound="1"
+          eType="#/0/ValueSpecification" containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="Property" eSuperTypes="#/0/NamedElement #/0/TypedElement">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="association" eType="#/0/Association"
+          eOpposite="#/0/Association/memberEnd"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="lower" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Int"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="upper" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Int"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="isDerived" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Boolean"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="redefinedProperty" upperBound="-1"
+          eType="#/0/Property"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="aggregation" eType="#/0/AggregationKind"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="Type" abstract="true" eSuperTypes="#/0/NamedElement">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="typedElement" upperBound="-1"
+          eType="#/0/TypedElement" eOpposite="#/0/TypedElement/type"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="TypedElement" abstract="true" eSuperTypes="#/0/NamedElement">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="type" lowerBound="1"
+          upperBound="-1" eType="#/0/Type" eOpposite="#/0/Type/typedElement"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="NamedElement" abstract="true">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="DataType" eSuperTypes="#/0/Classifier">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="property" upperBound="-1"
+          eType="#/0/Property" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="operation" upperBound="-1"
+          eType="#/0/Operation" containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="Enumeration" eSuperTypes="#/0/DataType">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="ownedLiteral" upperBound="-1"
+          eType="#/0/EnumerationLiteral" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="enumerationLiteral" upperBound="-1"
+          eType="#/0/EnumerationLiteral" eOpposite="#/0/EnumerationLiteral/enumeration"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="EnumerationLiteral" eSuperTypes="#/0/NamedElement">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="enumeration" lowerBound="1"
+          eType="#/0/Enumeration" eOpposite="#/0/Enumeration/enumerationLiteral"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="Operation" eSuperTypes="#/0/NamedElement">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="#/0/Type"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="lower" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Int"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="upper" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Int"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
+          eType="#/0/Parameter" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="bodyCondition" upperBound="-1"
+          eType="#/0/Constraint" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="postcondition" upperBound="-1"
+          eType="#/0/Constraint" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="precondition" upperBound="-1"
+          eType="#/0/Constraint" containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="Classifier" abstract="true" eSuperTypes="#/0/Type">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="isAbstract" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Boolean"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="generalization" upperBound="-1"
+          eType="#/0/Generalization" containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="Generalization">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="general" eType="#/0/Classifier"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="OpaqueExpression" eSuperTypes="#/0/ValueSpecification">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="body" upperBound="-1"
+          eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="language" upperBound="-1"
+          eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="Parameter" eSuperTypes="#/0/TypedElement">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="default" upperBound="-1"
+          eType="ecore:EDataType http://www.eclipse.org/ocl/2015/Pivot#T-pivot-String"
+          defaultValueLiteral=""/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="direction" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="ValueSpecification" abstract="true"
+        eSuperTypes="#/0/TypedElement"/>
+    <eClassifiers xsi:type="ecore:EClass" name="LiteralSpecification" abstract="true"
+        eSuperTypes="#/0/ValueSpecification"/>
+    <eClassifiers xsi:type="ecore:EClass" name="LiteralInteger" eSuperTypes="#/0/LiteralSpecification">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/ocl/2015/Pivot#T-pivot-Integer"
+          defaultValueLiteral="0"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="LiteralUnlimitedNatural" eSuperTypes="#/0/LiteralSpecification">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/ocl/2015/Pivot#T-pivot-UnlimitedNatural"
+          defaultValueLiteral="0"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="LiteralReal" eSuperTypes="#/0/LiteralSpecification">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/ocl/2015/Pivot#T-pivot-Real"
+          defaultValueLiteral="0"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="LiteralString" eSuperTypes="#/0/LiteralSpecification">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="LiteralNull" eSuperTypes="#/0/LiteralSpecification"/>
+    <eClassifiers xsi:type="ecore:EClass" name="LiteralBoolean">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Boolean"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="SnapshotAssocClass" eSuperTypes="#/0/Association #/0/SnapshotComponent"/>
+    <eClassifiers xsi:type="ecore:EClass" name="Model" eSuperTypes="#/0/NamedElement">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="ownedElements" upperBound="-1"
+          eType="#/0/NamedElement" containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EEnum" name="AggregationKind">
+      <eLiterals name="none"/>
+      <eLiterals name="shared"/>
+      <eLiterals name="composite"/>
+    </eClassifiers>
+  </ecore:EPackage>
+  <sTM:Model name="BankAccountSTM">
+    <ownedElements xsi:type="sTM:SnapshotClassifier" name="Snapshot">
+      <snapshotObjects name="DebitCard" typedElement="#/1/@ownedElements.8/@context #/1/@ownedElements.3/@ownedEnd.1">
+        <attributes name="cardNumber" type="#/1/@ownedElements.9" lower="1" upper="1"/>
+        <attributes name="limit" type="#/1/@ownedElements.9" lower="1" upper="1"/>
+        <constraints name="inv2">
+          <specification xsi:type="sTM:OpaqueExpression">
+            <body>(self.limit > 0)</body>
+          </specification>
+        </constraints>
+        <constraints name="inv3">
+          <specification xsi:type="sTM:OpaqueExpression">
+            <body>DebitCard.allInstances->isUnique($elem1 : DebitCard | $elem1.cardNumber)</body>
+          </specification>
+        </constraints>
+      </snapshotObjects>
+      <snapshotObjects name="BankAccount" typedElement="#/1/@ownedElements.5/@context #/1/@ownedElements.6/@context #/1/@ownedElements.7/@context #/1/@ownedElements.3/@ownedEnd.0">
+        <attributes name="accountNumber" type="#/1/@ownedElements.9" lower="1" upper="1"/>
+        <attributes name="balance" type="#/1/@ownedElements.9" lower="1" upper="1"/>
+        <constraints name="inv1">
+          <specification xsi:type="sTM:OpaqueExpression">
+            <body>(not self.card->isEmpty implies self.card->forAll($elem0 : DebitCard | ($elem0.limit &lt;= self.balance)))</body>
+          </specification>
+        </constraints>
+      </snapshotObjects>
+    </ownedElements>
+    <ownedElements xsi:type="sTM:SnapshotClassifier" name="FirstSnapshot" isFirst="true">
+      <generalization general="#/1/@ownedElements.0"/>
+    </ownedElements>
+    <ownedElements xsi:type="sTM:SnapshotClassifier" name="LastSnapshot" isLast="true">
+      <generalization general="#/1/@ownedElements.0"/>
+    </ownedElements>
+    <ownedElements xsi:type="sTM:Association" name="AccountCard" memberEnd="#/1/@ownedElements.3/@ownedEnd.0 #/1/@ownedElements.3/@ownedEnd.1">
+      <ownedEnd name="account" type="#/1/@ownedElements.0/@snapshotObjects.1" association="#/1/@ownedElements.3"
+          lower="1" upper="1"/>
+      <ownedEnd name="card" type="#/1/@ownedElements.0/@snapshotObjects.0" association="#/1/@ownedElements.3"
+          upper="-1"/>
+    </ownedElements>
+    <ownedElements xsi:type="sTM:TransitionClass" name="Transition" isAbstract="true"
+        isParentClass="true" transitionSubClasses="#/1/@ownedElements.5 #/1/@ownedElements.6 #/1/@ownedElements.7 #/1/@ownedElements.8"/>
+    <ownedElements xsi:type="sTM:TransitionClass" name="BankAccount_assignNewCard"
+        transitionParent="#/1/@ownedElements.4">
+      <generalization general="#/1/@ownedElements.4"/>
+      <constraints name="post4">
+        <specification xsi:type="sTM:OpaqueExpression">
+          <body>(DebitCard.allInstances->select($elem2 : DebitCard | $elem2.oclIsNew)->size = 1)</body>
+          <language>OCL</language>
+        </specification>
+      </constraints>
+      <constraints name="post5">
+        <specification xsi:type="sTM:OpaqueExpression">
+          <body>self.card->includes(DebitCard.allInstances->select($elem3 : DebitCard | $elem3.oclIsNew)->any($elem4 : DebitCard | true))</body>
+          <language>OCL</language>
+        </specification>
+      </constraints>
+      <context name="transitionContext" type="#/1/@ownedElements.0/@snapshotObjects.1"
+          upper="1"/>
+    </ownedElements>
+    <ownedElements xsi:type="sTM:TransitionClass" name="BankAccount_deposit" transitionParent="#/1/@ownedElements.4">
+      <generalization general="#/1/@ownedElements.4"/>
+      <attributes name="amount" type="#/1/@ownedElements.9" upper="1"/>
+      <constraints name="post2">
+        <specification xsi:type="sTM:OpaqueExpression">
+          <body>(self.balance = (self.balance@pre + amount))</body>
+          <language>OCL</language>
+        </specification>
+      </constraints>
+      <context name="transitionContext" type="#/1/@ownedElements.0/@snapshotObjects.1"
+          upper="1"/>
+    </ownedElements>
+    <ownedElements xsi:type="sTM:TransitionClass" name="BankAccount_withdraw" transitionParent="#/1/@ownedElements.4">
+      <generalization general="#/1/@ownedElements.4"/>
+      <attributes name="amount" type="#/1/@ownedElements.9" upper="1"/>
+      <constraints name="post1">
+        <specification xsi:type="sTM:OpaqueExpression">
+          <body>(self.balance = (self.balance@pre - amount))</body>
+          <language>OCL</language>
+        </specification>
+      </constraints>
+      <context name="transitionContext" type="#/1/@ownedElements.0/@snapshotObjects.1"
+          upper="1"/>
+    </ownedElements>
+    <ownedElements xsi:type="sTM:TransitionClass" name="DebitCard_pay" transitionParent="#/1/@ownedElements.4">
+      <generalization general="#/1/@ownedElements.4"/>
+      <attributes name="amount" type="#/1/@ownedElements.9" upper="1"/>
+      <constraints name="pre1">
+        <specification xsi:type="sTM:OpaqueExpression">
+          <body>(amount &lt; self.transitionContext.limit)</body>
+          <language>OCL</language>
+        </specification>
+      </constraints>
+      <constraints name="post3">
+        <specification xsi:type="sTM:OpaqueExpression">
+          <body>(self.account.balance = (self.account.balance@pre - amount))</body>
+          <language>OCL</language>
+        </specification>
+      </constraints>
+      <context name="transitionContext" type="#/1/@ownedElements.0/@snapshotObjects.0"
+          upper="1"/>
+    </ownedElements>
+    <ownedElements xsi:type="sTM:DataType" name="Integer" typedElement="#/1/@ownedElements.0/@snapshotObjects.1/@attributes.0 #/1/@ownedElements.0/@snapshotObjects.1/@attributes.1 #/1/@ownedElements.6/@attributes.0 #/1/@ownedElements.7/@attributes.0 #/1/@ownedElements.0/@snapshotObjects.0/@attributes.0 #/1/@ownedElements.0/@snapshotObjects.0/@attributes.1 #/1/@ownedElements.8/@attributes.0"/>
+  </sTM:Model>
+</xmi:XMI>

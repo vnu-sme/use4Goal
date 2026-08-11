@@ -1,0 +1,7 @@
+-- if move() is called, then openDoor() is called in one of the future snapshots
+context Elevator
+inv sometimeOpenIsCalled: isCalled(move()) implies sometime isCalled(openDoor())
+
+--Translated OCL
+--context Elevator
+--inv sometimeOpenIsCalled: OperationCall.allInstances()->exists(op | op.succ() = self.snapshotElevator and op.oclIsTypeOf(move_ElevatorOpC)) implies (let CS:Snapshot = self.snapshotElevator in Set{CS}->closure(s | s.succ())->excluding(null)->exists(s | OperationCall.allInstances()->exists(op | op.succ() = s and op.oclIsTypeOf(openDoor_ElevatorOpC))))

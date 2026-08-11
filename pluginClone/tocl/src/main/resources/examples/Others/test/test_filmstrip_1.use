@@ -1,0 +1,69 @@
+model test_model
+
+
+class Snapshot
+operations
+  pred() : Snapshot = 
+    if (self.pred->size() = 1) then self.pred->any( $elem0:Snapshot | true ) else null endif
+  succ() : Snapshot = 
+    if (self.succ->size() = 1) then self.succ->any( $elem0:Snapshot | true ) else null endif
+end
+
+aggregation PredSuccA between
+  A[0..1] role predA
+  A[0..1] role succA
+end
+
+aggregation PredSuccB between
+  B[0..1] role predB
+  B[0..1] role succB
+end
+
+abstract class OperationCall
+operations
+  pred() : Snapshot = 
+    if (self.pred->size() = 1) then self.pred->any( $elem0:Snapshot | true ) else null endif
+  succ() : Snapshot = 
+    if (self.succ->size() = 1) then self.succ->any( $elem0:Snapshot | true ) else null endif
+end
+
+association Filmstrip between
+  Snapshot[0..1] role pred
+  Snapshot[0..1] role succ
+  OperationCall[0..1]
+end
+
+composition SnapshotB between
+  Snapshot[1] role snapshotB
+  B[*]
+end
+
+composition SnapshotA between
+  Snapshot[1] role snapshotA
+  A[*]
+end
+
+class A
+end
+
+class B
+operations
+  op()
+end
+
+constraints
+context A inv validSnapshotLinking:
+  (self.succA.isDefined() implies (self.succA.snapshotA = self.snapshotA.succ()))
+
+context B inv validSnapshotLinking:
+  (self.succB.isDefined() implies (self.succB.snapshotB = self.snapshotB.succ()))
+
+context OperationCall inv assocClassBehavior:
+  (((self.pred->size() = 1) and (self.succ->size() = 1)) and OperationCall.allInstances()->forAll( op:OperationCall | (((self.pred = op.pred) and (self.succ = op.succ)) implies (self = op)) ))
+
+context Snapshot inv cycleFree:
+  Set{self.succ()}->closure( s:Snapshot | s.succ() )->excludes(self)
+
+context Snapshot inv oneFilmstrip:
+  ((Snapshot.allInstances()->select( s:Snapshot | s.pred().isUndefined() )->size() = 1) and (Snapshot.allInstances()->select( s:Snapshot | s.succ().isUndefined() )->size() = 1))
+

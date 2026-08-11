@@ -1,0 +1,58 @@
+// Two enabled XOR completions for the same valid input: one satisfies attendance,
+// one reaches EndEvent without it. Used to demonstrate weak versus strong compliance.
+model MeetingSchedulerNondeterministic {
+  pool MeetingOrganization {
+    lane Initiator {
+      start start_meeting { trigger none }
+      task decideMeetingDetails {
+        post {[ MeetingUnit.allInstances()->forAll(m | m.detailsDecided) ]}
+        effect {[
+          for m in MeetingUnit.allInstances() do m.detailsDecided := true; end
+        ]}
+      }
+    }
+    lane Organizer {
+      task checkCalendar {
+        pre {[ Participant.allInstances()->forAll(p | p.source_Agent_plays_Participant.hasCalendar) ]}
+        post {[ Participant.allInstances()->forAll(p | p.timetableCollected) ]}
+        effect {[
+          for p in Participant.allInstances() do
+            p.timetableCollected := true; p.timetableChannel := #calendar;
+          end
+        ]}
+      }
+      task chooseTimeAndDate {
+        post {[ MeetingUnit.allInstances()->forAll(m | m.timeChosen) ]}
+        effect {[
+          for m in MeetingUnit.allInstances() do m.timeChosen := true; end
+        ]}
+      }
+      task announceMeeting {
+        post {[ Participant.allInstances()->forAll(p | p.notified) ]}
+        effect {[
+          for p in Participant.allInstances() do p.notified := true; end
+        ]}
+      }
+      gateway completionChoice { type xor }
+      task skipAttendance { name "Finish without recording attendance" }
+      end end_meeting { trigger none }
+    }
+    lane Participant {
+      task participate {
+        post {[ Participant.allInstances()->forAll(p | p.attended) ]}
+        effect {[
+          for p in Participant.allInstances() do p.attended := true; end
+        ]}
+      }
+    }
+    flow start_meeting -> decideMeetingDetails
+    flow decideMeetingDetails -> checkCalendar
+    flow checkCalendar -> chooseTimeAndDate
+    flow chooseTimeAndDate -> announceMeeting
+    flow announceMeeting -> completionChoice
+    flow completionChoice -> participate
+    flow completionChoice -> skipAttendance
+    flow participate -> end_meeting
+    flow skipAttendance -> end_meeting
+  }
+}

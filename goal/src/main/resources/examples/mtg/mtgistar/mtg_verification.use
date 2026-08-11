@@ -1,0 +1,134 @@
+-- Generated from ACL. Regenerate instead of editing this file.
+-- Role 'extends' is a play chain (Owner[1]--Role[mult] association), not USE
+-- generalization: no two Role classes are ever related by '<'. Agent is an empty
+-- class. A Role's multiplicity toward its owner is [0..1] unless the Role is ever
+-- a Group member (Owner target), in which case it is [0..*] -- see
+-- ACL_OCL_SEMANTICS.md §3.4-§3.7 and ACL_TO_USE_OCL_CASES.md R1-R13.
+-- Compatibility is 'inv NoConflict_<R1>_<R2>' on the nearest shared play-chain
+-- ancestor; every Owner-target Role also gets 'inv NoSelfConflict_<R>'.
+
+model MeetingSchedulerShadow
+
+enum TimetableChannel {none, calendar, phone}
+
+class Agent
+end
+
+class MeetingParty
+attributes
+  name : String
+  phone : String
+  hasCalendar : Boolean
+end
+
+class Initiator
+end
+
+class Organizer
+end
+
+class Secretary
+end
+
+class Participant
+attributes
+  timetableCollected : Boolean
+  timetableChannel : TimetableChannel
+  notified : Boolean
+  attended : Boolean
+end
+
+class MeetingUnit
+attributes
+  detailsDecided : Boolean
+  timeChosen : Boolean
+end
+
+association knowsPhoneOf between
+  MeetingParty[0..*] role knower
+  MeetingParty[0..*] role knownContact
+end
+
+association Agent_plays_MeetingParty between
+  Agent[1] role source_Agent_plays_MeetingParty
+  MeetingParty[0..1] role target_Agent_plays_MeetingParty
+end
+
+association MeetingParty_plays_Initiator between
+  MeetingParty[1] role source_MeetingParty_plays_Initiator
+  Initiator[0..*] role target_MeetingParty_plays_Initiator
+end
+
+association MeetingParty_plays_Organizer between
+  MeetingParty[1] role source_MeetingParty_plays_Organizer
+  Organizer[0..*] role target_MeetingParty_plays_Organizer
+end
+
+association MeetingParty_plays_Secretary between
+  MeetingParty[1] role source_MeetingParty_plays_Secretary
+  Secretary[0..*] role target_MeetingParty_plays_Secretary
+end
+
+association MeetingParty_plays_Participant between
+  MeetingParty[1] role source_MeetingParty_plays_Participant
+  Participant[0..*] role target_MeetingParty_plays_Participant
+end
+
+composition Initiator_in_MeetingUnit between
+  MeetingUnit[1] role source_Initiator_in_MeetingUnit
+  Initiator[1] role target_Initiator_in_MeetingUnit
+end
+
+composition Organizer_in_MeetingUnit between
+  MeetingUnit[1] role source_Organizer_in_MeetingUnit
+  Organizer[1] role target_Organizer_in_MeetingUnit
+end
+
+composition Secretary_in_MeetingUnit between
+  MeetingUnit[1] role source_Secretary_in_MeetingUnit
+  Secretary[0..1] role target_Secretary_in_MeetingUnit
+end
+
+composition Participant_in_MeetingUnit between
+  MeetingUnit[1] role source_Participant_in_MeetingUnit
+  Participant[2..*] role target_Participant_in_MeetingUnit
+end
+
+constraints
+
+context MeetingParty inv NoSelfConflict_Initiator:
+  self.target_MeetingParty_plays_Initiator->forAll(r1, r2 : Initiator |
+    r1 <> r2 implies r1.source_Initiator_in_MeetingUnit <> r2.source_Initiator_in_MeetingUnit)
+
+context MeetingParty inv NoSelfConflict_Organizer:
+  self.target_MeetingParty_plays_Organizer->forAll(r1, r2 : Organizer |
+    r1 <> r2 implies r1.source_Organizer_in_MeetingUnit <> r2.source_Organizer_in_MeetingUnit)
+
+context MeetingParty inv NoSelfConflict_Secretary:
+  self.target_MeetingParty_plays_Secretary->forAll(r1, r2 : Secretary |
+    r1 <> r2 implies r1.source_Secretary_in_MeetingUnit <> r2.source_Secretary_in_MeetingUnit)
+
+context MeetingParty inv NoSelfConflict_Participant:
+  self.target_MeetingParty_plays_Participant->forAll(r1, r2 : Participant |
+    r1 <> r2 implies r1.source_Participant_in_MeetingUnit <> r2.source_Participant_in_MeetingUnit)
+
+context MeetingParty inv NoConflict_Initiator_Organizer:
+self.target_MeetingParty_plays_Initiator->forAll(r1 : Initiator |
+self.target_MeetingParty_plays_Organizer->forAll(r2 : Organizer |
+      not (r1.source_Initiator_in_MeetingUnit = r2.source_Organizer_in_MeetingUnit)))
+
+context MeetingParty inv NoConflict_Initiator_Secretary:
+self.target_MeetingParty_plays_Initiator->forAll(r1 : Initiator |
+self.target_MeetingParty_plays_Secretary->forAll(r2 : Secretary |
+      not (r1.source_Initiator_in_MeetingUnit = r2.source_Secretary_in_MeetingUnit)))
+
+context MeetingParty inv NoConflict_Organizer_Participant:
+self.target_MeetingParty_plays_Organizer->forAll(r1 : Organizer |
+self.target_MeetingParty_plays_Participant->forAll(r2 : Participant |
+      not (r1.source_Organizer_in_MeetingUnit = r2.source_Participant_in_MeetingUnit)))
+
+context MeetingParty inv NoConflict_Secretary_Participant:
+self.target_MeetingParty_plays_Secretary->forAll(r1 : Secretary |
+self.target_MeetingParty_plays_Participant->forAll(r2 : Participant |
+      not (r1.source_Secretary_in_MeetingUnit = r2.source_Participant_in_MeetingUnit)))
+

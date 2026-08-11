@@ -3,8 +3,8 @@
 // potential_participant: xing, amr, naya (see doc/concept-domain-model-vs-scenario.md).
 //
 // This is now an execution trace, not a full state dump: the scenario declares the cast and
-// fires only real tasks/actions. Delegated goals such as HaveSecretaryCallPP and
-// MeetingAttendedByParticipant are inferred by the scenario evaluator from mtg.istar's
+// fires only real tasks/actions. Delegated goals such as SecretaryRequested and
+// ParticipantAttended are inferred by the scenario evaluator from mtg.istar's
 // dependency links after the dependee's task is fulfilled.
 //
 // abdul/matilda/alex are declared as instances too (not just xing/amr/naya) so they exist as
@@ -25,7 +25,7 @@
 //   hasPhoneNumber(alex, naya/amr/xing).                  -- alex can call all 3
 // so naya's is collected via the secretary, xing's and amr's straight from their calendars —
 // not injected for effect, it falls out of mtg.pl's own facts, and is exactly why 'all over
-// QuickScheduling' FAILS below while 'any over Inclusivity' HOLDS.
+// FastCollection' FAILS below while 'any over InclusiveCollection' HOLDS.
 
 scenario MeetingSchedulerAbdul for "mtg.istar" {
     instance abdul   : Initiator;
@@ -33,36 +33,36 @@ scenario MeetingSchedulerAbdul for "mtg.istar" {
     instance alex    : Secretary;
     instance xing, amr, naya : Participant;
 
-    fire DecideMeetingDetails;
-    fire ChooseTimeAndDate;
+    fire DecideDetails;
+    fire ChooseMeetingTime;
 
     // xing, amr: the organizer's own action (no Dependency involved) — a genuine fire.
     fire xing.CollectFromCalendar;
     fire amr.CollectFromCalendar;
 
     // naya: alex performs the secretary task for this participant; the delegated organizer
-    // goal is inferred through dependency as HaveSecretaryCallPP(matilda, alex, naya).
-    fire alex.CollectConstraintsByPhone for naya;
+    // goal is inferred through dependency as SecretaryRequested(matilda, alex, naya).
+    fire alex.CollectByPhone for naya;
 
-    fire xing.AnnounceMeeting;
-    fire amr.AnnounceMeeting;
-    fire naya.AnnounceMeeting;
+    fire xing.NotifyParticipant;
+    fire amr.NotifyParticipant;
+    fire naya.NotifyParticipant;
 
     // Each participant's own action is fired; the initiator's delegated attendance goal is inferred.
-    fire xing.Participate;
-    fire amr.Participate;
-    fire naya.Participate;
+    fire xing.AttendMeeting;
+    fire amr.AttendMeeting;
+    fire naya.AttendMeeting;
 
     // 'of Participant' restricts each check to the 3 Participant instances — abdul/matilda/alex
     // are declared instances too (see above) but their own state is a different, much sparser
     // slice (only the broadcast facts reach them); without the filter these checks would range
     // over all 6 declared instances and dilute what "every participant" is actually asking.
     aggregate EveryTimetableCollected : all of Participant over TimetableCollected;
-    aggregate EveryoneNotified        : all of Participant over AnnounceMeeting;
-    aggregate EveryoneAttended        : all of Participant over MeetingAttendedByParticipant;
-    aggregate MeetingFullyOrganized   : all of Participant over HaveMeetingOrganized;
+    aggregate EveryoneNotified        : all of Participant over NotifyParticipant;
+    aggregate EveryoneAttended        : all of Participant over ParticipantAttended;
+    aggregate MeetingFullyOrganized   : all of Participant over MeetingOrganized;
 
     // The organizer's two quality preferences split along the same calendar/phone divide:
-    aggregate SomeInclusivityViaSecretary : any of Participant over Inclusivity;      // naya's branch -> holds
-    aggregate UniversalQuickScheduling    : all of Participant over QuickScheduling;  // naya has none -> fails
+    aggregate SomeInclusiveCollectionViaSecretary : any of Participant over InclusiveCollection;      // naya's branch -> holds
+    aggregate UniversalFastCollection    : all of Participant over FastCollection;  // naya has none -> fails
 }

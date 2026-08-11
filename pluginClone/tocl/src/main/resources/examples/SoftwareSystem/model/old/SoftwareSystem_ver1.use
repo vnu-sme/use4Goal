@@ -1,0 +1,63 @@
+model SoftwareSystem
+
+-- Classes
+class System
+attributes
+    id : Integer
+    freeMemory : Integer
+    loadedAppIds : Set(Integer) -- this will store ids of loaded apps
+    installedAppIds : Set(Integer) -- this will store ids of installed apps
+operations
+    load(app : Application)
+    install(app : Application)
+    run(app: Application)
+end
+
+class Application
+attributes
+    id : Integer
+    size : Integer
+end
+
+-- Associations
+
+
+-- Invariants
+constraints
+context System
+    -- freeMemory is always positive
+    inv memoryConstraint: self.freeMemory >= 0
+
+context Application
+    -- Size is always positive
+    inv sizeConstraint: self.size > 0
+
+context System::load(app: Application)
+    pre notLoadedAndInstalled:
+        not self.loadedAppIds->includes(app.id) and
+        not self.installedAppIds->includes(app.id)
+    post sameMemory: self.freeMemory = self.freeMemory@pre
+    post sameInstalled:
+        self.installedAppIds = self.installedAppIds@pre
+    post appLoaded:
+        self.loadedAppIds->includes(app.id) and self.loadedAppIds = self.loadedAppIds@pre->including(app.id)
+
+context System::install(app: Application)
+    pre appLoadedNotInstalled:
+        self.loadedAppIds->includes(app.id) and
+        not self.installedAppIds->includes(app.id)
+    pre enoughMemory: self.freeMemory >= app.size
+    post reducedMem: self.freeMemory = self.freeMemory@pre - app.size
+    post removeLoaded:
+        self.loadedAppIds->excludes(app.id) and self.loadedAppIds = self.loadedAppIds@pre->excluding(app.id)
+    post appInstalled:
+        self.installedAppIds->includes(app.id) and self.installedAppIds = self.installedAppIds@pre->including(app.id)
+
+context System::run(app: Application)
+    pre: self.installedAppIds->includes(app.id)
+    -- these are additional constraints to ensure that the system state is preserved
+    post sameMemory: self.freeMemory = self.freeMemory@pre
+    post sameLoadedAppIds:
+        self.loadedAppIds = self.loadedAppIds@pre
+    post sameInstalledIds:
+        self.installedAppIds = self.installedAppIds@pre

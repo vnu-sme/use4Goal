@@ -1,0 +1,41 @@
+istar IncidentResponse {
+
+  role Coordinator {
+    goal IncidentHandled
+    task TriageIncident > IncidentHandled ocl {[
+      self.triaged and IncidentCase.allInstances()->exists(i | i.reported)
+    ]}
+    goal EvidenceCollected > IncidentHandled
+    goal EvidenceReviewed > forall Analyst EvidenceCollected
+    goal RemediationDone > IncidentHandled
+    goal ServiceRestored > pick Technician RemediationDone
+    goal ClosureDone > IncidentHandled
+    goal ClosureApproved > pick Auditor ClosureDone
+  }
+
+  role Analyst {
+    task AnalyzeEvidence ocl {[
+      self.reportReady
+      and EvidencePacket.allInstances()->exists(e | e.complete)
+    ]}
+  }
+
+  role Technician {
+    task RepairService ocl {[
+      self.fixApplied
+      and Service.allInstances()->exists(s | s.restored)
+      and ChangeRequest.allInstances()->exists(c | c.deployed)
+    ]}
+  }
+
+  role Auditor {
+    task AuditClosure ocl {[
+      self.auditApproved
+      and AuditTrail.allInstances()->exists(a | a.signed)
+    ]}
+  }
+
+  depend Coordinator.EvidenceReviewed -> task AnalyzeEvidence -> Analyst.AnalyzeEvidence
+  depend Coordinator.ServiceRestored -> task RepairService -> Technician.RepairService
+  depend Coordinator.ClosureApproved -> task AuditClosure -> Auditor.AuditClosure
+}

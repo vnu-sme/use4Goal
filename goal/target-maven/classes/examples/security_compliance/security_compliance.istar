@@ -1,0 +1,28 @@
+// iStar 2.0 Example — Security Compliance
+// Transcribed from example/Data/security/goal_model.txt (piStar 2.1.0 JSON export).
+// Paired with security_compliance.bpmn2 (from the real BPMN in the same folder) and
+// security_compliance.map. A DCR graph (example/Data/security/dcr-graph.xml) also models
+// this same process declaratively; it was cross-checked by hand against the BPMN (both use
+// the same 8 "condition" precedence edges + the loop encoded by the 1 "response" edge as the
+// Apply-Vulnerability-Test -> Perform-Penetration-Test back-edge) but was not needed to derive
+// the process model below, since a hand-drawn BPMN equivalent already exists in the dataset.
+
+istar SecurityCompliance {
+
+  agent SecurityTeam {
+    quality DataProtectedAppropriately
+
+    goal DataBreachDetected > break DataProtectedAppropriately
+    goal DataProtected      > make  DataProtectedAppropriately
+
+    task ApplyVulnerabilityPatch > make DataProtectedAppropriately
+    task PerformPenetrationTests > DataBreachDetected
+    task FlagSuspiciousActivity  > DataBreachDetected
+    task DeployDataGrail  > or DeployMonitoringTools
+    task DeployOneTrust   > or DeployMonitoringTools
+    task ReviseAccessControls    > ImplementPasswordPolicy
+    task UpdateEncryptionStandards > ImplementPasswordPolicy
+    task ImplementPasswordPolicy > DataProtected
+    task DeployMonitoringTools   > DataProtected
+  }
+}

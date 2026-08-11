@@ -1,0 +1,36 @@
+// iStar 2.0 Example — Job Application Review
+// 3 actors, written to give IStarScenario (.iscn) a richer multi-actor "happy path" to
+// fire than the single-actor generic_example: HR's AND-refinement needs both branches
+// (screening + outcome) fulfilled, and each actor contributes a Make/Break quality.
+
+istar JobApplicationReview {
+
+  role Candidate {
+    task SubmitApplication
+    task AttendInterview
+  }
+
+  agent HRDepartment {
+    goal ApplicationProcessed
+    goal ApplicationScreened  > ApplicationProcessed
+    goal OutcomeCommunicated  > ApplicationProcessed
+
+    task ScreenApplication > or ApplicationScreened
+    task RejectEarly       > or ApplicationScreened > break CandidateExperience
+    task NotifyOutcome     > or OutcomeCommunicated > make  CandidateExperience
+    quality CandidateExperience
+  }
+
+  agent HiringManager {
+    goal DecisionMade
+    task ConductInterview
+    task MakeOffer     > or DecisionMade > make  TeamQuality
+    task MakeRejection > or DecisionMade > break TeamQuality
+    quality TeamQuality
+  }
+
+  depend Candidate     -> task SubmitApplication  -> HRDepartment
+  depend Candidate     -> task AttendInterview    -> HiringManager
+  depend HRDepartment  -> goal DecisionMade       -> HiringManager
+  depend HiringManager -> goal OutcomeCommunicated -> HRDepartment
+}

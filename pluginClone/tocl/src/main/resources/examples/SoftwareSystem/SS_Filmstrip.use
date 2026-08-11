@@ -1,0 +1,247 @@
+model SoftwareSystem
+
+
+class stop_SystemOpC < SystemOpC
+attributes
+  app : Application
+end
+
+composition SnapshotSystem between
+  Snapshot[1] role snapshotSystem
+  System[*]
+end
+
+association Filmstrip between
+  Snapshot[0..1] role pred
+  Snapshot[0..1] role succ
+  OperationCall[0..1]
+end
+
+abstract class SystemOpC < OperationCall
+attributes
+  aSelf : System
+end
+
+aggregation PredSuccApplication between
+  Application[0..1] role predApplication
+  Application[0..1] role succApplication
+end
+
+composition SnapshotApplication between
+  Snapshot[1] role snapshotApplication
+  Application[*]
+end
+
+class Snapshot
+operations
+  pred() : Snapshot = 
+    if (self.pred->size() = 1) then self.pred->any( $elem0:Snapshot | true ) else null endif
+  succ() : Snapshot = 
+    if (self.succ->size() = 1) then self.succ->any( $elem0:Snapshot | true ) else null endif
+end
+
+class run_SystemOpC < SystemOpC
+attributes
+  app : Application
+end
+
+class install_SystemOpC < SystemOpC
+end
+
+abstract class OperationCall
+operations
+  pred() : Snapshot = 
+    if (self.pred->size() = 1) then self.pred->any( $elem0:Snapshot | true ) else null endif
+  succ() : Snapshot = 
+    if (self.succ->size() = 1) then self.succ->any( $elem0:Snapshot | true ) else null endif
+end
+
+aggregation PredSuccSystem between
+  System[0..1] role predSystem
+  System[0..1] role succSystem
+end
+
+class load_SystemOpC < SystemOpC
+attributes
+  app : Application
+end
+
+class System
+attributes
+  id : Integer
+  freeMemory : Integer init : 10
+  loadedApps : Set(Application) init : Set{}
+  installedApps : Set(Application) init : Set{}
+  runningApps : Set(Application) init : Set{}
+operations
+  load(app : Application)
+    begin
+      self.loadedApps := self.loadedApps->including(app);
+      self.freeMemory := (self.freeMemory - app.size);
+    end
+  install()
+    begin
+      self.installedApps := self.installedApps->union(self.loadedApps);
+      self.loadedApps := self.loadedApps->reject($elem0 : Application | true)->excluding(null);
+    end
+  run(app : Application)
+    begin
+      self.runningApps := self.runningApps->including(app)
+    end
+  stop(app : Application)
+    begin
+      self.runningApps := self.runningApps->excluding(app)
+    end
+end
+
+class Application
+attributes
+  id : Integer
+  size : Integer
+end
+
+association SystemApplication between
+  System[1]
+  Application[*] role apps
+end
+
+constraints
+context Application inv validSnapshotLinking:
+  (self.succApplication.isDefined() implies (self.succApplication.snapshotApplication = self.snapshotApplication.succ()))
+
+context OperationCall inv assocClassBehavior:
+  (((self.pred->size() = 1) and (self.succ->size() = 1)) and OperationCall.allInstances()->forAll( op:OperationCall | (((self.pred = op.pred) and (self.succ = op.succ)) implies (self = op)) ))
+
+context Snapshot inv cycleFree:
+  Set{self.succ()}->closure( s:Snapshot | s.succ() )->excludes(self)
+
+context Snapshot inv oneFilmstrip:
+  ((Snapshot.allInstances()->select( s:Snapshot | s.pred().isUndefined() )->size() = 1) and (Snapshot.allInstances()->select( s:Snapshot | s.succ().isUndefined() )->size() = 1))
+
+context System inv validLinkingSystemApplication:
+  self.apps->forAll( c:Application | (c.snapshotApplication = self.snapshotSystem) )
+
+context System inv validSnapshotLinking:
+  (self.succSystem.isDefined() implies (self.succSystem.snapshotSystem = self.snapshotSystem.succ()))
+
+context SystemOpC inv aSelfDefined:
+  self.aSelf.isDefined()
+
+context SystemOpC inv aSelfInPred:
+  (self.aSelf.snapshotSystem = self.pred())
+
+context install_SystemOpC inv post_installed:
+  (aSelf.succSystem.installedApps = aSelf.succSystem.predSystem.installedApps->collectNested( a1:Application | a1.succApplication )->asSet()->union(aSelf.succSystem.predSystem.loadedApps->collectNested( a1:Application | a1.succApplication )->asSet()))
+
+context install_SystemOpC inv post_loadedAppsEmpty:
+  (aSelf.succSystem.loadedApps = aSelf.succSystem.predSystem.loadedApps->collectNested( a1:Application | a1.succApplication )->asSet()->reject( $elem1:Application | true )->excluding(null))
+
+context install_SystemOpC inv post_sameMemory:
+  (aSelf.succSystem.freeMemory = aSelf.succSystem.predSystem.freeMemory)
+
+context install_SystemOpC inv post_sameRunning:
+  (aSelf.succSystem.runningApps = aSelf.succSystem.predSystem.runningApps->collectNested( a1:Application | a1.succApplication )->asSet())
+
+context install_SystemOpC inv post_unchanged:
+  aSelf.succSystem.apps->forAll( app:Application | ((app.size = app.predApplication.size) and (app.id = app.predApplication.id)) )
+
+context install_SystemOpC inv pre_hasLoadedApps:
+  aSelf.loadedApps->notEmpty()
+
+context load_SystemOpC inv paramAppInPred:
+  (not self.app.isUndefined() implies (self.app.snapshotApplication = self.pred()))
+
+context load_SystemOpC inv post_freeMemory:
+  (aSelf.succSystem.freeMemory = (aSelf.succSystem.predSystem.freeMemory - app.succApplication.size))
+
+context load_SystemOpC inv post_loaded:
+  (aSelf.succSystem.loadedApps = aSelf.succSystem.predSystem.loadedApps->collectNested( a1:Application | a1.succApplication )->asSet()->including(app.succApplication))
+
+context load_SystemOpC inv post_sameInstalledAndRunning:
+  ((aSelf.succSystem.installedApps = aSelf.succSystem.predSystem.installedApps->collectNested( a1:Application | a1.succApplication )->asSet()) and (aSelf.succSystem.runningApps = aSelf.succSystem.predSystem.runningApps->collectNested( a1:Application | a1.succApplication )->asSet()))
+
+context load_SystemOpC inv post_unchanged:
+  aSelf.succSystem.apps->forAll( app:Application | ((app.size = app.predApplication.size) and (app.id = app.predApplication.id)) )
+
+context load_SystemOpC inv pre_enoughMemory:
+  (aSelf.freeMemory >= app.size)
+
+context load_SystemOpC inv pre_notLoaded:
+  ((not aSelf.loadedApps->includes(app) and not aSelf.installedApps->includes(app)) and not aSelf.runningApps->includes(app))
+
+context run_SystemOpC inv paramAppInPred:
+  (not self.app.isUndefined() implies (self.app.snapshotApplication = self.pred()))
+
+context run_SystemOpC inv post_running:
+  (aSelf.succSystem.runningApps = aSelf.succSystem.predSystem.runningApps->collectNested( a1:Application | a1.succApplication )->asSet()->including(app.succApplication))
+
+context run_SystemOpC inv post_sameInstalled:
+  (aSelf.succSystem.installedApps = aSelf.succSystem.predSystem.installedApps->collectNested( a1:Application | a1.succApplication )->asSet())
+
+context run_SystemOpC inv post_sameLoaded:
+  (aSelf.succSystem.loadedApps = aSelf.succSystem.predSystem.loadedApps->collectNested( a1:Application | a1.succApplication )->asSet())
+
+context run_SystemOpC inv post_sameMemory:
+  (aSelf.succSystem.freeMemory = aSelf.succSystem.predSystem.freeMemory)
+
+context run_SystemOpC inv post_unchanged:
+  aSelf.succSystem.apps->forAll( app:Application | ((app.size = app.predApplication.size) and (app.id = app.predApplication.id)) )
+
+context run_SystemOpC inv pre_isInstalled:
+  aSelf.installedApps->includes(app)
+
+context run_SystemOpC inv pre_notRunning:
+  not aSelf.runningApps->includes(app)
+
+context stop_SystemOpC inv paramAppInPred:
+  (not self.app.isUndefined() implies (self.app.snapshotApplication = self.pred()))
+
+context stop_SystemOpC inv post_notRunning:
+  (aSelf.succSystem.runningApps = aSelf.succSystem.predSystem.runningApps->collectNested( a1:Application | a1.succApplication )->asSet()->excluding(app.succApplication))
+
+context stop_SystemOpC inv post_sameInstalled:
+  (aSelf.succSystem.installedApps = aSelf.succSystem.predSystem.installedApps->collectNested( a1:Application | a1.succApplication )->asSet())
+
+context stop_SystemOpC inv post_sameLoaded:
+  (aSelf.succSystem.loadedApps = aSelf.succSystem.predSystem.loadedApps->collectNested( a1:Application | a1.succApplication )->asSet())
+
+context stop_SystemOpC inv post_sameMemory:
+  (aSelf.succSystem.freeMemory = aSelf.succSystem.predSystem.freeMemory)
+
+context stop_SystemOpC inv post_unchanged:
+  aSelf.succSystem.apps->forAll( app:Application | ((app.size = app.predApplication.size) and (app.id = app.predApplication.id)) )
+
+context stop_SystemOpC inv pre_isRunning:
+  (aSelf.runningApps->includes(app) and aSelf.installedApps->includes(app))
+
+context self : System inv memoryConstraint:
+  (self.freeMemory >= 0)
+
+context self : System inv notLoadedAndInstalled:
+  self.loadedApps->intersection(self.installedApps)->isEmpty()
+
+context self : System inv sets:
+  (let appNumber:Integer = self.apps->size() in (((self.loadedApps->size() <= appNumber) and (self.installedApps->size() <= appNumber)) and (self.runningApps->size() <= appNumber)))
+
+context self : System inv notContainsNull:
+  ((not self.loadedApps->includes(null) and not self.installedApps->includes(null)) and not self.runningApps->includes(null))
+
+context self : Application inv sizeConstraint:
+  (self.size > 0)
+
+context Application
+inv ApplicationSameId: self.succApplication.isDefined() implies self.id = self.succApplication.id
+context System
+inv SystemSameId: self.succSystem.isDefined() implies self.id = self.succSystem.id
+
+context Application
+inv ApplicationDiffId: self.snapshotApplication.application->forAll(o | o <> self implies o.id <> self.id)
+context System
+inv SystemDiffId: self.snapshotSystem.system->forAll(o | o <> self implies o.id <> self.id)
+
+context System
+inv safety1: self.runningApps->notEmpty() implies
+            self.runningApps->forAll(app |
+                (run_SystemOpC.allInstances()->exists(op | op.succ() = self.snapshotSystem and (Set{op.app.succApplication}->closure(p | p.succApplication)->includes(app) or Set{op.app.predApplication}->closure(p | p.predApplication)->includes(app)))) implies
+                (let CS:Snapshot = self.snapshotSystem in Set{CS.pred()}->closure(s | s.pred())->exists(s | (load_SystemOpC.allInstances()->exists(op | op.succ() = s and (Set{op.app.succApplication}->closure(p | p.succApplication)->includes(app) or Set{op.app.predApplication}->closure(p | p.predApplication)->includes(app))))))
+            )

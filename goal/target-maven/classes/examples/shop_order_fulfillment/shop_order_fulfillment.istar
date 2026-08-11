@@ -1,0 +1,22 @@
+// iStar 2.0 Example — Shop Order Fulfillment
+// Transcribed from example/Data/shop/goal_model.txt (piStar 2.1.0 JSON export).
+// A DCR graph (example/Data/shop/dcr-graph.xml) also models this same process declaratively,
+// using the classic "self-exclude + include-next" idiom (each event runs at most once, and
+// firing it re-enables the next one) — this reduces exactly to a strict linear sequence
+// Pick -> Pack -> Ship, matching shop_order_fulfillment.bpmn2 below (no divergent behaviour
+// was lost in this particular case).
+
+istar ShopOrderFulfillment {
+
+  agent WarehouseTeam {
+    quality MinimizeCost
+    quality EnsureCustomerSatisfaction
+
+    goal DeliverOnTime
+    goal FulfillOrder > or DeliverOnTime
+
+    task PickItems > FulfillOrder
+    task PackItems > FulfillOrder > break MinimizeCost
+    task ShipItems > FulfillOrder > make  EnsureCustomerSatisfaction
+  }
+}

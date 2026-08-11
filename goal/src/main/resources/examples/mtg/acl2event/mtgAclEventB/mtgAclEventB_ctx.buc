@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.contextFile org.eventb.core.configuration="org.eventb.core.fwd" version="3">
+  <org.eventb.core.carrierSet name="n0" org.eventb.core.identifier="AGENT_ID"/>
+  <org.eventb.core.carrierSet name="n1" org.eventb.core.identifier="STRING"/>
+  <org.eventb.core.carrierSet name="n2" org.eventb.core.identifier="G_MeetingUnit_ID"/>
+  <org.eventb.core.carrierSet name="n3" org.eventb.core.identifier="R_MeetingParty_ID"/>
+  <org.eventb.core.carrierSet name="n4" org.eventb.core.identifier="R_Initiator_ID"/>
+  <org.eventb.core.carrierSet name="n5" org.eventb.core.identifier="R_Organizer_ID"/>
+  <org.eventb.core.carrierSet name="n6" org.eventb.core.identifier="R_Secretary_ID"/>
+  <org.eventb.core.carrierSet name="n7" org.eventb.core.identifier="R_Participant_ID"/>
+  <org.eventb.core.carrierSet name="n8" org.eventb.core.identifier="TIMETABLECHANNEL"/>
+  <org.eventb.core.constant name="n9" org.eventb.core.identifier="EMPTY_STRING"/>
+  <org.eventb.core.constant name="n10" org.eventb.core.identifier="none"/>
+  <org.eventb.core.constant name="n11" org.eventb.core.identifier="calendar"/>
+  <org.eventb.core.constant name="n12" org.eventb.core.identifier="phone"/>
+  <org.eventb.core.axiom name="n13" org.eventb.core.label="axm1" org.eventb.core.predicate="EMPTY_STRING ∈ STRING"/>
+  <org.eventb.core.axiom name="n14" org.eventb.core.label="axm2" org.eventb.core.predicate="partition(TIMETABLECHANNEL, {none}, {calendar}, {phone})"/>
+</org.eventb.core.contextFile>
