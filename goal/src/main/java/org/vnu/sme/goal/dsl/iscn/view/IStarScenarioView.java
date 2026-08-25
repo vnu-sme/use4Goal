@@ -24,8 +24,6 @@ public final class IStarScenarioView {
     private static final Color C_PENDING   = new Color(180, 130, 0);
     private static final Color C_TRUE      = new Color(30, 150, 60);
     private static final Color C_FALSE     = new Color(170, 30, 30);
-    private static final Color C_ACTIVE    = new Color(170, 30, 30);
-    private static final Color C_RESOLVED  = new Color(30, 150, 60);
 
     private IStarScenarioView() {}
 
@@ -96,13 +94,6 @@ public final class IStarScenarioView {
                 case TRUE    -> badges.put(id, new NodeBadge(C_TRUE, "T", "True"));
                 case FALSE   -> badges.put(id, new NodeBadge(C_FALSE, "F", "False"));
                 case UNKNOWN -> { /* no badge: not part of the scenario */ }
-            }
-        });
-        marking.obstacleStatuses().forEach((id, status) -> {
-            switch (status) {
-                case ACTIVE -> badges.put(id, new NodeBadge(C_ACTIVE, "A", "Active obstacle"));
-                case RESOLVED -> badges.put(id, new NodeBadge(C_RESOLVED, "R", "Resolved obstacle"));
-                case UNKNOWN -> { /* no badge: obstacle has not occurred */ }
             }
         });
         return badges;

@@ -1,0 +1,25 @@
+// No BPMN flow is named here. Each adjacent pair is one formal EXEC step.
+// Repeated files represent Start/Gateway steps that change sigma_F while the
+// ACL state sigma_M remains unchanged.
+acl-state-scenario v1.0 ClassroomElectronicRun {
+  acl "classroom.acl";
+  bpmn "classroom.bpmn2";
+  state "classroom_state_01_initial.aol";
+  state "classroom_state_01_initial.aol";
+  state "classroom_state_01_initial.aol";
+  state "classroom_trace_state_01_started.aol";
+  state "classroom_trace_state_01_started.aol";
+  state "classroom_trace_state_01_started.aol";
+  state "classroom_trace_state_02_slides.aol";
+  state "classroom_trace_state_02_slides.aol";
+  state "classroom_trace_state_02_slides.aol";
+  state "classroom_trace_state_04_attendance.aol";
+  state "classroom_trace_state_04_attendance.aol";
+  state "classroom_trace_state_05_delivered.aol";
+  state "classroom_trace_state_05_delivered.aol";
+  state "classroom_trace_state_05_delivered.aol";
+  state "classroom_trace_state_06_clarified.aol";
+  state "classroom_trace_state_06_clarified.aol";
+  state "classroom_trace_state_06_clarified.aol";
+  state "classroom_trace_state_07_finished.aol";
+}

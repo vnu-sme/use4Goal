@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<diagram_Layout version="13">
+    <diagramOptions>
+        <autolayout>false</autolayout>
+        <antialiasing>true</antialiasing>
+        <showassocnames>false</showassocnames>
+        <showattributes>true</showattributes>
+        <showmultiplicities>false</showmultiplicities>
+        <showoperations>false</showoperations>
+        <showrolenames>true</showrolenames>
+        <showgrid>false</showgrid>
+    </diagramOptions>
+    <node height="520.0" id="Teacher" sizeCalculated="false"
+        type="IStarNode" width="837.0">
+        <name>Teacher</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>38.0</x>
+            <y>48.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="ClassCompleted" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>ClassCompleted</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>148.0</x>
+            <y>83.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="LessonDelivered" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>LessonDelivered</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>66.0</x>
+            <y>258.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="81.0" id="AttendanceSummaryRecorded"
+        sizeCalculated="false" type="IStarNode" width="238.0">
+        <name>AttendanceSummaryRecorded</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>433.0</x>
+            <y>173.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="90.0" id="RecordAttendanceManually"
+        sizeCalculated="false" type="IStarNode" width="395.0">
+        <name>RecordAttendanceManually</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>452.0</x>
+            <y>338.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="90.0" id="RecordAttendanceElectronically"
+        sizeCalculated="false" type="IStarNode" width="391.0">
+        <name>RecordAttendanceElectronically</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>174.0</x>
+            <y>450.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="331.0" id="Student" sizeCalculated="false"
+        type="IStarNode" width="586.0">
+        <name>Student</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>898.0</x>
+            <y>41.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="ParticipatesInClass" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>ParticipatesInClass</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1029.0</x>
+            <y>100.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="AttendanceMarked" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>AttendanceMarked</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1206.0</x>
+            <y>258.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="PresentForLesson" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>PresentForLesson</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>926.0</x>
+            <y>262.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <edge type="IStarEdge">
+        <source>AttendanceMarked</source>
+        <target>ParticipatesInClass</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::AttendanceMarked::ParticipatesInClass::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::AttendanceMarked::ParticipatesInClass::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>AttendanceSummaryRecorded</source>
+        <target>ClassCompleted</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::AttendanceSummaryRecorded::ClassCompleted::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::AttendanceSummaryRecorded::ClassCompleted::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>LessonDelivered</source>
+        <target>ClassCompleted</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::LessonDelivered::ClassCompleted::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::LessonDelivered::ClassCompleted::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>PresentForLesson</source>
+        <target>ParticipatesInClass</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::PresentForLesson::ParticipatesInClass::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::PresentForLesson::ParticipatesInClass::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>RecordAttendanceElectronically</source>
+        <target>AttendanceSummaryRecorded</target>
+        <name>or_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::OR_REFINE::RecordAttendanceElectronically::AttendanceSummaryRecorded::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::OR_REFINE::RecordAttendanceElectronically::AttendanceSummaryRecorded::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>RecordAttendanceManually</source>
+        <target>AttendanceSummaryRecorded</target>
+        <name>or_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::OR_REFINE::RecordAttendanceManually::AttendanceSummaryRecorded::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::OR_REFINE::RecordAttendanceManually::AttendanceSummaryRecorded::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+</diagram_Layout>

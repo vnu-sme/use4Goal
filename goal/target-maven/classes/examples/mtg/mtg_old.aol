@@ -1,0 +1,45 @@
+aol v1.0 MeetingSchedulerInitial for "mtg_old.acl" {
+  agent MeetingParty as alice {
+    name = "Alice";
+    phone = "+84-911-111-111";
+    hasCalendar = true;
+  }
+
+  agent MeetingParty as bob {
+    name = "Bob";
+    phone = "+84-900-222-333";
+    hasCalendar = true;
+  }
+
+  agent MeetingParty as carol {
+    name = "Carol";
+    phone = "+84-922-222-222";
+    hasCalendar = false;
+  }
+
+  group MeetingUnit as architectureReview {
+    detailsDecided = false;
+    timeChosen = false;
+
+    play Initiator as initiatorAlice by alice;
+    play Organizer as organizerBob by bob;
+    play Secretary as secretaryBob by bob;
+
+    play Participant as participantAlice by alice {
+      timetableCollected = false;
+      timetableChannel = none;
+      notified = false;
+      attended = false;
+    }
+
+    play Participant as participantCarol by carol {
+      timetableCollected = false;
+      timetableChannel = none;
+      notified = false;
+      attended = false;
+    }
+
+  }
+
+  link knowsPhoneOf : bob -> alice, carol;
+}

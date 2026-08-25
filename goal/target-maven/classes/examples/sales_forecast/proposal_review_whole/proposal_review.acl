@@ -1,0 +1,49 @@
+// Shared state for the ProposalReview motivating example.  Validation is tied
+// to a concrete revision, so changing currentRevision does not silently make
+// the new proposal valid.
+acl v2.0 ProposalReviewState {
+  enum ProposalRevision {
+    none,
+    r1,
+    r2
+  }
+
+  role ProposalManager {
+  }
+
+  role Customer {
+  }
+
+  group ProposalReviewCase {
+    prepared : Boolean default false;
+    currentRevision : ProposalRevision default none;
+    validationRevision : ProposalRevision default none;
+
+    reviewCompleted : Boolean default false;
+    reviewRequestsChanges : Boolean default false;
+    changesRequested : Boolean default false;
+    changesIncorporated : Boolean default false;
+
+    finalized : Boolean default false;
+    sent : Boolean default false;
+    sentRevision : ProposalRevision default none;
+    processCompleted : Boolean default false;
+
+    ProposalManager [1];
+    Customer [1];
+  }
+
+  // Structural/lifecycle invariants only.  In particular, "the current
+  // revision is validated" is intentionally an iStar requirement rather than
+  // an ACL invariant; otherwise the defective BPMN branch would be removed
+  // from the state space instead of being returned as a cross-model conflict.
+  context ProposalReviewCase inv ValidationRequiresPreparation:
+    self.validationRevision <> ProposalRevision::none implies self.prepared;
+
+  context ProposalReviewCase inv SentRevisionIsCurrent:
+    self.sentRevision <> ProposalRevision::none implies
+      self.sentRevision = self.currentRevision;
+
+  context ProposalReviewCase inv CompletionRequiresSending:
+    self.processCompleted implies self.sent;
+}

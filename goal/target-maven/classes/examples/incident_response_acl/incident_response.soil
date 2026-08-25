@@ -22,23 +22,23 @@
 !create agentAnalyst : Agent
 !create agentTechnician : Agent
 !create agentAuditor : Agent
+!set agentCoordinator.name := 'Coordinator'
+!set agentAnalyst.name := 'Analyst'
+!set agentTechnician.name := 'Technician'
+!set agentAuditor.name := 'Auditor'
 !create coordinator : Coordinator
-!set coordinator.name := 'Coordinator'
 !set coordinator.triaged := false
 !insert (agentCoordinator, coordinator) into Agent_plays_Coordinator
 !insert (incident1, coordinator) into Coordinator_in_IncidentCase
 !create analyst : Analyst
-!set analyst.name := 'Analyst'
 !set analyst.reportReady := false
 !insert (agentAnalyst, analyst) into Agent_plays_Analyst
 !insert (incident1, analyst) into Analyst_in_IncidentCase
 !create technician : Technician
-!set technician.name := 'Technician'
 !set technician.fixApplied := false
 !insert (agentTechnician, technician) into Agent_plays_Technician
 !insert (incident1, technician) into Technician_in_IncidentCase
 !create auditor : Auditor
-!set auditor.name := 'Auditor'
 !set auditor.auditApproved := false
 !insert (agentAuditor, auditor) into Agent_plays_Auditor
 !insert (incident1, auditor) into Auditor_in_IncidentCase

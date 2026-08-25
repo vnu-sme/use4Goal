@@ -378,8 +378,6 @@ public final class AclBpmnIStarConformanceChecker {
             switch (r) {
                 case AndRefinement and -> children.addAll(and.children());
                 case OrRefinement or -> children.add(or.child());
-                case ForRefinement f -> children.add(f.child());
-                case PickRefinement p -> children.add(p.child());
             }
         }
         Set<String> roots = new LinkedHashSet<>();

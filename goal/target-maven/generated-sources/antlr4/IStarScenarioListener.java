@@ -1,5 +1,5 @@
 // Generated from IStarScenario.g4 by ANTLR 4.9.3
- package org.vnu.sme.goal.iscn.parser; 
+ package org.vnu.sme.goal.dsl.iscn.parser; 
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**

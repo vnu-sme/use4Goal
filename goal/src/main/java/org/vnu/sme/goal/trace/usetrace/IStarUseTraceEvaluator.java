@@ -21,13 +21,10 @@ import org.vnu.sme.goal.dsl.istar.mm.Agent;
 import org.vnu.sme.goal.dsl.istar.mm.AndRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Contribution;
 import org.vnu.sme.goal.dsl.istar.mm.Dependency;
-import org.vnu.sme.goal.dsl.istar.mm.ForRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Goal;
 import org.vnu.sme.goal.dsl.istar.mm.GoalModel;
 import org.vnu.sme.goal.dsl.istar.mm.IntentionalElement;
-import org.vnu.sme.goal.dsl.istar.mm.Obstacle;
 import org.vnu.sme.goal.dsl.istar.mm.OrRefinement;
-import org.vnu.sme.goal.dsl.istar.mm.PickRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Quality;
 import org.vnu.sme.goal.dsl.istar.mm.Refinement;
 import org.vnu.sme.goal.dsl.istar.mm.Resource;
@@ -137,7 +134,6 @@ public final class IStarUseTraceEvaluator {
                     }
                 }
                 case Resource r -> { }
-                case Obstacle o -> { }
             }
         }
         return IStarPropagation.closePending(evaluation.instanceModel(),
@@ -214,13 +210,13 @@ public final class IStarUseTraceEvaluator {
         while (changed && steps++ < MAX_DEPENDENCY_STEPS) {
             changed = false;
             for (Dependency d : model.getDependencies()) {
-                if (d.dependerElmt() == null) continue;
+                if (d.dependerElmt() == null || d.dependeeElmt() == null) continue;
                 boolean directCondition = model.findElement(d.dependerElmt())
                         .filter(Goal.class::isInstance).map(Goal.class::cast)
                         .map(goal -> !goal.conditions().isEmpty()).orElse(false);
                 if (directCondition) continue;
                 if (current.goalTaskStatus(d.dependerElmt()) == GoalTaskStatus.FULFILLED) continue;
-                if (current.goalTaskStatus(d.dependum()) == GoalTaskStatus.FULFILLED) {
+                if (current.goalTaskStatus(d.dependeeElmt()) == GoalTaskStatus.FULFILLED) {
                     current = IStarPropagation.assignGoalTask(model, current,
                             d.dependerElmt(), GoalTaskStatus.FULFILLED);
                     changed = true;
@@ -296,9 +292,9 @@ public final class IStarUseTraceEvaluator {
                 String actorId = occ(actor.name(), obj);
                 Actor copy = (actor instanceof Role)
                         ? new Role(actorId, elements, refinements, contributions,
-                                List.of(), List.of(), List.of(), List.of(), List.of())
+                                List.of(), List.of(), List.of())
                         : new Agent(actorId, elements, refinements, contributions,
-                                List.of(), List.of(), List.of(), List.of(), List.of());
+                                List.of(), List.of(), List.of());
                 out.addActor(copy);
                 actorLabels.put(actorId, actor.name() + " [" + obj + "]");
             }
@@ -334,7 +330,6 @@ public final class IStarUseTraceEvaluator {
         List<String> ids = new ArrayList<>();
         if (d.dependerElmt() != null) ids.add(d.dependerElmt());
         if (d.dependeeElmt() != null) ids.add(d.dependeeElmt());
-        if (d.dependum() != null) ids.add(d.dependum());
 
         List<Dependency> out = new ArrayList<>();
         for (Map<String, String> binding : bindingsFor(source, resolution, instancesByType, ids)) {
@@ -344,13 +339,12 @@ public final class IStarUseTraceEvaluator {
                     : binding.getOrDefault(resolution.actorTypeOf(source, d.dependerElmt()), dependerActor);
             String dependeeElmtInst = d.dependeeElmt() == null ? dependeeActor
                     : binding.getOrDefault(resolution.actorTypeOf(source, d.dependeeElmt()), dependeeActor);
-            String dependumInst = binding.getOrDefault(resolution.actorTypeOf(source, d.dependum()), dependeeElmtInst);
+            String dependumInst = dependeeElmtInst;
 
             out.add(new Dependency(
                     occ(d.depender(), dependerActor),
                     d.dependerElmt() == null ? null : occ(d.dependerElmt(), dependerElmtInst),
-                    d.dependumKind(),
-                    occ(d.dependum(), dependumInst),
+                    copyElement(d.dependum(), occ(d.dependum().id(), dependumInst)),
                     occ(d.dependee(), dependeeActor),
                     d.dependeeElmt() == null ? null : occ(d.dependeeElmt(), dependeeElmtInst)));
         }
@@ -444,7 +438,6 @@ public final class IStarUseTraceEvaluator {
             case Task t -> { GoalTaskStatus s = m.goalTaskStatus(baseId); if (s != GoalTaskStatus.UNKNOWN) goalTaskMarks.put(occId, s); }
             case Quality q -> { QualityStatus s = m.qualityStatus(baseId); if (s != QualityStatus.UNKNOWN) qualityMarks.put(occId, s); }
             case Resource r -> { }
-            case Obstacle o -> { }
         }
     }
 
@@ -458,11 +451,7 @@ public final class IStarUseTraceEvaluator {
     /**
      * AND/OR: parent and children are synchronized to a shared instance whenever they share a
      * governing ActorType (bindingsFor), instead of the child fanning out under a single fixed
-     * parent occurrence -- needed now that a plain AND/OR child of a forall/pick-quantified goal
-     * (CollectFromCalendar, ContactedByPhone under TimetableCollected) is itself governed by that
-     * same quantified ActorType (see the class doc). FOR/PICK keep the earlier "expand the
-     * child fully under one parent occurrence" shape: that IS the aggregation step, not a
-     * same-instance replication.
+     * parent occurrence.
      */
     private static List<Refinement> copyRefinement(GoalModel source, Refinement r, String obj,
                                                    ContextResolution resolution,
@@ -488,34 +477,18 @@ public final class IStarUseTraceEvaluator {
                 }
                 yield out;
             }
-            case ForRefinement forR -> {
-                List<Refinement> out = new ArrayList<>();
-                for (Map<String, String> binding : bindingsFor(source, resolution, instancesByType, List.of(forR.parent()))) {
-                    out.add(new AndRefinement(occFor(source, resolution, forR.parent(), obj, binding),
-                            expand(source, forR.child(), obj, resolution, instancesByType)));
-                }
-                yield out;
-            }
-            case PickRefinement p -> {
-                List<Refinement> out = new ArrayList<>();
-                for (Map<String, String> binding : bindingsFor(source, resolution, instancesByType, List.of(p.parent()))) {
-                    String parentOcc = occFor(source, resolution, p.parent(), obj, binding);
-                    for (String childOcc : expand(source, p.child(), obj, resolution, instancesByType)) {
-                        out.add(new OrRefinement(parentOcc, childOcc));
-                    }
-                }
-                yield out;
-            }
         };
     }
 
     private static IntentionalElement copyElement(IntentionalElement elem, String id) {
         return switch (elem) {
-            case Goal g -> new Goal(id, g.goalType(), g.constraints());
-            case Task t -> new Task(id, t.constraints());
+            case Goal g -> new Goal(id, g.goalType(),
+                    g.conditions().stream().findFirst().orElse(null));
+            case Task t -> new Task(id,
+                    t.preconditions().stream().findFirst().orElse(null),
+                    t.postconditions().stream().findFirst().orElse(null));
             case Resource r -> new Resource(id);
             case Quality q -> new Quality(id);
-            case Obstacle o -> new Obstacle(id, o.type());
         };
     }
 

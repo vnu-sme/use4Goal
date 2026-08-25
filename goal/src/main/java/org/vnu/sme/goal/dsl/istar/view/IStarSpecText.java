@@ -8,20 +8,15 @@ import org.vnu.sme.goal.dsl.istar.mm.Agent;
 import org.vnu.sme.goal.dsl.istar.mm.AndRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Contribution;
 import org.vnu.sme.goal.dsl.istar.mm.Dependency;
-import org.vnu.sme.goal.dsl.istar.mm.ForRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Goal;
 import org.vnu.sme.goal.dsl.istar.mm.GoalModel;
 import org.vnu.sme.goal.dsl.istar.mm.IntentionalElement;
 import org.vnu.sme.goal.dsl.istar.mm.GoalTaskElement;
 import org.vnu.sme.goal.dsl.istar.mm.NeededBy;
-import org.vnu.sme.goal.dsl.istar.mm.Obstacle;
-import org.vnu.sme.goal.dsl.istar.mm.Obstruction;
 import org.vnu.sme.goal.dsl.istar.mm.OrRefinement;
-import org.vnu.sme.goal.dsl.istar.mm.PickRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Qualification;
 import org.vnu.sme.goal.dsl.istar.mm.Quality;
 import org.vnu.sme.goal.dsl.istar.mm.Refinement;
-import org.vnu.sme.goal.dsl.istar.mm.Resolution;
 import org.vnu.sme.goal.dsl.istar.mm.Resource;
 import org.vnu.sme.goal.dsl.istar.mm.Task;
 
@@ -52,10 +47,11 @@ public final class IStarSpecText {
                 NodeBadge badge = badges.get(e.id());
                 if (badge != null) sb.append(" = ").append(badge.tooltip());
                 sb.append("\n");
-                if (e instanceof GoalTaskElement gt) {
-                    gt.constraints().forEach(c -> sb.append("    ")
-                            .append(c.kind().name().toLowerCase()).append(" {[ ")
-                            .append(c.oclBody()).append(" ]}\n"));
+                if (e instanceof Goal goal) {
+                    appendContracts(sb, "condition", goal.conditions());
+                } else if (e instanceof Task task) {
+                    appendContracts(sb, "pre", task.preconditions());
+                    appendContracts(sb, "post", task.postconditions());
                 }
             }
 
@@ -84,20 +80,6 @@ public final class IStarSpecText {
                             .append(label(nodeLabels, nb.task())).append("\n");
                 }
             }
-            if (!actor.obstructions().isEmpty()) {
-                sb.append("  obstructions:\n");
-                for (Obstruction ob : actor.obstructions()) {
-                    sb.append("    ").append(label(nodeLabels, ob.obstacle())).append(" obstructs ")
-                            .append(label(nodeLabels, ob.element())).append("\n");
-                }
-            }
-            if (!actor.resolutions().isEmpty()) {
-                sb.append("  resolutions:\n");
-                for (Resolution rs : actor.resolutions()) {
-                    sb.append("    ").append(label(nodeLabels, rs.element())).append(" resolves ")
-                            .append(label(nodeLabels, rs.obstacle())).append("\n");
-                }
-            }
             sb.append("\n");
         }
 
@@ -107,7 +89,8 @@ public final class IStarSpecText {
             for (Dependency d : deps) {
                 sb.append("  ").append(label(actorLabels, d.depender()));
                 if (d.dependerElmt() != null) sb.append(".").append(label(nodeLabels, d.dependerElmt()));
-                sb.append(" --").append(d.dependumKind()).append(" ").append(label(nodeLabels, d.dependum())).append("--> ")
+                sb.append(" --").append(kindOf(d.dependum())).append(" ")
+                        .append(label(nodeLabels, d.dependum().id())).append("--> ")
                         .append(label(actorLabels, d.dependee()));
                 if (d.dependeeElmt() != null) sb.append(".").append(label(nodeLabels, d.dependeeElmt()));
                 sb.append("\n");
@@ -117,13 +100,18 @@ public final class IStarSpecText {
         return sb.toString();
     }
 
+    private static void appendContracts(StringBuilder sb, String label,
+                                        List<org.vnu.sme.goal.dsl.istar.mm.IStarOclConstraint> contracts) {
+        contracts.forEach(c -> sb.append("    ").append(label).append(" {[ ")
+                .append(c.oclBody()).append(" ]}\n"));
+    }
+
     private static String kindOf(IntentionalElement e) {
         return switch (e) {
             case Goal g -> "goal";
             case Task t -> "task";
             case Quality q -> "quality";
             case Resource r -> "resource";
-            case Obstacle o -> "obstacle";
         };
     }
 
@@ -132,10 +120,6 @@ public final class IStarSpecText {
             case AndRefinement and -> label(nodeLabels, and.parent()) + " <-AND- "
                     + and.children().stream().map(c -> label(nodeLabels, c)).reduce((a, b) -> a + ", " + b).orElse("");
             case OrRefinement or -> label(nodeLabels, or.parent()) + " <-OR- " + label(nodeLabels, or.child());
-            case ForRefinement forR -> label(nodeLabels, forR.parent()) + " <-FORALL(" + forR.actorType() + ")- "
-                    + label(nodeLabels, forR.child());
-            case PickRefinement p -> label(nodeLabels, p.parent()) + " <-PICK(" + p.actorType() + ")- "
-                    + label(nodeLabels, p.child());
         };
     }
 

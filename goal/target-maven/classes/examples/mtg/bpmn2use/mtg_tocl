@@ -1,0 +1,606 @@
+model MeetingScheduler_Verification
+
+enum TimetableChannel {
+  none, calendar, phone
+ };
+
+aggregation PredSuccOrganizer between
+  Organizer[0..1] role predOrganizer
+  Organizer[0..1] role succOrganizer
+end
+
+composition SnapshotOrganizer between
+  Snapshot[1] role snapshotOrganizer
+  Organizer[*]
+end
+
+class checkCalendar_OrganizerOpC < OrganizerOpC
+end
+
+abstract class ParticipantOpC < OperationCall
+attributes
+  aSelf : Participant
+end
+
+association Filmstrip between
+  Snapshot[0..1] role pred
+  Snapshot[0..1] role succ
+  OperationCall[0..1]
+end
+
+aggregation PredSuccMeetingParty between
+  MeetingParty[0..1] role predMeetingParty
+  MeetingParty[0..1] role succMeetingParty
+end
+
+aggregation PredSuccSecretary between
+  Secretary[0..1] role predSecretary
+  Secretary[0..1] role succSecretary
+end
+
+composition SnapshotMeetingUnit between
+  Snapshot[1] role snapshotMeetingUnit
+  MeetingUnit[*]
+end
+
+class requestSecretaryCall_OrganizerOpC < OrganizerOpC
+end
+
+aggregation PredSuccInitiator between
+  Initiator[0..1] role predInitiator
+  Initiator[0..1] role succInitiator
+end
+
+composition SnapshotMeetingParty between
+  Snapshot[1] role snapshotMeetingParty
+  MeetingParty[*]
+end
+
+composition SnapshotParticipant between
+  Snapshot[1] role snapshotParticipant
+  Participant[*]
+end
+
+composition SnapshotInitiator between
+  Snapshot[1] role snapshotInitiator
+  Initiator[*]
+end
+
+abstract class OperationCall
+operations
+  pred() : Snapshot = 
+    if (self.pred->size() = 1) then self.pred->any( $elem0:Snapshot | true ) else null endif
+  succ() : Snapshot = 
+    if (self.succ->size() = 1) then self.succ->any( $elem0:Snapshot | true ) else null endif
+end
+
+abstract class InitiatorOpC < OperationCall
+attributes
+  aSelf : Initiator
+end
+
+composition SnapshotAgent between
+  Snapshot[1] role snapshotAgent
+  Agent[*]
+end
+
+class announceMeeting_OrganizerOpC < OrganizerOpC
+end
+
+class collectConstraintsByPhone_SecretaryOpC < SecretaryOpC
+end
+
+class start_meeting_InitiatorOpC < InitiatorOpC
+end
+
+class chooseTimeAndDate_OrganizerOpC < OrganizerOpC
+end
+
+class participate_ParticipantOpC < ParticipantOpC
+end
+
+class phoneCollectionRequired_OrganizerOpC < OrganizerOpC
+end
+
+aggregation PredSuccMeetingUnit between
+  MeetingUnit[0..1] role predMeetingUnit
+  MeetingUnit[0..1] role succMeetingUnit
+end
+
+abstract class SecretaryOpC < OperationCall
+attributes
+  aSelf : Secretary
+end
+
+aggregation PredSuccParticipant between
+  Participant[0..1] role predParticipant
+  Participant[0..1] role succParticipant
+end
+
+aggregation PredSuccAgent between
+  Agent[0..1] role predAgent
+  Agent[0..1] role succAgent
+end
+
+class decideMeetingDetails_InitiatorOpC < InitiatorOpC
+end
+
+class Snapshot
+operations
+  pred() : Snapshot = 
+    if (self.pred->size() = 1) then self.pred->any( $elem0:Snapshot | true ) else null endif
+  succ() : Snapshot = 
+    if (self.succ->size() = 1) then self.succ->any( $elem0:Snapshot | true ) else null endif
+end
+
+abstract class OrganizerOpC < OperationCall
+attributes
+  aSelf : Organizer
+end
+
+composition SnapshotSecretary between
+  Snapshot[1] role snapshotSecretary
+  Secretary[*]
+end
+
+class timetableCollectionComplete_OrganizerOpC < OrganizerOpC
+end
+
+class Agent
+end
+
+class MeetingParty
+attributes
+  name : String
+  phone : String
+  hasCalendar : Boolean
+end
+
+class Initiator
+operations
+  start_meeting()
+  decideMeetingDetails()
+end
+
+class Organizer
+operations
+  checkCalendar()
+  phoneCollectionRequired()
+  requestSecretaryCall()
+  timetableCollectionComplete()
+  chooseTimeAndDate()
+  announceMeeting()
+  end_meeting()
+  phoneCollectionRequired_to_requestSecretaryCall_guard() : Boolean = 
+    self.meetingUnit.participant->exists( p:Participant | not p.meetingParty.hasCalendar )
+end
+
+class Secretary
+operations
+  collectConstraintsByPhone()
+end
+
+class Participant
+attributes
+  timetableCollected : Boolean
+  timetableChannel : TimetableChannel
+  notified : Boolean
+  attended : Boolean
+operations
+  participate()
+end
+
+class MeetingUnit
+attributes
+  detailsDecided : Boolean
+  timeChosen : Boolean
+end
+
+association knowsPhoneOf between
+  MeetingParty[*] role knower
+  MeetingParty[*] role knownContact
+end
+
+association Agent_plays_MeetingParty between
+  Agent[1]
+  MeetingParty[*] role play_meetingParty
+end
+
+association MeetingParty_plays_Initiator between
+  MeetingParty[1]
+  Initiator[*] role play_initiator
+end
+
+association MeetingParty_plays_Organizer between
+  MeetingParty[1]
+  Organizer[*] role play_organizer
+end
+
+association MeetingParty_plays_Secretary between
+  MeetingParty[1]
+  Secretary[*] role play_secretary
+end
+
+association MeetingParty_plays_Participant between
+  MeetingParty[1]
+  Participant[*] role play_participant
+end
+
+composition Initiator_in_MeetingUnit between
+  MeetingUnit[1]
+  Initiator[1]
+end
+
+composition Organizer_in_MeetingUnit between
+  MeetingUnit[1]
+  Organizer[1]
+end
+
+composition Secretary_in_MeetingUnit between
+  MeetingUnit[1]
+  Secretary[0..1]
+end
+
+composition Participant_in_MeetingUnit between
+  MeetingUnit[1]
+  Participant[2..*]
+end
+
+constraints
+context Agent inv validLinkingAgent_plays_MeetingParty:
+  self.play_meetingParty->forAll( c:MeetingParty | (c.snapshotMeetingParty = self.snapshotAgent) )
+
+context Agent inv validSnapshotLinking:
+  (self.succAgent.isDefined() implies (self.succAgent.snapshotAgent = self.snapshotAgent.succ()))
+
+context Initiator inv validSnapshotLinking:
+  (self.succInitiator.isDefined() implies (self.succInitiator.snapshotInitiator = self.snapshotInitiator.succ()))
+
+context InitiatorOpC inv aSelfDefined:
+  self.aSelf.isDefined()
+
+context InitiatorOpC inv aSelfInPred:
+  (self.aSelf.snapshotInitiator = self.pred())
+
+context MeetingParty inv validLinkingMeetingParty_plays_Initiator:
+  self.play_initiator->forAll( c:Initiator | (c.snapshotInitiator = self.snapshotMeetingParty) )
+
+context MeetingParty inv validLinkingMeetingParty_plays_Organizer:
+  self.play_organizer->forAll( c:Organizer | (c.snapshotOrganizer = self.snapshotMeetingParty) )
+
+context MeetingParty inv validLinkingMeetingParty_plays_Participant:
+  self.play_participant->forAll( c:Participant | (c.snapshotParticipant = self.snapshotMeetingParty) )
+
+context MeetingParty inv validLinkingMeetingParty_plays_Secretary:
+  self.play_secretary->forAll( c:Secretary | (c.snapshotSecretary = self.snapshotMeetingParty) )
+
+context MeetingParty inv validLinkingknowsPhoneOf:
+  self.knownContact->forAll( c:MeetingParty | (c.snapshotMeetingParty = self.snapshotMeetingParty) )
+
+context MeetingParty inv validSnapshotLinking:
+  (self.succMeetingParty.isDefined() implies (self.succMeetingParty.snapshotMeetingParty = self.snapshotMeetingParty.succ()))
+
+context MeetingUnit inv validLinkingInitiator_in_MeetingUnit:
+  (self.initiator.isDefined() implies (self.snapshotMeetingUnit = self.initiator.snapshotInitiator))
+
+context MeetingUnit inv validLinkingOrganizer_in_MeetingUnit:
+  (self.organizer.isDefined() implies (self.snapshotMeetingUnit = self.organizer.snapshotOrganizer))
+
+context MeetingUnit inv validLinkingParticipant_in_MeetingUnit:
+  self.participant->forAll( c:Participant | (c.snapshotParticipant = self.snapshotMeetingUnit) )
+
+context MeetingUnit inv validLinkingSecretary_in_MeetingUnit:
+  (self.secretary.isDefined() implies (self.snapshotMeetingUnit = self.secretary.snapshotSecretary))
+
+context MeetingUnit inv validSnapshotLinking:
+  (self.succMeetingUnit.isDefined() implies (self.succMeetingUnit.snapshotMeetingUnit = self.snapshotMeetingUnit.succ()))
+
+context OperationCall inv assocClassBehavior:
+  (((self.pred->size() = 1) and (self.succ->size() = 1)) and OperationCall.allInstances()->forAll( op:OperationCall | (((self.pred = op.pred) and (self.succ = op.succ)) implies (self = op)) ))
+
+context Organizer inv validSnapshotLinking:
+  (self.succOrganizer.isDefined() implies (self.succOrganizer.snapshotOrganizer = self.snapshotOrganizer.succ()))
+
+context OrganizerOpC inv aSelfDefined:
+  self.aSelf.isDefined()
+
+context OrganizerOpC inv aSelfInPred:
+  (self.aSelf.snapshotOrganizer = self.pred())
+
+context Participant inv validSnapshotLinking:
+  (self.succParticipant.isDefined() implies (self.succParticipant.snapshotParticipant = self.snapshotParticipant.succ()))
+
+context ParticipantOpC inv aSelfDefined:
+  self.aSelf.isDefined()
+
+context ParticipantOpC inv aSelfInPred:
+  (self.aSelf.snapshotParticipant = self.pred())
+
+context Secretary inv validSnapshotLinking:
+  (self.succSecretary.isDefined() implies (self.succSecretary.snapshotSecretary = self.snapshotSecretary.succ()))
+
+context SecretaryOpC inv aSelfDefined:
+  self.aSelf.isDefined()
+
+context SecretaryOpC inv aSelfInPred:
+  (self.aSelf.snapshotSecretary = self.pred())
+
+context Snapshot inv cycleFree:
+  Set{self.succ()}->closure( s:Snapshot | s.succ() )->excludes(self)
+
+context Snapshot inv oneFilmstrip:
+  ((Snapshot.allInstances()->select( s:Snapshot | s.pred().isUndefined() )->size() = 1) and (Snapshot.allInstances()->select( s:Snapshot | s.succ().isUndefined() )->size() = 1))
+
+context announceMeeting_OrganizerOpC inv post_BPMN_MeetingOrganization_announceMeeting_DomainPost:
+  aSelf.succOrganizer.meetingUnit.participant->forAll( p:Participant | p.notified )
+
+context announceMeeting_OrganizerOpC inv pre_BPMN_MeetingOrganization_announceMeeting_DomainPre:
+  aSelf.meetingUnit.timeChosen
+
+context checkCalendar_OrganizerOpC inv post_BPMN_MeetingOrganization_checkCalendar_DomainPost:
+  aSelf.succOrganizer.meetingUnit.participant->select( p:Participant | p.meetingParty.hasCalendar )->forAll( p:Participant | (p.timetableCollected and (p.timetableChannel = TimetableChannel::calendar)) )
+
+context checkCalendar_OrganizerOpC inv pre_BPMN_MeetingOrganization_checkCalendar_DomainPre:
+  aSelf.meetingUnit.detailsDecided
+
+context chooseTimeAndDate_OrganizerOpC inv post_BPMN_MeetingOrganization_chooseTimeAndDate_DomainPost:
+  aSelf.succOrganizer.meetingUnit.timeChosen
+
+context chooseTimeAndDate_OrganizerOpC inv pre_BPMN_MeetingOrganization_chooseTimeAndDate_DomainPre:
+  aSelf.meetingUnit.participant->forAll( p:Participant | p.timetableCollected )
+
+context collectConstraintsByPhone_SecretaryOpC inv post_BPMN_MeetingOrganization_collectConstraintsByPhone_DomainPost:
+  aSelf.succSecretary.meetingUnit.participant->select( p:Participant | not p.meetingParty.hasCalendar )->forAll( p:Participant | (p.timetableCollected and (p.timetableChannel = TimetableChannel::phone)) )
+
+context collectConstraintsByPhone_SecretaryOpC inv pre_BPMN_MeetingOrganization_collectConstraintsByPhone_DomainPre:
+  ((aSelf.meetingUnit.participant->exists( p:Participant | not p.meetingParty.hasCalendar ) and not aSelf.meetingUnit.secretary.isUndefined()) and aSelf.meetingUnit.participant->select( p:Participant | not p.meetingParty.hasCalendar )->forAll( p:Participant | ((p.meetingParty.phone <> '') and aSelf.meetingUnit.secretary.meetingParty.knownContact->includes(p.meetingParty)) ))
+
+context decideMeetingDetails_InitiatorOpC inv post_BPMN_MeetingOrganization_decideMeetingDetails_DomainPost:
+  aSelf.succInitiator.meetingUnit.detailsDecided
+
+context participate_ParticipantOpC inv post_BPMN_MeetingOrganization_participate_DomainPost:
+  aSelf.succParticipant.meetingUnit.participant->forAll( p:Participant | p.attended )
+
+context participate_ParticipantOpC inv pre_BPMN_MeetingOrganization_participate_DomainPre:
+  aSelf.meetingUnit.participant->forAll( p:Participant | p.notified )
+
+context phoneCollectionRequired_OrganizerOpC inv pre_BPMN_MeetingOrganization_phoneCollectionRequired_DomainPre:
+  aSelf.meetingUnit.participant->select( p:Participant | p.meetingParty.hasCalendar )->forAll( p:Participant | p.timetableCollected )
+
+context requestSecretaryCall_OrganizerOpC inv pre_BPMN_MeetingOrganization_requestSecretaryCall_DomainPre:
+  (((aSelf.meetingUnit.detailsDecided and aSelf.meetingUnit.participant->exists( p:Participant | not p.meetingParty.hasCalendar )) and not aSelf.meetingUnit.secretary.isUndefined()) and aSelf.meetingUnit.participant->select( p:Participant | not p.meetingParty.hasCalendar )->forAll( p:Participant | ((p.meetingParty.phone <> '') and aSelf.meetingUnit.secretary.meetingParty.knownContact->includes(p.meetingParty)) ))
+
+context start_meeting_InitiatorOpC inv pre_BPMN_MeetingOrganization_start_meeting_DomainPre:
+  ((not aSelf.meetingUnit.detailsDecided and not aSelf.meetingUnit.timeChosen) and aSelf.meetingUnit.participant->forAll( p:Participant | (((not p.timetableCollected and (p.timetableChannel = TimetableChannel::none)) and not p.notified) and not p.attended) ))
+
+context timetableCollectionComplete_OrganizerOpC inv pre_BPMN_MeetingOrganization_timetableCollectionComplete_DomainPre:
+  aSelf.meetingUnit.participant->forAll( p:Participant | p.timetableCollected )
+
+context self : MeetingParty inv NoSelfConflict_Initiator:
+  self.play_initiator->forAll( r1:Initiator, r2:Initiator | ((r1 <> r2) implies (r1.meetingUnit <> r2.meetingUnit)) )
+
+context self : MeetingParty inv NoSelfConflict_Organizer:
+  self.play_organizer->forAll( r1:Organizer, r2:Organizer | ((r1 <> r2) implies (r1.meetingUnit <> r2.meetingUnit)) )
+
+context self : MeetingParty inv NoSelfConflict_Secretary:
+  self.play_secretary->forAll( r1:Secretary, r2:Secretary | ((r1 <> r2) implies (r1.meetingUnit <> r2.meetingUnit)) )
+
+context self : MeetingParty inv NoSelfConflict_Participant:
+  self.play_participant->forAll( r1:Participant, r2:Participant | ((r1 <> r2) implies (r1.meetingUnit <> r2.meetingUnit)) )
+
+context self : MeetingParty inv NoConflict_Initiator_Organizer:
+  self.play_initiator->forAll( r1:Initiator | self.play_organizer->forAll( r2:Organizer | not (r1.meetingUnit = r2.meetingUnit) ) )
+
+context self : MeetingParty inv NoConflict_Initiator_Secretary:
+  self.play_initiator->forAll( r1:Initiator | self.play_secretary->forAll( r2:Secretary | not (r1.meetingUnit = r2.meetingUnit) ) )
+
+context self : MeetingParty inv NoConflict_Organizer_Participant:
+  self.play_organizer->forAll( r1:Organizer | self.play_participant->forAll( r2:Participant | not (r1.meetingUnit = r2.meetingUnit) ) )
+
+context self : MeetingParty inv NoConflict_Secretary_Participant:
+  self.play_secretary->forAll( r1:Secretary | self.play_participant->forAll( r2:Participant | not (r1.meetingUnit = r2.meetingUnit) ) )
+
+context Agent
+inv AgentSameId: self.succAgent.isDefined() implies self.id = self.succAgent.id
+context Initiator
+inv InitiatorSameId: self.succInitiator.isDefined() implies self.id = self.succInitiator.id
+context MeetingParty
+inv MeetingPartySameId: self.succMeetingParty.isDefined() implies self.id = self.succMeetingParty.id
+context MeetingUnit
+inv MeetingUnitSameId: self.succMeetingUnit.isDefined() implies self.id = self.succMeetingUnit.id
+context Organizer
+inv OrganizerSameId: self.succOrganizer.isDefined() implies self.id = self.succOrganizer.id
+context Participant
+inv ParticipantSameId: self.succParticipant.isDefined() implies self.id = self.succParticipant.id
+context Secretary
+inv SecretarySameId: self.succSecretary.isDefined() implies self.id = self.succSecretary.id
+
+context Agent
+inv AgentDiffId: self.snapshotAgent.agent->forAll(o | o <> self implies o.id <> self.id)
+context Initiator
+inv InitiatorDiffId: self.snapshotInitiator.initiator->forAll(o | o <> self implies o.id <> self.id)
+context MeetingParty
+inv MeetingPartyDiffId: self.snapshotMeetingParty.meetingParty->forAll(o | o <> self implies o.id <> self.id)
+context MeetingUnit
+inv MeetingUnitDiffId: self.snapshotMeetingUnit.meetingUnit->forAll(o | o <> self implies o.id <> self.id)
+context Organizer
+inv OrganizerDiffId: self.snapshotOrganizer.organizer->forAll(o | o <> self implies o.id <> self.id)
+context Participant
+inv ParticipantDiffId: self.snapshotParticipant.participant->forAll(o | o <> self implies o.id <> self.id)
+context Secretary
+inv SecretaryDiffId: self.snapshotSecretary.secretary->forAll(o | o <> self implies o.id <> self.id)
+
+context MeetingUnit
+inv BPMN_MeetingOrganization_before_decideMeetingDetails:
+  (let CS:Snapshot = self.snapshotMeetingUnit in Set{CS}->closure(s | s.succ())->excluding(null)->forAll(s | (
+    Initiator.allInstances()->exists(target : Initiator |
+      target.meetingUnit = self and
+      target_MeetingUnitOpC.allInstances()->exists(op | op.succ() = s).decideMeetingDetails())
+    )))
+    implies
+    (let CS:Snapshot = self.snapshotMeetingUnit in Set{CS.pred()}->closure(s | s.pred())->exists(s | (
+      Initiator.allInstances()->exists(source1 : Initiator |
+      source1.meetingUnit = self and
+      source1_MeetingUnitOpC.allInstances()->exists(op | op.succ() = s).start_meeting())
+    )))
+    )
+  )
+
+-- Incoming sequence flow(s) of checkCalendar
+context MeetingUnit
+inv BPMN_MeetingOrganization_before_checkCalendar:
+  always (
+    Organizer.allInstances()->exists(target : Organizer |
+      target.meetingUnit = self and
+      isCalled(target.checkCalendar())
+    )
+    implies
+    sometimePast (
+      Initiator.allInstances()->exists(source1 : Initiator |
+      source1.meetingUnit = self and
+      isCalled(source1.decideMeetingDetails())
+    )
+    )
+  )
+
+-- Incoming sequence flow(s) of phoneCollectionRequired
+context MeetingUnit
+inv BPMN_MeetingOrganization_before_phoneCollectionRequired:
+  always (
+    Organizer.allInstances()->exists(target : Organizer |
+      target.meetingUnit = self and
+      isCalled(target.phoneCollectionRequired())
+    )
+    implies
+    sometimePast (
+      Organizer.allInstances()->exists(source1 : Organizer |
+      source1.meetingUnit = self and
+      isCalled(source1.checkCalendar())
+    )
+    )
+  )
+
+-- Incoming sequence flow(s) of requestSecretaryCall
+context MeetingUnit
+inv BPMN_MeetingOrganization_before_requestSecretaryCall:
+  always (
+    Organizer.allInstances()->exists(target : Organizer |
+      target.meetingUnit = self and
+      isCalled(target.requestSecretaryCall())
+    )
+    implies
+    sometimePast (
+      Organizer.allInstances()->exists(source1 : Organizer |
+      source1.meetingUnit = self and
+      isCalled(source1.phoneCollectionRequired())
+    )
+    )
+  )
+
+-- Incoming sequence flow(s) of timetableCollectionComplete
+context MeetingUnit
+inv BPMN_MeetingOrganization_before_timetableCollectionComplete:
+  always (
+    Organizer.allInstances()->exists(target : Organizer |
+      target.meetingUnit = self and
+      isCalled(target.timetableCollectionComplete())
+    )
+    implies
+    sometimePast (
+      Organizer.allInstances()->exists(source1 : Organizer |
+      source1.meetingUnit = self and
+      isCalled(source1.phoneCollectionRequired())
+    )
+    )
+    or sometimePast (
+      Secretary.allInstances()->exists(source2 : Secretary |
+      source2.meetingUnit = self and
+      isCalled(source2.collectConstraintsByPhone())
+    )
+    )
+  )
+
+-- Incoming sequence flow(s) of collectConstraintsByPhone
+context MeetingUnit
+inv BPMN_MeetingOrganization_before_collectConstraintsByPhone:
+  always (
+    Secretary.allInstances()->exists(target : Secretary |
+      target.meetingUnit = self and
+      isCalled(target.collectConstraintsByPhone())
+    )
+    implies
+    sometimePast (
+      Organizer.allInstances()->exists(source1 : Organizer |
+      source1.meetingUnit = self and
+      isCalled(source1.requestSecretaryCall())
+    )
+    )
+  )
+
+-- Incoming sequence flow(s) of chooseTimeAndDate
+context MeetingUnit
+inv BPMN_MeetingOrganization_before_chooseTimeAndDate:
+  always (
+    Organizer.allInstances()->exists(target : Organizer |
+      target.meetingUnit = self and
+      isCalled(target.chooseTimeAndDate())
+    )
+    implies
+    sometimePast (
+      Organizer.allInstances()->exists(source1 : Organizer |
+      source1.meetingUnit = self and
+      isCalled(source1.timetableCollectionComplete())
+    )
+    )
+  )
+
+-- Incoming sequence flow(s) of announceMeeting
+context MeetingUnit
+inv BPMN_MeetingOrganization_before_announceMeeting:
+  always (
+    Organizer.allInstances()->exists(target : Organizer |
+      target.meetingUnit = self and
+      isCalled(target.announceMeeting())
+    )
+    implies
+    sometimePast (
+      Organizer.allInstances()->exists(source1 : Organizer |
+      source1.meetingUnit = self and
+      isCalled(source1.chooseTimeAndDate())
+    )
+    )
+  )
+
+-- Incoming sequence flow(s) of participate
+context MeetingUnit
+inv BPMN_MeetingOrganization_before_participate:
+  always (
+    Participant.allInstances()->exists(target : Participant |
+      target.meetingUnit = self and
+      isCalled(target.participate())
+    )
+    implies
+    sometimePast (
+      Organizer.allInstances()->exists(source1 : Organizer |
+      source1.meetingUnit = self and
+      isCalled(source1.announceMeeting())
+    )
+    )
+  )
+
+-- Incoming sequence flow(s) of end_meeting
+context MeetingUnit
+inv BPMN_MeetingOrganization_before_end_meeting:
+  always (
+    Organizer.allInstances()->exists(target : Organizer |
+      target.meetingUnit = self and
+      isCalled(target.end_meeting())
+    )
+    implies
+    sometimePast (
+      Participant.allInstances()->exists(source1 : Participant |
+      source1.meetingUnit = self and
+      isCalled(source1.participate())
+    )
+    )
+  )

@@ -1,5 +1,5 @@
 // Generated from DCR.g4 by ANTLR 4.9.3
- package org.vnu.sme.goal.dcr.parser; 
+ package org.vnu.sme.goal.dsl.dcr.parser; 
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;

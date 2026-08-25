@@ -77,7 +77,7 @@ public final class IStarDiagramEdge extends EdgeBase {
 
     private Stroke stroke() {
         return switch (edge.kind()) {
-            case QUALIFICATION, DEPENDENCY, OBSTRUCTION, RESOLUTION ->
+            case QUALIFICATION, DEPENDENCY ->
                     DiagramVisualStyle.dashed();
             default -> DiagramVisualStyle.solid();
         };
@@ -89,7 +89,6 @@ public final class IStarDiagramEdge extends EdgeBase {
         g.drawLine(x1, y1, x2, y2);
         switch (edge.kind()) {
             case AND_REFINE, OR_REFINE -> { }
-            case RESOLUTION -> drawT(g, x1, y1, x2, y2);
             case NEEDED_BY -> {
                 g.setColor(Color.WHITE);
                 g.fillOval(x2 - 5, y2 - 5, 10, 10);
@@ -98,13 +97,6 @@ public final class IStarDiagramEdge extends EdgeBase {
             }
             default -> DirectedEdgeFactory.drawArrow(g, x1, y1, x2, y2, ArrowStyle.FILLED);
         }
-    }
-
-    private static void drawT(Graphics2D g, int x1, int y1, int x2, int y2) {
-        double angle = Math.atan2(y2 - y1, x2 - x1) + Math.PI / 2.0;
-        int sz = 7;
-        g.drawLine(x2 - (int) (sz * Math.cos(angle)), y2 - (int) (sz * Math.sin(angle)),
-                x2 + (int) (sz * Math.cos(angle)), y2 + (int) (sz * Math.sin(angle)));
     }
 
     private void paintLabel(Graphics2D g, Point2D first, Point2D last) {

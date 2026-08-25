@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    name="istarstate" nsURI="https://vnu.edu.vn/sme/goal/istar/state/3.0" nsPrefix="istars">
+
+  <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+    <details key="documentation" value="State-aware iStar development metamodel. Actor declarations are not duplicated: ActorView references an ACL Actor. GoalTrace evaluates every applicable intentional element against each immutable ACL SystemState."/>
+  </eAnnotations>
+  <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+    <details key="validationDelegates" value="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG"/>
+  </eAnnotations>
+
+  <!-- ======================== M1 intentional model ======================== -->
+
+  <eClassifiers xsi:type="ecore:EClass" name="GoalModel">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="UniqueActorViews UniqueElementIds DependenciesStayInModel"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="UniqueActorViews" value="actorViews-&gt;isUnique(actor)"/>
+      <details key="UniqueElementIds" value="actorViews-&gt;collect(elements)-&gt;flatten()-&gt;isUnique(id)"/>
+      <details key="DependenciesStayInModel" value="dependencies-&gt;forAll(d | actorViews-&gt;includes(d.depender) and actorViews-&gt;includes(d.dependee))"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="aclModel" lowerBound="1"
+        eType="ecore:EClass acl-state.ecore#//AclModel"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="actorViews" lowerBound="1" upperBound="-1"
+        eType="#//ActorView" containment="true" eOpposite="#//ActorView/model"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dependencies" upperBound="-1"
+        eType="#//Dependency" containment="true"/>
+  </eClassifiers>
+
+  <eClassifiers xsi:type="ecore:EClass" name="ActorView">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="The intentional boundary of one shared ACL Actor. An INDIVIDUAL actor view contains personal goals; a ROLE view contains position responsibilities; a COLLECTIVE view contains organizational goals."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="ActorBelongsToAclModel UniqueElementIds"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="ActorBelongsToAclModel" value="actor.model = model.aclModel"/>
+      <details key="UniqueElementIds" value="elements-&gt;isUnique(id)"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="model" lowerBound="1"
+        eType="#//GoalModel" eOpposite="#//GoalModel/actorViews"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="actor" lowerBound="1"
+        eType="ecore:EClass acl-state.ecore#//Actor"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="elements" upperBound="-1"
+        eType="#//IntentionalElement" containment="true" eOpposite="#//IntentionalElement/owner"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="relations" upperBound="-1"
+        eType="#//IntentionalRelation" containment="true" eOpposite="#//IntentionalRelation/owner"/>
+  </eClassifiers>
+
+  <eClassifiers xsi:type="ecore:EClass" name="IntentionalElement" abstract="true">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="A reusable intention template. Its runtime subject type is contextActor when present, otherwise owner.actor. This makes quantified child goals explicit without copying them into another actor boundary."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="NonEmptyId ContextActorBelongsToAclModel"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="NonEmptyId" value="id.size() &gt; 0"/>
+      <details key="ContextActorBelongsToAclModel" value="contextActor.oclIsUndefined() or contextActor.model = owner.model.aclModel"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="description"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="owner" eType="#//ActorView"
+        eOpposite="#//ActorView/elements"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="contextActor"
+        eType="ecore:EClass acl-state.ecore#//Actor"/>
+  </eClassifiers>
+
+  <eClassifiers xsi:type="ecore:EClass" name="GoalTaskElement" abstract="true"
+      eSuperTypes="#//IntentionalElement"/>
+
+  <eClassifiers xsi:type="ecore:EClass" name="Goal" eSuperTypes="#//GoalTaskElement">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="A desired state predicate. activation determines applicability; condition determines satisfaction in the current ACL SystemState."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="goalType" lowerBound="1" eType="#//GoalType"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="activation" eType="#//StatePredicate" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="condition" eType="#//StatePredicate" containment="true"/>
+  </eClassifiers>
+
+  <eClassifiers xsi:type="ecore:EClass" name="Task" eSuperTypes="#//GoalTaskElement">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="An intended action contract. precondition is evaluated in a source SystemState and postcondition in its successor; the task does not store domain state itself."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="precondition" eType="#//StatePredicate" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="postcondition" eType="#//StatePredicate" containment="true"/>
+  </eClassifiers>
+
+  <eClassifiers xsi:type="ecore:EClass" name="Quality" eSuperTypes="#//IntentionalElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="condition" eType="#//StatePredicate" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Resource" eSuperTypes="#//IntentionalElement"/>
+
+  <eClassifiers xsi:type="ecore:EClass" name="StatePredicate">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="An OCL boolean evaluated over one ACL SystemState. self denotes the marking subject; outer optionally denotes the enclosing quantified subject; state denotes the complete checkpoint."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="NonEmptyBody"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="NonEmptyBody" value="oclBody.size() &gt; 0"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="oclBody" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+
+  <eClassifiers xsi:type="ecore:EClass" name="IntentionalRelation" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="owner" lowerBound="1"
+        eType="#//ActorView" eOpposite="#//ActorView/relations"/>
+  </eClassifiers>
+
+  <eClassifiers xsi:type="ecore:EClass" name="Refinement" abstract="true"
+      eSuperTypes="#//IntentionalRelation">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="ParentOwnedByBoundary"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="ParentOwnedByBoundary" value="parent.owner = owner"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parent" lowerBound="1" eType="#//GoalTaskElement"/>
+  </eClassifiers>
+
+  <eClassifiers xsi:type="ecore:EClass" name="AndRefinement" eSuperTypes="#//Refinement">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="ChildrenOwnedByBoundary NoSelfChild"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="ChildrenOwnedByBoundary" value="children-&gt;forAll(c | c.owner = owner)"/>
+      <details key="NoSelfChild" value="children-&gt;excludes(parent)"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="children" lowerBound="2" upperBound="-1"
+        eType="#//GoalTaskElement"/>
+  </eClassifiers>
+
+  <eClassifiers xsi:type="ecore:EClass" name="OrRefinement" eSuperTypes="#//Refinement">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="ChildrenOwnedByBoundary NoSelfChild"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="ChildrenOwnedByBoundary" value="children-&gt;forAll(c | c.owner = owner)"/>
+      <details key="NoSelfChild" value="children-&gt;excludes(parent)"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="children" lowerBound="1" upperBound="-1"
+        eType="#//GoalTaskElement"/>
+  </eClassifiers>
+
+  <eClassifiers xsi:type="ecore:EClass" name="QuantifiedRefinement" eSuperTypes="#//Refinement">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="Evaluates one child template over matching occurrences of targetActor in the current ACL state. FORALL aggregates conjunction; PICK aggregates existential choice."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="ChildOwnedByBoundary ContextMatchesTarget"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="ChildOwnedByBoundary" value="child.owner = owner"/>
+      <details key="ContextMatchesTarget" value="child.contextActor = targetActor"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="quantifier" lowerBound="1" eType="#//QuantifierKind"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="child" lowerBound="1" eType="#//GoalTaskElement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="targetActor" lowerBound="1"
+        eType="ecore:EClass acl-state.ecore#//Actor"/>
+  </eClassifiers>
+
+  <eClassifiers xsi:type="ecore:EClass" name="Contribution" eSuperTypes="#//IntentionalRelation">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" lowerBound="1" eType="#//ContributionType"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="source" lowerBound="1" eType="#//IntentionalElement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="quality" lowerBound="1" eType="#//Quality"/>
+  </eClassifiers>
+
+  <eClassifiers xsi:type="ecore:EClass" name="Dependency">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="A social or organizational delegation between two shared Actor views. The dependum is composition-owned and therefore already carries its concrete intentional-element kind."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="DistinctActors EndpointOwnership"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="DistinctActors" value="depender &lt;&gt; dependee"/>
+      <details key="EndpointOwnership" value="(dependerElement.oclIsUndefined() or dependerElement.owner = depender) and (dependeeElement.oclIsUndefined() or dependeeElement.owner = dependee)"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="depender" lowerBound="1" eType="#//ActorView"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dependerElement" eType="#//IntentionalElement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dependum" lowerBound="1"
+        eType="#//IntentionalElement" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dependee" lowerBound="1" eType="#//ActorView"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dependeeElement" eType="#//IntentionalElement"/>
+  </eClassifiers>
+
+  <!-- ======================== M0 goal evaluation ======================== -->
+
+  <eClassifiers xsi:type="ecore:EClass" name="GoalTrace">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="The state-aware execution companion of one GoalModel and one ACL SystemHistory. It does not duplicate domain state; each GoalSnapshot references the exact ACL checkpoint it evaluates."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="ModelsAgree UniqueSystemStateSnapshot"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="ModelsAgree" value="history.model = goalModel.aclModel"/>
+      <details key="UniqueSystemStateSnapshot" value="snapshots-&gt;isUnique(systemState)"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="goalModel" lowerBound="1" eType="#//GoalModel"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="history" lowerBound="1"
+        eType="ecore:EClass acl-state.ecore#//SystemHistory"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="snapshots" lowerBound="1" upperBound="-1"
+        eType="#//GoalSnapshot" containment="true" eOpposite="#//GoalSnapshot/trace"/>
+  </eClassifiers>
+
+  <eClassifiers xsi:type="ecore:EClass" name="GoalSnapshot">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="StateBelongsToHistory MarkingSubjectsAreActive UniqueMarkingKey"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="StateBelongsToHistory" value="systemState.history = trace.history"/>
+      <details key="MarkingSubjectsAreActive" value="markings-&gt;forAll(m | systemState.activeInstances-&gt;includes(m.subject))"/>
+      <details key="UniqueMarkingKey" value="markings-&gt;forAll(m | markings-&gt;select(x | x.element = m.element and x.subject = m.subject and x.outer = m.outer)-&gt;size() = 1)"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="trace" lowerBound="1"
+        eType="#//GoalTrace" eOpposite="#//GoalTrace/snapshots"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="systemState" lowerBound="1"
+        eType="ecore:EClass acl-state.ecore#//SystemState"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="complete" lowerBound="1" defaultValueLiteral="true"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="markings" upperBound="-1"
+        eType="#//IntentionalMarking" containment="true"/>
+  </eClassifiers>
+
+  <eClassifiers xsi:type="ecore:EClass" name="IntentionalMarking">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="One evaluation of one intentional template for one runtime subject. subject is normally typed by element.contextActor, or by element.owner.actor when contextActor is absent."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="SubjectTypeMatchesContext"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="SubjectTypeMatchesContext" value="subject.classifier = (if element.contextActor.oclIsUndefined() then element.owner.actor else element.contextActor endif)"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="element" lowerBound="1" eType="#//IntentionalElement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="subject" lowerBound="1"
+        eType="ecore:EClass acl-state.ecore#//RuntimeInstance"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="outer"
+        eType="ecore:EClass acl-state.ecore#//RuntimeInstance"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="status" lowerBound="1" eType="#//MarkingStatus"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="evidence"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+
+  <eClassifiers xsi:type="ecore:EEnum" name="GoalType">
+    <eLiterals name="ACHIEVE" literal="Achieve"/>
+    <eLiterals name="MAINTAIN" value="1" literal="Maintain"/>
+    <eLiterals name="SUSTAIN" value="2" literal="Sustain"/>
+    <eLiterals name="RECUR" value="3" literal="Recur"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="QuantifierKind">
+    <eLiterals name="FORALL" literal="forall"/>
+    <eLiterals name="PICK" value="1" literal="pick"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="ContributionType">
+    <eLiterals name="MAKE" literal="Make"/>
+    <eLiterals name="HELP" value="1" literal="Help"/>
+    <eLiterals name="HURT" value="2" literal="Hurt"/>
+    <eLiterals name="BREAK" value="3" literal="Break"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="MarkingStatus">
+    <eLiterals name="INACTIVE" literal="inactive"/>
+    <eLiterals name="PENDING" value="1" literal="pending"/>
+    <eLiterals name="SATISFIED" value="2" literal="satisfied"/>
+    <eLiterals name="VIOLATED" value="3" literal="violated"/>
+  </eClassifiers>
+</ecore:EPackage>

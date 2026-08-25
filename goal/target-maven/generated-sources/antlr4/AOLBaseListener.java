@@ -1,5 +1,5 @@
 // Generated from AOL.g4 by ANTLR 4.9.3
- package org.vnu.sme.goal.aol.parser; 
+ package org.vnu.sme.goal.dsl.aol.parser; 
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -83,6 +83,30 @@ public class AOLBaseListener implements AOLListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitPlayDecl(AOLParser.PlayDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterRoleInstanceDecl(AOLParser.RoleInstanceDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitRoleInstanceDecl(AOLParser.RoleInstanceDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterPlayLinkDecl(AOLParser.PlayLinkDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPlayLinkDecl(AOLParser.PlayLinkDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

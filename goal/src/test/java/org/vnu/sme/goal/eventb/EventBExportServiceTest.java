@@ -22,7 +22,7 @@ class EventBExportServiceTest {
         assertTrue(result.diagnostics().stream().noneMatch(x -> x.startsWith("Unsupported")),
                 () -> "every mtg.bpmn2 pre/post clause must translate: " + String.join("\n", result.diagnostics()));
         assertTrue(result.diagnostics().isEmpty(), () -> String.join("\n", result.diagnostics()));
-        assertEquals(6, result.generatedFiles().size());
+        assertEquals(8, result.generatedFiles().size(), "Rodin sources plus Markdown/CSV semantic mapping reports");
         assertTrue(Files.readString(result.projectDirectory()
                 .resolve(".settings/org.eclipse.core.resources.prefs")).contains("encoding/<project>=UTF-8"));
         Path context = result.projectDirectory().resolve("MeetingSchedulerEventB_ctx.buc");
@@ -90,7 +90,11 @@ class EventBExportServiceTest {
         assertTrue(temporalProperties.contains("G_OrganizerScheduledMeeting_A ∖ G_OrganizerScheduledMeeting_P"));
         assertTrue(Files.readString(ltl).contains("MeetingUnit_detailsDecided"),
                 "the generated liveness property must contain the declared goal trigger");
-        assertFalse(Files.readString(machine).contains("org.eventb.core.theorem=\"true\""));
+        assertTrue(Files.readString(machine).contains("org.eventb.core.theorem=\"true\""),
+                "statically supported Task–Activity mappings must become Rodin theorem guards");
+        assertTrue(temporalProperties.contains("MAPPING_SOUNDNESS"));
+        assertTrue(Files.isRegularFile(result.projectDirectory().resolve("MeetingSchedulerEventB_mapping.md")));
+        assertTrue(Files.isRegularFile(result.projectDirectory().resolve("MeetingSchedulerEventB_mapping.csv")));
         var factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true); factory.newDocumentBuilder().parse(context.toFile());
         factory.newDocumentBuilder().parse(machine.toFile());

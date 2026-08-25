@@ -1,0 +1,16 @@
+// Initial SalesCase state, before proposalReceived fires. Every SalesCase
+// attribute uses its ACL default value (draft, nothing prepared/sent).
+// Expected OCL result: 7 true, 0 false (all seven invariants vacuously hold).
+aol v2.0 SalesForecastInitial for "sales_forecast.acl" {
+  group SalesCase as salescase1;
+
+  role Management as management1;
+  role CustomerManager as manager1;
+  role Approver as approver1;
+  role Customer as customer1;
+
+  link SalesCase_contains_Management : salescase1 -> management1;
+  link SalesCase_contains_CustomerManager : salescase1 -> manager1;
+  link SalesCase_contains_Approver : salescase1 -> approver1;
+  link SalesCase_contains_Customer : salescase1 -> customer1;
+}

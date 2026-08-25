@@ -21,6 +21,14 @@
   doi     = {10.1016/j.scico.2013.03.017}
 }
 
+@article{gstarEventB,
+  author  = {La, Trinh Hoang Viet and Dang, Duc-Hanh},
+  title   = {An Investigation into a Formal Semantic Framework for Goal-Oriented Requirements Models},
+  journal = {VNU Journal of Science: Computer Science and Communication Engineering},
+  year    = {2026},
+  note    = {Accepted manuscript}
+}
+
 @inproceedings{yu1997towards,
   author    = {Yu, Eric S. K.},
   title     = {Towards Modelling and Reasoning Support for Early-Phase Requirements Engineering},
@@ -274,3 +282,74 @@
   booktitle = {Proceedings of the International Symposium on Business Modeling and Software Design (BMSD 2013)},
   year      = {2013}
 } % TODO verify pages -- xác nhận qua scitepress PDF (tóm tắt AI), chưa đọc toàn văn đầy đủ
+
+@article{snookbutler2006umlb,
+  author  = {Snook, Colin and Butler, Michael},
+  title   = {{UML-B}: Formal Modeling and Design Aided by {UML}},
+  journal = {ACM Transactions on Software Engineering and Methodology},
+  volume  = {15},
+  number  = {1},
+  pages   = {92--122},
+  year    = {2006},
+  doi     = {10.1145/1125808.1125811}
+} % Confirmed verbatim against latex/paperssssss/eventB/umlB.tex (own reference copy of this
+  % paper): title, authors, journal, volume, number, and pages all read directly from the
+  % paper's own footer. Targets classical B (machines/operations), not Event-B; uses its own
+  % muB constraint language, not OCL -- see Section 3.3/3.4 of the paper for why (proof-tool
+  % traceability, not translatability).
+
+@inproceedings{snookbutler2008eventb,
+  author    = {Snook, Colin and Butler, Michael},
+  title     = {{UML-B}: A Plug-in for the {Event-B} Tool Set},
+  booktitle = {Abstract State Machines, B and Z (ABZ 2008)},
+  series    = {Lecture Notes in Computer Science},
+  year      = {2008},
+  doi       = {10.1007/978-3-540-87603-8_32}
+} % TODO verify LNCS volume/pages -- title/venue/DOI confirmed via Springer link, ABZ
+  % conference site, and Southampton ePrints record (3 independent sources agree); full text
+  % not fetchable (all mirrors returned 403/blocked-by-bot-protection when tried). Confirms
+  % Snook & Butler retargeted their own classical-B UML-B translation (snookbutler2006umlb) to
+  % Event-B two years later -- cited as precedent that a B-targeting translation methodology
+  % carries over to Event-B without a new translation theory.
+
+@inproceedings{ledang2002ocl2b,
+  author    = {Ledang, Hung and Souquières, Jeanine},
+  title     = {Integration of {UML} and {B} Specification Techniques: Systematic Transformation from {OCL} Expressions into {B}},
+  booktitle = {Proceedings of the 9th Asia-Pacific Software Engineering Conference (APSEC 2002)},
+  year      = {2002}
+} % TODO verify pages -- title/venue/year confirmed via IEEE Xplore document 1183053 and
+  % multiple independent secondary sources; full text not fetchable (HAL mirror blocked by
+  % bot protection). Rule-level content in this bib entry's citing text is described only at
+  % abstract level -- see goal/docs/semantics/transformations/ocl2eventb-foundation.md.
+
+@incollection{laleau2000bspec,
+  author    = {Laleau, Régine and Mammar, Amel},
+  title     = {An Overview of a Method and its Support Tool for Generating {B} Specifications from {UML} Notations},
+  booktitle = {Proceedings of the 15th IEEE International Conference on Automated Software Engineering (ASE 2000)},
+  year      = {2000}
+} % TODO verify pages -- title/venue/year confirmed via DBLP entry conf/kbse/LaleauM00 (highest
+  % confidence of the four new entries added here). Full text not fetchable (HAL/academia.edu
+  % mirrors blocked). Rule-level content described only at abstract level -- see
+  % goal/docs/semantics/transformations/ocl2eventb-foundation.md.
+
+@incollection{idani2007b2uml,
+  author    = {Idani, Akram},
+  title     = {{B2UML} vs {UML2B}: Bridging the Gap between Formal and Graphical Software Modelling Paradigms},
+  booktitle = {Computer Software Engineering Research},
+  chapter   = {6},
+  pages     = {161--177},
+  publisher = {Nova Science Publishers},
+  year      = {2007}
+} % TODO verify ISBN -- title/pages/publisher/year confirmed via two independent search
+  % result sets; full text not fetchable. Rule-level content described only at abstract
+  % level -- see goal/docs/semantics/transformations/ocl2eventb-foundation.md.
+
+@book{abrial2010eventb,
+  author    = {Abrial, Jean-Raymond},
+  title     = {Modeling in {Event-B}: System and Software Engineering},
+  publisher = {Cambridge University Press},
+  year      = {2010}
+} % Canonical, near-universally-cited primary reference for Event-B's definition; states that
+  % Event-B keeps classical B's mathematical language (ZF set theory + Generalised
+  % Substitution Language) and replaces only the control layer (operations/refinement-call ->
+  % independent guarded events).

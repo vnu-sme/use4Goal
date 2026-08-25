@@ -28,35 +28,45 @@ public final class GoalModelValidator {
         validateRefinementKindConsistency(model, errors);
         validateSingleRefinementParent(model, errors);
         validateRefinementAcyclic(model, errors);
-        validateParameterRefinementActorTypes(model, errors);
         validateContributions(model, errors);
         validateQualifications(model, errors);
         validateNeededBy(model, errors);
-        validateObstructions(model, errors);
-        validateResolutions(model, errors);
         validateAssociations(model, errors);
         validateDependencies(model, errors);
-        validateActivationPlacement(model, errors);
-        validateReleaseConstraints(model, errors);
+        validateRefinementParentsAreNotDependencyEndpoints(model, errors);
+        validateOclContracts(model, errors);
         return List.copyOf(errors);
     }
 
-    /**
-     * The {@code release} clause is accepted by the grammar as an alias for goal conditions
-     * (IStar.g4 line 121) but has no operational semantics in the conformance engine or the
-     * iStar propagation algorithm. Any goal that declares a {@code release} clause must
-     * therefore be rejected at model-load time so the user knows the clause is a no-op rather
-     * than discovering silent wrong results during conformance checking.
-     */
-    private static void validateReleaseConstraints(GoalModel model, List<String> errors) {
+    private static void validateOclContracts(GoalModel model, List<String> errors) {
+        Set<String> refinementParents = new LinkedHashSet<>();
+        for (Actor actor : model.getActors()) {
+            actor.refinements().forEach(refinement -> refinementParents.add(refinement.parent()));
+        }
         for (Actor actor : model.getActors()) {
             for (IntentionalElement element : actor.elements()) {
-                if (element instanceof Goal goal && !goal.releases().isEmpty()) {
-                    errors.add("semantic: goal '" + goal.id() + "' in actor '" + actor.name()
-                            + "' declares a 'release' clause, which is accepted by the parser"
-                            + " but has no operational semantics in the current conformance"
-                            + " engine; replace it with 'activation' or 'condition'");
+                if (element instanceof Goal goal) {
+                    validateOclBodies(goal.id(), "condition", goal.conditions(), errors);
+                    if (refinementParents.contains(goal.id()) && !goal.conditions().isEmpty()) {
+                        errors.add("semantic: non-leaf goal '" + goal.id()
+                                + "' cannot declare a condition; its value must be propagated"
+                                + " from refinement children");
+                    }
+                } else if (element instanceof Task task) {
+                    validateOclBodies(task.id(), "pre", task.preconditions(), errors);
+                    validateOclBodies(task.id(), "post", task.postconditions(), errors);
                 }
+            }
+        }
+    }
+
+    private static void validateOclBodies(String elementId, String slot,
+                                          List<IStarOclConstraint> contracts,
+                                          List<String> errors) {
+        for (IStarOclConstraint contract : contracts) {
+            if (contract.oclBody() == null || contract.oclBody().isBlank()) {
+                errors.add("semantic: element '" + elementId + "' has an empty '" + slot
+                        + "' OCL contract");
             }
         }
     }
@@ -117,8 +127,6 @@ public final class GoalModelValidator {
         return switch (ref) {
             case AndRefinement and -> and.children();
             case OrRefinement or -> List.of(or.child());
-            case ForRefinement forR -> List.of(forR.child());
-            case PickRefinement p -> List.of(p.child());
         };
     }
 
@@ -153,7 +161,7 @@ public final class GoalModelValidator {
         kindsByParent.forEach((parent, kinds) -> {
             if (kinds.size() > 1) {
                 errors.add("semantic: element '" + parent + "' is decomposed by more than one refinement kind "
-                        + kinds + " — an element must be refined by exactly one kind (AND, OR, forall or pick)");
+                        + kinds + " — an element must be refined by exactly one kind (AND or OR)");
             }
         });
     }
@@ -178,8 +186,6 @@ public final class GoalModelValidator {
         return switch (ref) {
             case AndRefinement ignored -> "AND";
             case OrRefinement ignored -> "OR";
-            case ForRefinement ignored -> "forall";
-            case PickRefinement ignored -> "pick";
         };
     }
 
@@ -210,19 +216,6 @@ public final class GoalModelValidator {
         }
         color.put(node, 2);
         return false;
-    }
-
-    private static void validateParameterRefinementActorTypes(GoalModel model, List<String> errors) {
-        for (Actor actor : model.getActors()) {
-            for (Refinement ref : actor.refinements()) {
-                if (ref instanceof ParameterRefinement parameter
-                        && model.findActor(parameter.actorType()).isEmpty()) {
-                    errors.add("semantic: parameter-refine '" + parameter.child() + " -> " + parameter.parent()
-                            + "' in actor '" + actor.name()
-                            + "' references unknown actor type '" + parameter.actorType() + "'");
-                }
-            }
-        }
     }
 
     private static void validateContributions(GoalModel model, List<String> errors) {
@@ -295,50 +288,6 @@ public final class GoalModelValidator {
         }
     }
 
-    private static void validateObstructions(GoalModel model, List<String> errors) {
-        for (Actor actor : model.getActors()) {
-            for (Obstruction ob : actor.obstructions()) {
-                model.findElement(ob.obstacle()).ifPresentOrElse(source -> {
-                    if (!(source instanceof Obstacle)) {
-                        errors.add("semantic: obstructs in actor '" + actor.name()
-                                + "' must originate from an obstacle, but '" + ob.obstacle()
-                                + "' is a " + kindOf(source));
-                    }
-                }, () -> errors.add("semantic: obstructs in actor '" + actor.name()
-                        + "' has unknown source obstacle '" + ob.obstacle() + "'"));
-                model.findElement(ob.element()).ifPresentOrElse(target -> {
-                    if (!(target instanceof Goal || target instanceof Task)) {
-                        errors.add("semantic: obstructs '" + ob.obstacle() + " > obstructs " + ob.element()
-                                + "' in actor '" + actor.name() + "' must target a goal or task, but '"
-                                + ob.element() + "' is a " + kindOf(target));
-                    }
-                }, () -> errors.add("semantic: obstructs has unknown target element '" + ob.element() + "'"));
-            }
-        }
-    }
-
-    private static void validateResolutions(GoalModel model, List<String> errors) {
-        for (Actor actor : model.getActors()) {
-            for (Resolution rs : actor.resolutions()) {
-                model.findElement(rs.element()).ifPresentOrElse(source -> {
-                    if (!(source instanceof Goal || source instanceof Task)) {
-                        errors.add("semantic: resolves in actor '" + actor.name()
-                                + "' must originate from a goal or task, but '" + rs.element()
-                                + "' is a " + kindOf(source));
-                    }
-                }, () -> errors.add("semantic: resolves in actor '" + actor.name()
-                        + "' has unknown source element '" + rs.element() + "'"));
-                model.findElement(rs.obstacle()).ifPresentOrElse(target -> {
-                    if (!(target instanceof Obstacle)) {
-                        errors.add("semantic: resolves '" + rs.element() + " > resolves " + rs.obstacle()
-                                + "' in actor '" + actor.name() + "' must target an obstacle, but '"
-                                + rs.obstacle() + "' is a " + kindOf(target));
-                    }
-                }, () -> errors.add("semantic: resolves has unknown target obstacle '" + rs.obstacle() + "'"));
-            }
-        }
-    }
-
     private static void validateAssociations(GoalModel model, List<String> errors) {
         Map<AssocKind, Map<String, List<String>>> graphs = new HashMap<>();
         for (Actor actor : model.getActors()) {
@@ -384,43 +333,35 @@ public final class GoalModelValidator {
     }
 
     /**
-     * AND/forall children are mandatory once their parent is demanded, so a local activation
-     * would silently weaken the decomposition. OR/pick children may use activation as an
-     * eligibility guard. A dependee goal likewise inherits demand from the depender and must
-     * not introduce a second, independent activation source.
+     * A refinement parent is an internal rationale node. Dependencies are
+     * actor-boundary interfaces and therefore may only attach to leaf
+     * intentional elements, on both the depender and dependee side.
      */
-    private static void validateActivationPlacement(GoalModel model, List<String> errors) {
-        Map<String, String> inheritedOnly = new LinkedHashMap<>();
+    private static void validateRefinementParentsAreNotDependencyEndpoints(
+            GoalModel model, List<String> errors) {
+        Set<String> refinementParents = new LinkedHashSet<>();
         for (Actor actor : model.getActors()) {
             for (Refinement refinement : actor.refinements()) {
-                if (refinement instanceof AndRefinement || refinement instanceof ForRefinement) {
-                    for (String child : refinementChildren(refinement)) {
-                        inheritedOnly.put(child, kindTag(refinement) + " parent '" + refinement.parent() + "'");
-                    }
-                }
+                model.findElement(refinement.parent())
+                        .filter(GoalTaskElement.class::isInstance)
+                        .ifPresent(element -> refinementParents.add(element.id()));
             }
         }
         for (Dependency dependency : model.getDependencies()) {
-            if (dependency.dependerElmt() != null && dependency.dependeeElmt() != null
-                    && model.findElement(dependency.dependeeElmt()).filter(Goal.class::isInstance).isPresent()) {
-                inheritedOnly.put(dependency.dependeeElmt(),
-                        "dependency from '" + dependency.dependerElmt() + "'");
-            }
+            rejectRefinementParentEndpoint(dependency.dependerElmt(), "depender",
+                    dependency, refinementParents, errors);
+            rejectRefinementParentEndpoint(dependency.dependeeElmt(), "dependee",
+                    dependency, refinementParents, errors);
         }
-        inheritedOnly.forEach((goalId, source) -> model.findElement(goalId)
-                .filter(Goal.class::isInstance).map(Goal.class::cast)
-                .filter(goal -> !goal.activations().isEmpty())
-                .ifPresent(goal -> errors.add("semantic: goal '" + goalId
-                        + "' inherits activation from " + source
-                        + " and therefore cannot declare its own activation")));
+    }
 
-        GoalActivationGraph graph = GoalActivationGraph.of(model);
-        for (String rootId : graph.roots()) {
-            model.findElement(rootId).filter(Goal.class::isInstance).map(Goal.class::cast)
-                    .filter(goal -> goal.goalType() != null && goal.activations().isEmpty())
-                    .ifPresent(goal -> errors.add("semantic: typed activation-root goal '"
-                            + goal.id() + "' must declare an activation condition"));
-        }
+    private static void rejectRefinementParentEndpoint(
+            String elementId, String endpointRole, Dependency dependency,
+            Set<String> refinementParents, List<String> errors) {
+        if (elementId == null || !refinementParents.contains(elementId)) return;
+        errors.add("semantic: dependency '" + dependencyLabel(dependency)
+                + "' uses refinement parent '" + elementId + "' as its " + endpointRole
+                + " endpoint — dependencies may only attach to leaf intentional elements");
     }
 
     private static void validateActor(GoalModel model, String actorId, String role,
@@ -449,16 +390,13 @@ public final class GoalModelValidator {
     }
 
     private static void validateDependum(GoalModel model, Dependency d, List<String> errors) {
-        Optional<IntentionalElement> dependum = model.findElement(d.dependum());
-        if (dependum.isEmpty()) {
-            errors.add("semantic: dependency '" + dependencyLabel(d) + "' has unknown dependum element '"
-                    + d.dependum() + "'");
-            return;
-        }
-        String actualKind = kindOf(dependum.get());
-        if (!actualKind.equals(d.dependumKind())) {
-            errors.add("semantic: dependency '" + dependencyLabel(d) + "' declares dependum as '"
-                    + d.dependumKind() + "', but '" + d.dependum() + "' is a '" + actualKind + "'");
+        IntentionalElement dependum = d.dependum();
+        if (dependum == null) {
+            errors.add("semantic: dependency '" + dependencyLabel(d)
+                    + "' must composition-own exactly one dependum intentional element");
+        } else if (dependum.id() == null || dependum.id().isBlank()) {
+            errors.add("semantic: dependency '" + dependencyLabel(d)
+                    + "' owns a dependum with an empty id");
         }
     }
 
@@ -470,8 +408,6 @@ public final class GoalModelValidator {
         return switch (ref) {
             case AndRefinement and -> and.children() + " > " + and.parent();
             case OrRefinement or -> or.child() + " > or " + or.parent();
-            case ForRefinement forR -> forR.child() + " > forall " + forR.actorType() + " " + forR.parent();
-            case PickRefinement p -> p.child() + " > pick " + p.actorType() + " " + p.parent();
         };
     }
 
@@ -480,13 +416,13 @@ public final class GoalModelValidator {
         if (element instanceof Task) return "task";
         if (element instanceof Resource) return "resource";
         if (element instanceof Quality) return "quality";
-        if (element instanceof Obstacle) return "obstacle";
         return element.getClass().getSimpleName();
     }
 
     private static String dependencyLabel(Dependency d) {
         return d.depender() + endpointSuffix(d.dependerElmt()) + " -> "
-                + d.dependumKind() + " " + d.dependum() + " -> "
+                + (d.dependum() == null ? "<missing-dependum>"
+                        : kindOf(d.dependum()) + " " + d.dependum().id()) + " -> "
                 + d.dependee() + endpointSuffix(d.dependeeElmt());
     }
 

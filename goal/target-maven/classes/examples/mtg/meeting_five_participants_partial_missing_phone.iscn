@@ -7,28 +7,28 @@ scenario MeetingOrganization_FiveParticipants_PartialMissingPhone for "mtg.istar
     instance alex    : Secretary;
     instance xing, amr, naya, bao, chloe : Participant;
 
-    fire DecideMeetingDetails;
-    fire ChooseTimeAndDate;
+    fire DecideDetails;
+    fire ChooseMeetingTime;
 
     fire xing.CollectFromCalendar;
     fire amr.CollectFromCalendar;
-    fire alex.CollectConstraintsByPhone for naya;
-    fire alex.CollectConstraintsByPhone for chloe;
+    fire alex.CollectByPhone for naya;
+    fire alex.CollectByPhone for chloe;
 
-    fire xing.AnnounceMeeting;
-    fire amr.AnnounceMeeting;
-    fire naya.AnnounceMeeting;
-    fire bao.AnnounceMeeting;
-    fire chloe.AnnounceMeeting;
+    fire xing.NotifyParticipant;
+    fire amr.NotifyParticipant;
+    fire naya.NotifyParticipant;
+    fire bao.NotifyParticipant;
+    fire chloe.NotifyParticipant;
 
-    fire xing.Participate;
-    fire amr.Participate;
-    fire naya.Participate;
-    fire bao.Participate;
-    fire chloe.Participate;
+    fire xing.AttendMeeting;
+    fire amr.AttendMeeting;
+    fire naya.AttendMeeting;
+    fire bao.AttendMeeting;
+    fire chloe.AttendMeeting;
 
     aggregate EveryTimetableCollected : all of Participant over TimetableCollected;
-    aggregate EveryoneNotified        : all of Participant over AnnounceMeeting;
-    aggregate EveryoneAttended        : all of Participant over MeetingAttendedByParticipant;
-    aggregate MeetingFullyOrganized   : all of Participant over HaveMeetingOrganized;
+    aggregate EveryoneNotified        : all of Participant over NotifyParticipant;
+    aggregate EveryoneAttended        : all of Participant over ParticipantAttended;
+    aggregate MeetingFullyOrganized   : all of Participant over MeetingOrganized;
 }

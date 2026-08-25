@@ -15,7 +15,6 @@ import org.vnu.sme.goal.dsl.istar.mm.Actor;
 import org.vnu.sme.goal.dsl.istar.mm.Goal;
 import org.vnu.sme.goal.dsl.istar.mm.GoalModel;
 import org.vnu.sme.goal.dsl.istar.mm.IntentionalElement;
-import org.vnu.sme.goal.dsl.istar.mm.Obstacle;
 
 /** Read-only tree browser for the Goal plugin's diagram models. */
 @SuppressWarnings("serial")
@@ -119,14 +118,13 @@ public final class DiagramModelBrowser extends JPanel {
             addRelationGroup(actorNode, "Contributions", actor.contributions());
             addRelationGroup(actorNode, "Qualifications", actor.qualifications());
             addRelationGroup(actorNode, "Needed-by", actor.neededBys());
-            addRelationGroup(actorNode, "Obstructions", actor.obstructions());
-            addRelationGroup(actorNode, "Resolutions", actor.resolutions());
             addRelationGroup(actorNode, "Associations", actor.associations());
         }
         DefaultMutableTreeNode dependencies = group(root, "Dependencies", model.getDependencies().size());
         model.getDependencies().forEach(d -> dependencies.add(node(d.depender() + " -> " + d.dependee(),
-                "iStar dependency", "Depender element", d.dependerElmt(), "Dependum kind", d.dependumKind(),
-                "Dependum", d.dependum(), "Dependee element", d.dependeeElmt())));
+                "iStar dependency", "Depender element", d.dependerElmt(),
+                "Dependum type", d.dependum().getClass().getSimpleName(),
+                "Dependum", d.dependum().id(), "Dependee element", d.dependeeElmt())));
         return new DiagramModelBrowser(root);
     }
 
@@ -196,13 +194,19 @@ public final class DiagramModelBrowser extends JPanel {
     private static DefaultMutableTreeNode iStarElement(IntentionalElement element) {
         String type = element.getClass().getSimpleName();
         if (element instanceof Goal goal) type += " (" + goal.goalType() + ")";
-        if (element instanceof Obstacle obstacle) type += " (" + obstacle.type() + ")";
-        var contract = element instanceof org.vnu.sme.goal.dsl.istar.mm.GoalTaskElement value ? value : null;
-        return node(type + ": " + element.id(), "iStar intentional element",
-                "Pre OCL", contract == null ? null : contract.preconditions().stream()
-                        .map(org.vnu.sme.goal.dsl.istar.mm.IStarOclConstraint::oclBody).reduce((a, b) -> a + " and " + b).orElse(null),
-                "Post OCL", contract == null ? null : contract.postconditions().stream()
-                        .map(org.vnu.sme.goal.dsl.istar.mm.IStarOclConstraint::oclBody).reduce((a, b) -> a + " and " + b).orElse(null));
+        if (element instanceof Goal goal) {
+            return node(type + ": " + element.id(), "iStar goal",
+                    "Condition OCL", goal.conditions().stream()
+                            .map(org.vnu.sme.goal.dsl.istar.mm.IStarOclConstraint::oclBody).findFirst().orElse(null));
+        }
+        if (element instanceof org.vnu.sme.goal.dsl.istar.mm.Task task) {
+            return node(type + ": " + element.id(), "iStar task",
+                    "Pre OCL", task.preconditions().stream()
+                            .map(org.vnu.sme.goal.dsl.istar.mm.IStarOclConstraint::oclBody).findFirst().orElse(null),
+                    "Post OCL", task.postconditions().stream()
+                            .map(org.vnu.sme.goal.dsl.istar.mm.IStarOclConstraint::oclBody).findFirst().orElse(null));
+        }
+        return node(type + ": " + element.id(), "iStar intentional element");
     }
 
     private static void addRelationGroup(DefaultMutableTreeNode parent, String label, List<?> values) {
@@ -215,19 +219,12 @@ public final class DiagramModelBrowser extends JPanel {
             return "AND: " + String.join(", ", v.children()) + " -> " + v.parent();
         if (value instanceof org.vnu.sme.goal.dsl.istar.mm.OrRefinement v)
             return "OR: " + v.child() + " -> " + v.parent();
-        if (value instanceof org.vnu.sme.goal.dsl.istar.mm.ParameterRefinement v)
-            return value.getClass().getSimpleName() + ": " + v.child() + " -> " + v.parent()
-                    + " [" + v.actorType() + "]";
         if (value instanceof org.vnu.sme.goal.dsl.istar.mm.Contribution v)
             return v.element() + " -" + v.type().label() + "-> " + v.quality();
         if (value instanceof org.vnu.sme.goal.dsl.istar.mm.Qualification v)
             return v.quality() + " -> " + v.element();
         if (value instanceof org.vnu.sme.goal.dsl.istar.mm.NeededBy v)
             return v.resource() + " -> " + v.task();
-        if (value instanceof org.vnu.sme.goal.dsl.istar.mm.Obstruction v)
-            return v.obstacle() + " -> " + v.element();
-        if (value instanceof org.vnu.sme.goal.dsl.istar.mm.Resolution v)
-            return v.element() + " -> " + v.obstacle();
         if (value instanceof org.vnu.sme.goal.dsl.istar.mm.Association v)
             return v.actor() + " -" + v.kind() + "-> " + v.target();
         return String.valueOf(value);

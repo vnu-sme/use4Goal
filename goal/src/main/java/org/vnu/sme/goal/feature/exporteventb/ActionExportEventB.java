@@ -14,6 +14,7 @@ import org.tzi.use.runtime.gui.IPluginActionDelegate;
 import org.vnu.sme.goal.translate.aclistarbpmn2eventb.EventBExportRequest;
 import org.vnu.sme.goal.translate.aclistarbpmn2eventb.EventBExportResult;
 import org.vnu.sme.goal.translate.aclistarbpmn2eventb.EventBExportService;
+import org.vnu.sme.goal.translate.aclistarbpmn2eventb.translate.AclIStarBpmn2EventBTranslator;
 
 /** USE menu action for the three-model Event-B exporter. */
 public final class ActionExportEventB implements IPluginActionDelegate {
@@ -33,10 +34,21 @@ public final class ActionExportEventB implements IPluginActionDelegate {
         String defaultName = base(acl.getFileName().toString()) + "EventB";
         String name = JOptionPane.showInputDialog(parent, "Rodin project name", defaultName);
         if (name == null || name.isBlank()) return;
+        Path previousMapping = null;
+        int compare = JOptionPane.showConfirmDialog(parent,
+                "Compare the generated semantic mapping with a previous mapping CSV?",
+                "Mapping evolution", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (compare == JOptionPane.CANCEL_OPTION || compare == JOptionPane.CLOSED_OPTION) return;
+        if (compare == JOptionPane.YES_OPTION) {
+            previousMapping = chooseFile(parent, "Select previous mapping CSV", "Mapping CSV (*.csv)", "csv");
+            if (previousMapping == null) return;
+        }
         EventBExportResult result = new EventBExportService().export(new EventBExportRequest(
-                acl, istar, bpmn, target.getSelectedFile().toPath(), name.trim()));
+                acl, istar, bpmn, target.getSelectedFile().toPath(), name.trim(), previousMapping));
         if (result.success()) JOptionPane.showMessageDialog(parent,
                 "Generated Rodin project:\n" + result.projectDirectory()
+                        + "\n\nSemantic mapping:\n" + result.projectDirectory().resolve(
+                                AclIStarBpmn2EventBTranslator.id(name.trim())+"_mapping.md")
                         + (result.diagnostics().isEmpty() ? "" : "\n\nTranslation warnings:\n" + String.join("\n", result.diagnostics())),
                 "Event-B export", result.diagnostics().isEmpty() ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.WARNING_MESSAGE);
         else JOptionPane.showMessageDialog(parent, String.join("\n", result.diagnostics()),

@@ -3,7 +3,6 @@ package org.vnu.sme.goal.dsl.acl;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.nio.file.Path;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -12,8 +11,22 @@ import org.vnu.sme.goal.dsl.acl.ocl.AclOclPropertyResolver;
 
 class AclOclPropertyResolverTest {
 
-    private static final Path MEETING_ACL =
-            Path.of("src/main/resources/examples/mtg/mtg.acl");
+    private static final String MEETING_ACL = """
+            acl v2.0 MeetingSchedulerShadow {
+              role MeetingParty { phone : String; hasCalendar : Boolean; }
+              role Secretary extends MeetingParty;
+              role Participant extends MeetingParty { timetableCollected : Boolean; }
+              association knowsPhoneOf {
+                MeetingParty [*] role knower;
+                MeetingParty [*] role knownContact;
+              }
+              group MeetingUnit {
+                detailsDecided : Boolean;
+                Secretary [0..1];
+                Participant [2..*];
+              }
+            }
+            """;
 
     @Test
     void rewritesReadableAclNavigationWithoutExposingUseAssociationEnds() throws Exception {
@@ -29,11 +42,10 @@ class AclOclPropertyResolverTest {
         String rewritten = AclOclPropertyResolver.rewrite(
                 compiled.model(), "Secretary", Map.of("participant", "Participant"), source);
 
-        assertTrue(rewritten.contains("self.source_Secretary_in_MeetingUnit.detailsDecided"));
-        assertTrue(rewritten.contains(
-                "self.source_Secretary_in_MeetingUnit.target_Participant_in_MeetingUnit"));
-        assertTrue(rewritten.contains("participant.source_MeetingParty_plays_Participant.phone"), rewritten);
-        assertTrue(rewritten.contains("self.source_MeetingParty_plays_Secretary.knownContact"), rewritten);
+        assertTrue(rewritten.contains("self.meetingUnit.detailsDecided"));
+        assertTrue(rewritten.contains("self.meetingUnit.participant"));
+        assertTrue(rewritten.contains("participant.meetingParty.phone"), rewritten);
+        assertTrue(rewritten.contains("self.meetingParty.knownContact"), rewritten);
         assertFalse(rewritten.contains(".group"));
         assertFalse(rewritten.contains(".agent"));
     }
@@ -51,11 +63,10 @@ class AclOclPropertyResolverTest {
                 not participant.timetableCollected
                 """);
 
-        assertTrue(rewritten.contains("self.source_MeetingParty_plays_Secretary.knownContact"));
-        assertTrue(rewritten.contains(
-                "includes(participant.source_MeetingParty_plays_Participant)"));
-        assertTrue(rewritten.contains("participant.source_MeetingParty_plays_Participant.phone"));
-        assertTrue(rewritten.contains("participant.source_MeetingParty_plays_Participant.hasCalendar"));
+        assertTrue(rewritten.contains("self.meetingParty.knownContact"));
+        assertTrue(rewritten.contains("includes(participant.meetingParty)"));
+        assertTrue(rewritten.contains("participant.meetingParty.phone"));
+        assertTrue(rewritten.contains("participant.meetingParty.hasCalendar"));
         assertTrue(rewritten.contains("participant.timetableCollected"),
                 "a concrete role-occurrence attribute must not be projected to Agent");
     }

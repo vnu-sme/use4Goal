@@ -8,7 +8,6 @@ import java.util.Objects;
 import org.vnu.sme.goal.dsl.istar.mm.Goal;
 import org.vnu.sme.goal.dsl.istar.mm.GoalModel;
 import org.vnu.sme.goal.dsl.istar.mm.IntentionalElement;
-import org.vnu.sme.goal.dsl.istar.mm.Obstacle;
 import org.vnu.sme.goal.dsl.istar.mm.Quality;
 import org.vnu.sme.goal.dsl.istar.mm.Resource;
 import org.vnu.sme.goal.dsl.istar.mm.Task;
@@ -23,33 +22,28 @@ public final class IStarMarking {
     private final Map<String, GoalMarking> goals;
     private final Map<String, TaskMarking> tasks;
     private final Map<String, QualityStatus> quality;
-    private final Map<String, ObstacleStatus> obstacle;
 
     private IStarMarking(Map<String, GoalMarking> goals, Map<String, TaskMarking> tasks,
-                         Map<String, QualityStatus> quality,
-                         Map<String, ObstacleStatus> obstacle) {
+                         Map<String, QualityStatus> quality) {
         this.goals = goals;
         this.tasks = tasks;
         this.quality = quality;
-        this.obstacle = obstacle;
     }
 
-    /** Initial marking m0: Goal/Task, Quality, and Obstacle occurrences are all unknown. */
+    /** Initial marking m0: Goal/Task and Quality occurrences are all unknown. */
     public static IStarMarking initial(GoalModel gm) {
         Map<String, GoalMarking> goals = new LinkedHashMap<>();
         Map<String, TaskMarking> tasks = new LinkedHashMap<>();
         Map<String, QualityStatus> q = new LinkedHashMap<>();
-        Map<String, ObstacleStatus> o = new LinkedHashMap<>();
         for (IntentionalElement e : gm.allElements().values()) {
             switch (e) {
                 case Goal g -> goals.put(g.id(), GoalMarking.initial(g.goalType()));
                 case Task t -> tasks.put(t.id(), TaskMarking.initial());
                 case Quality qu -> q.put(qu.id(), QualityStatus.UNKNOWN);
                 case Resource r -> { /* resources are not part of the marking */ }
-                case Obstacle ob -> o.put(ob.id(), ObstacleStatus.UNKNOWN);
             }
         }
-        return new IStarMarking(goals, tasks, q, o);
+        return new IStarMarking(goals, tasks, q);
     }
 
     public GoalTaskStatus goalTaskStatus(String id) {
@@ -63,20 +57,16 @@ public final class IStarMarking {
         return quality.getOrDefault(id, QualityStatus.UNKNOWN);
     }
 
-    public ObstacleStatus obstacleStatus(String id) {
-        return obstacle.getOrDefault(id, ObstacleStatus.UNKNOWN);
-    }
-
     public IStarMarking withGoalTask(String id, GoalTaskStatus s) {
         if (goals.containsKey(id)) {
             Map<String, GoalMarking> values = new LinkedHashMap<>(goals);
             values.put(id, GoalMarking.fromStatus(goals.get(id).type(), s));
-            return new IStarMarking(values, tasks, quality, obstacle);
+            return new IStarMarking(values, tasks, quality);
         }
         if (tasks.containsKey(id)) {
             Map<String, TaskMarking> values = new LinkedHashMap<>(tasks);
             values.put(id, TaskMarking.fromStatus(s));
-            return new IStarMarking(goals, values, quality, obstacle);
+            return new IStarMarking(goals, values, quality);
         }
         return this;
     }
@@ -87,25 +77,19 @@ public final class IStarMarking {
     public IStarMarking withGoalMarking(String id, GoalMarking value) {
         Map<String, GoalMarking> values = new LinkedHashMap<>(goals);
         values.put(id, value);
-        return new IStarMarking(values, tasks, quality, obstacle);
+        return new IStarMarking(values, tasks, quality);
     }
 
     public IStarMarking withTaskMarking(String id, TaskMarking value) {
         Map<String, TaskMarking> values = new LinkedHashMap<>(tasks);
         values.put(id, value);
-        return new IStarMarking(goals, values, quality, obstacle);
+        return new IStarMarking(goals, values, quality);
     }
 
     public IStarMarking withQuality(String id, QualityStatus s) {
         Map<String, QualityStatus> q = new LinkedHashMap<>(quality);
         q.put(id, s);
-        return new IStarMarking(goals, tasks, q, obstacle);
-    }
-
-    public IStarMarking withObstacle(String id, ObstacleStatus s) {
-        Map<String, ObstacleStatus> values = new LinkedHashMap<>(obstacle);
-        values.put(id, s);
-        return new IStarMarking(goals, tasks, quality, values);
+        return new IStarMarking(goals, tasks, q);
     }
 
     /** Membership test for F_C (Definition 4.1): every declared quality must be TRUE. */
@@ -127,23 +111,19 @@ public final class IStarMarking {
         return Collections.unmodifiableMap(quality);
     }
 
-    public Map<String, ObstacleStatus> obstacleStatuses() {
-        return Collections.unmodifiableMap(obstacle);
-    }
-
     @Override
     public boolean equals(Object o) {
         return o instanceof IStarMarking m && goals.equals(m.goals) && tasks.equals(m.tasks)
-                && quality.equals(m.quality) && obstacle.equals(m.obstacle);
+                && quality.equals(m.quality);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(goals, tasks, quality, obstacle);
+        return Objects.hash(goals, tasks, quality);
     }
 
     @Override
     public String toString() {
-        return "IStarMarking" + goalTaskStatuses() + quality + obstacle;
+        return "IStarMarking" + goalTaskStatuses() + quality;
     }
 }

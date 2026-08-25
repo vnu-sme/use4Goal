@@ -1,0 +1,568 @@
+-- Generated from ACL. Regenerate instead of editing this file.
+-- Role 'extends' is a play chain (Owner[1]--Role[mult] association), not USE
+-- generalization: no two Role classes are ever related by '<'. Agent is an empty
+-- class. Every play association is parent[1]--child[0..*].
+-- Compatibility is 'inv NoConflict_<R1>_<R2>' on the nearest shared play-chain
+-- ancestor; every Owner-target Role also gets 'inv NoSelfConflict_<R>'.
+
+model EnterpriseOrganization
+
+enum DocClass {Public, Internal, Confidential}
+
+enum DeliverableStatus {Planned, InProgress, Done, Cancelled}
+
+class Agent
+end
+
+class Document
+attributes
+  title : String
+  version : Integer
+  classification : DocClass
+end
+
+class Budget < Document
+attributes
+  amount : Real
+  currency : String
+end
+
+class Contract
+attributes
+  value : Real
+  signedDate : String
+end
+
+class Deliverable
+attributes
+  dueDate : String
+  status : DeliverableStatus
+end
+
+class Milestone
+attributes
+  name : String
+  dueDate : String
+end
+
+class Person
+attributes
+  name : String
+  email : String
+end
+
+class Employee
+attributes
+  employeeId : String
+  hireDate : String
+end
+
+class Manager
+attributes
+  managementLevel : Integer
+end
+
+class SeniorManager
+attributes
+  budgetAuthority : Real
+end
+
+class Executive
+attributes
+  title : String
+end
+
+class Reviewer
+attributes
+  reviewLevel : Integer
+end
+
+class Contractor
+attributes
+  contractEndDate : String
+  dailyRate : Real
+end
+
+class TeamMember
+attributes
+  taskCount : Integer
+end
+
+class TeamLead
+attributes
+  teamBudget : Real
+end
+
+class DepartmentHead
+attributes
+  departmentGoals : String
+end
+
+class BoardMember
+attributes
+  votingRights : Boolean
+end
+
+class Auditor
+attributes
+  certificationId : String
+end
+
+class SeniorAuditor
+attributes
+  leadAudits : Integer
+end
+
+class ComplianceOfficer
+attributes
+  specialization : String
+end
+
+class Corporation
+attributes
+  name : String
+  foundedYear : Integer
+end
+
+class Department
+attributes
+  budgetCode : String
+end
+
+class Team
+attributes
+  teamName : String
+  sprintLength : Integer
+end
+
+class AuditCommittee
+end
+
+association mentors between
+  Manager[0..*] role mentor
+  Employee[0..*] role mentee
+end
+
+association reportsTo between
+  TeamMember[0..*] role subordinate
+  TeamLead[1] role supervisor
+end
+
+association reviewsWork between
+  Auditor[0..*] role auditor
+  TeamMember[0..*] role audited
+end
+
+association collaboratesWith between
+  TeamMember[0..*] role colleague1
+  Contractor[0..*] role colleague2
+end
+
+association escalatesTo between
+  DepartmentHead[0..*] role escalator
+  BoardMember[0..*] role escalatee
+end
+
+association assignedTo between
+  Deliverable[0..*] role task
+  TeamMember[0..*] role assignee
+end
+
+aggregation contractFunding between
+  Department[0..*] role funder
+  Contract[0..*] role funded
+end
+
+aggregation reviewedBy between
+  Document[0..*] role reviewedDoc
+  Auditor[0..*] role reviewer
+end
+
+composition auditDocuments between
+  AuditCommittee[1] role committee
+  Document[0..*] role committeeDocument
+end
+
+composition corporationContracts between
+  Corporation[1] role corporation
+  Contract[0..*] role contracts
+end
+
+composition departmentBudget between
+  Department[1] role department
+  Budget[1] role budget
+end
+
+composition teamDeliverables between
+  Team[1] role team
+  Deliverable[0..*] role deliverables
+end
+
+composition deliverableMilestones between
+  Deliverable[1] role parent
+  Milestone[0..*] role milestone
+end
+
+association Agent_plays_Person between
+  Agent[1] role source_Agent_plays_Person
+  Person[0..*] role target_Agent_plays_Person
+end
+
+association Person_plays_Employee between
+  Person[1] role source_Person_plays_Employee
+  Employee[0..*] role target_Person_plays_Employee
+end
+
+association Employee_plays_Manager between
+  Employee[1] role source_Employee_plays_Manager
+  Manager[0..*] role target_Employee_plays_Manager
+end
+
+association Manager_plays_SeniorManager between
+  Manager[1] role source_Manager_plays_SeniorManager
+  SeniorManager[0..*] role target_Manager_plays_SeniorManager
+end
+
+association SeniorManager_plays_Executive between
+  SeniorManager[1] role source_SeniorManager_plays_Executive
+  Executive[0..*] role target_SeniorManager_plays_Executive
+end
+
+association Person_plays_Reviewer between
+  Person[1] role source_Person_plays_Reviewer
+  Reviewer[0..*] role target_Person_plays_Reviewer
+end
+
+association Person_plays_Contractor between
+  Person[1] role source_Person_plays_Contractor
+  Contractor[0..*] role target_Person_plays_Contractor
+end
+
+association Employee_plays_TeamMember between
+  Employee[1] role source_Employee_plays_TeamMember
+  TeamMember[0..*] role target_Employee_plays_TeamMember
+end
+
+association TeamMember_plays_TeamLead between
+  TeamMember[1] role source_TeamMember_plays_TeamLead
+  TeamLead[0..*] role target_TeamMember_plays_TeamLead
+end
+
+association SeniorManager_plays_DepartmentHead between
+  SeniorManager[1] role source_SeniorManager_plays_DepartmentHead
+  DepartmentHead[0..*] role target_SeniorManager_plays_DepartmentHead
+end
+
+association Executive_plays_BoardMember between
+  Executive[1] role source_Executive_plays_BoardMember
+  BoardMember[0..*] role target_Executive_plays_BoardMember
+end
+
+association Reviewer_plays_Auditor between
+  Reviewer[1] role source_Reviewer_plays_Auditor
+  Auditor[0..*] role target_Reviewer_plays_Auditor
+end
+
+association Auditor_plays_SeniorAuditor between
+  Auditor[1] role source_Auditor_plays_SeniorAuditor
+  SeniorAuditor[0..*] role target_Auditor_plays_SeniorAuditor
+end
+
+association Reviewer_plays_ComplianceOfficer between
+  Reviewer[1] role source_Reviewer_plays_ComplianceOfficer
+  ComplianceOfficer[0..*] role target_Reviewer_plays_ComplianceOfficer
+end
+
+composition Owner_Corporation_Department between
+  Corporation[1] role source_Owner_Corporation_Department
+  Department[1..*] role target_Owner_Corporation_Department
+end
+
+composition Owner_Corporation_AuditCommittee between
+  Corporation[1] role source_Owner_Corporation_AuditCommittee
+  AuditCommittee[1] role target_Owner_Corporation_AuditCommittee
+end
+
+composition BoardMember_in_Corporation between
+  Corporation[1] role source_BoardMember_in_Corporation
+  BoardMember[3..9] role target_BoardMember_in_Corporation
+end
+
+composition Owner_Department_Team between
+  Department[1] role source_Owner_Department_Team
+  Team[0..*] role target_Owner_Department_Team
+end
+
+composition DepartmentHead_in_Department between
+  Department[1] role source_DepartmentHead_in_Department
+  DepartmentHead[1] role target_DepartmentHead_in_Department
+end
+
+composition Contractor_in_Department between
+  Department[1] role source_Contractor_in_Department
+  Contractor[0..*] role target_Contractor_in_Department
+end
+
+composition TeamMember_in_Team between
+  Team[1] role source_TeamMember_in_Team
+  TeamMember[2..*] role target_TeamMember_in_Team
+end
+
+composition TeamLead_in_Team between
+  Team[1] role source_TeamLead_in_Team
+  TeamLead[1] role target_TeamLead_in_Team
+end
+
+composition Auditor_in_AuditCommittee between
+  AuditCommittee[1] role source_Auditor_in_AuditCommittee
+  Auditor[2..5] role target_Auditor_in_AuditCommittee
+end
+
+composition SeniorAuditor_in_AuditCommittee between
+  AuditCommittee[1] role source_SeniorAuditor_in_AuditCommittee
+  SeniorAuditor[0..2] role target_SeniorAuditor_in_AuditCommittee
+end
+
+composition ComplianceOfficer_in_AuditCommittee between
+  AuditCommittee[1] role source_ComplianceOfficer_in_AuditCommittee
+  ComplianceOfficer[1] role target_ComplianceOfficer_in_AuditCommittee
+end
+
+constraints
+
+context TeamLead inv RoleOwnerScope_TeamMember_TeamLead:
+  self.source_TeamMember_plays_TeamLead.source_TeamMember_in_Team = self.source_TeamLead_in_Team
+
+context SeniorAuditor inv RoleOwnerScope_Auditor_SeniorAuditor:
+  self.source_Auditor_plays_SeniorAuditor.source_Auditor_in_AuditCommittee = self.source_SeniorAuditor_in_AuditCommittee
+
+context Person inv NoSelfConflict_Contractor:
+  self.target_Person_plays_Contractor->forAll(r1, r2 : Contractor |
+    r1 <> r2 implies r1.source_Contractor_in_Department <> r2.source_Contractor_in_Department)
+
+context Employee inv NoSelfConflict_TeamMember:
+  self.target_Employee_plays_TeamMember->forAll(r1, r2 : TeamMember |
+    r1 <> r2 implies r1.source_TeamMember_in_Team <> r2.source_TeamMember_in_Team)
+
+context TeamMember inv NoSelfConflict_TeamLead:
+  self.target_TeamMember_plays_TeamLead->forAll(r1, r2 : TeamLead |
+    r1 <> r2 implies r1.source_TeamLead_in_Team <> r2.source_TeamLead_in_Team)
+
+context SeniorManager inv NoSelfConflict_DepartmentHead:
+  self.target_SeniorManager_plays_DepartmentHead->forAll(r1, r2 : DepartmentHead |
+    r1 <> r2 implies r1.source_DepartmentHead_in_Department <> r2.source_DepartmentHead_in_Department)
+
+context Executive inv NoSelfConflict_BoardMember:
+  self.target_Executive_plays_BoardMember->forAll(r1, r2 : BoardMember |
+    r1 <> r2 implies r1.source_BoardMember_in_Corporation <> r2.source_BoardMember_in_Corporation)
+
+context Reviewer inv NoSelfConflict_Auditor:
+  self.target_Reviewer_plays_Auditor->forAll(r1, r2 : Auditor |
+    r1 <> r2 implies r1.source_Auditor_in_AuditCommittee <> r2.source_Auditor_in_AuditCommittee)
+
+context Auditor inv NoSelfConflict_SeniorAuditor:
+  self.target_Auditor_plays_SeniorAuditor->forAll(r1, r2 : SeniorAuditor |
+    r1 <> r2 implies r1.source_SeniorAuditor_in_AuditCommittee <> r2.source_SeniorAuditor_in_AuditCommittee)
+
+context Reviewer inv NoSelfConflict_ComplianceOfficer:
+  self.target_Reviewer_plays_ComplianceOfficer->forAll(r1, r2 : ComplianceOfficer |
+    r1 <> r2 implies r1.source_ComplianceOfficer_in_AuditCommittee <> r2.source_ComplianceOfficer_in_AuditCommittee)
+
+context Person inv NoConflict_Contractor_TeamMember:
+self.target_Person_plays_Contractor->forAll(r1 : Contractor |
+self.target_Person_plays_Employee->forAll(r2_a0 : Employee |
+r2_a0.target_Employee_plays_TeamMember->forAll(r2 : TeamMember |
+      not (r1.source_Contractor_in_Department = r2.source_TeamMember_in_Team.source_Owner_Department_Team or r1.source_Contractor_in_Department.source_Owner_Corporation_Department = r2.source_TeamMember_in_Team.source_Owner_Department_Team.source_Owner_Corporation_Department) or (r1.source_Contractor_in_Department = r2.source_TeamMember_in_Team.source_Owner_Department_Team))))
+
+context Person inv NoConflict_Contractor_TeamLead:
+self.target_Person_plays_Contractor->forAll(r1 : Contractor |
+self.target_Person_plays_Employee->forAll(r2_a0 : Employee |
+r2_a0.target_Employee_plays_TeamMember->forAll(r2_a1 : TeamMember |
+r2_a1.target_TeamMember_plays_TeamLead->forAll(r2 : TeamLead |
+      not (r1.source_Contractor_in_Department = r2.source_TeamLead_in_Team.source_Owner_Department_Team or r1.source_Contractor_in_Department.source_Owner_Corporation_Department = r2.source_TeamLead_in_Team.source_Owner_Department_Team.source_Owner_Corporation_Department) or (r1.source_Contractor_in_Department = r2.source_TeamLead_in_Team.source_Owner_Department_Team)))))
+
+context Person inv NoConflict_Contractor_DepartmentHead:
+self.target_Person_plays_Contractor->forAll(r1 : Contractor |
+self.target_Person_plays_Employee->forAll(r2_a0 : Employee |
+r2_a0.target_Employee_plays_Manager->forAll(r2_a1 : Manager |
+r2_a1.target_Manager_plays_SeniorManager->forAll(r2_a2 : SeniorManager |
+r2_a2.target_SeniorManager_plays_DepartmentHead->forAll(r2 : DepartmentHead |
+      not (r1.source_Contractor_in_Department = r2.source_DepartmentHead_in_Department or r1.source_Contractor_in_Department.source_Owner_Corporation_Department = r2.source_DepartmentHead_in_Department.source_Owner_Corporation_Department))))))
+
+context Person inv NoConflict_Contractor_BoardMember:
+self.target_Person_plays_Contractor->forAll(r1 : Contractor |
+self.target_Person_plays_Employee->forAll(r2_a0 : Employee |
+r2_a0.target_Employee_plays_Manager->forAll(r2_a1 : Manager |
+r2_a1.target_Manager_plays_SeniorManager->forAll(r2_a2 : SeniorManager |
+r2_a2.target_SeniorManager_plays_Executive->forAll(r2_a3 : Executive |
+r2_a3.target_Executive_plays_BoardMember->forAll(r2 : BoardMember |
+      not (r1.source_Contractor_in_Department.source_Owner_Corporation_Department = r2.source_BoardMember_in_Corporation)))))))
+
+context Person inv NoConflict_Contractor_Auditor:
+self.target_Person_plays_Contractor->forAll(r1 : Contractor |
+self.target_Person_plays_Reviewer->forAll(r2_a0 : Reviewer |
+r2_a0.target_Reviewer_plays_Auditor->forAll(r2 : Auditor |
+      not (r1.source_Contractor_in_Department.source_Owner_Corporation_Department = r2.source_Auditor_in_AuditCommittee.source_Owner_Corporation_AuditCommittee))))
+
+context Person inv NoConflict_Contractor_SeniorAuditor:
+self.target_Person_plays_Contractor->forAll(r1 : Contractor |
+self.target_Person_plays_Reviewer->forAll(r2_a0 : Reviewer |
+r2_a0.target_Reviewer_plays_Auditor->forAll(r2_a1 : Auditor |
+r2_a1.target_Auditor_plays_SeniorAuditor->forAll(r2 : SeniorAuditor |
+      not (r1.source_Contractor_in_Department.source_Owner_Corporation_Department = r2.source_SeniorAuditor_in_AuditCommittee.source_Owner_Corporation_AuditCommittee)))))
+
+context Person inv NoConflict_Contractor_ComplianceOfficer:
+self.target_Person_plays_Contractor->forAll(r1 : Contractor |
+self.target_Person_plays_Reviewer->forAll(r2_a0 : Reviewer |
+r2_a0.target_Reviewer_plays_ComplianceOfficer->forAll(r2 : ComplianceOfficer |
+      not (r1.source_Contractor_in_Department.source_Owner_Corporation_Department = r2.source_ComplianceOfficer_in_AuditCommittee.source_Owner_Corporation_AuditCommittee))))
+
+context Employee inv NoConflict_TeamMember_DepartmentHead:
+self.target_Employee_plays_TeamMember->forAll(r1 : TeamMember |
+self.target_Employee_plays_Manager->forAll(r2_a0 : Manager |
+r2_a0.target_Manager_plays_SeniorManager->forAll(r2_a1 : SeniorManager |
+r2_a1.target_SeniorManager_plays_DepartmentHead->forAll(r2 : DepartmentHead |
+      not (r1.source_TeamMember_in_Team.source_Owner_Department_Team = r2.source_DepartmentHead_in_Department or r1.source_TeamMember_in_Team.source_Owner_Department_Team.source_Owner_Corporation_Department = r2.source_DepartmentHead_in_Department.source_Owner_Corporation_Department)))))
+
+context Employee inv NoConflict_TeamMember_BoardMember:
+self.target_Employee_plays_TeamMember->forAll(r1 : TeamMember |
+self.target_Employee_plays_Manager->forAll(r2_a0 : Manager |
+r2_a0.target_Manager_plays_SeniorManager->forAll(r2_a1 : SeniorManager |
+r2_a1.target_SeniorManager_plays_Executive->forAll(r2_a2 : Executive |
+r2_a2.target_Executive_plays_BoardMember->forAll(r2 : BoardMember |
+      not (r1.source_TeamMember_in_Team.source_Owner_Department_Team.source_Owner_Corporation_Department = r2.source_BoardMember_in_Corporation))))))
+
+context Person inv NoConflict_TeamMember_Auditor:
+self.target_Person_plays_Employee->forAll(r1_a0 : Employee |
+r1_a0.target_Employee_plays_TeamMember->forAll(r1 : TeamMember |
+self.target_Person_plays_Reviewer->forAll(r2_a0 : Reviewer |
+r2_a0.target_Reviewer_plays_Auditor->forAll(r2 : Auditor |
+      not (r1.source_TeamMember_in_Team.source_Owner_Department_Team.source_Owner_Corporation_Department = r2.source_Auditor_in_AuditCommittee.source_Owner_Corporation_AuditCommittee)))))
+
+context Person inv NoConflict_TeamMember_SeniorAuditor:
+self.target_Person_plays_Employee->forAll(r1_a0 : Employee |
+r1_a0.target_Employee_plays_TeamMember->forAll(r1 : TeamMember |
+self.target_Person_plays_Reviewer->forAll(r2_a0 : Reviewer |
+r2_a0.target_Reviewer_plays_Auditor->forAll(r2_a1 : Auditor |
+r2_a1.target_Auditor_plays_SeniorAuditor->forAll(r2 : SeniorAuditor |
+      not (r1.source_TeamMember_in_Team.source_Owner_Department_Team.source_Owner_Corporation_Department = r2.source_SeniorAuditor_in_AuditCommittee.source_Owner_Corporation_AuditCommittee))))))
+
+context Person inv NoConflict_TeamMember_ComplianceOfficer:
+self.target_Person_plays_Employee->forAll(r1_a0 : Employee |
+r1_a0.target_Employee_plays_TeamMember->forAll(r1 : TeamMember |
+self.target_Person_plays_Reviewer->forAll(r2_a0 : Reviewer |
+r2_a0.target_Reviewer_plays_ComplianceOfficer->forAll(r2 : ComplianceOfficer |
+      not (r1.source_TeamMember_in_Team.source_Owner_Department_Team.source_Owner_Corporation_Department = r2.source_ComplianceOfficer_in_AuditCommittee.source_Owner_Corporation_AuditCommittee)))))
+
+context Employee inv NoConflict_TeamLead_DepartmentHead:
+self.target_Employee_plays_TeamMember->forAll(r1_a0 : TeamMember |
+r1_a0.target_TeamMember_plays_TeamLead->forAll(r1 : TeamLead |
+self.target_Employee_plays_Manager->forAll(r2_a0 : Manager |
+r2_a0.target_Manager_plays_SeniorManager->forAll(r2_a1 : SeniorManager |
+r2_a1.target_SeniorManager_plays_DepartmentHead->forAll(r2 : DepartmentHead |
+      not (r1.source_TeamLead_in_Team.source_Owner_Department_Team = r2.source_DepartmentHead_in_Department or r1.source_TeamLead_in_Team.source_Owner_Department_Team.source_Owner_Corporation_Department = r2.source_DepartmentHead_in_Department.source_Owner_Corporation_Department) or (r1.source_TeamLead_in_Team.source_Owner_Department_Team = r2.source_DepartmentHead_in_Department))))))
+
+context Employee inv NoConflict_TeamLead_BoardMember:
+self.target_Employee_plays_TeamMember->forAll(r1_a0 : TeamMember |
+r1_a0.target_TeamMember_plays_TeamLead->forAll(r1 : TeamLead |
+self.target_Employee_plays_Manager->forAll(r2_a0 : Manager |
+r2_a0.target_Manager_plays_SeniorManager->forAll(r2_a1 : SeniorManager |
+r2_a1.target_SeniorManager_plays_Executive->forAll(r2_a2 : Executive |
+r2_a2.target_Executive_plays_BoardMember->forAll(r2 : BoardMember |
+      not (r1.source_TeamLead_in_Team.source_Owner_Department_Team.source_Owner_Corporation_Department = r2.source_BoardMember_in_Corporation)))))))
+
+context Person inv NoConflict_TeamLead_Auditor:
+self.target_Person_plays_Employee->forAll(r1_a0 : Employee |
+r1_a0.target_Employee_plays_TeamMember->forAll(r1_a1 : TeamMember |
+r1_a1.target_TeamMember_plays_TeamLead->forAll(r1 : TeamLead |
+self.target_Person_plays_Reviewer->forAll(r2_a0 : Reviewer |
+r2_a0.target_Reviewer_plays_Auditor->forAll(r2 : Auditor |
+      not (r1.source_TeamLead_in_Team.source_Owner_Department_Team.source_Owner_Corporation_Department = r2.source_Auditor_in_AuditCommittee.source_Owner_Corporation_AuditCommittee))))))
+
+context Person inv NoConflict_TeamLead_SeniorAuditor:
+self.target_Person_plays_Employee->forAll(r1_a0 : Employee |
+r1_a0.target_Employee_plays_TeamMember->forAll(r1_a1 : TeamMember |
+r1_a1.target_TeamMember_plays_TeamLead->forAll(r1 : TeamLead |
+self.target_Person_plays_Reviewer->forAll(r2_a0 : Reviewer |
+r2_a0.target_Reviewer_plays_Auditor->forAll(r2_a1 : Auditor |
+r2_a1.target_Auditor_plays_SeniorAuditor->forAll(r2 : SeniorAuditor |
+      not (r1.source_TeamLead_in_Team.source_Owner_Department_Team.source_Owner_Corporation_Department = r2.source_SeniorAuditor_in_AuditCommittee.source_Owner_Corporation_AuditCommittee)))))))
+
+context Person inv NoConflict_TeamLead_ComplianceOfficer:
+self.target_Person_plays_Employee->forAll(r1_a0 : Employee |
+r1_a0.target_Employee_plays_TeamMember->forAll(r1_a1 : TeamMember |
+r1_a1.target_TeamMember_plays_TeamLead->forAll(r1 : TeamLead |
+self.target_Person_plays_Reviewer->forAll(r2_a0 : Reviewer |
+r2_a0.target_Reviewer_plays_ComplianceOfficer->forAll(r2 : ComplianceOfficer |
+      not (r1.source_TeamLead_in_Team.source_Owner_Department_Team.source_Owner_Corporation_Department = r2.source_ComplianceOfficer_in_AuditCommittee.source_Owner_Corporation_AuditCommittee))))))
+
+context Person inv NoConflict_DepartmentHead_Auditor:
+self.target_Person_plays_Employee->forAll(r1_a0 : Employee |
+r1_a0.target_Employee_plays_Manager->forAll(r1_a1 : Manager |
+r1_a1.target_Manager_plays_SeniorManager->forAll(r1_a2 : SeniorManager |
+r1_a2.target_SeniorManager_plays_DepartmentHead->forAll(r1 : DepartmentHead |
+self.target_Person_plays_Reviewer->forAll(r2_a0 : Reviewer |
+r2_a0.target_Reviewer_plays_Auditor->forAll(r2 : Auditor |
+      not (r1.source_DepartmentHead_in_Department.source_Owner_Corporation_Department = r2.source_Auditor_in_AuditCommittee.source_Owner_Corporation_AuditCommittee)))))))
+
+context Person inv NoConflict_DepartmentHead_SeniorAuditor:
+self.target_Person_plays_Employee->forAll(r1_a0 : Employee |
+r1_a0.target_Employee_plays_Manager->forAll(r1_a1 : Manager |
+r1_a1.target_Manager_plays_SeniorManager->forAll(r1_a2 : SeniorManager |
+r1_a2.target_SeniorManager_plays_DepartmentHead->forAll(r1 : DepartmentHead |
+self.target_Person_plays_Reviewer->forAll(r2_a0 : Reviewer |
+r2_a0.target_Reviewer_plays_Auditor->forAll(r2_a1 : Auditor |
+r2_a1.target_Auditor_plays_SeniorAuditor->forAll(r2 : SeniorAuditor |
+      not (r1.source_DepartmentHead_in_Department.source_Owner_Corporation_Department = r2.source_SeniorAuditor_in_AuditCommittee.source_Owner_Corporation_AuditCommittee))))))))
+
+context Person inv NoConflict_DepartmentHead_ComplianceOfficer:
+self.target_Person_plays_Employee->forAll(r1_a0 : Employee |
+r1_a0.target_Employee_plays_Manager->forAll(r1_a1 : Manager |
+r1_a1.target_Manager_plays_SeniorManager->forAll(r1_a2 : SeniorManager |
+r1_a2.target_SeniorManager_plays_DepartmentHead->forAll(r1 : DepartmentHead |
+self.target_Person_plays_Reviewer->forAll(r2_a0 : Reviewer |
+r2_a0.target_Reviewer_plays_ComplianceOfficer->forAll(r2 : ComplianceOfficer |
+      not (r1.source_DepartmentHead_in_Department.source_Owner_Corporation_Department = r2.source_ComplianceOfficer_in_AuditCommittee.source_Owner_Corporation_AuditCommittee)))))))
+
+context Person inv NoConflict_BoardMember_Auditor:
+self.target_Person_plays_Employee->forAll(r1_a0 : Employee |
+r1_a0.target_Employee_plays_Manager->forAll(r1_a1 : Manager |
+r1_a1.target_Manager_plays_SeniorManager->forAll(r1_a2 : SeniorManager |
+r1_a2.target_SeniorManager_plays_Executive->forAll(r1_a3 : Executive |
+r1_a3.target_Executive_plays_BoardMember->forAll(r1 : BoardMember |
+self.target_Person_plays_Reviewer->forAll(r2_a0 : Reviewer |
+r2_a0.target_Reviewer_plays_Auditor->forAll(r2 : Auditor |
+      not (r1.source_BoardMember_in_Corporation = r2.source_Auditor_in_AuditCommittee.source_Owner_Corporation_AuditCommittee))))))))
+
+context Person inv NoConflict_BoardMember_SeniorAuditor:
+self.target_Person_plays_Employee->forAll(r1_a0 : Employee |
+r1_a0.target_Employee_plays_Manager->forAll(r1_a1 : Manager |
+r1_a1.target_Manager_plays_SeniorManager->forAll(r1_a2 : SeniorManager |
+r1_a2.target_SeniorManager_plays_Executive->forAll(r1_a3 : Executive |
+r1_a3.target_Executive_plays_BoardMember->forAll(r1 : BoardMember |
+self.target_Person_plays_Reviewer->forAll(r2_a0 : Reviewer |
+r2_a0.target_Reviewer_plays_Auditor->forAll(r2_a1 : Auditor |
+r2_a1.target_Auditor_plays_SeniorAuditor->forAll(r2 : SeniorAuditor |
+      not (r1.source_BoardMember_in_Corporation = r2.source_SeniorAuditor_in_AuditCommittee.source_Owner_Corporation_AuditCommittee)))))))))
+
+context Person inv NoConflict_BoardMember_ComplianceOfficer:
+self.target_Person_plays_Employee->forAll(r1_a0 : Employee |
+r1_a0.target_Employee_plays_Manager->forAll(r1_a1 : Manager |
+r1_a1.target_Manager_plays_SeniorManager->forAll(r1_a2 : SeniorManager |
+r1_a2.target_SeniorManager_plays_Executive->forAll(r1_a3 : Executive |
+r1_a3.target_Executive_plays_BoardMember->forAll(r1 : BoardMember |
+self.target_Person_plays_Reviewer->forAll(r2_a0 : Reviewer |
+r2_a0.target_Reviewer_plays_ComplianceOfficer->forAll(r2 : ComplianceOfficer |
+      not (r1.source_BoardMember_in_Corporation = r2.source_ComplianceOfficer_in_AuditCommittee.source_Owner_Corporation_AuditCommittee))))))))
+
+context Reviewer inv NoConflict_Auditor_ComplianceOfficer:
+self.target_Reviewer_plays_Auditor->forAll(r1 : Auditor |
+self.target_Reviewer_plays_ComplianceOfficer->forAll(r2 : ComplianceOfficer |
+      not (r1.source_Auditor_in_AuditCommittee = r2.source_ComplianceOfficer_in_AuditCommittee or r1.source_Auditor_in_AuditCommittee.source_Owner_Corporation_AuditCommittee = r2.source_ComplianceOfficer_in_AuditCommittee.source_Owner_Corporation_AuditCommittee) or (r1.source_Auditor_in_AuditCommittee = r2.source_ComplianceOfficer_in_AuditCommittee)))
+
+context Reviewer inv NoConflict_SeniorAuditor_ComplianceOfficer:
+self.target_Reviewer_plays_Auditor->forAll(r1_a0 : Auditor |
+r1_a0.target_Auditor_plays_SeniorAuditor->forAll(r1 : SeniorAuditor |
+self.target_Reviewer_plays_ComplianceOfficer->forAll(r2 : ComplianceOfficer |
+      not (r1.source_SeniorAuditor_in_AuditCommittee = r2.source_ComplianceOfficer_in_AuditCommittee or r1.source_SeniorAuditor_in_AuditCommittee.source_Owner_Corporation_AuditCommittee = r2.source_ComplianceOfficer_in_AuditCommittee.source_Owner_Corporation_AuditCommittee) or (r1.source_SeniorAuditor_in_AuditCommittee = r2.source_ComplianceOfficer_in_AuditCommittee))))
+

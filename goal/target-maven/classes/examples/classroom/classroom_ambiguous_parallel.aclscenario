@@ -1,0 +1,13 @@
+// Expected result: AMBIGUOUS. Both orders of the two parallel flows survive,
+// and both incoming source Post_B expressions hold at the AND join.
+acl-state-scenario v1.0 ClassroomAmbiguousParallelStep {
+  acl "classroom.acl";
+  bpmn "classroom.bpmn2";
+  state "classroom_state_01_initial.aol";
+  state "classroom_state_01_initial.aol";
+  state "classroom_state_01_initial.aol";
+  state "classroom_trace_state_01_started.aol";
+  state "classroom_trace_state_01_started.aol";
+  state "classroom_trace_state_01_started.aol";
+  state "classroom_trace_state_03_roster.aol";
+}

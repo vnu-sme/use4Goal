@@ -8,7 +8,7 @@
 model IStarScenarioStructure
 
 enum ActorKind       {agent, role}
-enum ElementKind     {goal, task, resource, quality, obstacle}
+enum ElementKind     {goal, task, resource, quality}
 enum ScenarioStatus  {unknown, fulfilled, pending, trueValue, falseValue}
 enum StatementKind   {fire, assign, aggregate}
 enum AggregateMode   {all, any}

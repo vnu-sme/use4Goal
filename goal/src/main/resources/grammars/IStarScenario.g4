@@ -47,9 +47,6 @@ grammar IStarScenario;
 //
 //      fire c1.SubmitApplication;
 //      assign c1.ReviewDelegatedToManager = Fulfilled;
-//      assign c1.NoCommonSlot = Active;
-//      assign c1.NoCommonSlot = Resolved;
-//
 //      aggregate AllHired : all of Candidate over TeamQuality;
 //    }
 //
@@ -81,8 +78,6 @@ statusValue
     | 'Pending'   # svPending
     | 'True'      # svTrue
     | 'False'     # svFalse
-    | 'Active'    # svActive
-    | 'Resolved'  # svResolved
     ;
 
 qualifiedId : (IDENT '.')? IDENT ;

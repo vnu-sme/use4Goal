@@ -24,7 +24,10 @@ import org.vnu.sme.goal.dsl.acl.mm.*;
  * {@code <Parent>_plays_<Role>} association instead, with the parent-side multiplicity fixed
  * at {@code [1]} (playing the child requires an existing occurrence of the parent). The
  * child-side multiplicity is {@code [0..*]}. Owner and compatibility constraints are rendered
- * only after the complete play and Group-owner graphs exist.
+ * only after the complete play and Group-owner graphs exist. Generated association-end roles
+ * use compact semantic names: {@code agent.play_participant},
+ * {@code participant.agent}, {@code meetingUnit.participant}, and
+ * {@code participant.meetingUnit}.
  */
 public final class Acl2UseTranslator {
     private Acl2UseTranslator() {}
@@ -45,8 +48,9 @@ public final class Acl2UseTranslator {
         StringBuilder out = new StringBuilder()
                 .append("-- Generated from ACL. Regenerate instead of editing this file.\n")
                 .append("-- Role 'extends' is a play chain (Owner[1]--Role[mult] association), not USE\n")
-                .append("-- generalization: no two Role classes are ever related by '<'. Agent is an empty\n")
-                .append("-- class. Every play association is parent[1]--child[0..*].\n")
+                .append("-- generalization: no two Role classes are ever related by '<'. Every generated\n")
+                .append("-- class has a technical id : Integer used to preserve object identity in filmstrips.\n")
+                .append("-- Every play association is parent[1]--child[0..*].\n")
                 .append("-- Compatibility is 'inv NoConflict_<R1>_<R2>' on the nearest shared play-chain\n")
                 .append("-- ancestor; every Owner-target Role also gets 'inv NoSelfConflict_<R>'.\n\n")
                 .append("model ").append(id(model.name())).append("\n\n");
@@ -86,9 +90,10 @@ public final class Acl2UseTranslator {
             String ownerType = role.parentRoles().stream().findFirst().orElse(agentClass);
             String assocName = unique(names, ownerType + "_plays_" + role.name());
             relationship(out, assocName, "association", ownerType, AclCardinality.bounded(1, 1),
-                    role.name(), AclCardinality.unlimited(0));
-            chainHopByRole.put(role.name(), new ChainHop(ownerType, "target_" + assocName,
-                    "source_" + assocName, true, role.name()));
+                    ownerType.equals(agentClass) ? "agent" : lowerFirst(ownerType),
+                    role.name(), AclCardinality.unlimited(0), playRole(role.name()));
+            chainHopByRole.put(role.name(), new ChainHop(ownerType, playRole(role.name()),
+                    ownerType.equals(agentClass) ? "agent" : lowerFirst(ownerType), true, role.name()));
         }
 
         // Owner Group->Role and Group->Group both become composition.
@@ -98,15 +103,17 @@ public final class Acl2UseTranslator {
             if (model.findRole(owner.target()).isPresent()) {
                 String inGroup = unique(names, owner.target() + "_in_" + owner.sourceGroup());
                 relationship(out, inGroup, "composition", owner.sourceGroup(), AclCardinality.bounded(1, 1),
-                        owner.target(), owner.multiplicity());
+                        lowerFirst(owner.sourceGroup()), owner.target(), owner.multiplicity(),
+                        lowerFirst(owner.target()));
                 roleGroupNavByRole.computeIfAbsent(owner.target(), k -> new ArrayList<>())
-                        .add(new GroupNav(owner.sourceGroup(), "source_" + inGroup));
+                        .add(new GroupNav(owner.sourceGroup(), lowerFirst(owner.sourceGroup())));
             } else {
                 String name = unique(names, "Owner_" + owner.sourceGroup() + "_" + owner.target());
                 relationship(out, name, "composition", owner.sourceGroup(), AclCardinality.bounded(1, 1),
-                        owner.target(), owner.multiplicity());
+                        lowerFirst(owner.sourceGroup()), owner.target(), owner.multiplicity(),
+                        lowerFirst(owner.target()));
                 groupParentNavByGroup.computeIfAbsent(owner.target(), k -> new ArrayList<>())
-                        .add(new GroupNav(owner.sourceGroup(), "source_" + name));
+                        .add(new GroupNav(owner.sourceGroup(), lowerFirst(owner.sourceGroup())));
             }
         }
 
@@ -399,20 +406,22 @@ public final class Acl2UseTranslator {
                                     List<AclAttribute> attributes) {
         out.append("class ").append(id(name));
         parent.ifPresent(value -> out.append(" < ").append(id(value)));
+        List<AclAttribute> domainAttributes = attributes.stream()
+                .filter(value -> !value.name().equals("id"))
+                .toList();
         out.append("\n");
-        if (!attributes.isEmpty()) {
+        if (parent.isEmpty() || !domainAttributes.isEmpty()) {
             out.append("attributes\n");
-            attributes.forEach(value -> out.append("  ").append(id(value.name())).append(" : ")
-                    .append(id(value.type().sourceName())).append("\n"));
         }
+        // Specialized Entity/Group classes inherit id from their USE parent;
+        // every other generated class declares the technical identity itself.
+        if (parent.isEmpty()) out.append("  id : Integer\n");
+        // `id` is reserved by the USE/TOCL translation as the stable identity of
+        // one logical object across Filmstrip snapshots.  Do not emit a second
+        // source-level attribute with the same name.
+        domainAttributes.forEach(value -> out.append("  ").append(id(value.name())).append(" : ")
+                .append(id(value.type().sourceName())).append("\n"));
         out.append("end\n\n");
-    }
-
-    private static void relationship(StringBuilder out, String name, String kind,
-                                     String sourceType, AclCardinality sourceMultiplicity,
-                                     String targetType, AclCardinality targetMultiplicity) {
-        relationship(out, name, kind, sourceType, sourceMultiplicity, "source_" + name,
-                targetType, targetMultiplicity, "target_" + name);
     }
 
     private static void relationship(StringBuilder out, String name, String kind,
@@ -446,7 +455,11 @@ public final class Acl2UseTranslator {
         if (!matcher.find()) return useText; // defensive: caller's className should always match an emitted class
         int classEnd = useText.indexOf("\nend\n", matcher.start());
         if (classEnd < 0) return useText;
-        String opsBlock = "operations\n" + String.join("\n", operationLines) + "\n";
+        String classBlock = useText.substring(matcher.start(), classEnd);
+        boolean alreadyHasOperations = Pattern.compile("(?m)^operations\\s*$")
+                .matcher(classBlock).find();
+        String opsBlock = (alreadyHasOperations ? "" : "operations\n")
+                + String.join("\n", operationLines) + "\n";
         return useText.substring(0, classEnd + 1) + opsBlock + useText.substring(classEnd + 1);
     }
 
@@ -465,5 +478,14 @@ public final class Acl2UseTranslator {
         if (value == null || value.isBlank()) return "unnamed";
         String clean = value.replaceAll("[^A-Za-z0-9_]", "_");
         return Character.isDigit(clean.charAt(0)) ? "_" + clean : clean;
+    }
+
+    private static String lowerFirst(String value) {
+        String clean = id(value);
+        return Character.toLowerCase(clean.charAt(0)) + clean.substring(1);
+    }
+
+    private static String playRole(String value) {
+        return "play_" + lowerFirst(value);
     }
 }

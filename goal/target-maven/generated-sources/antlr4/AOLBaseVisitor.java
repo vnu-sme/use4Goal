@@ -1,5 +1,5 @@
 // Generated from AOL.g4 by ANTLR 4.9.3
- package org.vnu.sme.goal.aol.parser; 
+ package org.vnu.sme.goal.dsl.aol.parser; 
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**
@@ -53,6 +53,20 @@ public class AOLBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements AO
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitPlayDecl(AOLParser.PlayDeclContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitRoleInstanceDecl(AOLParser.RoleInstanceDeclContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitPlayLinkDecl(AOLParser.PlayLinkDeclContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

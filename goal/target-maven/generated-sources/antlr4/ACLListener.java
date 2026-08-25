@@ -1,5 +1,5 @@
 // Generated from ACL.g4 by ANTLR 4.9.3
- package org.vnu.sme.goal.acl.parser; 
+ package org.vnu.sme.goal.dsl.acl.parser; 
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -27,6 +27,36 @@ public interface ACLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitTopLevelDecl(ACLParser.TopLevelDeclContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ACLParser#invariantDecl}.
+	 * @param ctx the parse tree
+	 */
+	void enterInvariantDecl(ACLParser.InvariantDeclContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ACLParser#invariantDecl}.
+	 * @param ctx the parse tree
+	 */
+	void exitInvariantDecl(ACLParser.InvariantDeclContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ACLParser#oclExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterOclExpression(ACLParser.OclExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ACLParser#oclExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitOclExpression(ACLParser.OclExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ACLParser#oclToken}.
+	 * @param ctx the parse tree
+	 */
+	void enterOclToken(ACLParser.OclTokenContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ACLParser#oclToken}.
+	 * @param ctx the parse tree
+	 */
+	void exitOclToken(ACLParser.OclTokenContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ACLParser#enumDecl}.
 	 * @param ctx the parse tree
@@ -148,26 +178,6 @@ public interface ACLListener extends ParseTreeListener {
 	 */
 	void exitGroupMemberDecl(ACLParser.GroupMemberDeclContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ACLParser#legacyTypedMemberDecl}.
-	 * @param ctx the parse tree
-	 */
-	void enterLegacyTypedMemberDecl(ACLParser.LegacyTypedMemberDeclContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ACLParser#legacyTypedMemberDecl}.
-	 * @param ctx the parse tree
-	 */
-	void exitLegacyTypedMemberDecl(ACLParser.LegacyTypedMemberDeclContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link ACLParser#legacySubgroupDecl}.
-	 * @param ctx the parse tree
-	 */
-	void enterLegacySubgroupDecl(ACLParser.LegacySubgroupDeclContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ACLParser#legacySubgroupDecl}.
-	 * @param ctx the parse tree
-	 */
-	void exitLegacySubgroupDecl(ACLParser.LegacySubgroupDeclContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link ACLParser#entityRelationDecl}.
 	 * @param ctx the parse tree
 	 */
@@ -207,56 +217,6 @@ public interface ACLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitCompatibilityDecl(ACLParser.CompatibilityDeclContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link ACLParser#linkArrow}.
-	 * @param ctx the parse tree
-	 */
-	void enterLinkArrow(ACLParser.LinkArrowContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ACLParser#linkArrow}.
-	 * @param ctx the parse tree
-	 */
-	void exitLinkArrow(ACLParser.LinkArrowContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link ACLParser#linkScope}.
-	 * @param ctx the parse tree
-	 */
-	void enterLinkScope(ACLParser.LinkScopeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ACLParser#linkScope}.
-	 * @param ctx the parse tree
-	 */
-	void exitLinkScope(ACLParser.LinkScopeContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link ACLParser#compatibilityOption}.
-	 * @param ctx the parse tree
-	 */
-	void enterCompatibilityOption(ACLParser.CompatibilityOptionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ACLParser#compatibilityOption}.
-	 * @param ctx the parse tree
-	 */
-	void exitCompatibilityOption(ACLParser.CompatibilityOptionContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link ACLParser#compatibilityType}.
-	 * @param ctx the parse tree
-	 */
-	void enterCompatibilityType(ACLParser.CompatibilityTypeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ACLParser#compatibilityType}.
-	 * @param ctx the parse tree
-	 */
-	void exitCompatibilityType(ACLParser.CompatibilityTypeContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link ACLParser#scopeValue}.
-	 * @param ctx the parse tree
-	 */
-	void enterScopeValue(ACLParser.ScopeValueContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ACLParser#scopeValue}.
-	 * @param ctx the parse tree
-	 */
-	void exitScopeValue(ACLParser.ScopeValueContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ACLParser#cardinality}.
 	 * @param ctx the parse tree

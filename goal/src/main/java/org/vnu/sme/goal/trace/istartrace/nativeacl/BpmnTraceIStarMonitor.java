@@ -75,20 +75,16 @@ public final class BpmnTraceIStarMonitor {
                         // Structural goals have no state predicate of their own. Their status
                         // is produced exclusively by refinement/dependency propagation below.
                         if (goal.conditions().isEmpty()) continue;
-                        boolean demanded=structurallyDemanded(
-                                occurrenceId,graph,inst,snapshot);
-                        boolean activation=goal.activations().isEmpty()||goal.activations().stream()
-                                .allMatch(x->NativeOclEvaluator.evaluate(x.oclBody(),snapshot,context));
+                        boolean demanded=structurallyDemanded(occurrenceId,graph);
                         boolean predicate=goal.conditions().stream()
                                 .allMatch(x->NativeOclEvaluator.evaluate(x.oclBody(),snapshot,context));
                         GoalMarking old=oldGoals.getOrDefault(occurrenceId,GoalMarking.initial(goal.goalType()));
-                        GoalMarking current=old.update(demanded&&activation,predicate);
+                        GoalMarking current=old.update(demanded,predicate);
                         goals.put(occurrenceId,current);
                         if(current.status()!=GoalTaskStatus.UNKNOWN)
                             marking=IStarPropagation.assignGoalTask(inst.instanceModel(),marking,occurrenceId,current.status());
                     } else if(sourceElement instanceof Task task){
-                        boolean demanded=structurallyDemanded(
-                                occurrenceId,graph,inst,snapshot);
+                        boolean demanded=structurallyDemanded(occurrenceId,graph);
                         boolean pre=!task.preconditions().isEmpty()&&task.preconditions().stream()
                                 .allMatch(x->NativeOclEvaluator.evaluate(x.oclBody(),snapshot,context));
                         boolean post=!task.postconditions().isEmpty()&&task.postconditions().stream()
@@ -127,16 +123,10 @@ public final class BpmnTraceIStarMonitor {
         for(String id:label.substring(open+1,close).split(",")){var object=snapshot.object(id.strip());if(object!=null)out.add(object);}return out;
     }
 
-    private static boolean structurallyDemanded(String id,GoalActivationGraph graph,
-            GoalModelInstanceEvaluation evaluation,AclSnapshot snapshot){
+    private static boolean structurallyDemanded(String id,GoalActivationGraph graph){
         Set<String> seen=new LinkedHashSet<>();String current=id;
         while(seen.add(current)){
             var parent=graph.parentOf(current);if(parent.isEmpty())return true;current=parent.get();
-            IntentionalElement source=evaluation.goalModelInstance().elementInstanceOf().get(current);
-            if(source instanceof Goal goal&&!goal.activations().isEmpty()){
-                List<AclSnapshot.ObjectValue> context=contextOf(evaluation.nodeLabels().get(current),snapshot);
-                if(!goal.activations().stream().allMatch(x->NativeOclEvaluator.evaluate(x.oclBody(),snapshot,context)))return false;
-            }
         }
         return false;
     }
@@ -144,14 +134,14 @@ public final class BpmnTraceIStarMonitor {
     private static IStarMarking saturateDependencies(GoalModel model,IStarMarking input){
         IStarMarking current=input;boolean changed=true;int guard=0;
         while(changed&&guard++<10_000){changed=false;for(Dependency d:model.getDependencies()){
-            if(d.dependerElmt()==null)continue;
+            if(d.dependerElmt()==null||d.dependeeElmt()==null)continue;
             boolean direct=model.findElement(d.dependerElmt()).filter(Goal.class::isInstance).map(Goal.class::cast)
                     .map(g->!g.conditions().isEmpty()).orElse(false);
             if(direct||current.goalTaskStatus(d.dependerElmt())==GoalTaskStatus.FULFILLED)continue;
-            GoalTaskStatus dependum=current.goalTaskStatus(d.dependum());
-            if((dependum==GoalTaskStatus.FULFILLED||dependum==GoalTaskStatus.PENDING)
-                    &&current.goalTaskStatus(d.dependerElmt())!=dependum){
-                current=IStarPropagation.assignGoalTask(model,current,d.dependerElmt(),dependum);
+            GoalTaskStatus provided=current.goalTaskStatus(d.dependeeElmt());
+            if((provided==GoalTaskStatus.FULFILLED||provided==GoalTaskStatus.PENDING)
+                    &&current.goalTaskStatus(d.dependerElmt())!=provided){
+                current=IStarPropagation.assignGoalTask(model,current,d.dependerElmt(),provided);
                 changed=true;
             }
         }}return IStarPropagation.closePending(model,current);

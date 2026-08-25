@@ -52,17 +52,38 @@ public final class AclModelFactory {
             List<AclCompatibility> compatibility=ast.compatibilities().stream().map(this::compatibility).toList();
             groups=groups.stream().map(g->new AclGroup(g.name(),g.specializes(),g.attributes(),g.members(),g.roles(),g.subgroups(),compatibility.stream().filter(c->c.groupName().equals(g.name())).toList())).toList();
             Map<String,AclGroup> groupMap=indexGroup(groups);
-            List<AclRelation> relations=new ArrayList<>(); for(var x:ast.relations())relations.add(relation(x));
-            List<AclOwner> owners=new ArrayList<>();
+            List<AclRelation> relations=new ArrayList<>();
             for(var source:ast.groups()) for(var member:source.members()) {
-                AclCardinality mult=cardinality(member.multiplicity());
+                if (roleMap.containsKey(member.type()) || groupMap.containsKey(member.type())) {
+                    relations.add(new AclRelation(RelationKind.COMPOSITION,
+                            AclContainment.relationName(source.name(), member.type()),
+                            new AclEndpoint(source.name(), AclCardinality.bounded(1, 1),
+                                    Optional.of(AclContainment.wholeRoleName())),
+                            new AclEndpoint(member.type(), cardinality(member.multiplicity()),
+                                    Optional.of(AclContainment.partRoleName(member.type())))));
+                }
+            }
+            for(var x:ast.relations())relations.add(relation(x));
+            for(var source:ast.groups()) for(var member:source.members()) {
                 if(entityMap.containsKey(member.type())) {
                     error(member.location(), "Entity '"+member.type()+"' cannot be a member of Group '"
                             +source.name()+"'; declare an explicit association, aggregation, or composition instead");
-                } else owners.add(new AclOwner(source.name(),member.type(),mult));
+                }
             }
             List<AclGeneralization> gens=new ArrayList<>(); ast.entities().forEach(x->x.specializes().ifPresent(p->gens.add(new AclGeneralization(x.name(),p)))); ast.roles().forEach(x->x.parentRoles().forEach(p->gens.add(new AclGeneralization(x.name(),p)))); ast.groups().forEach(x->x.specializes().ifPresent(p->gens.add(new AclGeneralization(x.name(),p))));
-            return new AclModel(ast.version(),ast.name(),enumList,entities,roles,groups,relations,owners,compatibility,gens);
+            List<AclInvariant> invariants = ast.invariants().stream()
+                    .map(x -> new AclInvariant(x.contextType(), x.name(), x.expression())).toList();
+            Set<String> classifiers = new LinkedHashSet<>();
+            entities.forEach(x -> classifiers.add(x.name())); roles.forEach(x -> classifiers.add(x.name()));
+            groups.forEach(x -> classifiers.add(x.name()));
+            Set<String> invariantNames = new LinkedHashSet<>();
+            for (var x : ast.invariants()) {
+                if (!classifiers.contains(x.contextType()))
+                    error(x.location(), "unknown OCL context classifier '" + x.contextType() + "'");
+                if (!invariantNames.add(x.contextType() + "::" + x.name()))
+                    error(x.location(), "duplicate OCL invariant '" + x.contextType() + "::" + x.name() + "'");
+            }
+            return new AclModel(ast.version(),ast.name(),enumList,entities,roles,groups,relations,List.of(),compatibility,gens,invariants);
         }
         private AclGroup group(AclGroupCS x,Map<String,AclEntity> entities,Map<String,AclRole> roles){
             List<AclGroupMember> members=x.members().stream().map(m->new AclGroupMember(m.type(),cardinality(m.multiplicity()))).toList();

@@ -1,0 +1,10 @@
+// Expected result: NON_CONFORMANT at formal flow s2 -> s3 because
+// Post_B(beginLesson,prepSplit) is false.
+acl-state-scenario v1.0 ClassroomBadPostcondition {
+  acl "classroom.acl";
+  bpmn "classroom.bpmn2";
+  state "classroom_state_01_initial.aol";
+  state "classroom_state_01_initial.aol";
+  state "classroom_state_01_initial.aol";
+  state "classroom_error_state_bad_begin.aol";
+}

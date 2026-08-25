@@ -25,9 +25,6 @@ public sealed interface ElementBodyCS {
     /** quality <id> rel* */
     record QualityCS(String id, List<RelCS> rels) implements ElementBodyCS {}
 
-    /** obstacle <id> [: obstacleType] rel* */
-    record ObstacleCS(String id, String obstacleType, List<RelCS> rels) implements ElementBodyCS {}
-
     /** <actor> is-a <target> */
     record IsACS(String actor, String target) implements ElementBodyCS {}
 

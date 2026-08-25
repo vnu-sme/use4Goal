@@ -1,193 +1,122 @@
-// Meeting Scheduler. BPMN contains predicates only; there is no SOIL action.
-// A caller performs each real action after begin(...) and before complete(...).
-
-model MeetingScheduler {
-  pool MeetingOrganization {
-    name "Meeting Organization"
-
-    lane Initiator {
-      name "Initiator"
-
-      start start_meeting {
-        trigger none
-      }
-
-      task decideMeetingDetails {
-        name "Decide Meeting Details"
-        post {[
-          MeetingUnit.allInstances()->exists(m | m.detailsDecided)
-        ]}
-        effect {[
-          for m in MeetingUnit.allInstances() do
-            m.detailsDecided := true;
-          end
-        ]}
-      }
-    }
-
-    lane Organizer {
-      name "Organizer"
-
-      task checkCalendar {
-        name "Check Participant Calendar"
-        pre {[
-          MeetingUnit.allInstances()->exists(m | m.detailsDecided)
-        ]}
-        post {[
-          Participant.allInstances()
-            ->select(p | p.source_Agent_plays_Participant.hasCalendar)
-            ->forAll(p | p.timetableCollected and p.timetableChannel = #calendar)
-        ]}
-        effect {[
-          for p in Participant.allInstances()->select(p | p.source_Agent_plays_Participant.hasCalendar) do
-            p.timetableCollected := true;
-            p.timetableChannel := #calendar;
-          end
-        ]}
-      }
-
-      gateway phoneCollectionRequired {
-        name "Phone Collection Required?"
-        type xor
-        pre {[
-          Participant.allInstances()
-            ->select(p | p.source_Agent_plays_Participant.hasCalendar)
-            ->forAll(p | p.timetableCollected)
-        ]}
-        post {[
-          Participant.allInstances()
-            ->select(p | p.source_Agent_plays_Participant.hasCalendar)
-            ->forAll(p | p.timetableCollected)
-        ]}
-      }
-
-      task requestSecretaryCall {
-        name "Request Secretary Call"
-        pre {[
-          MeetingUnit.allInstances()->exists(m | m.detailsDecided)
-          and Participant.allInstances()->exists(p | not p.source_Agent_plays_Participant.hasCalendar)
-          and Secretary.allInstances()->notEmpty()
-          and Participant.allInstances()->select(p | not p.source_Agent_plays_Participant.hasCalendar)->forAll(p |
-            p.source_Agent_plays_Participant.phone <> ''
-            and Secretary.allInstances()->exists(s |
-              s.source_Agent_plays_Secretary.knownContact
-                ->includes(p.source_Agent_plays_Participant)))
-        ]}
-      }
-
-      gateway timetableCollectionComplete {
-        name "Timetable Collection Complete"
-        type xor
-        pre {[
-          Participant.allInstances()->forAll(p | p.timetableCollected)
-        ]}
-        post {[
-          Participant.allInstances()->forAll(p | p.timetableCollected)
-        ]}
-      }
-
-      task chooseTimeAndDate {
-        name "Choose Time And Date"
-        pre {[
-          Participant.allInstances()->forAll(p | p.timetableCollected)
-        ]}
-        post {[
-          MeetingUnit.allInstances()->exists(m | m.timeChosen)
-        ]}
-        effect {[
-          for m in MeetingUnit.allInstances() do
-            m.timeChosen := true;
-          end
-        ]}
-      }
-
-      task announceMeeting {
-        name "Announce Meeting"
-        pre {[
-          MeetingUnit.allInstances()->exists(m | m.timeChosen)
-        ]}
-        post {[
-          Participant.allInstances()->forAll(p | p.notified)
-        ]}
-        effect {[
-          for p in Participant.allInstances() do
-            p.notified := true;
-          end
-        ]}
-      }
-
-      end end_meeting {
-        trigger none
-      }
-    }
-
-    lane Secretary {
-      name "Secretary"
-
-      task collectConstraintsByPhone {
-        name "Collect Constraints By Phone"
-        pre {[
-          Participant.allInstances()->exists(p | not p.source_Agent_plays_Participant.hasCalendar)
-          and Secretary.allInstances()->notEmpty()
-          and Participant.allInstances()->select(p | not p.source_Agent_plays_Participant.hasCalendar)->forAll(p |
-            p.source_Agent_plays_Participant.phone <> ''
-            and Secretary.allInstances()->exists(s |
-              s.source_Agent_plays_Secretary.knownContact
-                ->includes(p.source_Agent_plays_Participant)))
-        ]}
-        post {[
-          Participant.allInstances()
-            ->select(p | not p.source_Agent_plays_Participant.hasCalendar)
-            ->forAll(p | p.timetableCollected and p.timetableChannel = #phone)
-        ]}
-        effect {[
-          for p in Participant.allInstances()->select(p | not p.source_Agent_plays_Participant.hasCalendar) do
-            p.timetableCollected := true;
-            p.timetableChannel := #phone;
-          end
-        ]}
-      }
-    }
-
-    lane Participant {
-      name "Participant"
-
-      task participate {
-        name "Participate"
-        pre {[
-          Participant.allInstances()->forAll(p | p.notified)
-        ]}
-        post {[
-          Participant.allInstances()->forAll(p | p.attended)
-        ]}
-        effect {[
-          for p in Participant.allInstances() do
-            p.attended := true;
-          end
-        ]}
-      }
-    }
-
-    flow start_meeting -> decideMeetingDetails
-    flow decideMeetingDetails -> checkCalendar
-    flow checkCalendar -> phoneCollectionRequired
-    flow phoneCollectionRequired -> requestSecretaryCall {
-      name "some participant has no calendar"
-      guard {[
-        Participant.allInstances()->exists(p | not p.source_Agent_plays_Participant.hasCalendar)
-      ]}
-    }
-    flow phoneCollectionRequired -> timetableCollectionComplete {
-      name "every participant has a calendar"
-      guard {[
-        Participant.allInstances()->forAll(p | p.source_Agent_plays_Participant.hasCalendar)
-      ]}
-    }
-    flow requestSecretaryCall -> collectConstraintsByPhone
-    flow collectConstraintsByPhone -> timetableCollectionComplete
-    flow timetableCollectionComplete -> chooseTimeAndDate
-    flow chooseTimeAndDate -> announceMeeting
-    flow announceMeeting -> participate
-    flow participate -> end_meeting
+// Operational realization of the computer-supported configuration in Yu's
+// original Meeting Scheduler example.
+model ClassicIStarMeetingScheduler {
+  pool MeetingScheduling for Meeting {
+    name "Computer-supported meeting scheduling"
+    lane MeetingInitiator;
+    lane MeetingScheduler;
+    lane MeetingParticipant;
+    lane ImportantParticipant;
   }
+
+  start meetingRequested {
+    lane MeetingInitiator trigger none
+    pre {[ not self.meetingRequested ]}
+    flow requestMeeting
+  }
+  activity requestMeeting {
+    name "Request meeting" type task lane MeetingInitiator
+    post {[ self.meetingRequested ]}
+    flow enterDateRange
+  }
+  activity enterDateRange {
+    name "Enter date range" type task lane MeetingInitiator
+    post {[ self.target_MeetingInitiator_in_Meeting.dateRangeEntered ]}
+    flow delegateScheduling
+  }
+  activity delegateScheduling {
+    name "Let scheduler schedule meeting" type task lane MeetingInitiator
+    post {[ self.target_MeetingInitiator_in_Meeting.schedulingDelegated ]}
+    flow requestAvailability
+  }
+  activity requestAvailability {
+    name "Obtain availability dates" type task lane MeetingScheduler
+    pre {[
+      self.target_MeetingInitiator_in_Meeting.dateRangeEntered
+      and self.target_MeetingInitiator_in_Meeting.schedulingDelegated
+    ]}
+    post {[ self.target_MeetingScheduler_in_Meeting.availabilityRequested ]}
+    flow enterAvailability
+  }
+  activity enterAvailability {
+    name "Enter exclusion and preferred dates" type task lane MeetingParticipant
+    pre {[ self.target_MeetingScheduler_in_Meeting.availabilityRequested ]}
+    post {[
+      self.target_MeetingParticipant_in_Meeting->forAll(participant |
+        participant.exclusionDatesEntered and participant.preferredDatesEntered)
+    ]}
+    flow mergeAvailability
+  }
+  activity mergeAvailability {
+    name "Merge availability dates" type task lane MeetingScheduler
+    pre {[
+      self.target_MeetingParticipant_in_Meeting->forAll(participant |
+        participant.exclusionDatesEntered and participant.preferredDatesEntered)
+    ]}
+    post {[
+      self.target_MeetingScheduler_in_Meeting.availabilityMerged
+      and self.target_MeetingScheduler_in_Meeting.suitableSlotFound
+    ]}
+    flow publishProposedDate
+  }
+  activity publishProposedDate {
+    name "Publish proposed date" type task lane MeetingScheduler
+    post {[ self.target_MeetingScheduler_in_Meeting.proposedDatePublished ]}
+    flow obtainAgreement
+  }
+  activity obtainAgreement {
+    name "Obtain agreement" type task lane MeetingParticipant
+    pre {[ self.target_MeetingScheduler_in_Meeting.proposedDatePublished ]}
+    post {[
+      self.target_MeetingParticipant_in_Meeting
+        ->forAll(participant | participant.agreementProvided)
+    ]}
+    flow importantParticipantDecision
+  }
+  gateway importantParticipantDecision {
+    lane MeetingScheduler type xor
+    flow assureImportantAttendance when {[
+      not self.target_ImportantParticipant_in_Meeting->isEmpty()
+    ]}
+    flow agreementsComplete default
+  }
+  activity assureImportantAttendance {
+    name "Assure important-participant attendance" type task lane ImportantParticipant
+    post {[
+      self.target_ImportantParticipant_in_Meeting
+        ->forAll(participant | participant.agreementProvided and participant.attendanceAssured)
+    ]}
+    flow agreementsComplete
+  }
+  gateway agreementsComplete {
+    lane MeetingScheduler type xor
+    pre {[
+      self.target_MeetingParticipant_in_Meeting
+        ->forAll(participant | participant.agreementProvided)
+      and self.target_ImportantParticipant_in_Meeting
+        ->forAll(participant | participant.attendanceAssured)
+    ]}
+    flow scheduleMeeting
+  }
+  activity scheduleMeeting {
+    name "Schedule meeting" type task lane MeetingScheduler
+    post {[ self.meetingScheduled ]}
+    flow announceMeeting
+  }
+  activity announceMeeting {
+    name "Announce meeting" type task lane MeetingScheduler
+    post {[ self.scheduleAnnounced ]}
+    flow attendMeeting
+  }
+  activity attendMeeting {
+    name "Attend meeting" type task lane MeetingParticipant
+    post {[
+      self.target_MeetingParticipant_in_Meeting
+        ->forAll(participant | participant.attending)
+      and self.target_ImportantParticipant_in_Meeting
+        ->forAll(participant | participant.attending)
+    ]}
+    flow meetingCompleted
+  }
+  end meetingCompleted { lane MeetingInitiator trigger none }
 }

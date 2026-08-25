@@ -127,9 +127,10 @@ public final class IStarUseOclForm extends JDialog {
                 "OUTPUT (two files)\n\n" +
                 "  <name>.use — plain OCL, compiles standalone in USE:\n" +
                 "    • USE class diagram (from ACL)\n" +
-                "    • derived operations (activation/condition/pre/post per goal/task)\n" +
-                "    • refinement structural invariants (AND/OR)\n\n" +
-                "  <name>.tocl — temporal properties (always/sometime/alwaysPast),\n" +
+                "    • one condition() query per Goal\n" +
+                "    • preHolds()/postHolds() queries per Task\n" +
+                "    • AND/OR propagation inside the parent condition()\n\n" +
+                "  <name>.tocl — temporal properties (always/sometime),\n" +
                 "  written next to the .use file under the same basename because those\n" +
                 "  operators are not core OCL and need the TOCL plugin to parse.\n\n" +
                 "Load the .use file in USE, then load the .tocl file via the TOCL plugin.");

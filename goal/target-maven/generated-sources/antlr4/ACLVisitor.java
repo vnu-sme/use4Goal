@@ -1,5 +1,5 @@
 // Generated from ACL.g4 by ANTLR 4.9.3
- package org.vnu.sme.goal.acl.parser; 
+ package org.vnu.sme.goal.dsl.acl.parser; 
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -22,6 +22,24 @@ public interface ACLVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitTopLevelDecl(ACLParser.TopLevelDeclContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ACLParser#invariantDecl}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInvariantDecl(ACLParser.InvariantDeclContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ACLParser#oclExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOclExpression(ACLParser.OclExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ACLParser#oclToken}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOclToken(ACLParser.OclTokenContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ACLParser#enumDecl}.
 	 * @param ctx the parse tree
@@ -95,18 +113,6 @@ public interface ACLVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitGroupMemberDecl(ACLParser.GroupMemberDeclContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ACLParser#legacyTypedMemberDecl}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLegacyTypedMemberDecl(ACLParser.LegacyTypedMemberDeclContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ACLParser#legacySubgroupDecl}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLegacySubgroupDecl(ACLParser.LegacySubgroupDeclContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link ACLParser#entityRelationDecl}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -130,36 +136,6 @@ public interface ACLVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitCompatibilityDecl(ACLParser.CompatibilityDeclContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ACLParser#linkArrow}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLinkArrow(ACLParser.LinkArrowContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ACLParser#linkScope}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLinkScope(ACLParser.LinkScopeContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ACLParser#compatibilityOption}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitCompatibilityOption(ACLParser.CompatibilityOptionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ACLParser#compatibilityType}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitCompatibilityType(ACLParser.CompatibilityTypeContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ACLParser#scopeValue}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitScopeValue(ACLParser.ScopeValueContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ACLParser#cardinality}.
 	 * @param ctx the parse tree

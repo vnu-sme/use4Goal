@@ -3,7 +3,7 @@ package org.vnu.sme.goal.dsl.istar.mm;
 /**
  * quality ···· element  (dotted line — quality constrains element).
  * {@code element} is any {@link ConcreteIntentionalElement} (resource,
- * goal/task, or obstacle) — not restricted to goal/task.
+ * goal, task, or resource) — not restricted to goal/task.
  */
 public final class Qualification {
 

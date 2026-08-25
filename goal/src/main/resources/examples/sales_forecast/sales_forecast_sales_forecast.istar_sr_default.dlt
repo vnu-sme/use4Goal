@@ -1,0 +1,631 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<diagram_Layout version="13">
+    <diagramOptions>
+        <autolayout>false</autolayout>
+        <antialiasing>true</antialiasing>
+        <showassocnames>false</showassocnames>
+        <showattributes>true</showattributes>
+        <showmultiplicities>false</showmultiplicities>
+        <showoperations>false</showoperations>
+        <showrolenames>true</showrolenames>
+        <showgrid>false</showgrid>
+    </diagramOptions>
+    <node height="422.0" id="Management" sizeCalculated="false"
+        type="IStarNode" width="469.0">
+        <name>Management</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>4.0</x>
+            <y>109.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="50.0" id="SalesRiskControlled" sizeCalculated="false"
+        type="IStarNode" width="126.0">
+        <name>SalesRiskControlled</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>73.0</x>
+            <y>201.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="OnlyApprovedProposalSent"
+        sizeCalculated="false" type="IStarNode" width="250.0">
+        <name>OnlyApprovedProposalSent</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>195.0</x>
+            <y>273.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="RiskyCommitmentAvoided"
+        sizeCalculated="false" type="IStarNode" width="250.0">
+        <name>RiskyCommitmentAvoided</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>32.0</x>
+            <y>421.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="816.0" id="CustomerManager" sizeCalculated="false"
+        type="IStarNode" width="788.0">
+        <name>CustomerManager</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>375.0</x>
+            <y>64.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="50.0" id="CustomerRelationshipMaintained"
+        sizeCalculated="false" type="IStarNode" width="126.0">
+        <name>CustomerRelationshipMaintained</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>686.0</x>
+            <y>129.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="ProposalDelivered" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>ProposalDelivered</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>414.0</x>
+            <y>167.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="ProposalCompliant" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>ProposalCompliant</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>885.0</x>
+            <y>208.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="RespondQuicklyAndFlexibly"
+        sizeCalculated="false" type="IStarNode" width="250.0">
+        <name>RespondQuicklyAndFlexibly</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>757.0</x>
+            <y>310.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="CustomerSatisfied" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>CustomerSatisfied</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>510.0</x>
+            <y>314.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="90.0" id="ObtainApproval" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>ObtainApproval</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>621.0</x>
+            <y>465.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="90.0" id="SendApprovedProposal" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>SendApprovedProposal</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>403.0</x>
+            <y>586.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="90.0" id="SendUnapprovedProposal"
+        sizeCalculated="false" type="IStarNode" width="250.0">
+        <name>SendUnapprovedProposal</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>694.0</x>
+            <y>626.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="424.0" id="Approver" sizeCalculated="false"
+        type="IStarNode" width="618.0">
+        <name>Approver</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1073.0</x>
+            <y>287.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="50.0" id="ApprovalProvided" sizeCalculated="false"
+        type="IStarNode" width="126.0">
+        <name>ApprovalProvided</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1250.0</x>
+            <y>338.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="ProposalReviewed" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>ProposalReviewed</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1101.0</x>
+            <y>461.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="ApprovalDecisionRecorded"
+        sizeCalculated="false" type="IStarNode" width="250.0">
+        <name>ApprovalDecisionRecorded</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1413.0</x>
+            <y>458.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="90.0" id="ReviewAndApprove" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>ReviewAndApprove</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1140.0</x>
+            <y>587.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="166.0" id="Customer" sizeCalculated="false"
+        type="IStarNode" width="306.0">
+        <name>Customer</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1378.0</x>
+            <y>73.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="ApprovedProposalReceived"
+        sizeCalculated="false" type="IStarNode" width="250.0">
+        <name>ApprovedProposalReceived</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1406.0</x>
+            <y>123.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="36.0" id="dependum:8:ApprovedProposalDelivery"
+        sizeCalculated="false" type="IStarNode" width="126.0">
+        <name>dependum:8:ApprovedProposalDelivery</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>299.0</x>
+            <y>375.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="44.0" id="dependum:10:ApprovalDecision"
+        sizeCalculated="false" type="IStarNode" width="108.0">
+        <name>dependum:10:ApprovalDecision</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>774.0</x>
+            <y>534.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <edge type="IStarEdge">
+        <source>ApprovalDecisionRecorded</source>
+        <target>ApprovalProvided</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::ApprovalDecisionRecorded::ApprovalProvided::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::ApprovalDecisionRecorded::ApprovalProvided::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>CustomerSatisfied</source>
+        <target>CustomerRelationshipMaintained</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::CustomerSatisfied::CustomerRelationshipMaintained::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::CustomerSatisfied::CustomerRelationshipMaintained::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>OnlyApprovedProposalSent</source>
+        <target>SalesRiskControlled</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::OnlyApprovedProposalSent::SalesRiskControlled::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::OnlyApprovedProposalSent::SalesRiskControlled::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ProposalCompliant</source>
+        <target>CustomerRelationshipMaintained</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::ProposalCompliant::CustomerRelationshipMaintained::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::ProposalCompliant::CustomerRelationshipMaintained::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ProposalDelivered</source>
+        <target>CustomerRelationshipMaintained</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::ProposalDelivered::CustomerRelationshipMaintained::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::ProposalDelivered::CustomerRelationshipMaintained::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ProposalReviewed</source>
+        <target>ApprovalProvided</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::ProposalReviewed::ApprovalProvided::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::ProposalReviewed::ApprovalProvided::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>RespondQuicklyAndFlexibly</source>
+        <target>CustomerRelationshipMaintained</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::RespondQuicklyAndFlexibly::CustomerRelationshipMaintained::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::RespondQuicklyAndFlexibly::CustomerRelationshipMaintained::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>RiskyCommitmentAvoided</source>
+        <target>SalesRiskControlled</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::RiskyCommitmentAvoided::SalesRiskControlled::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::RiskyCommitmentAvoided::SalesRiskControlled::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ObtainApproval</source>
+        <target>dependum:10:ApprovalDecision</target>
+        <name>dependency</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::DEPENDENCY::ObtainApproval::dependum:10:ApprovalDecision::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::DEPENDENCY::ObtainApproval::dependum:10:ApprovalDecision::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>OnlyApprovedProposalSent</source>
+        <target>dependum:8:ApprovedProposalDelivery</target>
+        <name>dependency</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::DEPENDENCY::OnlyApprovedProposalSent::dependum:8:ApprovedProposalDelivery::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::DEPENDENCY::OnlyApprovedProposalSent::dependum:8:ApprovedProposalDelivery::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>dependum:10:ApprovalDecision</source>
+        <target>ReviewAndApprove</target>
+        <name>dependency</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:10:ApprovalDecision::ReviewAndApprove::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:10:ApprovalDecision::ReviewAndApprove::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>dependum:8:ApprovedProposalDelivery</source>
+        <target>SendApprovedProposal</target>
+        <name>dependency</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:8:ApprovedProposalDelivery::SendApprovedProposal::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:8:ApprovedProposalDelivery::SendApprovedProposal::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+</diagram_Layout>

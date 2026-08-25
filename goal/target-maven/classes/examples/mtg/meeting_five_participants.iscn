@@ -12,7 +12,7 @@
 //   Collect Constraints By Phone  3  (naya, bao, chloe only)
 //   Choose Time And Date          1  (matilda, broadcast)
 //   Announce Meeting              5
-//   Participate                   5
+//   AttendMeeting                   5
 
 scenario MeetingOrganization_WithFiveParticipants_MixedCalendarAndPhoneCollection for "mtg.istar" {
     instance abdul   : Initiator;
@@ -20,8 +20,8 @@ scenario MeetingOrganization_WithFiveParticipants_MixedCalendarAndPhoneCollectio
     instance alex    : Secretary;
     instance xing, amr, naya, bao, chloe : Participant;
 
-    fire DecideMeetingDetails;
-    fire ChooseTimeAndDate;
+    fire DecideDetails;
+    fire ChooseMeetingTime;
 
     // xing, amr: hasCalendar = true -> organizer's own action, no Dependency involved.
     fire xing.CollectFromCalendar;
@@ -29,29 +29,29 @@ scenario MeetingOrganization_WithFiveParticipants_MixedCalendarAndPhoneCollectio
 
     // naya, bao, chloe: hasCalendar = false -> alex performs the secretary task for
     // each participant; the delegated organizer goals are inferred through dependency.
-    fire alex.CollectConstraintsByPhone for naya;
-    fire alex.CollectConstraintsByPhone for bao;
-    fire alex.CollectConstraintsByPhone for chloe;
+    fire alex.CollectByPhone for naya;
+    fire alex.CollectByPhone for bao;
+    fire alex.CollectByPhone for chloe;
 
-    fire xing.AnnounceMeeting;
-    fire amr.AnnounceMeeting;
-    fire naya.AnnounceMeeting;
-    fire bao.AnnounceMeeting;
-    fire chloe.AnnounceMeeting;
+    fire xing.NotifyParticipant;
+    fire amr.NotifyParticipant;
+    fire naya.NotifyParticipant;
+    fire bao.NotifyParticipant;
+    fire chloe.NotifyParticipant;
 
     // Each participant's own action is fired; the initiator's delegated attendance goal is inferred.
-    fire xing.Participate;
-    fire amr.Participate;
-    fire naya.Participate;
-    fire bao.Participate;
-    fire chloe.Participate;
+    fire xing.AttendMeeting;
+    fire amr.AttendMeeting;
+    fire naya.AttendMeeting;
+    fire bao.AttendMeeting;
+    fire chloe.AttendMeeting;
 
     aggregate EveryTimetableCollected : all of Participant over TimetableCollected;
-    aggregate EveryoneNotified        : all of Participant over AnnounceMeeting;
-    aggregate EveryoneAttended        : all of Participant over MeetingAttendedByParticipant;
-    aggregate MeetingFullyOrganized   : all of Participant over HaveMeetingOrganized;
+    aggregate EveryoneNotified        : all of Participant over NotifyParticipant;
+    aggregate EveryoneAttended        : all of Participant over ParticipantAttended;
+    aggregate MeetingFullyOrganized   : all of Participant over MeetingOrganized;
 
     // 2 of 5 collected by calendar, 3 of 5 collected by secretary phone call:
-    aggregate SomeInclusivityViaSecretary : any of Participant over Inclusivity;      // naya/bao/chloe -> holds
-    aggregate UniversalQuickScheduling    : all of Participant over QuickScheduling;  // only xing/amr -> fails
+    aggregate SomeInclusiveCollectionViaSecretary : any of Participant over InclusiveCollection;      // naya/bao/chloe -> holds
+    aggregate UniversalFastCollection    : all of Participant over FastCollection;  // only xing/amr -> fails
 }

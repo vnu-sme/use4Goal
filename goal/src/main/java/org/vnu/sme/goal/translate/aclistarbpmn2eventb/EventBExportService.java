@@ -8,9 +8,12 @@ import java.util.List;
 
 import org.vnu.sme.goal.dsl.acl.parser.AclCompiler;
 import org.vnu.sme.goal.dsl.bpmn.parser.BpmnCompiler;
+import org.vnu.sme.goal.analysis.mapping.SemanticMappingAnalyzer;
+import org.vnu.sme.goal.analysis.mapping.SemanticMappingReportWriter;
 import org.vnu.sme.goal.translate.aclistarbpmn2eventb.ir.EventBProject;
 import org.vnu.sme.goal.translate.aclistarbpmn2eventb.serialize.RodinProjectWriter;
 import org.vnu.sme.goal.translate.aclistarbpmn2eventb.translate.AclIStarBpmn2EventBTranslator;
+import org.vnu.sme.goal.translate.aclistarbpmn2eventb.translate.MappingObligationCompiler;
 import org.vnu.sme.goal.dsl.istar.parser.IStarCompiler;
 
 /** Public application service used by the GUI, CLI, and tests. */
@@ -26,9 +29,14 @@ public final class EventBExportService {
             errors.addAll(prefix("iStar", istar.errors()));
             errors.addAll(prefix("BPMN", bpmn.errors()));
             if (!errors.isEmpty()) return failed(request, errors);
+            var mapping = SemanticMappingAnalyzer.analyze(acl.model(), istar.model(), bpmn.model());
             EventBProject project = AclIStarBpmn2EventBTranslator.translate(request.projectName(), acl.model(), istar.model(), bpmn.model(), errors);
+            var verifiedMapping = MappingObligationCompiler.compile(project, mapping, acl.model(), istar.model(), bpmn.model());
+            project = verifiedMapping.project();
             Path target = request.outputDirectory().resolve(AclIStarBpmn2EventBTranslator.id(request.projectName()));
-            List<Path> files = RodinProjectWriter.write(project, target, errors);
+            List<Path> files = new ArrayList<>(RodinProjectWriter.write(project, target, errors));
+            files.addAll(SemanticMappingReportWriter.write(mapping, verifiedMapping.plan(), target,
+                    AclIStarBpmn2EventBTranslator.id(request.projectName()), request.previousMapping()));
             return new EventBExportResult(true, target, files, errors);
         } catch (IOException | RuntimeException exception) {
             errors.add(exception.getMessage() == null ? exception.getClass().getSimpleName() : exception.getMessage());

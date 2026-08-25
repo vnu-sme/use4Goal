@@ -21,24 +21,23 @@ Classifier (abstract)
     └── Role
 ```
 
-Và một nhánh quan hệ:
+Các quan hệ tạo thành một phân cấp trong đó Association là khái niệm cha:
 
 ```text
-Relationship (abstract)
-├── Association
+Association
 ├── Aggregation
-├── Composition
-└── Owner
+└── Composition
 ```
 
-Mỗi Relationship có đúng hai `MemberEnd`. Mỗi MemberEnd có:
+Mỗi Association có đúng hai `MemberEnd`. Mỗi MemberEnd có:
 
-- một `target` là Classifier;
+- một `target` là Class;
 - một tên navigation `role`;
 - một multiplicity.
 
-`Classifier`, `Datatype` và `Relationship` là khái niệm trừu tượng; không có
-declaration trực tiếp cho chúng trong ACL.
+`Classifier` và `Datatype` là khái niệm trừu tượng; không có declaration trực
+tiếp cho chúng trong ACL. ACL không có metaclass hoặc quan hệ `Owner` độc lập;
+ngữ nghĩa sở hữu được biểu diễn bằng Composition.
 
 ## 2. Datatype
 
@@ -61,7 +60,7 @@ Các ràng buộc:
 1. Enum phải có ít nhất một literal.
 2. Tên literal phải duy nhất trong Enum.
 3. Một giá trị Enum chỉ có thể là một literal đã khai báo.
-4. Enum không phải Entity, Group hay Role; không có object identity, Owner hay
+4. Enum không phải Entity, Group hay Role; không có object identity hoặc
    MemberEnd như một Class occurrence.
 5. Khi dịch sang USE, Enum phải giữ nguyên thành USE `enum`.
 
@@ -109,7 +108,7 @@ Entity không được:
 
 - specialize Group hoặc Role;
 - xuất hiện như member trong thân Group;
-- trở thành target của Owner.
+- xuất hiện như member được sở hữu trong thân Group.
 
 ## 5. Group
 
@@ -134,14 +133,16 @@ group Team {
 }
 ```
 
-Role member và Group con tạo Owner; chúng không phải Property và không phải
-Association miền thông thường.
+Role member và Group con tạo Composition từ Group chứa tới member; chúng không
+phải Property hoặc Association miền không sở hữu.
 
 `ChildGroup extends ParentGroup` là generalization thông thường. Group con
-nhận Property của Group cha, nhưng generalization không đồng nghĩa với Owner:
+nhận Property của Group cha, nhưng generalization không đồng nghĩa với
+Composition containment:
 
 - `Department extends Unit` nghĩa là Department là một Unit;
-- `Company { Department [*]; }` nghĩa là Company owner các Department;
+- `Company { Department [*]; }` nghĩa là Company chứa các Department bằng
+  Composition;
 - hai mệnh đề này độc lập.
 
 Group không được:
@@ -149,7 +150,7 @@ Group không được:
 - chứa Entity member;
 - specialize Entity hoặc Role;
 - dùng generalization thay cho containment;
-- suy diễn một quan hệ tới Entity khi không có Relationship declaration tường
+- suy diễn một quan hệ tới Entity khi không có Association declaration tường
   minh.
 
 ## 6. Role
@@ -189,12 +190,14 @@ có trực tiếp `name` hoặc `employeeId`.
 
 ### 6.3 Tính đơn điệu của Group scope
 
-Role specialization và Group Owner là hai quan hệ khác nhau, nhưng nếu Role
-cha và Role con đều có Owner thì hai cây phải tương thích.
+Role specialization và Group Composition là hai quan hệ khác nhau, nhưng nếu
+Role cha và Role con đều thuộc một Group qua Composition thì hai cây phải
+tương thích.
 
-Đặt `ownerRole(r)` là Group owner Role `r`, và `AncestorsOrSelf(g)` là Group
-`g` cùng mọi Group tổ tiên theo Owner Group–Group. Với mọi Role tổ tiên `p`
-của Role `c`:
+Đặt `ownerRole(r)` là phép chiếu suy dẫn trả về Group ở đầu whole của
+Composition chứa Role `r`, và `AncestorsOrSelf(g)` là Group `g` cùng mọi Group
+tổ tiên theo Composition Group–Group. `ownerRole` chỉ là ký hiệu suy dẫn,
+không phải một quan hệ trong metamodel. Với mọi Role tổ tiên `p` của Role `c`:
 
 \[
 ownerRole(p)\ne\bot
@@ -203,14 +206,16 @@ ownerRole(c)\ne\bot\land
 ownerRole(p)\in AncestorsOrSelf(ownerRole(c)).
 \]
 
-Role cha không có Owner không hạn chế scope Role con. Nếu Role cha có Owner,
-Role con phải có Owner tại cùng Group hoặc một Group con/cháu. Hai Group ở hai
-nhánh không liên quan tạo một Role parent sai. Role cha có Owner nhưng Role con
-không có Owner cũng sai vì scope của con bị mở rộng.
+Role cha không thuộc Composition của Group nào thì không hạn chế scope Role
+con. Nếu Role cha thuộc một Group, Role con phải thuộc cùng Group hoặc một
+Group con/cháu. Hai Group ở hai nhánh không liên quan tạo một Role parent sai.
+Role cha có Group chứa nhưng Role con không có Group chứa cũng sai vì scope của
+con bị mở rộng.
 
-Phải xét toàn bộ bao đóng Role cha, kể cả khi Role trung gian không có Owner.
-Ở mức instance, hai đường Role-play và Group-Owner phải dẫn tới **cùng Group
-occurrence**, không chỉ cùng Group type.
+Phải xét toàn bộ bao đóng Role cha, kể cả khi Role trung gian không thuộc
+Composition của Group nào.
+Ở mức instance, hai đường Role-play và Group-Composition phải dẫn tới **cùng
+Group occurrence**, không chỉ cùng Group type.
 
 ## 7. Generalization
 
@@ -227,33 +232,34 @@ Ràng buộc well-formedness:
    Mục 6.
 6. Enumeration và PrimitiveType không tham gia Generalization của ACL.
 
-## 8. Relationship và MemberEnd
+## 8. Association và MemberEnd
 
-Mỗi Relationship tường minh có đúng hai MemberEnd. Với mỗi MemberEnd:
+Mỗi Association tường minh có đúng hai MemberEnd. Với mỗi MemberEnd:
 
-1. Target Classifier phải tồn tại.
-2. Tên role/navigation phải không rỗng và không gây nhập nhằng tại Classifier
+1. Target Class phải tồn tại.
+2. Tên role/navigation phải không rỗng và không gây nhập nhằng tại Class
    đối diện.
 3. Multiplicity phải có dạng `[n]`, `[l..u]` hoặc `[*]`.
 4. `0 <= l <= u`; `*` chỉ được dùng làm upper bound vô hạn.
 5. Trong một state, số link nhìn từ một object ở đầu đối diện phải nằm trong
    multiplicity của MemberEnd.
 
-Tên Relationship phải duy nhất trong schema. Hai Relationship có thể nối cùng
-một cặp Classifier nếu chúng có tên khác nhau.
+Tên Association phải duy nhất trong schema. Hai Association có thể nối cùng
+một cặp Class nếu chúng có tên khác nhau.
 
 ### 8.1 Association
 
 Association biểu diễn liên kết không sở hữu và không ràng buộc lifecycle. Nó
-có thể nối Entity, Group hoặc Role theo endpoint được khai báo.
+có thể nối các Class theo endpoint được khai báo, miễn là thỏa WF-6.
 
-Association Role–Role là hợp lệ và phải giữ nguyên endpoint Role. Không được
-thay nó bằng association Agent–Agent hoặc Agent–Entity.
+Association Role–Role không hợp lệ. Nếu hai endpoint đều thuộc
+`Role ∪ Group`, WF-6 yêu cầu association phải là Composition nhị phân với đầu
+thứ nhất là Group và đầu thứ hai là Role hoặc Group.
 
 ### 8.2 Aggregation
 
 Aggregation biểu diễn quan hệ whole–part yếu: part có thể tồn tại độc lập với
-whole. Aggregation không tạo Owner và không có cascade lifecycle như
+whole. Aggregation không tạo sở hữu mạnh và không có cascade lifecycle như
 Composition.
 
 Theo ACL hiện tại, Aggregation phải có ít nhất một endpoint Entity.
@@ -267,11 +273,10 @@ Composition biểu diễn whole–part mạnh:
 2. Link composition quyết định containment/lifecycle của part.
 3. Đồ thị composition phải không chu trình.
 4. Entity không được làm whole để sở hữu một Role hoặc Group.
-5. Theo ACL hiện tại, Composition tường minh phải có ít nhất một endpoint
-   Entity; containment Group–Role/Group–Group thuộc Owner, không khai lại bằng
-   Composition thường.
+5. Khai báo member Group–Role/Group–Group là cú pháp rút gọn và được chuẩn hóa
+   thành Composition nhị phân có Group ở đầu whole.
 
-Quan hệ Group–Entity chỉ tồn tại khi có một Relationship declaration tường
+Quan hệ Group–Entity chỉ tồn tại khi có một Association declaration tường
 minh. Ví dụ hợp lệ:
 
 ```acl
@@ -284,79 +289,54 @@ composition meetingAgenda {
 Thiết kế sai: đặt `Agenda [1];` trong thân `Meeting` rồi ngầm hiểu nó là
 Composition.
 
-## 9. Owner
+## 9. Composition của Group
 
-Owner là một Relationship containment chuyên biệt, không phải tên gọi khác
-của mọi Composition.
+Không có metaclass `Owner`. Một khai báo member trong thân Group là cú pháp
+rút gọn của đúng một Composition từ Group tới Role hoặc Group đó. Ví dụ
+`Classroom { Teacher [1]; }` tạo association chuẩn
+`Classroom_contains_Teacher` với source `Classroom`, target `Teacher` và
+multiplicity target `[1]`. Link instance của membership nằm trong
+`sigma_Assoc(Classroom_contains_Teacher)`.
 
-Miền hợp lệ:
+API Java `owners()` chỉ là projection deprecated từ các Composition để module
+dịch cũ tiếp tục biên dịch; nó không phải một phần của ACL metamodel chuẩn.
+
+## 10. Role object và `sigma_Play`
+
+Không có classifier hay object `Agent`. Mỗi Role `r` có miền định danh riêng
+`oid(r)`, và một Role con instance không đồng thời là Role cha instance.
+
+Với mỗi cạnh kế thừa trực tiếp từ Role con `r'` tới Role cha `r`, state chứa:
 
 \[
-Owner\subseteq Group\times(Role\cup Group).
+sigma_{Play}(r,r'):
+sigma_{Class}(r)\to\mathcal{P}(sigma_{Class}(r')).
 \]
 
-Ràng buộc:
+Mỗi Role con instance phải có đúng một Role cha instance ở phía ngược của
+link. AOL v2 viết link này dưới dạng `play parentId -> childId`.
 
-1. Source của Owner phải là Group.
-2. Target chỉ được là Role hoặc Group.
-3. Target có nhiều nhất một Owner trực tiếp.
-4. Owner Group–Group phải không tạo chu trình containment.
-5. Multiplicity ở target là multiplicity ghi trong thân Group.
-6. Mỗi target occurrence phải thuộc đúng một source Group occurrence.
-7. Khi dịch sang USE, Owner trở thành Composition.
+## 11. Thuộc tính Role kế thừa
 
-Owner không được:
-
-- có Entity làm target;
-- có Role hoặc Entity làm source;
-- được dùng như Association miền thông thường;
-- bị đồng nhất với generalization Group–Group.
-
-## 10. Agent và play-chain
-
-Agent là khái niệm instance dùng để đồng nhất chủ thể đang play các Role. Khi
-dịch sang USE, sinh đúng một Class rỗng tên `Agent`.
-
-Ràng buộc:
-
-1. Agent không có Property ACL được chuyển vào nó.
-2. Với mỗi Role type gốc `R`, sinh association Agent–R.
-3. Không sinh association trực tiếp Agent–Role cho Role không gốc.
-4. Mỗi Role occurrence gốc có đúng một Agent.
-5. Mỗi Role occurrence không gốc có đúng một Role occurrence cha.
-6. Lần ngược một play-chain phải kết thúc tại đúng một Agent.
-
-Thiết kế sai: coi Role là subclass của Agent hoặc dồn Property của mọi Role
-gốc vào class Agent.
-
-## 11. Ngữ nghĩa mặc định của Role
-
-Trong cùng một Group occurrence và đối với cùng một Agent:
-
-1. Agent không được có hai occurrence của cùng một Role type
-   (`NoSelfConflict`).
-2. Mặc định, Agent không được đồng thời play hai Role type khác nhau
-   (`NoConflict`).
-3. Role cha và Role con trên cùng play-chain được phép cùng tồn tại vì Role
-   con đã đòi hỏi Role cha; xung đột mặc định áp dụng cho các Role độc lập.
-
-“Cùng Agent” được xác định bằng play-chain ở Mục 10. “Cùng Group” được xác
-định bằng Owner link, không bằng Group type hoặc Role specialization.
+Role object chỉ lưu attribute khai báo trực tiếp tại Role type của nó. Truy
+cập property được khai báo tại Role cha phải đi qua Role cha instance thực sự
+trong `sigma_Play`. Surface expression `self.p` có thể được evaluator hạ thành
+`self.playOf.p`; không được sao chép `p` vào object Role con.
 
 ## 12. Compatibility
 
 Compatibility là constraint giữa hai Role type khác nhau trong một Group
 scope. Nó không phải Association và không tạo link occurrence.
 
-`R1 compatible R2` có nghĩa: trong scope đó, cùng một Agent được đồng thời
-play R1 và R2. Ràng buộc:
+`R1 compatible R2` là quan hệ mức type và được dịch thành OCL constraint trên
+Role objects/play-links tương ứng. Ràng buộc:
 
 1. Hai endpoint phải là Role đã khai báo và phải khác nhau.
 2. Compatibility đối xứng; khai báo `R1 compatible R2` bao phủ cả hai chiều.
 3. Declaration phải nằm trong một Group scope hợp lệ cho cả hai Role.
 4. Không được khai trùng cùng một cặp trong cùng scope.
-5. Compatibility chỉ loại xung đột khác kiểu; không loại `NoSelfConflict`.
-6. Compatibility không tạo play-chain, Owner hoặc quan hệ giữa Group.
+5. Compatibility không tạo object hoặc link runtime.
+6. Compatibility không tạo play-chain hoặc quan hệ giữa Group.
 7. Compatibility không được suy ra chỉ từ Role specialization.
 
 Đặt:
@@ -373,21 +353,24 @@ việc cho phép được biểu diễn bằng cách bỏ đúng invariant cấm
 
 Một state ACL gồm:
 
-- Agent instance;
-- Entity, Group và Role occurrence;
-- giá trị Property;
-- link của Relationship tường minh;
-- Owner link;
-- play link Agent–Role gốc và Role cha–Role con.
+- `sigma_Class`: các object Entity, Role và Group đang tồn tại;
+- `sigma_Att`: giá trị attribute của các object đó;
+- `sigma_Assoc`: các link của Association, Aggregation và Composition;
+- `sigma_Play`: các link từ Role cha instance tới Role con instance trực tiếp.
+
+Không có Agent object và không có thành phần Owner trong state. Khai báo member
+trong Group là cú pháp rút gọn của một Composition `Group -> Role/Group`, nên
+instance membership được lưu trong `sigma_Assoc`.
 
 State hợp lệ khi đồng thời thỏa:
 
 1. mọi occurrence và link được định kiểu đúng;
 2. mọi Property value đúng type, required/default/mutability;
-3. mọi MemberEnd và Owner thỏa multiplicity;
+3. mọi Association end thỏa multiplicity;
 4. generalization Entity/Group hợp lệ;
-5. mọi play-chain đầy đủ, đơn trị về phía cha và kết thúc tại Agent;
-6. Owner/composition có owner duy nhất và không chu trình;
+5. mỗi Role con instance có đúng một Role cha instance cho từng cạnh kế thừa
+   trực tiếp theo `sigma_Play`;
+6. mọi Composition link tuân theo các ràng buộc Group–Role/Group;
 7. mọi link chỉ nối các endpoint được declaration cho phép;
 8. `NoSelfConflict` và mọi `NoConflict` còn hiệu lực đều đúng.
 
@@ -396,14 +379,14 @@ State hợp lệ khi đồng thời thỏa:
 Không được thiết kế hoặc hiện thực ACL theo các cách sau:
 
 - coi Enumeration là Class hoặc Entity;
-- cho phép declaration trực tiếp `Classifier`, `Datatype` hoặc `Relationship`;
+- cho phép declaration trực tiếp `Classifier` hoặc `Datatype`;
 - cho Entity xuất hiện như member trong Group;
 - tạo Owner Group–Entity;
 - dùng Group generalization để biểu diễn containment;
 - dùng Owner để biểu diễn generalization;
 - dịch Role specialization thành class generalization;
 - sao chép Property Role cha vào Role con hoặc Agent;
-- cho phép Role con thuộc Group không liên quan với Group owner Role cha;
+- cho phép Role con thuộc Group không liên quan với Group chứa Role cha;
 - chỉ kiểm tra cạnh Role cha trực tiếp mà bỏ qua tổ tiên Role nhiều cấp;
 - nối Agent trực tiếp tới mọi Role thay vì chỉ Role gốc;
 - quy Association Role–Role về Agent;
@@ -412,7 +395,7 @@ Không được thiết kế hoặc hiện thực ACL theo các cách sau:
 - coi `compatible` là một link runtime;
 - mặc định mọi Role đều compatible;
 - dùng `compatible` để cho phép hai occurrence cùng Role type;
-- tự sinh quan hệ Group–Entity khi schema không khai Relationship tương ứng.
+- tự sinh quan hệ Group–Entity khi schema không khai Association tương ứng.
 
 ## 15. Biên tương thích implementation
 
@@ -432,3 +415,42 @@ chuẩn ở tài liệu này.
 Định nghĩa tập hợp tương ứng nằm tại [formal/acl.md](../../formal/acl.md); thứ
 tự dịch sang USE/OCL nằm tại
 [`ACL_TO_USE_OCL_CASES.md`](../../../src/main/resources/examples/mtg/ACL_TO_USE_OCL_CASES.md).
+
+## 16. OCL nhúng trong ACL và đánh giá state trực tiếp
+
+ACL cho phép đặt invariant OCL ngay trong đặc tả cấu trúc:
+
+```acl
+context Student inv MarkedStudentMustBePresent:
+  self.attendanceMarked = true implies self.present = true;
+```
+
+`context` phải là một Entity, Role hoặc Group đã khai báo trong cùng model.
+Tên invariant phải duy nhất trong context đó. Biểu thức sau dấu `:` là một
+biểu thức Boolean trên trạng thái và `self` lần lượt được gắn với từng
+occurrence của context. Với Entity và Group, context bao gồm object của subtype
+theo domain inclusion. Với Role, context chỉ gồm object trong đúng `oid(r)`;
+Role con là một object khác và được nối qua `sigma_Play`. Invariant đúng trên
+một state khi biểu thức đúng với mọi occurrence của context; nếu context không
+có occurrence thì invariant đúng theo lượng từ phổ quát trên tập rỗng.
+
+Đường đánh giá chuẩn của chức năng **ACL State Evaluator** là:
+
+```text
+ACL structure + embedded OCL + formal AOL v2 snapshot
+                    ↓
+       typed ACL system state
+                    ↓
+       native ACL/OCL evaluation
+```
+
+Đường này không sinh UML/USE class model, không chuyển state thành SOIL và
+không dùng `MSystemState`. Phân loại Entity/Role/Group của ACL được giữ nguyên
+trong state evaluator. Khả năng dịch ACL sang USE/OCL vẫn có thể tồn tại như
+một chức năng tích hợp riêng, nhưng không phải ngữ nghĩa thực thi của bộ đánh
+giá state ACL.
+
+AOL v2 dùng `role R as r1` để tạo object thuộc `sigma_Class(R)`,
+`play parent -> child` để thêm một cặp vào `sigma_Play`, và `link A : x -> y`
+để thêm một link vào `sigma_Assoc(A)`. Cú pháp AOL v1 dựa trên `agent`/`by`
+chỉ còn dành cho module legacy và bị ACL State Evaluator từ chối.

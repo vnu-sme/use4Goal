@@ -10,8 +10,6 @@ public sealed interface Actor permits Agent, Role {
     List<Refinement>         refinements();
     List<Contribution>       contributions();
     List<Qualification>      qualifications();
-    List<NeededBy>            neededBys();
-    List<Obstruction>         obstructions();
-    List<Resolution>          resolutions();
+    List<NeededBy>           neededBys();
     List<Association>        associations();
 }

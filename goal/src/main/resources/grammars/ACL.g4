@@ -10,6 +10,25 @@ topLevelDecl
     | roleDecl
     | groupDecl
     | entityRelationDecl
+    | invariantDecl
+    ;
+
+// ACL embeds state predicates using the standard OCL invariant surface form.
+// The expression is retained verbatim by the ACL CST/model and is evaluated
+// directly over an ACL system state; it is not translated to a USE model.
+invariantDecl : 'context' IDENT 'inv' IDENT ':' oclExpression ';' ;
+oclExpression : oclToken+ ;
+oclToken
+    : IDENT
+    | 'group'
+    | STRING_LITERAL
+    | SIGNED_NUMBER
+    | BOOLEAN
+    | INT
+    | '.' | '->' | '(' | ')' | '|'
+    | '#' | '::'
+    | '=' | '<>' | '<' | '<=' | '>' | '>='
+    | '+' | '-' | '*' | '/'
     ;
 
 enumDecl : 'enum' IDENT '{' IDENT (',' IDENT)* ','? '}' ;

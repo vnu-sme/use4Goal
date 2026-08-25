@@ -4,8 +4,8 @@
 // scenario (same 5 participants, same calendar/phone split).
 //
 // .iscn has no notion of OCL: a Goal whose only path to Fulfilled in mtg.istar is its own
-// ocl {[...]} clause (TimetableCollected, HaveSchedulingPerformedByOrganizer,
-// MeetingAttendedByParticipant -- none of them reachable from any fire'd leaf task through
+// ocl {[...]} clause (TimetableCollected, OrganizerScheduledMeeting,
+// ParticipantAttended -- none of them reachable from any fire'd leaf task through
 // AND/OR/contribution anymore, by design: see mtg.istar's own header comment) has no way to
 // become Fulfilled here except an explicit assign mirroring what the OCL would have derived
 // from the .soil run. That is not a workaround, it is the whole point of the .iscn vs.
@@ -18,8 +18,8 @@ scenario MeetingSchedulerVerify for "mtg.istar" {
     instance alex, hung : Secretary;
     instance xing, amr, naya, bao, chloe : Participant;
 
-    fire DecideMeetingDetails;
-    fire ChooseTimeAndDate;
+    fire DecideDetails;
+    fire ChooseMeetingTime;
 
     fire xing.CollectFromCalendar;
     fire amr.CollectFromCalendar;
@@ -30,24 +30,24 @@ scenario MeetingSchedulerVerify for "mtg.istar" {
     assign bao.CollectFromCalendar  = Pending;
     assign chloe.CollectFromCalendar = Pending;
 
-    assign xing.QuickScheduling = True;
-    assign amr.QuickScheduling  = True;
+    assign xing.FastCollection = True;
+    assign amr.FastCollection  = True;
 
-    fire alex.CollectConstraintsByPhone for naya;
-    fire hung.CollectConstraintsByPhone for bao;
-    fire hung.CollectConstraintsByPhone for chloe;
+    fire alex.CollectByPhone for naya;
+    fire hung.CollectByPhone for bao;
+    fire hung.CollectByPhone for chloe;
 
-    fire xing.AnnounceMeeting;
-    fire amr.AnnounceMeeting;
-    fire naya.AnnounceMeeting;
-    fire bao.AnnounceMeeting;
-    fire chloe.AnnounceMeeting;
+    fire xing.NotifyParticipant;
+    fire amr.NotifyParticipant;
+    fire naya.NotifyParticipant;
+    fire bao.NotifyParticipant;
+    fire chloe.NotifyParticipant;
 
-    fire xing.Participate;
-    fire amr.Participate;
-    fire naya.Participate;
-    fire bao.Participate;
-    assign chloe.Participate = Pending;
+    fire xing.AttendMeeting;
+    fire amr.AttendMeeting;
+    fire naya.AttendMeeting;
+    fire bao.AttendMeeting;
+    assign chloe.AttendMeeting = Pending;
 
     // Every participant's timetable ends up #collected in mtg.soil regardless of channel --
     // TimetableCollected's own ocl clause derives this from real state; .iscn has to be told.
@@ -58,26 +58,26 @@ scenario MeetingSchedulerVerify for "mtg.istar" {
     assign chloe.TimetableCollected = Fulfilled;
 
     // Every participant's attendance ends up #attended in mtg.soil.
-    assign xing.MeetingAttendedByParticipant  = Fulfilled;
-    assign amr.MeetingAttendedByParticipant   = Fulfilled;
-    assign naya.MeetingAttendedByParticipant  = Fulfilled; 
-    assign bao.MeetingAttendedByParticipant   = Fulfilled;
-    assign chloe.MeetingAttendedByParticipant = Pending;
+    assign xing.ParticipantAttended  = Fulfilled;
+    assign amr.ParticipantAttended   = Fulfilled;
+    assign naya.ParticipantAttended  = Fulfilled;
+    assign bao.ParticipantAttended   = Fulfilled;
+    assign chloe.ParticipantAttended = Pending;
 
     // matilda's own ocl-derived fact -- left unqualified: Organizer only ever has one
     // instance, so there is nothing to qualify against, and unqualified is exactly what
     // makes IStarScenarioCompiler broadcast a fact into every other declared instance's
     // own private trace too.
-    assign HaveSchedulingPerformedByOrganizer = Fulfilled;
+    assign OrganizerScheduledMeeting = Fulfilled;
 
-    // HavePPCalled is restored as an OR-child of TimetableCollected (see mtg.istar), so it is
+    // ContactedByPhone is restored as an OR-child of TimetableCollected (see mtg.istar), so it is
     // now per-participant like CollectFromCalendar, not a single Organizer-wide fact: true for
     // whoever was actually collected by phone in mtg.soil, pending for whoever used their own
-    // calendar instead. Inclusivity then follows automatically via propagation/contribution,
+    // calendar instead. InclusiveCollection then follows automatically via propagation/contribution,
     // same as .soil derives it.
-    assign xing.HavePPCalled  = Pending;
-    assign amr.HavePPCalled   = Pending;
-    assign naya.HavePPCalled  = Fulfilled;
-    assign bao.HavePPCalled   = Fulfilled;
-    assign chloe.HavePPCalled = Fulfilled;
+    assign xing.ContactedByPhone  = Pending;
+    assign amr.ContactedByPhone   = Pending;
+    assign naya.ContactedByPhone  = Fulfilled;
+    assign bao.ContactedByPhone   = Fulfilled;
+    assign chloe.ContactedByPhone = Fulfilled;
 }

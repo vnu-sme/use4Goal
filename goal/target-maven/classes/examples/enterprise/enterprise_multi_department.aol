@@ -1,0 +1,122 @@
+// Breadth stress: 4 Departments under one Corporation, each with its own
+// Team, exercising the Department[1..*]/Team[0..*] cardinalities across a
+// wide (not just deep) tree. Every Department also funds its own Contract.
+
+aol v1.0 EnterpriseMultiDepartment for "enterprise.acl" {
+
+  agent Executive as alice { name = "Alice Nguyen"; email = "alice@acme.example"; employeeId = "E001"; hireDate = "2010-03-01"; managementLevel = 5; budgetAuthority = 500000.0; title = "Chair"; }
+  agent Executive as bob   { name = "Bob Tran";     email = "bob@acme.example";   employeeId = "E002"; hireDate = "2011-06-15"; managementLevel = 5; budgetAuthority = 450000.0; title = "CFO"; }
+  agent Executive as carol { name = "Carol Le";     email = "carol@acme.example"; employeeId = "E003"; hireDate = "2012-09-20"; managementLevel = 5; budgetAuthority = 400000.0; title = "CTO"; }
+
+  agent SeniorManager as dave  { name = "Dave Pham";   email = "dave@acme.example";   employeeId = "E004"; hireDate = "2013-01-10"; managementLevel = 4; budgetAuthority = 150000.0; }
+  agent SeniorManager as erin  { name = "Erin Vo";     email = "erin@acme.example";   employeeId = "E005"; hireDate = "2013-05-19"; managementLevel = 4; budgetAuthority = 140000.0; }
+  agent SeniorManager as frank { name = "Frank Do";    email = "frank@acme.example";  employeeId = "E006"; hireDate = "2014-02-02"; managementLevel = 4; budgetAuthority = 130000.0; }
+  agent SeniorManager as gina  { name = "Gina Ho";     email = "gina@acme.example";   employeeId = "E007"; hireDate = "2014-09-30"; managementLevel = 4; budgetAuthority = 120000.0; }
+
+  agent Employee as henry { name = "Henry Ta";  email = "henry@acme.example";  employeeId = "E010"; hireDate = "2019-01-01"; }
+  agent Employee as iris  { name = "Iris Mai";  email = "iris@acme.example";   employeeId = "E011"; hireDate = "2019-02-01"; }
+  agent Employee as jack  { name = "Jack Ly";   email = "jack@acme.example";   employeeId = "E012"; hireDate = "2020-03-01"; }
+  agent Employee as karen { name = "Karen Vu";  email = "karen@acme.example";  employeeId = "E013"; hireDate = "2020-04-01"; }
+  agent Employee as leo   { name = "Leo Tran";  email = "leo@acme.example";    employeeId = "E014"; hireDate = "2021-05-01"; }
+  agent Employee as mia   { name = "Mia Pham";  email = "mia@acme.example";    employeeId = "E015"; hireDate = "2021-06-01"; }
+  agent Employee as noah  { name = "Noah Do";   email = "noah@acme.example";   employeeId = "E016"; hireDate = "2022-07-01"; }
+  agent Employee as olga  { name = "Olga Le";   email = "olga@acme.example";   employeeId = "E017"; hireDate = "2022-08-01"; }
+
+  agent Reviewer as petra { name = "Petra Nguyen"; email = "petra@acme.example"; reviewLevel = 3; }
+  agent Reviewer as quinn { name = "Quinn Vo";     email = "quinn@acme.example"; reviewLevel = 2; }
+  agent Reviewer as ruth  { name = "Ruth Ho";      email = "ruth@acme.example";  reviewLevel = 4; }
+
+  group Corporation as corp1 {
+    name = "Wide Corp";
+    foundedYear = 2005;
+
+    play BoardMember as board_alice by alice { votingRights = true; }
+    play BoardMember as board_bob   by bob   { votingRights = true; }
+    play BoardMember as board_carol by carol { votingRights = true; }
+
+    entity Contract as contract_east { value = 400000.0; signedDate = "2025-01-10"; }
+    entity Contract as contract_west { value = 350000.0; signedDate = "2025-02-11"; }
+    entity Contract as contract_north { value = 300000.0; signedDate = "2025-03-12"; }
+    entity Contract as contract_south { value = 250000.0; signedDate = "2025-04-13"; }
+
+    group Department as dept_east {
+      budgetCode = "EAST-01";
+      play DepartmentHead as head_east by dave { departmentGoals = "Grow east region"; }
+      entity Budget as budget_east { amount = 500000.0; currency = "USD"; }
+      group Team as team_east {
+        teamName = "East Delivery"; sprintLength = 14;
+        play TeamMember as member_henry_east by henry { taskCount = 4; }
+        play TeamLead   as lead_henry_east   by henry { teamBudget = 40000.0; }
+        play TeamMember as member_iris_east  by iris  { taskCount = 6; }
+        entity Deliverable as deliv_east { dueDate = "2026-05-01"; status = Planned; }
+      }
+    }
+
+    group Department as dept_west {
+      budgetCode = "WEST-01";
+      play DepartmentHead as head_west by erin { departmentGoals = "Grow west region"; }
+      entity Budget as budget_west { amount = 480000.0; currency = "USD"; }
+      group Team as team_west {
+        teamName = "West Delivery"; sprintLength = 14;
+        play TeamMember as member_jack_west  by jack  { taskCount = 3; }
+        play TeamLead   as lead_jack_west    by jack  { teamBudget = 38000.0; }
+        play TeamMember as member_karen_west by karen { taskCount = 5; }
+        entity Deliverable as deliv_west { dueDate = "2026-05-15"; status = Planned; }
+      }
+    }
+
+    group Department as dept_north {
+      budgetCode = "NORTH-01";
+      play DepartmentHead as head_north by frank { departmentGoals = "Stabilize north ops"; }
+      entity Budget as budget_north { amount = 420000.0; currency = "USD"; }
+      group Team as team_north {
+        teamName = "North Delivery"; sprintLength = 21;
+        play TeamMember as member_leo_north by leo { taskCount = 2; }
+        play TeamLead   as lead_leo_north   by leo { teamBudget = 30000.0; }
+        play TeamMember as member_mia_north by mia { taskCount = 4; }
+        entity Deliverable as deliv_north { dueDate = "2026-06-01"; status = Planned; }
+      }
+    }
+
+    group Department as dept_south {
+      budgetCode = "SOUTH-01";
+      play DepartmentHead as head_south by gina { departmentGoals = "Launch south region"; }
+      entity Budget as budget_south { amount = 390000.0; currency = "USD"; }
+      group Team as team_south {
+        teamName = "South Delivery"; sprintLength = 7;
+        play TeamMember as member_noah_south by noah { taskCount = 5; }
+        play TeamLead   as lead_noah_south   by noah { teamBudget = 25000.0; }
+        play TeamMember as member_olga_south by olga { taskCount = 3; }
+        entity Deliverable as deliv_south { dueDate = "2026-06-15"; status = Planned; }
+      }
+    }
+
+    group AuditCommittee as audit1 {
+      play Auditor as auditor_petra by petra { certificationId = "CIA-4001"; }
+      play Auditor as auditor_quinn by quinn { certificationId = "CIA-4002"; }
+      play ComplianceOfficer as compliance_ruth by ruth { specialization = "Regional operations"; }
+    }
+  }
+
+  // ---- associations ----
+  link mentors: alice -> dave, erin;
+  link mentors: bob -> frank, gina;
+  link reportsTo: member_iris_east  -> lead_henry_east;
+  link reportsTo: member_karen_west -> lead_jack_west;
+  link reportsTo: member_mia_north  -> lead_leo_north;
+  link reportsTo: member_olga_south -> lead_noah_south;
+  link reviewsWork: auditor_petra -> member_henry_east, member_jack_west;
+  link reviewsWork: auditor_quinn -> member_leo_north, member_noah_south;
+  link escalatesTo: head_east -> board_alice;
+  link escalatesTo: head_west -> board_bob;
+  link escalatesTo: head_north -> board_carol;
+  link escalatesTo: head_south -> board_alice;
+  link assignedTo: deliv_east  -> member_henry_east, member_iris_east;
+  link assignedTo: deliv_west  -> member_jack_west, member_karen_west;
+
+  // ---- aggregation ----
+  link contractFunding: dept_east  -> contract_east;
+  link contractFunding: dept_west  -> contract_west;
+  link contractFunding: dept_north -> contract_north;
+  link contractFunding: dept_south -> contract_south;
+}

@@ -12,16 +12,33 @@ import org.vnu.sme.goal.dsl.istar.parser.IStarCompiler;
 import org.vnu.sme.goal.usegen.UseOutputWriter;
 
 /**
- * Same ACL + iStar → USE + TOCL pipeline as {@link IStarUseOclService}, but
- * writing into a caller-chosen output FOLDER (auto-named {@code <model>.use}
- * / {@code <model>.tocl}) instead of an exact file path the caller types out.
- * {@link IStarUseOclService} (and its action/GUI) is left untouched; this is
- * a separate action with the same underlying translator ({@link
- * AclIStar2UseTranslator}, unchanged) and the shared {@link UseOutputWriter}.
+ * File-based ACL + iStar → USE + TOCL pipeline. The two input models are
+ * read from caller-supplied files and the generated artifacts are written into
+ * a caller-supplied folder as {@code <iStar-model>_Verification.use} and
+ * {@code <iStar-model>_Verification.tocl}.
  */
 public final class IStarUseOclFolderService {
 
     private IStarUseOclFolderService() {}
+
+    /** Command-line entry point mirroring the USE plugin action. */
+    public static void main(String[] args) {
+        if (args.length != 3) {
+            System.err.println("Usage: IStarUseOclFolderService <model.acl> <model.istar> <output-folder>");
+            return;
+        }
+        Result result = translate(Path.of(args[0]), Path.of(args[1]), Path.of(args[2]));
+        result.allDiagnostics().forEach(System.err::println);
+        if (!result.ok()) {
+            throw new IllegalStateException("ACL + iStar to USE/TOCL translation failed");
+        }
+        if (result.written() != null) {
+            System.out.println(result.written().useFile());
+            if (result.written().toclFile() != null) {
+                System.out.println(result.written().toclFile());
+            }
+        }
+    }
 
     public record Result(
             Path outputFolder,
@@ -29,7 +46,9 @@ public final class IStarUseOclFolderService {
             AclIStar2UseTranslator.Result useResult,
             List<String> errors) {
 
-        public boolean ok() { return errors.isEmpty(); }
+        public boolean ok() {
+            return errors.isEmpty() && useResult != null && useResult.ok();
+        }
 
         public List<String> allDiagnostics() {
             List<String> all = new ArrayList<>(errors);
@@ -68,6 +87,10 @@ public final class IStarUseOclFolderService {
         GoalModel gm = istarResult.model();
 
         AclIStar2UseTranslator.Result useResult = AclIStar2UseTranslator.translate(acl, gm);
+        if (!useResult.ok()) {
+            errors.add("Translation stopped because the iStar model uses unsupported semantics.");
+            return new Result(outputFolder, null, useResult, errors);
+        }
 
         UseOutputWriter.Written written = null;
         try {

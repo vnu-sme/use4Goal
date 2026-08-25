@@ -37,15 +37,23 @@ public final class AclBuildingVisitor extends ACLBaseVisitor<AclModelCS> {/**
         List<AclEnumCS> enums = new ArrayList<>(); List<AclEntityCS> entities = new ArrayList<>();
         List<AclRoleCS> roles = new ArrayList<>(); List<AclRelationCS> relations = new ArrayList<>();
         List<AclGroupCS> groups = new ArrayList<>(); List<AclCompatibilityCS> compatibilities = new ArrayList<>();
+        List<AclInvariantCS> invariants = new ArrayList<>();
         for (var d : ctx.topLevelDecl()) {
             if (d.enumDecl() != null) enums.add(enumValue(d.enumDecl()));
             else if (d.entityDecl() != null) entities.add(entity(d.entityDecl()));
             else if (d.roleDecl() != null) roles.add(role(d.roleDecl()));
             else if (d.entityRelationDecl() != null) relations.add(relation(d.entityRelationDecl()));
             else if (d.groupDecl() != null) { GroupBuild b = group(d.groupDecl()); groups.add(b.group()); compatibilities.addAll(b.compatibilities()); }
+            else if (d.invariantDecl() != null) invariants.add(invariant(d.invariantDecl()));
         }
         return new AclModelCS(ctx.VERSION().getText(), ctx.IDENT().getText(), enums, entities,
-                roles, relations, groups, compatibilities, location(ctx));
+                roles, relations, groups, compatibilities, invariants, location(ctx));
+    }
+
+    private static AclInvariantCS invariant(ACLParser.InvariantDeclContext c) {
+        return new AclInvariantCS(c.IDENT(0).getText(), c.IDENT(1).getText(),
+                c.oclExpression().oclToken().stream().map(ParserRuleContext::getText)
+                        .collect(java.util.stream.Collectors.joining(" ")), location(c));
     }
 
     private static AclEnumCS enumValue(ACLParser.EnumDeclContext c) {

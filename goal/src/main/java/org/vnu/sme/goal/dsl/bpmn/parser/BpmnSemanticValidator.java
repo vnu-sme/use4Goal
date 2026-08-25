@@ -12,8 +12,9 @@ import org.vnu.sme.goal.dsl.bpmn.mm.Process;
  *
  * <p>Rules enforced here (version 1 boundary):
  * <ol>
- *   <li>OR (inclusive) and event-based gateways are rejected — their formally-correct
- *       inclusive semantics are not yet implemented (BPMN2_DESIGN.md §8.7).</li>
+ *   <li>Event-based gateways are rejected. Inclusive gateways use the
+ *       state-oriented activation semantics implemented by the execution and
+ *       state-trace evaluators.</li>
  *   <li>MessageFlow elements are rejected — the execution engine does not process
  *       inter-pool communication in version 1.</li>
  *   <li>A pool without a {@code for} group-class binding whose activities reference
@@ -40,15 +41,11 @@ public final class BpmnSemanticValidator {
             for (FlowElement fe : process.flowElements()) {
                 if (fe instanceof Gateway gw) {
                     switch (gw.kind()) {
-                        case OR ->
-                            errors.add("BPMN unsupported: OR (inclusive) gateway '" + gw.id()
-                                    + "' in pool '" + process.id() + "' — inclusive gateway semantics"
-                                    + " are not implemented in version 1; use XOR or AND instead");
                         case EVENT_BASED ->
                             errors.add("BPMN unsupported: event-based gateway '" + gw.id()
                                     + "' in pool '" + process.id() + "' — event-based gateway"
                                     + " semantics are not implemented in version 1");
-                        default -> { /* XOR and AND are supported */ }
+                        default -> { /* XOR, AND and OR are supported */ }
                     }
                 }
             }

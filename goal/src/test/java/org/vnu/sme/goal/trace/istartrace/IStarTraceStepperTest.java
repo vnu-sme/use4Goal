@@ -36,8 +36,7 @@ class IStarTraceStepperTest {
                 istar TraceMonitor {
                   role Controller {
                     goal SignalObserved : Recur
-                    activation {[ self.enabled ]}
-                    condition {[ self.signal ]}
+                    condition {[ self.enabled and self.signal ]}
                   }
                 }
                 """);

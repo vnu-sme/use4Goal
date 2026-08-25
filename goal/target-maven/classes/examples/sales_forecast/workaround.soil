@@ -1,0 +1,37 @@
+-- Observed workaround scenario: the proposal is sent directly while the
+-- response window is open, without an approval round.
+!create case1 : SalesCase
+!set case1.currentRevision := #r1
+!set case1.approvedRevision := #none
+!set case1.sentRevision := #none
+!set case1.proposalPrepared := false
+!set case1.approvalRequested := false
+!set case1.reviewCompleted := false
+!set case1.approvalAccepted := true
+!set case1.approvalStatus := #draft
+!set case1.proposalSent := false
+!set case1.processCompleted := false
+!set case1.approvalDelayed := false
+!set case1.responseWindowOpen := true
+!set case1.sentWithinWindow := false
+
+!create managementAgent : Agent
+!create managerAgent : Agent
+!create approverAgent : Agent
+!create customerAgent : Agent
+
+!create management1 : Management
+!create manager1 : CustomerManager
+!create approver1 : Approver
+!create customer1 : Customer
+!set approver1.authorised := true
+
+!insert (managementAgent, management1) into Agent_plays_Management
+!insert (managerAgent, manager1) into Agent_plays_CustomerManager
+!insert (approverAgent, approver1) into Agent_plays_Approver
+!insert (customerAgent, customer1) into Agent_plays_Customer
+
+!insert (case1, management1) into Management_in_SalesCase
+!insert (case1, manager1) into CustomerManager_in_SalesCase
+!insert (case1, approver1) into Approver_in_SalesCase
+!insert (case1, customer1) into Customer_in_SalesCase

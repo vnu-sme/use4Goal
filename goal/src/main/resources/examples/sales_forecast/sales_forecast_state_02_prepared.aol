@@ -1,0 +1,21 @@
+// After prepareProposal and submitForApproval (sales_forecast.bpmn2): the
+// proposal is prepared and approval has been requested, but review has not
+// started yet.
+// Expected OCL result: 7 true, 0 false.
+aol v2.0 SalesForecastPrepared for "sales_forecast.acl" {
+  group SalesCase as salescase1 {
+    proposalPrepared = true;
+    approvalRequested = true;
+    approvalStatus = requested;
+  }
+
+  role Management as management1;
+  role CustomerManager as manager1;
+  role Approver as approver1;
+  role Customer as customer1;
+
+  link SalesCase_contains_Management : salescase1 -> management1;
+  link SalesCase_contains_CustomerManager : salescase1 -> manager1;
+  link SalesCase_contains_Approver : salescase1 -> approver1;
+  link SalesCase_contains_Customer : salescase1 -> customer1;
+}

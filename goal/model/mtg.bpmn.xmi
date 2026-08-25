@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Dynamic Ecore instance corresponding to
+     goal/src/main/resources/examples/mtg/mtg.bpmn2. -->
+<bpmn:BpmnModel xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:bpmn="https://vnu.edu.vn/sme/goal/bpmn/2.0"
+    xsi:schemaLocation="https://vnu.edu.vn/sme/goal/bpmn/2.0 bpmn.ecore"
+    name="MeetingScheduler">
+  <processes id="MeetingOrganization" name="Meeting Organization" groupClass="MeetingUnit">
+    <lanes id="Initiator" name="Initiator" roleName="Initiator"
+        flowElements="//@processes.0/@flowElements.0 //@processes.0/@flowElements.1"/>
+    <lanes id="Organizer" name="Organizer" roleName="Organizer"
+        flowElements="//@processes.0/@flowElements.2 //@processes.0/@flowElements.3 //@processes.0/@flowElements.4 //@processes.0/@flowElements.6 //@processes.0/@flowElements.7 //@processes.0/@flowElements.8 //@processes.0/@flowElements.10"/>
+    <lanes id="Secretary" name="Secretary" roleName="Secretary"
+        flowElements="//@processes.0/@flowElements.5"/>
+    <lanes id="Participant" name="Participant" roleName="Participant"
+        flowElements="//@processes.0/@flowElements.9"/>
+
+    <flowElements xsi:type="bpmn:StartEvent" id="start_meeting"
+        lane="//@processes.0/@lanes.0" trigger="none">
+      <precondition oclBody="not self.detailsDecided and not self.timeChosen and self.target_Participant_in_MeetingUnit->forAll(p | not p.timetableCollected and p.timetableChannel = #none and not p.notified and not p.attended)"/>
+    </flowElements>
+    <flowElements xsi:type="bpmn:Task" id="decideMeetingDetails" name="Decide Meeting Details"
+        lane="//@processes.0/@lanes.0">
+      <postcondition oclBody="self.detailsDecided"/>
+    </flowElements>
+    <flowElements xsi:type="bpmn:Task" id="checkCalendar" name="Check Participant Calendar"
+        lane="//@processes.0/@lanes.1">
+      <precondition oclBody="self.detailsDecided"/>
+      <postcondition oclBody="self.target_Participant_in_MeetingUnit->select(p | p.source_Agent_plays_Participant.hasCalendar)->forAll(p | p.timetableCollected and p.timetableChannel = #calendar)"/>
+    </flowElements>
+    <flowElements xsi:type="bpmn:Gateway" id="phoneCollectionRequired"
+        lane="//@processes.0/@lanes.1" kind="XOR">
+      <precondition oclBody="self.target_Participant_in_MeetingUnit->select(p | p.source_Agent_plays_Participant.hasCalendar)->forAll(p | p.timetableCollected)"/>
+    </flowElements>
+    <flowElements xsi:type="bpmn:Task" id="requestSecretaryCall" name="Request Secretary Call"
+        lane="//@processes.0/@lanes.1">
+      <precondition oclBody="self.detailsDecided and self.target_Participant_in_MeetingUnit->exists(p | not p.source_Agent_plays_Participant.hasCalendar) and not self.target_Secretary_in_MeetingUnit.oclIsUndefined() and self.target_Participant_in_MeetingUnit->select(p | not p.source_Agent_plays_Participant.hasCalendar)->forAll(p | p.source_Agent_plays_Participant.phone &lt;> '' and self.target_Secretary_in_MeetingUnit.source_Agent_plays_Secretary.knownContact->includes(p.source_Agent_plays_Participant))"/>
+    </flowElements>
+    <flowElements xsi:type="bpmn:Task" id="collectConstraintsByPhone" name="Collect Constraints By Phone"
+        lane="//@processes.0/@lanes.2">
+      <precondition oclBody="self.target_Participant_in_MeetingUnit->exists(p | not p.source_Agent_plays_Participant.hasCalendar) and not self.target_Secretary_in_MeetingUnit.oclIsUndefined() and self.target_Participant_in_MeetingUnit->select(p | not p.source_Agent_plays_Participant.hasCalendar)->forAll(p | p.source_Agent_plays_Participant.phone &lt;> '' and self.target_Secretary_in_MeetingUnit.source_Agent_plays_Secretary.knownContact->includes(p.source_Agent_plays_Participant))"/>
+      <postcondition oclBody="self.target_Participant_in_MeetingUnit->select(p | not p.source_Agent_plays_Participant.hasCalendar)->forAll(p | p.timetableCollected and p.timetableChannel = #phone)"/>
+    </flowElements>
+    <flowElements xsi:type="bpmn:Gateway" id="timetableCollectionComplete"
+        lane="//@processes.0/@lanes.1" kind="XOR">
+      <precondition oclBody="self.target_Participant_in_MeetingUnit->forAll(p | p.timetableCollected)"/>
+    </flowElements>
+    <flowElements xsi:type="bpmn:Task" id="chooseTimeAndDate" name="Choose Time And Date"
+        lane="//@processes.0/@lanes.1">
+      <precondition oclBody="self.target_Participant_in_MeetingUnit->forAll(p | p.timetableCollected)"/>
+      <postcondition oclBody="self.timeChosen"/>
+    </flowElements>
+    <flowElements xsi:type="bpmn:Task" id="announceMeeting" name="Announce Meeting"
+        lane="//@processes.0/@lanes.1">
+      <precondition oclBody="self.timeChosen"/>
+      <postcondition oclBody="self.target_Participant_in_MeetingUnit->forAll(p | p.notified)"/>
+    </flowElements>
+    <flowElements xsi:type="bpmn:Task" id="participate" name="Attend Scheduled Meeting"
+        lane="//@processes.0/@lanes.3">
+      <precondition oclBody="self.target_Participant_in_MeetingUnit->forAll(p | p.notified)"/>
+      <postcondition oclBody="self.target_Participant_in_MeetingUnit->forAll(p | p.attended)"/>
+    </flowElements>
+    <flowElements xsi:type="bpmn:EndEvent" id="end_meeting"
+        lane="//@processes.0/@lanes.1" trigger="none"/>
+
+    <sequenceFlows source="//@processes.0/@flowElements.0" target="//@processes.0/@flowElements.1"/>
+    <sequenceFlows source="//@processes.0/@flowElements.1" target="//@processes.0/@flowElements.2"/>
+    <sequenceFlows source="//@processes.0/@flowElements.2" target="//@processes.0/@flowElements.3"/>
+    <sequenceFlows source="//@processes.0/@flowElements.3" target="//@processes.0/@flowElements.4">
+      <guard oclBody="self.target_Participant_in_MeetingUnit->exists(p | not p.source_Agent_plays_Participant.hasCalendar)"/>
+    </sequenceFlows>
+    <sequenceFlows isDefault="true" source="//@processes.0/@flowElements.3" target="//@processes.0/@flowElements.6"/>
+    <sequenceFlows source="//@processes.0/@flowElements.4" target="//@processes.0/@flowElements.5"/>
+    <sequenceFlows source="//@processes.0/@flowElements.5" target="//@processes.0/@flowElements.6"/>
+    <sequenceFlows source="//@processes.0/@flowElements.6" target="//@processes.0/@flowElements.7"/>
+    <sequenceFlows source="//@processes.0/@flowElements.7" target="//@processes.0/@flowElements.8"/>
+    <sequenceFlows source="//@processes.0/@flowElements.8" target="//@processes.0/@flowElements.9"/>
+    <sequenceFlows source="//@processes.0/@flowElements.9" target="//@processes.0/@flowElements.10"/>
+  </processes>
+</bpmn:BpmnModel>

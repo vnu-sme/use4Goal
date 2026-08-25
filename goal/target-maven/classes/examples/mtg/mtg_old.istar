@@ -1,0 +1,151 @@
+istar MeetingScheduler {
+  role Initiator {
+    goal MeetingOrganized : Achieve
+    activation {[
+      true
+    ]}
+
+    task DecideDetails > MeetingOrganized
+    pre {[
+      not self.group.detailsDecided
+    ]}
+    post {[
+      self.group.detailsDecided
+    ]}
+
+    goal MeetingScheduled : Achieve > MeetingOrganized
+    goal ParticipantsAttended : Achieve > MeetingOrganized
+
+    goal OrganizerScheduledMeeting : Achieve
+      > pick Organizer MeetingScheduled
+
+    // `forall` creates one branch for each Participant in this MeetingUnit.
+    // Here self is the Participant occurrence bound to the current branch.
+    goal ParticipantAttended : Achieve
+      > forall Participant ParticipantsAttended
+    condition {[
+      self.attended
+    ]}
+  }
+
+  role Organizer {
+    // Maintain is immediate: whenever a time has been chosen, the meeting
+    // details must already be present and must remain valid.
+    goal ChosenTimeHasDetails : Maintain
+    activation {[
+      self.group.timeChosen
+    ]}
+    condition {[
+      self.group.detailsDecided
+    ]}
+
+    goal OrganizerSchedulingService : Achieve
+    condition {[
+      self.group.timeChosen
+      and self.group.Participant->forAll(participant | participant.notified)
+    ]}
+
+    goal SchedulingCompleted : Achieve
+    activation {[ self.group.detailsDecided ]}
+
+    goal TimetablesCollected : Achieve > SchedulingCompleted
+
+    task ChooseMeetingTime > SchedulingCompleted
+    pre {[
+      self.group.detailsDecided
+      and self.group.Participant
+        ->forAll(participant | participant.timetableCollected)
+    ]}
+    post {[
+      self.group.timeChosen
+    ]}
+
+    goal ParticipantsNotified : Sustain > SchedulingCompleted
+    condition {[
+      self.group.Participant
+        ->forAll(participant | participant.notified)
+    ]}
+
+    goal TimetableCollected : Achieve
+      > forall Participant TimetablesCollected
+    condition {[
+      self.timetableCollected
+    ]}
+
+    goal ContactedByPhone : Achieve
+      > or TimetableCollected
+      > make InclusiveCollection
+    activation {[
+      not self.hasCalendar
+    ]}
+    condition {[
+      self.timetableCollected
+      and self.timetableChannel = #phone
+    ]}
+
+    task CollectFromCalendar
+      > or TimetableCollected
+      > make FastCollection
+    pre {[
+      self.hasCalendar and not self.timetableCollected
+    ]}
+    post {[
+      self.hasCalendar
+      and self.timetableCollected
+      and self.timetableChannel = #calendar
+    ]}
+
+    goal SecretaryRequested : Achieve
+      > pick Secretary ContactedByPhone
+    activation {[
+      self.knownContact->includes(self.outer)
+    ]}
+
+    task NotifyParticipant
+      > forall Participant ParticipantsNotified
+    pre {[
+      self.group.timeChosen
+    ]}
+    post {[
+      self.notified
+    ]}
+
+    quality InclusiveCollection
+    quality FastCollection
+  }
+
+  role Secretary {
+    task CollectByPhone
+    pre {[
+      self.outer.phone <> ''
+      and not self.outer.hasCalendar
+      and not self.outer.timetableCollected
+    ]}
+    post {[
+      self.outer.timetableCollected
+      and self.outer.timetableChannel = #phone
+    ]}
+  }
+
+  role Participant {
+    task AttendMeeting
+    pre {[
+      self.notified
+    ]}
+    post {[
+      self.attended
+    ]}
+  }
+
+  depend Initiator.OrganizerScheduledMeeting
+    -> task ChooseMeetingTime
+    -> Organizer.OrganizerSchedulingService
+
+  depend Organizer.SecretaryRequested
+    -> task CollectByPhone
+    -> Secretary.CollectByPhone
+
+  depend Initiator.ParticipantAttended
+    -> task AttendMeeting
+    -> Participant.AttendMeeting
+}

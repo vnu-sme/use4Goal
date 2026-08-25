@@ -12,7 +12,9 @@ import org.vnu.sme.goal.dsl.aol.ast.AolEntityInstanceCS;
 import org.vnu.sme.goal.dsl.aol.ast.AolGroupInstanceCS;
 import org.vnu.sme.goal.dsl.aol.ast.AolLinkCS;
 import org.vnu.sme.goal.dsl.aol.ast.AolModelCS;
+import org.vnu.sme.goal.dsl.aol.ast.AolPlayLinkCS;
 import org.vnu.sme.goal.dsl.aol.ast.AolPlayCS;
+import org.vnu.sme.goal.dsl.aol.ast.AolRoleInstanceCS;
 
 public final class AOLBuildingVisitor extends AOLBaseVisitor<AolModelCS> {
 
@@ -21,15 +23,19 @@ public final class AOLBuildingVisitor extends AOLBaseVisitor<AolModelCS> {
         List<AolAgentCS> agents = new ArrayList<>();
         List<AolGroupInstanceCS> groups = new ArrayList<>();
         List<AolEntityInstanceCS> entities = new ArrayList<>();
+        List<AolRoleInstanceCS> roles = new ArrayList<>();
+        List<AolPlayLinkCS> playLinks = new ArrayList<>();
         List<AolLinkCS> links = new ArrayList<>();
         for (AOLParser.TopLevelDeclContext decl : ctx.topLevelDecl()) {
             if (decl.agentDecl() != null) agents.addAll(buildAgents(decl.agentDecl()));
             else if (decl.groupInstanceDecl() != null) groups.add(buildGroupInstance(decl.groupInstanceDecl()));
             else if (decl.entityInstanceDecl() != null) entities.add(buildEntityInstance(decl.entityInstanceDecl()));
+            else if (decl.roleInstanceDecl() != null) roles.add(buildRoleInstance(decl.roleInstanceDecl()));
+            else if (decl.playLinkDecl() != null) playLinks.add(buildPlayLink(decl.playLinkDecl()));
             else if (decl.linkDecl() != null) links.add(buildLink(decl.linkDecl()));
         }
         return new AolModelCS(ctx.VERSION().getText(), ctx.IDENT().getText(), unquote(ctx.STRING_LITERAL().getText()),
-                agents, groups, entities, links, location(ctx));
+                agents, groups, entities, roles, playLinks, links, location(ctx));
     }
 
     private static AolLinkCS buildLink(AOLParser.LinkDeclContext ctx) {
@@ -76,6 +82,17 @@ public final class AOLBuildingVisitor extends AOLBaseVisitor<AolModelCS> {
         List<TerminalNode> ids = ctx.IDENT();
         return new AolEntityInstanceCS(ids.get(0).getText(), ids.get(1).getText(),
                 attributeValues(ctx.attributeValueBlock()), location(ctx));
+    }
+
+    private static AolRoleInstanceCS buildRoleInstance(AOLParser.RoleInstanceDeclContext ctx) {
+        List<TerminalNode> ids = ctx.IDENT();
+        return new AolRoleInstanceCS(ids.get(0).getText(), ids.get(1).getText(),
+                attributeValues(ctx.attributeValueBlock()), location(ctx));
+    }
+
+    private static AolPlayLinkCS buildPlayLink(AOLParser.PlayLinkDeclContext ctx) {
+        List<TerminalNode> ids = ctx.IDENT();
+        return new AolPlayLinkCS(ids.get(0).getText(), ids.get(1).getText(), location(ctx));
     }
 
     private static List<AolAttributeValueCS> attributeValues(AOLParser.AttributeValueBlockContext block) {

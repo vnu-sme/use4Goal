@@ -15,6 +15,7 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.vnu.sme.goal.dsl.acl.ast.AclModelCS;
 import org.vnu.sme.goal.dsl.acl.mm.AclModel;
+import org.vnu.sme.goal.trace.istartrace.nativeacl.NativeOclEvaluator;
 
 public final class AclCompiler {
     public record Result(AclModelCS ast, AclModel model, List<String> errors) {
@@ -69,6 +70,14 @@ public final class AclCompiler {
         for (AclModelFactory.SemanticError error : factory.errors()) {
             errors.add(format(sourceName, error.location().line(), error.location().column(),
                     "semantic", error.message()));
+        }
+        for (var invariant : ast.invariants()) {
+            try {
+                NativeOclEvaluator.validate(invariant.expression());
+            } catch (IllegalArgumentException ex) {
+                errors.add(format(sourceName, invariant.location().line(), invariant.location().column(),
+                        "OCL", ex.getMessage()));
+            }
         }
         return new Result(ast, factory.model(), errors);
     }

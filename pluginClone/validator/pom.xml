@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>use</artifactId>
+        <groupId>org.tzi.use</groupId>
+        <version>7.1.1</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>validator4goal</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>use-core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>use-gui</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Kodkod SAT-based relational model finder — installed to local repo by initialize phase -->
+        <dependency>
+            <groupId>kodkod</groupId>
+            <artifactId>kodkod</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <!-- SAT4J core solver used by Kodkod -->
+        <dependency>
+            <groupId>org.sat4j</groupId>
+            <artifactId>core</artifactId>
+            <version>1.0</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!-- Source lives directly in src/, not src/main/java/ -->
+        <sourceDirectory>src</sourceDirectory>
+
+        <resources>
+            <resource>
+                <directory>.</directory>
+                <includes>
+                    <include>resources/**</include>
+                    <include>useplugin.xml</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <plugins>
+            <!--
+                Install local JARs (kodkod, sat4j) to the local Maven repo during initialize
+                so that the compile and shade phases can resolve them as regular dependencies.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <id>install-kodkod</id>
+                        <phase>initialize</phase>
+                        <goals><goal>install-file</goal></goals>
+                        <configuration>
+                            <file>${project.basedir}/lib/kodkod.jar</file>
+                            <groupId>kodkod</groupId>
+                            <artifactId>kodkod</artifactId>
+                            <version>1.0</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-sat4j</id>
+                        <phase>initialize</phase>
+                        <goals><goal>install-file</goal></goals>
+                        <configuration>
+                            <file>${project.basedir}/lib/org.sat4j.core.jar</file>
+                            <groupId>org.sat4j</groupId>
+                            <artifactId>core</artifactId>
+                            <version>1.0</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <release>21</release>
+                    <!-- Source files use Latin-1 encoding (German comments with umlauts) -->
+                    <encoding>ISO-8859-1</encoding>
+                </configuration>
+            </plugin>
+
+            <!--
+                Create a fat JAR bundling kodkod and sat4j alongside the plugin classes.
+                Mirrors what the original Ant build.xml did with FatJar.
+                use-core and use-gui are excluded (provided at runtime by USE).
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.3</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <outputFile>${project.build.directory}/Validator4Goal.jar</outputFile>
+                            <shadedArtifactAttached>false</shadedArtifactAttached>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <artifactSet>
+                                <!-- Exclude USE runtime jars — provided by the host USE process -->
+                                <excludes>
+                                    <exclude>org.tzi.use:use-core</exclude>
+                                    <exclude>org.tzi.use:use-gui</exclude>
+                                </excludes>
+                            </artifactSet>
+                            <filters>
+                                <!-- Strip signature files to avoid JAR security conflicts -->
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                                <!-- Exclude bundled extras from kodkod.jar (mirrors build.xml) -->
+                                <filter>
+                                    <artifact>kodkod:kodkod</artifact>
+                                    <excludes>
+                                        <exclude>solvers.zip</exclude>
+                                        <exclude>examples.jar</exclude>
+                                    </excludes>
+                                </filter>
+                                <!-- Exclude extras from sat4j.jar (mirrors build.xml) -->
+                                <filter>
+                                    <artifact>org.sat4j:core</artifact>
+                                    <excludes>
+                                        <exclude>sat4j.version</exclude>
+                                        <exclude>plugin.properties</exclude>
+                                        <exclude>overview.html</exclude>
+                                        <exclude>about.html</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Manifest-Version>1.0</Manifest-Version>
+                                        <Plugin-Name>Kodkod-Plugin</Plugin-Name>
+                                        <Plugin-Version>0.1</Plugin-Version>
+                                        <Main-Class>org.tzi.use.kodkod.main.KodkodPlugin</Main-Class>
+                                        <Plugin-Publisher>Torsten Humann</Plugin-Publisher>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -35,11 +35,9 @@ import org.vnu.sme.goal.dsl.bpmn.parser.BpmnCompiler;
 import org.vnu.sme.goal.dsl.istar.mm.GoalModel;
 import org.vnu.sme.goal.dsl.istar.mm.Actor;
 import org.vnu.sme.goal.dsl.istar.mm.AndRefinement;
-import org.vnu.sme.goal.dsl.istar.mm.ForRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Goal;
 import org.vnu.sme.goal.dsl.istar.mm.IntentionalElement;
 import org.vnu.sme.goal.dsl.istar.mm.OrRefinement;
-import org.vnu.sme.goal.dsl.istar.mm.PickRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Refinement;
 import org.vnu.sme.goal.verify.conformance.semantics.GoalTaskStatus;
 import org.vnu.sme.goal.trace.usetrace.IStarUseTraceCompiler;
@@ -261,8 +259,6 @@ public final class VisualConformanceSession {
             switch (refinement) {
                 case AndRefinement and -> children.addAll(and.children());
                 case OrRefinement or -> children.add(or.child());
-                case ForRefinement forall -> children.add(forall.child());
-                case PickRefinement pick -> children.add(pick.child());
             }
         }
         Set<String> roots = new LinkedHashSet<>();

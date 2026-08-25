@@ -1,6 +1,5 @@
 acl v2.0 MultiLevelOrganization {
-  // Abstract-role attributes form the persistent Agent profile. Attributes of
-  // concrete roles and groups belong to their corresponding AOL occurrences.
+  // Every Role occurrence owns its attributes; Role specialization is a play chain.
   enum ResponseStatus { pending, accepted, declined }
   enum ReviewStatus { notStarted, reviewing, submitted }
   enum AttendanceStatus { unknown, attended, absent }
@@ -11,7 +10,7 @@ acl v2.0 MultiLevelOrganization {
   }
 
   // Tầng 1: thuộc tính nhận dạng chung của Agent.
-  abstract role Person {
+  role Person {
     name : String;
     phone : String;
   }
@@ -58,7 +57,6 @@ acl v2.0 MultiLevelOrganization {
     MeetingParty [1..*];
     MeetingUnit [0..*];
 
-    MeetingParty compatible MeetingParty;
   }
 
   group MeetingUnit {
@@ -70,14 +68,17 @@ acl v2.0 MultiLevelOrganization {
     ReviewPanel [0..*];
 
     Organizer compatible Participant;
-    Participant compatible Participant;
   }
 
   group ReviewPanel {
     reviewClosed : Boolean;
 
     TechnicalReviewer [1..*];
-    Document [1..*];
+  }
+
+  composition reviewPanelDocuments {
+    ReviewPanel [1] role panel;
+    Document [1..*] role documents;
   }
 
   association reviewsDocument {

@@ -1,0 +1,54 @@
+// Observed deviation reported by Outmazgin, Soffer and Hadar: a Customer
+// Manager prepares a proposal outside the IS and sends it directly before the
+// approval round.  Kept separate from the prescribed BPMN so a workaround is
+// never mistaken for an officially allowed branch.
+model SalesForecastWorkaroundProcess {
+  pool DirectProposalResponse for SalesCase {
+    name "Direct unapproved proposal response"
+    lane CustomerManager;
+  }
+
+  start proposalReceived {
+    lane CustomerManager
+    trigger none
+    pre {[
+      not self.proposalPrepared
+      and not self.proposalSent
+    ]}
+    flow prepareProposalOutsideIS
+  }
+
+  activity prepareProposalOutsideIS {
+    name "Prepare proposal in Word or Excel"
+    type task
+    lane CustomerManager
+    post {[
+      self.proposalPrepared
+      and self.approvalStatus = #draft
+    ]}
+    flow sendUnapprovedProposal
+  }
+
+  activity sendUnapprovedProposal {
+    name "Send unapproved proposal directly by e-mail"
+    type task
+    lane CustomerManager
+    pre {[
+      self.proposalPrepared
+      and self.approvalStatus = #draft
+    ]}
+    post {[
+      self.proposalSent
+      and self.sentRevision = self.currentRevision
+      and self.approvalStatus = #draft
+      and self.sentWithinWindow = self.responseWindowOpen
+      and self.processCompleted
+    ]}
+    flow proposalHandled
+  }
+
+  end proposalHandled {
+    lane CustomerManager
+    trigger none
+  }
+}

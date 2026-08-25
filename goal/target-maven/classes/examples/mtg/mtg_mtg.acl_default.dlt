@@ -5,7 +5,7 @@
         <antialiasing>true</antialiasing>
         <showassocnames>false</showassocnames>
         <showattributes>true</showattributes>
-        <showmultiplicities>true</showmultiplicities>
+        <showmultiplicities>false</showmultiplicities>
         <showoperations>false</showoperations>
         <showrolenames>true</showrolenames>
         <showgrid>false</showgrid>
@@ -14,8 +14,8 @@
         type="AclNode" width="181.0">
         <name>role::MeetingParty</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>40.0</x>
-            <y>71.0</y>
+            <x>271.0</x>
+            <y>42.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
@@ -23,8 +23,8 @@
         type="AclNode" width="165.0">
         <name>role::Initiator</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>322.0</x>
-            <y>117.0</y>
+            <x>271.0</x>
+            <y>173.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
@@ -32,8 +32,8 @@
         type="AclNode" width="165.0">
         <name>role::Organizer</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>787.0</x>
-            <y>358.0</y>
+            <x>271.0</x>
+            <y>263.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
@@ -41,8 +41,8 @@
         type="AclNode" width="165.0">
         <name>role::Secretary</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>406.0</x>
-            <y>464.0</y>
+            <x>271.0</x>
+            <y>353.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
@@ -50,8 +50,8 @@
         type="AclNode" width="279.0">
         <name>role::Participant</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>9.0</x>
-            <y>491.0</y>
+            <x>271.0</x>
+            <y>443.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
@@ -59,8 +59,8 @@
         type="AclNode" width="202.0">
         <name>group::MeetingUnit</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>651.0</x>
-            <y>101.0</y>
+            <x>614.0</x>
+            <y>42.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
@@ -68,8 +68,8 @@
         sizeCalculated="false" type="AclNode" width="165.0">
         <name>enum::TimetableChannel</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>920.0</x>
-            <y>104.0</y>
+            <x>880.0</x>
+            <y>42.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
@@ -288,28 +288,14 @@
         <target>role::MeetingParty</target>
         <name>knowsPhoneOf</name>
         <properties>
-            <edgeproperty id="knowsPhoneOf::source::rolename"
-                sizeCalculated="true" type="rolename"
-                userDefined="false" visible="true">
-                <name>knower</name>
-                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
-                    <userOffsetX>0.0</userOffsetX>
-                    <userOffsetY>0.0</userOffsetY>
-                    <attached>knowsPhoneOf::WayPoint::0</attached>
-                    <offset_x>8</offset_x>
-                    <offset_y>8</offset_y>
-                    <placement>TOP</placement>
-                </strategy>
-                <hidden>false</hidden>
-            </edgeproperty>
-            <edgeproperty id="knowsPhoneOf::source::multiplicity"
+            <edgeproperty id="knowsPhoneOf::target::multiplicity"
                 sizeCalculated="true" type="multiplicity"
                 userDefined="false" visible="true">
                 <name>*</name>
                 <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
                     <userOffsetX>0.0</userOffsetX>
                     <userOffsetY>0.0</userOffsetY>
-                    <attached>knowsPhoneOf::WayPoint::0</attached>
+                    <attached>knowsPhoneOf::WayPoint::4</attached>
                     <offset_x>8</offset_x>
                     <offset_y>8</offset_y>
                     <placement>BOTTOM</placement>
@@ -330,17 +316,31 @@
                 </strategy>
                 <hidden>false</hidden>
             </edgeproperty>
-            <edgeproperty id="knowsPhoneOf::target::multiplicity"
+            <edgeproperty id="knowsPhoneOf::source::multiplicity"
                 sizeCalculated="true" type="multiplicity"
                 userDefined="false" visible="true">
                 <name>*</name>
                 <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
                     <userOffsetX>0.0</userOffsetX>
                     <userOffsetY>0.0</userOffsetY>
-                    <attached>knowsPhoneOf::WayPoint::4</attached>
+                    <attached>knowsPhoneOf::WayPoint::0</attached>
                     <offset_x>8</offset_x>
                     <offset_y>8</offset_y>
                     <placement>BOTTOM</placement>
+                </strategy>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty id="knowsPhoneOf::source::rolename"
+                sizeCalculated="true" type="rolename"
+                userDefined="false" visible="true">
+                <name>knower</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToAttached">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                    <attached>knowsPhoneOf::WayPoint::0</attached>
+                    <offset_x>8</offset_x>
+                    <offset_y>8</offset_y>
+                    <placement>TOP</placement>
                 </strategy>
                 <hidden>false</hidden>
             </edgeproperty>

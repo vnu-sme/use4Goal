@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<istars:GoalModel xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:istars="https://vnu.edu.vn/sme/goal/istar/state/3.0"
+    xsi:schemaLocation="https://vnu.edu.vn/sme/goal/istar/state/3.0 istar-state.ecore"
+    xmi:id="goalModel" name="MeetingSchedulerIntentions"
+    aclModel="mtg-development.acl.xmi#aclModel">
+
+  <!-- Collective organization goal. -->
+  <actorViews xmi:id="organizationView" actor="mtg-development.acl.xmi#organizationActor">
+    <elements xsi:type="istars:Goal" xmi:id="improveCoordination" id="ImproveCoordination"
+        goalType="Achieve" description="The parent organization coordinates its meeting units effectively.">
+      <activation oclBody="true"/>
+      <condition oclBody="self.coordinationScore &gt; 0"/>
+    </elements>
+  </actorViews>
+
+  <!-- Child collective goal. It is independent from structural composition with the parent. -->
+  <actorViews xmi:id="meetingUnitView" actor="mtg-development.acl.xmi#meetingUnitActor">
+    <elements xsi:type="istars:Goal" xmi:id="haveMeetingOrganized" id="HaveMeetingOrganized"
+        goalType="Achieve" description="The meeting unit reaches an organized and attended meeting state.">
+      <activation oclBody="self.meetings-&gt;notEmpty()"/>
+    </elements>
+    <elements xsi:type="istars:Goal" xmi:id="detailsDecidedGoal" id="DetailsDecided"
+        goalType="Achieve">
+      <condition oclBody="self.meetings-&gt;forAll(m | m.detailsDecided)"/>
+    </elements>
+    <elements xsi:type="istars:Goal" xmi:id="meetingScheduledGoal" id="MeetingScheduled"
+        goalType="Achieve">
+      <condition oclBody="self.meetings-&gt;forAll(m | m.timeChosen and m.announced)"/>
+    </elements>
+    <elements xsi:type="istars:Goal" xmi:id="participantsAttendedGoal" id="ParticipantsAttended"
+        goalType="Achieve"/>
+    <elements xsi:type="istars:Goal" xmi:id="participantAttendanceExpectation"
+        id="ParticipantAttendanceExpectation" goalType="Achieve"
+        contextActor="mtg-development.acl.xmi#participantActor">
+      <condition oclBody="self.attended"/>
+    </elements>
+
+    <relations xsi:type="istars:AndRefinement" parent="haveMeetingOrganized"
+        children="detailsDecidedGoal meetingScheduledGoal participantsAttendedGoal"/>
+    <relations xsi:type="istars:QuantifiedRefinement" parent="participantsAttendedGoal"
+        child="participantAttendanceExpectation" quantifier="forall"
+        targetActor="mtg-development.acl.xmi#participantActor"/>
+  </actorViews>
+
+  <!-- Role intentions describe responsibilities of any Organizer occurrence. -->
+  <actorViews xmi:id="organizerView" actor="mtg-development.acl.xmi#organizerActor">
+    <elements xsi:type="istars:Goal" xmi:id="organizerSchedules" id="HaveMeetingScheduled"
+        goalType="Achieve">
+      <activation oclBody="self.unit.meetings-&gt;notEmpty()"/>
+      <condition oclBody="self.unit.meetings-&gt;forAll(m | m.timeChosen and m.announced)"/>
+    </elements>
+    <elements xsi:type="istars:Task" xmi:id="chooseTime" id="ChooseMeetingTime">
+      <precondition oclBody="self.unit.meetings-&gt;forAll(m | m.detailsDecided and not m.timeChosen)"/>
+      <postcondition oclBody="self.unit.meetings-&gt;forAll(m | m.timeChosen)"/>
+    </elements>
+    <relations xsi:type="istars:AndRefinement" parent="organizerSchedules"
+        children="chooseTime announceMeeting"/>
+    <elements xsi:type="istars:Task" xmi:id="announceMeeting" id="AnnounceMeeting">
+      <precondition oclBody="self.unit.meetings-&gt;forAll(m | m.timeChosen)"/>
+      <postcondition oclBody="self.unit.meetings-&gt;forAll(m | m.announced)"/>
+    </elements>
+  </actorViews>
+
+  <actorViews xmi:id="participantView" actor="mtg-development.acl.xmi#participantActor">
+    <elements xsi:type="istars:Goal" xmi:id="participantAttends" id="AttendMeeting"
+        goalType="Achieve">
+      <activation oclBody="self.notified"/>
+      <condition oclBody="self.attended"/>
+    </elements>
+  </actorViews>
+
+  <!-- Personal intention template: it applies to each concrete Person occurrence independently of roles. -->
+  <actorViews xmi:id="personView" actor="mtg-development.acl.xmi#personActor">
+    <elements xsi:type="istars:Goal" xmi:id="avoidOvertime" id="AvoidOvertime"
+        goalType="Maintain" description="A person's intrinsic goal, not an obligation inherited from a role.">
+      <activation oclBody="true"/>
+      <condition oclBody="self.workingHours &lt;= 8"/>
+    </elements>
+    <elements xsi:type="istars:Quality" xmi:id="sustainableWorkload" id="SustainableWorkload">
+      <condition oclBody="self.workingHours &lt;= 8"/>
+    </elements>
+    <relations xsi:type="istars:Contribution" type="Make"
+        source="avoidOvertime" quality="sustainableWorkload"/>
+  </actorViews>
+
+  <!-- Intentional delegation is explicit; ACL Composition alone never transfers goals. -->
+  <dependencies depender="organizationView" dependerElement="improveCoordination"
+      dependee="meetingUnitView" dependeeElement="haveMeetingOrganized">
+    <dependum xsi:type="istars:Goal" id="MeetingUnitContribution" goalType="Achieve"/>
+  </dependencies>
+  <dependencies depender="meetingUnitView" dependerElement="meetingScheduledGoal"
+      dependee="organizerView" dependeeElement="organizerSchedules">
+    <dependum xsi:type="istars:Goal" id="SchedulingResponsibility" goalType="Achieve"/>
+  </dependencies>
+  <dependencies depender="meetingUnitView" dependerElement="participantAttendanceExpectation"
+      dependee="participantView" dependeeElement="participantAttends">
+    <dependum xsi:type="istars:Goal" id="AttendanceResponsibility" goalType="Achieve"/>
+  </dependencies>
+</istars:GoalModel>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<istar:GoalModel xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:istar="https://vnu.edu.vn/sme/goal/istar/2.0"
+    xsi:schemaLocation="https://vnu.edu.vn/sme/goal/istar/2.0 istar.ecore"
+    name="InvalidDependencyExample">
+  <actors xsi:type="istar:Role" name="Organizer"/>
+  <dependencies depender="//@actors.0" dependee="//@actors.0">
+    <dependum xsi:type="istar:Task" id="ChooseMeetingTime"/>
+  </dependencies>
+</istar:GoalModel>

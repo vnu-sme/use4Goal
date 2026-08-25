@@ -27,7 +27,7 @@
 !insert (adminAgent, admin) into Agent_plays_Admin
 !insert (journal, admin) into Admin_in_Journal
 !create mainMember : Main
-!set mainMember.description := 'Primary member'
+!set memberAgent.description := 'Primary member'
 !insert (memberAgent, mainMember) into Agent_plays_Main
 !insert (users, mainMember) into Main_in_GroupUser
 !create author : Author

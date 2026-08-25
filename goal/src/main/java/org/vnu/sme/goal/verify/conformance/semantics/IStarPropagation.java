@@ -1,7 +1,6 @@
 package org.vnu.sme.goal.verify.conformance.semantics;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -11,14 +10,9 @@ import java.util.Set;
 import org.vnu.sme.goal.dsl.istar.mm.Actor;
 import org.vnu.sme.goal.dsl.istar.mm.AndRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Contribution;
-import org.vnu.sme.goal.dsl.istar.mm.ForRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.GoalModel;
 import org.vnu.sme.goal.dsl.istar.mm.OrRefinement;
-import org.vnu.sme.goal.dsl.istar.mm.Obstacle;
-import org.vnu.sme.goal.dsl.istar.mm.PickRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Refinement;
-import org.vnu.sme.goal.dsl.istar.mm.Resolution;
-import org.vnu.sme.goal.dsl.istar.mm.Obstruction;
 
 /**
  * Propagation rules of Fig. 7 (Caballero-Villalobos, Definition 3.5 LTS) — the operational
@@ -40,9 +34,6 @@ public final class IStarPropagation {
 
     /** Fires the leaf element {@code firedLeafId} (rule P_leaf) then saturates all other rules. */
     public static IStarMarking fire(GoalModel gm, IStarMarking m, String firedLeafId) {
-        if (gm.findElement(firedLeafId).orElse(null) instanceof Obstacle) {
-            return assignObstacle(gm, m, firedLeafId, ObstacleStatus.ACTIVE);
-        }
         IStarMarking next = m.withGoalTask(firedLeafId, GoalTaskStatus.FULFILLED);
         return saturate(gm, next);
     }
@@ -64,36 +55,6 @@ public final class IStarPropagation {
         return saturate(gm, m.withQuality(id, status));
     }
 
-    /** Activates or resolves one obstacle occurrence and recomputes its effects. */
-    public static IStarMarking assignObstacle(
-            GoalModel gm, IStarMarking m, String id, ObstacleStatus status) {
-        return saturate(gm, m.withObstacle(id, status));
-    }
-
-    /** Three-valued aggregation for an already resolved, non-global instance universe. */
-    public static GoalTaskStatus aggregateQuantified(
-            boolean forall, Collection<GoalTaskStatus> statuses) {
-        if (statuses.isEmpty()) return GoalTaskStatus.UNKNOWN;
-        if (forall) {
-            if (statuses.stream().anyMatch(s -> s == GoalTaskStatus.VIOLATED)) {
-                return GoalTaskStatus.VIOLATED;
-            }
-            if (statuses.stream().allMatch(s -> s == GoalTaskStatus.FULFILLED)) {
-                return GoalTaskStatus.FULFILLED;
-            }
-            return statuses.stream().anyMatch(s -> s == GoalTaskStatus.PENDING)
-                    ? GoalTaskStatus.PENDING : GoalTaskStatus.UNKNOWN;
-        }
-        if (statuses.stream().anyMatch(s -> s == GoalTaskStatus.FULFILLED)) {
-            return GoalTaskStatus.FULFILLED;
-        }
-        if (statuses.stream().allMatch(s -> s == GoalTaskStatus.VIOLATED)) {
-            return GoalTaskStatus.VIOLATED;
-        }
-        return statuses.stream().allMatch(s -> s == GoalTaskStatus.PENDING)
-                ? GoalTaskStatus.PENDING : GoalTaskStatus.UNKNOWN;
-    }
-
     /**
      * Recomputes non-leaf Goal/Task statuses from the current refinement tree, including the
      * negative case that the operational {@link #saturate} intentionally does not derive:
@@ -111,15 +72,7 @@ public final class IStarPropagation {
         while (changed && steps++ < MAX_SATURATION_STEPS) {
             changed = false;
 
-            IStarMarking afterResolutions = resolveHandledObstacles(gm, current);
-            if (!afterResolutions.equals(current)) {
-                current = afterResolutions;
-                changed = true;
-            }
-            Set<String> blocked = activeObstructedElements(gm, current);
-
             for (Map.Entry<String, List<String>> e : andGroups.entrySet()) {
-                if (blocked.contains(e.getKey())) continue;
                 if (hasDirectGoalCondition(gm, e.getKey())) continue;
                 GoalTaskStatus status = statusOfAnd(current, e.getValue());
                 if (status != GoalTaskStatus.UNKNOWN && current.goalTaskStatus(e.getKey()) != status) {
@@ -129,7 +82,6 @@ public final class IStarPropagation {
             }
 
             for (Map.Entry<String, Set<String>> e : orGroups.entrySet()) {
-                if (blocked.contains(e.getKey())) continue;
                 if (hasDirectGoalCondition(gm, e.getKey())) continue;
                 GoalTaskStatus status = statusOfOr(current, e.getValue());
                 if (status != GoalTaskStatus.UNKNOWN && current.goalTaskStatus(e.getKey()) != status) {
@@ -138,12 +90,6 @@ public final class IStarPropagation {
                 }
             }
 
-            for (String id : blocked) {
-                if (current.goalTaskStatus(id) != GoalTaskStatus.PENDING) {
-                    current = current.withGoalTask(id, GoalTaskStatus.PENDING);
-                    changed = true;
-                }
-            }
         }
         return current;
     }
@@ -161,17 +107,9 @@ public final class IStarPropagation {
         while (changed && steps++ < MAX_SATURATION_STEPS) {
             changed = false;
 
-            IStarMarking afterResolutions = resolveHandledObstacles(gm, current);
-            if (!afterResolutions.equals(current)) {
-                current = afterResolutions;
-                changed = true;
-            }
-            Set<String> blocked = activeObstructedElements(gm, current);
-
             // P_AND — parent satisfied once every child is fulfilled.
             for (Map.Entry<String, List<String>> e : andGroups.entrySet()) {
                 String parent = e.getKey();
-                if (blocked.contains(parent)) continue;
                 if (hasDirectGoalCondition(gm, parent)) continue;
                 if (current.goalTaskStatus(parent) == GoalTaskStatus.FULFILLED) continue;
                 boolean allChildrenFulfilled = true;
@@ -190,7 +128,6 @@ public final class IStarPropagation {
             // P_OR — parent satisfied as soon as at least one child is fulfilled.
             for (Map.Entry<String, Set<String>> e : orGroups.entrySet()) {
                 String parent = e.getKey();
-                if (blocked.contains(parent)) continue;
                 if (hasDirectGoalCondition(gm, parent)) continue;
                 if (current.goalTaskStatus(parent) == GoalTaskStatus.FULFILLED) continue;
                 boolean anyChildFulfilled = false;
@@ -208,7 +145,6 @@ public final class IStarPropagation {
 
             // P_Make / P_Break / BP_fulfill / BP_deny.
             for (Contribution c : contributions) {
-                if (blocked.contains(c.element())) continue;
                 if (current.goalTaskStatus(c.element()) != GoalTaskStatus.FULFILLED) continue;
 
                 boolean positive = ContributionPolarity.isSufficientPositive(c.type());
@@ -239,12 +175,6 @@ public final class IStarPropagation {
                 }
             }
 
-            for (String id : blocked) {
-                if (current.goalTaskStatus(id) != GoalTaskStatus.PENDING) {
-                    current = current.withGoalTask(id, GoalTaskStatus.PENDING);
-                    changed = true;
-                }
-            }
         }
         return current;
     }
@@ -261,39 +191,10 @@ public final class IStarPropagation {
                     case OrRefinement or -> orGroups
                             .computeIfAbsent(or.parent(), k -> new LinkedHashSet<>())
                             .add(or.child());
-                    // A flat type-level marking has no instance universe. Parameter
-                    // refinements are expanded/aggregated only by an instance-aware layer.
-                    case ForRefinement ignored -> { }
-                    case PickRefinement ignored -> { }
                 }
             }
             contributions.addAll(actor.contributions());
         }
-    }
-
-    private static IStarMarking resolveHandledObstacles(GoalModel gm, IStarMarking marking) {
-        IStarMarking current = marking;
-        for (Actor actor : gm.getActors()) {
-            for (Resolution resolution : actor.resolutions()) {
-                if (current.obstacleStatus(resolution.obstacle()) == ObstacleStatus.ACTIVE
-                        && current.goalTaskStatus(resolution.element()) == GoalTaskStatus.FULFILLED) {
-                    current = current.withObstacle(resolution.obstacle(), ObstacleStatus.RESOLVED);
-                }
-            }
-        }
-        return current;
-    }
-
-    private static Set<String> activeObstructedElements(GoalModel gm, IStarMarking marking) {
-        Set<String> blocked = new LinkedHashSet<>();
-        for (Actor actor : gm.getActors()) {
-            for (Obstruction obstruction : actor.obstructions()) {
-                if (marking.obstacleStatus(obstruction.obstacle()) == ObstacleStatus.ACTIVE) {
-                    blocked.add(obstruction.element());
-                }
-            }
-        }
-        return blocked;
     }
 
     private static GoalTaskStatus statusOfAnd(IStarMarking marking, List<String> children) {

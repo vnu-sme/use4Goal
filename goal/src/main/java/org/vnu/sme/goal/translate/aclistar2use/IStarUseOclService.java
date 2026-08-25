@@ -20,11 +20,11 @@ import org.vnu.sme.goal.dsl.istar.parser.IStarCompiler;
  *   <li>Parse the {@code .acl} source → {@link AclModel}.</li>
  *   <li>Parse the {@code .istar} source → {@link GoalModel}.</li>
  *   <li>Delegate to {@link AclIStar2UseTranslator}, which produces plain-OCL
- *       {@code .use} text (class diagram + derived operations + refinement
- *       invariants) and separate TOCL text (temporal goal properties).</li>
+ *       {@code .use} text (class diagram + derived Goal/Task query operations)
+ *       and separate TOCL text (temporal goal properties).</li>
  *   <li>Write the {@code .use} text to the requested output file, and the TOCL
  *       text to a companion {@code .tocl} file next to it (same basename) --
- *       kept apart because {@code always}/{@code sometime}/{@code alwaysPast}
+ *       kept apart because {@code always}/{@code sometime}
  *       are not core OCL keywords, so a plain USE compile of the {@code .use}
  *       file must never contain them.</li>
  * </ol>
@@ -43,7 +43,9 @@ public final class IStarUseOclService {
             AclIStar2UseTranslator.Result useResult,
             List<String> errors) {
 
-        public boolean ok() { return errors.isEmpty(); }
+        public boolean ok() {
+            return errors.isEmpty() && useResult != null && useResult.ok();
+        }
 
         /** Combined diagnostics: I/O errors + translator warnings. */
         public List<String> allDiagnostics() {
@@ -98,6 +100,10 @@ public final class IStarUseOclService {
 
         // ── 3. Translate → USE text (class diagram + OCL) + TOCL text ──────────
         AclIStar2UseTranslator.Result useResult = AclIStar2UseTranslator.translate(acl, gm);
+        if (!useResult.ok()) {
+            errors.add("Translation stopped because the iStar model uses unsupported semantics.");
+            return new Result(outputFile, toclFile, useResult, errors);
+        }
 
         // ── 4. Write the two output files ────────────────────────────────────
         try {

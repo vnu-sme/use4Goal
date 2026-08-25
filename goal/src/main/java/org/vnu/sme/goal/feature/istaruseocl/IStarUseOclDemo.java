@@ -11,15 +11,27 @@ import org.vnu.sme.goal.translate.aclistar2use.AclIStar2UseTranslator;
 import org.vnu.sme.goal.translate.aclistar2use.IStarUseOclService;
 
 /**
- * Quick smoke-test: compile mtg.acl + mtg.istar and print the unified .use output to stdout.
+ * Quick smoke-test: compile a pair of ACL/iStar files and print the generated
+ * USE/TOCL text. Optional arguments are {@code <model.acl> <model.istar>
+ * <output.use>}.
  * Run with: mvn exec:java -pl goal -Dexec.mainClass=org.vnu.sme.goal.feature.istaruseocl.IStarUseOclDemo
  */
 public final class IStarUseOclDemo {
 
     public static void main(String[] args) throws Exception {
-        Path aclPath   = Paths.get("src/main/resources/examples/mtg/mtg.acl");
-        Path istarPath = Paths.get("src/main/resources/examples/mtg/mtg.istar");
-        Path outputFile = Paths.get("target/mtg_verification.use");
+        if (args.length != 0 && args.length != 3) {
+            System.err.println("Usage: IStarUseOclDemo [<model.acl> <model.istar> <output.use>]");
+            return;
+        }
+        Path aclPath = args.length == 3
+                ? Paths.get(args[0])
+                : Paths.get("src/main/resources/examples/classroom/classroom.acl");
+        Path istarPath = args.length == 3
+                ? Paths.get(args[1])
+                : Paths.get("src/main/resources/examples/classroom/classroom.istar");
+        Path outputFile = args.length == 3
+                ? Paths.get(args[2])
+                : Paths.get("target/ClassroomGoals_Verification.use");
 
         System.out.println("=== Parsing ACL: " + aclPath + " ===");
         AclCompiler.Result aclResult = AclCompiler.compile(aclPath);

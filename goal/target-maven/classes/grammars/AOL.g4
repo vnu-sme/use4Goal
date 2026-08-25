@@ -1,57 +1,24 @@
 grammar AOL;
 
-@header { package org.vnu.sme.goal.aol.parser; }
+@header { package org.vnu.sme.goal.dsl.aol.parser; }
 
-// =====================================================================
-//  AOL — ACL Object Language: an object-diagram-style instance snapshot
-//  for an ACL structural specification.
+// AOL v2 is the concrete syntax of the formal ACL state
+// (sigma_Class, sigma_Att, sigma_Assoc, sigma_Play):
 //
-//  The .acl file is the "class diagram" -- type-level: which Role/Entity/
-//  Group types exist, their cardinality bounds, and which Role pairs may
-//  be jointly held by one agent (compatibility). This .aol file is its
-//  "object diagram": concrete Agent identities, concrete Group instances
-//  (nested exactly like the .acl subgroup tree), concrete Entity
-//  instances with attribute values, and 'play' statements binding one
-//  Agent to one Role inside one Group instance.
+//   group Classroom as classroom1;
+//   role Person as person1;
+//   role Teacher as teacher1;
+//   play person1 -> teacher1;
+//   link Classroom_contains_Teacher : classroom1 -> teacher1;
 //
-//  Central point (see Metamodel/tmp/01-ACL-metamodel.drawio): a Role
-//  instance is never an object with its own identity across occasions --
-//  the Agent is the persistent identity. 'play' is the (Agent, Role,
-//  GroupInstance) triple that makes a role concrete, exactly why the
-//  eventual .use translation needs Role modeled as an associationclass
-//  over (Agent, GroupInstance) rather than a bare class: an Agent, unlike
-//  a plain UML Object, is not single-classified -- it may play several
-//  Roles at once, gated by CompatLink (default: not allowed).
+// Entity, Role and Group instances are the only objects.  `play` links a
+// parent Role object to a direct child Role object.  Group containment is an
+// ordinary composition link in sigma_Assoc.  There is no Agent classifier.
 //
-//  Example (against Metamodel's Company/Manager/Employee/Task showcase):
-//
-//    aol v1.0 CompanySnapshot for "full_showcase_diagram_notations.acl" {
-//      agent alice, bob, carol;
-//
-//      group Company as company1 {
-//        play Manager as m1 by alice;
-//        play Employee as e1 by bob;
-//
-//        entity Task as t1 { done = true; }
-//
-//        group Team as team1 {
-//          play Employee as e2 by carol;
-//        }
-//      }
-//    }
-//
-//  Validation (see AolModelFactory) checks, against the referenced .acl
-//  StructuralSpecification: every group/role/entity instance's declared
-//  type actually exists at that nesting point; abstract roles are never
-//  played directly; per-type-per-group-instance counts respect the
-//  declared AclCardinality bounds; attribute values type-check against
-//  AclDataType (including inherited role attributes); and -- the whole
-//  point of this language -- for every Agent, every pair of *distinct*
-//  Role types it plays within the same Group instance (propagated into
-//  nested subgroup instances when the compatibility declares
-//  extends-subgroups true) must be declared 'compatible' at the type
-//  level, or it is a semantic error (default: incompatible).
-// =====================================================================
+// The agent declaration and `play Role as id by agent` productions below are
+// retained solely so legacy AOL v1 tools can still parse their old fixtures.
+// AclSystemStateCompiler, used by ACL State Evaluator, requires v2.0 and
+// rejects those legacy constructs.
 
 model : 'aol' VERSION IDENT 'for' STRING_LITERAL '{' topLevelDecl* '}' EOF ;
 
@@ -59,6 +26,8 @@ topLevelDecl
     : agentDecl
     | groupInstanceDecl
     | entityInstanceDecl
+    | roleInstanceDecl
+    | playLinkDecl
     | linkDecl
     ;
 
@@ -80,6 +49,17 @@ groupItemDecl
 
 playDecl
     : 'play' IDENT 'as' IDENT 'by' IDENT (';' | attributeValueBlock)
+    ;
+
+// AOL v2 formal-state declarations.  A Role is an object in its own oid(r)
+// domain.  `play parent -> child` instantiates sigma_Play between two Role
+// objects; it is deliberately not an Agent--Role binding.
+roleInstanceDecl
+    : 'role' IDENT 'as' IDENT (';' | attributeValueBlock)
+    ;
+
+playLinkDecl
+    : 'play' IDENT '->' IDENT ';'
     ;
 
 entityInstanceDecl

@@ -28,6 +28,7 @@ thành hai nhánh: **semantics** giải thích hệ thống và ý nghĩa vận 
 - [ACL + BPMN → USE](semantics/transformations/aclBpmn2use.md)
 - [ACL + iStar + BPMN → USE](semantics/transformations/aclIstarBpmn2use.md)
 - [ACL + iStar + BPMN → Event-B](semantics/transformations/aclIstarBpmn2eventB.md)
+- [Semantic Task–Activity mapping](semantics/transformations/semantic-mapping.md)
 
 Mỗi luật dịch hoàn chỉnh phải nêu: nguồn, đích, ánh xạ khái niệm, OCL/TOCL
 được sinh, điều kiện bảo toàn ngữ nghĩa, construct chưa hỗ trợ và ít nhất một

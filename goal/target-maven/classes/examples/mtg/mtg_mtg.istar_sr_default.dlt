@@ -10,248 +10,500 @@
         <showrolenames>true</showrolenames>
         <showgrid>false</showgrid>
     </diagramOptions>
-    <node height="368.0" id="Initiator" sizeCalculated="false"
-        type="IStarNode" width="182.0">
-        <name>Initiator</name>
+    <node height="1118.0" id="MeetingInitiator" sizeCalculated="false"
+        type="IStarNode" width="1190.0">
+        <name>MeetingInitiator</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>24.0</x>
-            <y>30.0</y>
+            <x>-54.0</x>
+            <y>10.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="36.0" id="HaveMeetingOrganized" sizeCalculated="false"
+    <node height="82.0" id="MeetingOrganized" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>MeetingOrganized</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>-20.0</x>
+            <y>275.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="MeetingBeScheduled" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>MeetingBeScheduled</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>76.0</x>
+            <y>65.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="50.0" id="ParticipantsAttend" sizeCalculated="false"
         type="IStarNode" width="126.0">
-        <name>HaveMeetingOrganized</name>
+        <name>ParticipantsAttend</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>52.0</x>
-            <y>80.0</y>
+            <x>363.0</x>
+            <y>444.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="44.0" id="DecideMeetingDetails" sizeCalculated="false"
-        type="IStarNode" width="108.0">
-        <name>DecideMeetingDetails</name>
+    <node height="82.0" id="ParticipantAttends" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>ParticipantAttends</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>61.0</x>
-            <y>128.0</y>
+            <x>351.0</x>
+            <y>723.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="36.0" id="HaveSchedulingPerformed"
+    <node height="50.0" id="ImportantParticipantsAttend"
         sizeCalculated="false" type="IStarNode" width="126.0">
-        <name>HaveSchedulingPerformed</name>
+        <name>ImportantParticipantsAttend</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>52.0</x>
-            <y>184.0</y>
+            <x>136.0</x>
+            <y>477.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="36.0" id="MeetingAttended" sizeCalculated="false"
-        type="IStarNode" width="126.0">
-        <name>MeetingAttended</name>
+    <node height="82.0" id="ImportantParticipantAttends"
+        sizeCalculated="false" type="IStarNode" width="250.0">
+        <name>ImportantParticipantAttends</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>52.0</x>
-            <y>232.0</y>
+            <x>131.0</x>
+            <y>604.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="36.0" id="HaveSchedulingPerformedByOrganizer"
+    <node height="50.0" id="ImportantParticipantsAssured"
         sizeCalculated="false" type="IStarNode" width="126.0">
-        <name>HaveSchedulingPerformedByOrganizer</name>
+        <name>ImportantParticipantsAssured</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>52.0</x>
-            <y>280.0</y>
+            <x>1.0</x>
+            <y>581.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="36.0" id="MeetingAttendedByParticipant"
-        sizeCalculated="false" type="IStarNode" width="126.0">
-        <name>MeetingAttendedByParticipant</name>
+    <node height="82.0" id="ImportantAttendanceAssured"
+        sizeCalculated="false" type="IStarNode" width="250.0">
+        <name>ImportantAttendanceAssured</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>52.0</x>
-            <y>328.0</y>
+            <x>-26.0</x>
+            <y>883.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="644.0" id="Organizer" sizeCalculated="false"
-        type="IStarNode" width="182.0">
-        <name>Organizer</name>
+    <node height="90.0" id="ScheduleMeetingManually"
+        sizeCalculated="false" type="IStarNode" width="250.0">
+        <name>ScheduleMeetingManually</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>250.0</x>
-            <y>30.0</y>
+            <x>381.0</x>
+            <y>262.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="36.0" id="HaveMeetingScheduled" sizeCalculated="false"
-        type="IStarNode" width="126.0">
-        <name>HaveMeetingScheduled</name>
+    <node height="90.0" id="LetSchedulerScheduleMeeting"
+        sizeCalculated="false" type="IStarNode" width="250.0">
+        <name>LetSchedulerScheduleMeeting</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>278.0</x>
-            <y>80.0</y>
+            <x>456.0</x>
+            <y>83.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="36.0" id="TimetablesCollected" sizeCalculated="false"
-        type="IStarNode" width="126.0">
-        <name>TimetablesCollected</name>
+    <node height="90.0" id="EnterDateRange" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>EnterDateRange</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>278.0</x>
-            <y>128.0</y>
+            <x>636.0</x>
+            <y>368.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="44.0" id="ChooseTimeAndDate" sizeCalculated="false"
-        type="IStarNode" width="108.0">
-        <name>ChooseTimeAndDate</name>
-        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>287.0</x>
-            <y>176.0</y>
-        </strategy>
-        <hidden>false</hidden>
-    </node>
-    <node height="36.0" id="MeetingAnnounced" sizeCalculated="false"
-        type="IStarNode" width="126.0">
-        <name>MeetingAnnounced</name>
-        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>278.0</x>
-            <y>232.0</y>
-        </strategy>
-        <hidden>false</hidden>
-    </node>
-    <node height="36.0" id="TimetableCollected" sizeCalculated="false"
-        type="IStarNode" width="126.0">
-        <name>TimetableCollected</name>
-        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>278.0</x>
-            <y>280.0</y>
-        </strategy>
-        <hidden>false</hidden>
-    </node>
-    <node height="36.0" id="HavePPCalled" sizeCalculated="false"
-        type="IStarNode" width="126.0">
-        <name>HavePPCalled</name>
-        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>278.0</x>
-            <y>328.0</y>
-        </strategy>
-        <hidden>false</hidden>
-    </node>
-    <node height="44.0" id="CollectFromCalendar" sizeCalculated="false"
-        type="IStarNode" width="108.0">
-        <name>CollectFromCalendar</name>
-        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>287.0</x>
-            <y>376.0</y>
-        </strategy>
-        <hidden>false</hidden>
-    </node>
-    <node height="36.0" id="HaveSecretaryCallPP" sizeCalculated="false"
-        type="IStarNode" width="126.0">
-        <name>HaveSecretaryCallPP</name>
-        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>278.0</x>
-            <y>432.0</y>
-        </strategy>
-        <hidden>false</hidden>
-    </node>
-    <node height="44.0" id="AnnounceMeeting" sizeCalculated="false"
-        type="IStarNode" width="108.0">
-        <name>AnnounceMeeting</name>
-        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>287.0</x>
-            <y>480.0</y>
-        </strategy>
-        <hidden>false</hidden>
-    </node>
-    <node height="46.0" id="Inclusivity" sizeCalculated="false"
+    <node height="46.0" id="Quick" sizeCalculated="false"
         type="IStarNode" width="118.0">
-        <name>Inclusivity</name>
+        <name>Quick</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>282.0</x>
-            <y>536.0</y>
+            <x>990.0</x>
+            <y>132.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="46.0" id="QuickScheduling" sizeCalculated="false"
+    <node height="46.0" id="LowEffortInitiator" sizeCalculated="false"
         type="IStarNode" width="118.0">
-        <name>QuickScheduling</name>
+        <name>LowEffortInitiator</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>282.0</x>
-            <y>594.0</y>
+            <x>987.0</x>
+            <y>241.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="128.0" id="Secretary" sizeCalculated="false"
-        type="IStarNode" width="164.0">
-        <name>Secretary</name>
+    <node height="1264.0" id="MeetingScheduler" sizeCalculated="false"
+        type="IStarNode" width="1326.0">
+        <name>MeetingScheduler</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>476.0</x>
-            <y>30.0</y>
+            <x>819.0</x>
+            <y>86.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="44.0" id="CollectConstraintsByPhone"
+    <node height="82.0" id="SchedulingServiceProvided"
+        sizeCalculated="false" type="IStarNode" width="250.0">
+        <name>SchedulingServiceProvided</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>886.0</x>
+            <y>186.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="90.0" id="ScheduleMeeting" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>ScheduleMeeting</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1816.0</x>
+            <y>1157.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="90.0" id="ObtainAvailDates" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>ObtainAvailDates</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1314.0</x>
+            <y>175.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="96.0" id="FindAgreeableSlot" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>FindAgreeableSlot</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>847.0</x>
+            <y>726.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="90.0" id="MergeAvailDates" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>MergeAvailDates</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1643.0</x>
+            <y>114.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="90.0" id="PublishProposedDate" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>PublishProposedDate</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1550.0</x>
+            <y>849.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="90.0" id="ObtainAgreement" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>ObtainAgreement</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1867.0</x>
+            <y>976.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="46.0" id="QualityProposedDate" sizeCalculated="false"
+        type="IStarNode" width="118.0">
+        <name>QualityProposedDate</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1599.0</x>
+            <y>1276.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="1166.0" id="MeetingParticipant" sizeCalculated="false"
+        type="IStarNode" width="1266.0">
+        <name>MeetingParticipant</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1207.0</x>
+            <y>1418.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="ParticipatesInMeeting"
+        sizeCalculated="false" type="IStarNode" width="250.0">
+        <name>ParticipatesInMeeting</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1772.0</x>
+            <y>1836.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="96.0" id="AgreeableMeetingDate" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>AgreeableMeetingDate</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1657.0</x>
+            <y>1595.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="44.0" id="FindAgreeableDateUsingScheduler"
         sizeCalculated="false" type="IStarNode" width="108.0">
-        <name>CollectConstraintsByPhone</name>
+        <name>FindAgreeableDateUsingScheduler</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>504.0</x>
-            <y>80.0</y>
+            <x>1503.0</x>
+            <y>1724.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="128.0" id="Participant" sizeCalculated="false"
-        type="IStarNode" width="164.0">
-        <name>Participant</name>
+    <node height="90.0" id="EnterAvailDates" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>EnterAvailDates</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>684.0</x>
-            <y>30.0</y>
+            <x>2195.0</x>
+            <y>1841.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="44.0" id="Participate" sizeCalculated="false"
+    <node height="90.0" id="AgreeToDate" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>AgreeToDate</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1255.0</x>
+            <y>1868.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="90.0" id="FindAgreeableDateByTalkingToInitiator"
+        sizeCalculated="false" type="IStarNode" width="250.0">
+        <name>FindAgreeableDateByTalkingToInitiator</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>2095.0</x>
+            <y>1660.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="90.0" id="AttendMeeting" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>AttendMeeting</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1907.0</x>
+            <y>2325.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="26.0" id="ExclusionDates" sizeCalculated="false"
         type="IStarNode" width="108.0">
-        <name>Participate</name>
+        <name>ExclusionDates</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>712.0</x>
-            <y>80.0</y>
+            <x>2032.0</x>
+            <y>1992.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="44.0" id="dependum:15:ChooseTimeAndDate"
+    <node height="26.0" id="PreferredDates" sizeCalculated="false"
+        type="IStarNode" width="108.0">
+        <name>PreferredDates</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>2114.0</x>
+            <y>2104.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="26.0" id="ProposedDate" sizeCalculated="false"
+        type="IStarNode" width="108.0">
+        <name>ProposedDate</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1235.0</x>
+            <y>2164.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="26.0" id="Agreement" sizeCalculated="false"
+        type="IStarNode" width="108.0">
+        <name>Agreement</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1458.0</x>
+            <y>2105.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="46.0" id="ConvenientMeetingDate"
+        sizeCalculated="false" type="IStarNode" width="118.0">
+        <name>ConvenientMeetingDate</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1333.0</x>
+            <y>2231.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="46.0" id="MinInterruption" sizeCalculated="false"
+        type="IStarNode" width="118.0">
+        <name>MinInterruption</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>2240.0</x>
+            <y>2100.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="46.0" id="LowEffort" sizeCalculated="false"
+        type="IStarNode" width="118.0">
+        <name>LowEffort</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>2327.0</x>
+            <y>1509.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="46.0" id="RicherMedium" sizeCalculated="false"
+        type="IStarNode" width="118.0">
+        <name>RicherMedium</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1859.0</x>
+            <y>1486.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="46.0" id="UserFriendly" sizeCalculated="false"
+        type="IStarNode" width="118.0">
+        <name>UserFriendly</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1899.0</x>
+            <y>1698.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="541.0" id="ImportantParticipant"
+        sizeCalculated="false" type="IStarNode" width="759.0">
+        <name>ImportantParticipant</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>226.0</x>
+            <y>1415.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="ImportantParticipation"
+        sizeCalculated="false" type="IStarNode" width="250.0">
+        <name>ImportantParticipation</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>389.0</x>
+            <y>1495.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="AssuredAttendance" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>AssuredAttendance</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>707.0</x>
+            <y>1622.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="ImportantAttendsMeeting"
+        sizeCalculated="false" type="IStarNode" width="250.0">
+        <name>ImportantAttendsMeeting</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>254.0</x>
+            <y>1626.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="90.0" id="ConfirmAttendance" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>ConfirmAttendance</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>518.0</x>
+            <y>1838.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="46.0" id="AssuredAttendsMeeting"
+        sizeCalculated="false" type="IStarNode" width="118.0">
+        <name>AssuredAttendsMeeting</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>757.0</x>
+            <y>1718.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="36.0" id="dependum:41:MeetingBeScheduled"
+        sizeCalculated="false" type="IStarNode" width="126.0">
+        <name>dependum:41:MeetingBeScheduled</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1095.0</x>
+            <y>92.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="44.0" id="dependum:43:EnterAvailDates"
         sizeCalculated="false" type="IStarNode" width="108.0">
-        <name>dependum:15:ChooseTimeAndDate</name>
+        <name>dependum:43:EnterAvailDates</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>174.0</x>
-            <y>176.0</y>
+            <x>1586.0</x>
+            <y>410.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="44.0" id="dependum:17:CollectConstraintsByPhone"
+    <node height="26.0" id="dependum:45:Agreement"
         sizeCalculated="false" type="IStarNode" width="108.0">
-        <name>dependum:17:CollectConstraintsByPhone</name>
+        <name>dependum:45:Agreement</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>395.0</x>
-            <y>254.0</y>
+            <x>1519.0</x>
+            <y>1245.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="44.0" id="dependum:19:Participate"
+    <node height="26.0" id="dependum:47:ProposedDate"
         sizeCalculated="false" type="IStarNode" width="108.0">
-        <name>dependum:19:Participate</name>
+        <name>dependum:47:ProposedDate</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>386.0</x>
-            <y>202.0</y>
+            <x>1614.0</x>
+            <y>917.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="44.0" id="dependum:49:EnterDateRange"
+        sizeCalculated="false" type="IStarNode" width="108.0">
+        <name>dependum:49:EnterDateRange</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1194.0</x>
+            <y>460.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="36.0" id="dependum:51:AttendsMeeting"
+        sizeCalculated="false" type="IStarNode" width="126.0">
+        <name>dependum:51:AttendsMeeting</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>763.0</x>
+            <y>1115.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="36.0" id="dependum:53:AttendsMeeting"
+        sizeCalculated="false" type="IStarNode" width="126.0">
+        <name>dependum:53:AttendsMeeting</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>391.0</x>
+            <y>1099.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="46.0" id="dependum:55:AssuredAttendsMeeting"
+        sizeCalculated="false" type="IStarNode" width="118.0">
+        <name>dependum:55:AssuredAttendsMeeting</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>186.0</x>
+            <y>1048.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
     <edge type="IStarEdge">
-        <source>AnnounceMeeting</source>
-        <target>MeetingAnnounced</target>
+        <source>AgreeToDate</source>
+        <target>FindAgreeableDateUsingScheduler</target>
         <name>and_refine</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::AND_REFINE::AnnounceMeeting::MeetingAnnounced::WayPoint::0"
+                id="istar::AND_REFINE::AgreeToDate::FindAgreeableDateUsingScheduler::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -264,7 +516,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::AND_REFINE::AnnounceMeeting::MeetingAnnounced::WayPoint::1"
+                id="istar::AND_REFINE::AgreeToDate::FindAgreeableDateUsingScheduler::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -280,13 +532,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="IStarEdge">
-        <source>ChooseTimeAndDate</source>
-        <target>HaveMeetingScheduled</target>
+        <source>AgreeableMeetingDate</source>
+        <target>ParticipatesInMeeting</target>
         <name>and_refine</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::AND_REFINE::ChooseTimeAndDate::HaveMeetingScheduled::WayPoint::0"
+                id="istar::AND_REFINE::AgreeableMeetingDate::ParticipatesInMeeting::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -299,7 +551,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::AND_REFINE::ChooseTimeAndDate::HaveMeetingScheduled::WayPoint::1"
+                id="istar::AND_REFINE::AgreeableMeetingDate::ParticipatesInMeeting::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -315,13 +567,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="IStarEdge">
-        <source>DecideMeetingDetails</source>
-        <target>HaveMeetingOrganized</target>
+        <source>AssuredAttendance</source>
+        <target>ImportantParticipation</target>
         <name>and_refine</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::AND_REFINE::DecideMeetingDetails::HaveMeetingOrganized::WayPoint::0"
+                id="istar::AND_REFINE::AssuredAttendance::ImportantParticipation::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -334,7 +586,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::AND_REFINE::DecideMeetingDetails::HaveMeetingOrganized::WayPoint::1"
+                id="istar::AND_REFINE::AssuredAttendance::ImportantParticipation::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -350,13 +602,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="IStarEdge">
-        <source>HaveSchedulingPerformed</source>
-        <target>HaveMeetingOrganized</target>
+        <source>AttendMeeting</source>
+        <target>ParticipatesInMeeting</target>
         <name>and_refine</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::AND_REFINE::HaveSchedulingPerformed::HaveMeetingOrganized::WayPoint::0"
+                id="istar::AND_REFINE::AttendMeeting::ParticipatesInMeeting::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -369,7 +621,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::AND_REFINE::HaveSchedulingPerformed::HaveMeetingOrganized::WayPoint::1"
+                id="istar::AND_REFINE::AttendMeeting::ParticipatesInMeeting::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -385,13 +637,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="IStarEdge">
-        <source>MeetingAnnounced</source>
-        <target>HaveMeetingScheduled</target>
+        <source>EnterAvailDates</source>
+        <target>FindAgreeableDateUsingScheduler</target>
         <name>and_refine</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::AND_REFINE::MeetingAnnounced::HaveMeetingScheduled::WayPoint::0"
+                id="istar::AND_REFINE::EnterAvailDates::FindAgreeableDateUsingScheduler::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -404,7 +656,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::AND_REFINE::MeetingAnnounced::HaveMeetingScheduled::WayPoint::1"
+                id="istar::AND_REFINE::EnterAvailDates::FindAgreeableDateUsingScheduler::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -420,13 +672,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="IStarEdge">
-        <source>MeetingAttended</source>
-        <target>HaveMeetingOrganized</target>
+        <source>FindAgreeableSlot</source>
+        <target>ScheduleMeeting</target>
         <name>and_refine</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::AND_REFINE::MeetingAttended::HaveMeetingOrganized::WayPoint::0"
+                id="istar::AND_REFINE::FindAgreeableSlot::ScheduleMeeting::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -439,7 +691,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::AND_REFINE::MeetingAttended::HaveMeetingOrganized::WayPoint::1"
+                id="istar::AND_REFINE::FindAgreeableSlot::ScheduleMeeting::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -455,13 +707,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="IStarEdge">
-        <source>MeetingAttendedByParticipant</source>
-        <target>MeetingAttended</target>
+        <source>ImportantAttendanceAssured</source>
+        <target>ImportantParticipantsAssured</target>
         <name>and_refine</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::AND_REFINE::MeetingAttendedByParticipant::MeetingAttended::WayPoint::0"
+                id="istar::AND_REFINE::ImportantAttendanceAssured::ImportantParticipantsAssured::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -474,7 +726,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::AND_REFINE::MeetingAttendedByParticipant::MeetingAttended::WayPoint::1"
+                id="istar::AND_REFINE::ImportantAttendanceAssured::ImportantParticipantsAssured::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -490,13 +742,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="IStarEdge">
-        <source>TimetableCollected</source>
-        <target>TimetablesCollected</target>
+        <source>ImportantAttendsMeeting</source>
+        <target>ImportantParticipation</target>
         <name>and_refine</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::AND_REFINE::TimetableCollected::TimetablesCollected::WayPoint::0"
+                id="istar::AND_REFINE::ImportantAttendsMeeting::ImportantParticipation::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -509,7 +761,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::AND_REFINE::TimetableCollected::TimetablesCollected::WayPoint::1"
+                id="istar::AND_REFINE::ImportantAttendsMeeting::ImportantParticipation::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -525,13 +777,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="IStarEdge">
-        <source>TimetablesCollected</source>
-        <target>HaveMeetingScheduled</target>
+        <source>ImportantParticipantAttends</source>
+        <target>ImportantParticipantsAttend</target>
         <name>and_refine</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::AND_REFINE::TimetablesCollected::HaveMeetingScheduled::WayPoint::0"
+                id="istar::AND_REFINE::ImportantParticipantAttends::ImportantParticipantsAttend::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -544,7 +796,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::AND_REFINE::TimetablesCollected::HaveMeetingScheduled::WayPoint::1"
+                id="istar::AND_REFINE::ImportantParticipantAttends::ImportantParticipantsAttend::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -560,13 +812,300 @@
         <hidden>false</hidden>
     </edge>
     <edge type="IStarEdge">
-        <source>CollectFromCalendar</source>
-        <target>QuickScheduling</target>
+        <source>ImportantParticipantsAssured</source>
+        <target>MeetingOrganized</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::ImportantParticipantsAssured::MeetingOrganized::WayPoint::0"
+                sizeCalculated="true" type="WayPoint" userDefined="true" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToCorner">
+                    <userOffsetX>65.0316040852237</userOffsetX>
+                    <userOffsetY>7.436493896159163</userOffsetY>
+                    <basisDeltaX>ABSOLUTE</basisDeltaX>
+                    <deltaX>0.0</deltaX>
+                    <maxDeltaX>1.7976931348623157E308</maxDeltaX>
+                    <basisDeltaY>ABSOLUTE</basisDeltaY>
+                    <deltaY>0.0</deltaY>
+                    <maxDeltaY>1.7976931348623157E308</maxDeltaY>
+                    <corner>NORTH_WEST</corner>
+                    <relativeNodeId>ImportantParticipantsAssured</relativeNodeId>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::ImportantParticipantsAssured::MeetingOrganized::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ImportantParticipantsAttend</source>
+        <target>MeetingOrganized</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::ImportantParticipantsAttend::MeetingOrganized::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::ImportantParticipantsAttend::MeetingOrganized::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>MeetingBeScheduled</source>
+        <target>MeetingOrganized</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::MeetingBeScheduled::MeetingOrganized::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::MeetingBeScheduled::MeetingOrganized::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ObtainAgreement</source>
+        <target>ScheduleMeeting</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::ObtainAgreement::ScheduleMeeting::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::ObtainAgreement::ScheduleMeeting::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ObtainAvailDates</source>
+        <target>ScheduleMeeting</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::ObtainAvailDates::ScheduleMeeting::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::ObtainAvailDates::ScheduleMeeting::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ParticipantAttends</source>
+        <target>ParticipantsAttend</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::ParticipantAttends::ParticipantsAttend::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::ParticipantAttends::ParticipantsAttend::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ParticipantsAttend</source>
+        <target>MeetingOrganized</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::ParticipantsAttend::MeetingOrganized::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::ParticipantsAttend::MeetingOrganized::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>PublishProposedDate</source>
+        <target>ScheduleMeeting</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::PublishProposedDate::ScheduleMeeting::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::PublishProposedDate::ScheduleMeeting::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>AgreeToDate</source>
+        <target>ConvenientMeetingDate</target>
         <name>contribution</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::CONTRIBUTION::CollectFromCalendar::QuickScheduling::WayPoint::0"
+                id="istar::CONTRIBUTION::AgreeToDate::ConvenientMeetingDate::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -579,13 +1118,20 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::CONTRIBUTION::CollectFromCalendar::QuickScheduling::WayPoint::1"
-                sizeCalculated="true" type="WayPoint"
-                userDefined="false" visible="true">
+                id="istar::CONTRIBUTION::AgreeToDate::ConvenientMeetingDate::WayPoint::1"
+                sizeCalculated="true" type="WayPoint" userDefined="true" visible="true">
                 <name>1</name>
-                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
-                    <userOffsetX>0.0</userOffsetX>
-                    <userOffsetY>0.0</userOffsetY>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToCorner">
+                    <userOffsetX>-41.89535724152552</userOffsetX>
+                    <userOffsetY>-45.483418847305074</userOffsetY>
+                    <basisDeltaX>ABSOLUTE</basisDeltaX>
+                    <deltaX>0.0</deltaX>
+                    <maxDeltaX>1.7976931348623157E308</maxDeltaX>
+                    <basisDeltaY>ABSOLUTE</basisDeltaY>
+                    <deltaY>0.0</deltaY>
+                    <maxDeltaY>1.7976931348623157E308</maxDeltaY>
+                    <corner>NORTH_WEST</corner>
+                    <relativeNodeId>ConvenientMeetingDate</relativeNodeId>
                 </strategy>
                 <id>1</id>
                 <specialid>2</specialid>
@@ -595,13 +1141,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="IStarEdge">
-        <source>HavePPCalled</source>
-        <target>Inclusivity</target>
+        <source>ConfirmAttendance</source>
+        <target>AssuredAttendsMeeting</target>
         <name>contribution</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::CONTRIBUTION::HavePPCalled::Inclusivity::WayPoint::0"
+                id="istar::CONTRIBUTION::ConfirmAttendance::AssuredAttendsMeeting::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -614,7 +1160,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::CONTRIBUTION::HavePPCalled::Inclusivity::WayPoint::1"
+                id="istar::CONTRIBUTION::ConfirmAttendance::AssuredAttendsMeeting::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -630,13 +1176,468 @@
         <hidden>false</hidden>
     </edge>
     <edge type="IStarEdge">
-        <source>HaveSchedulingPerformedByOrganizer</source>
-        <target>dependum:15:ChooseTimeAndDate</target>
+        <source>EnterAvailDates</source>
+        <target>MinInterruption</target>
+        <name>contribution</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::CONTRIBUTION::EnterAvailDates::MinInterruption::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::CONTRIBUTION::EnterAvailDates::MinInterruption::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>FindAgreeableDateByTalkingToInitiator</source>
+        <target>RicherMedium</target>
+        <name>contribution</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::CONTRIBUTION::FindAgreeableDateByTalkingToInitiator::RicherMedium::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::CONTRIBUTION::FindAgreeableDateByTalkingToInitiator::RicherMedium::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>FindAgreeableDateByTalkingToInitiator</source>
+        <target>UserFriendly</target>
+        <name>contribution</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::CONTRIBUTION::FindAgreeableDateByTalkingToInitiator::UserFriendly::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::CONTRIBUTION::FindAgreeableDateByTalkingToInitiator::UserFriendly::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>FindAgreeableDateUsingScheduler</source>
+        <target>RicherMedium</target>
+        <name>contribution</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::CONTRIBUTION::FindAgreeableDateUsingScheduler::RicherMedium::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::CONTRIBUTION::FindAgreeableDateUsingScheduler::RicherMedium::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>FindAgreeableDateUsingScheduler</source>
+        <target>UserFriendly</target>
+        <name>contribution</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::CONTRIBUTION::FindAgreeableDateUsingScheduler::UserFriendly::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::CONTRIBUTION::FindAgreeableDateUsingScheduler::UserFriendly::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>LetSchedulerScheduleMeeting</source>
+        <target>LowEffortInitiator</target>
+        <name>contribution</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::CONTRIBUTION::LetSchedulerScheduleMeeting::LowEffortInitiator::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::CONTRIBUTION::LetSchedulerScheduleMeeting::LowEffortInitiator::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>LetSchedulerScheduleMeeting</source>
+        <target>Quick</target>
+        <name>contribution</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::CONTRIBUTION::LetSchedulerScheduleMeeting::Quick::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::CONTRIBUTION::LetSchedulerScheduleMeeting::Quick::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>MergeAvailDates</source>
+        <target>QualityProposedDate</target>
+        <name>contribution</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::CONTRIBUTION::MergeAvailDates::QualityProposedDate::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::CONTRIBUTION::MergeAvailDates::QualityProposedDate::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>PublishProposedDate</source>
+        <target>QualityProposedDate</target>
+        <name>contribution</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::CONTRIBUTION::PublishProposedDate::QualityProposedDate::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::CONTRIBUTION::PublishProposedDate::QualityProposedDate::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>RicherMedium</source>
+        <target>LowEffort</target>
+        <name>contribution</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::CONTRIBUTION::RicherMedium::LowEffort::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::CONTRIBUTION::RicherMedium::LowEffort::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ScheduleMeetingManually</source>
+        <target>LowEffortInitiator</target>
+        <name>contribution</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::CONTRIBUTION::ScheduleMeetingManually::LowEffortInitiator::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::CONTRIBUTION::ScheduleMeetingManually::LowEffortInitiator::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ScheduleMeetingManually</source>
+        <target>Quick</target>
+        <name>contribution</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::CONTRIBUTION::ScheduleMeetingManually::Quick::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::CONTRIBUTION::ScheduleMeetingManually::Quick::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>UserFriendly</source>
+        <target>LowEffort</target>
+        <name>contribution</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::CONTRIBUTION::UserFriendly::LowEffort::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::CONTRIBUTION::UserFriendly::LowEffort::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>AgreeToDate</source>
+        <target>dependum:47:ProposedDate</target>
         <name>dependency</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::DEPENDENCY::HaveSchedulingPerformedByOrganizer::dependum:15:ChooseTimeAndDate::WayPoint::0"
+                id="istar::DEPENDENCY::AgreeToDate::dependum:47:ProposedDate::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -649,7 +1650,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::DEPENDENCY::HaveSchedulingPerformedByOrganizer::dependum:15:ChooseTimeAndDate::WayPoint::1"
+                id="istar::DEPENDENCY::AgreeToDate::dependum:47:ProposedDate::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -665,13 +1666,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="IStarEdge">
-        <source>HaveSecretaryCallPP</source>
-        <target>dependum:17:CollectConstraintsByPhone</target>
+        <source>ImportantAttendanceAssured</source>
+        <target>dependum:55:AssuredAttendsMeeting</target>
         <name>dependency</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::DEPENDENCY::HaveSecretaryCallPP::dependum:17:CollectConstraintsByPhone::WayPoint::0"
+                id="istar::DEPENDENCY::ImportantAttendanceAssured::dependum:55:AssuredAttendsMeeting::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -684,7 +1685,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::DEPENDENCY::HaveSecretaryCallPP::dependum:17:CollectConstraintsByPhone::WayPoint::1"
+                id="istar::DEPENDENCY::ImportantAttendanceAssured::dependum:55:AssuredAttendsMeeting::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -700,13 +1701,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="IStarEdge">
-        <source>MeetingAttendedByParticipant</source>
-        <target>dependum:19:Participate</target>
+        <source>ImportantParticipantAttends</source>
+        <target>dependum:53:AttendsMeeting</target>
         <name>dependency</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::DEPENDENCY::MeetingAttendedByParticipant::dependum:19:Participate::WayPoint::0"
+                id="istar::DEPENDENCY::ImportantParticipantAttends::dependum:53:AttendsMeeting::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -719,7 +1720,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::DEPENDENCY::MeetingAttendedByParticipant::dependum:19:Participate::WayPoint::1"
+                id="istar::DEPENDENCY::ImportantParticipantAttends::dependum:53:AttendsMeeting::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -735,13 +1736,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="IStarEdge">
-        <source>dependum:15:ChooseTimeAndDate</source>
-        <target>HaveMeetingScheduled</target>
+        <source>LetSchedulerScheduleMeeting</source>
+        <target>dependum:41:MeetingBeScheduled</target>
         <name>dependency</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::DEPENDENCY::dependum:15:ChooseTimeAndDate::HaveMeetingScheduled::WayPoint::0"
+                id="istar::DEPENDENCY::LetSchedulerScheduleMeeting::dependum:41:MeetingBeScheduled::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -754,7 +1755,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::DEPENDENCY::dependum:15:ChooseTimeAndDate::HaveMeetingScheduled::WayPoint::1"
+                id="istar::DEPENDENCY::LetSchedulerScheduleMeeting::dependum:41:MeetingBeScheduled::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -770,13 +1771,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="IStarEdge">
-        <source>dependum:17:CollectConstraintsByPhone</source>
-        <target>CollectConstraintsByPhone</target>
+        <source>ObtainAgreement</source>
+        <target>dependum:45:Agreement</target>
         <name>dependency</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::DEPENDENCY::dependum:17:CollectConstraintsByPhone::CollectConstraintsByPhone::WayPoint::0"
+                id="istar::DEPENDENCY::ObtainAgreement::dependum:45:Agreement::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -789,7 +1790,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::DEPENDENCY::dependum:17:CollectConstraintsByPhone::CollectConstraintsByPhone::WayPoint::1"
+                id="istar::DEPENDENCY::ObtainAgreement::dependum:45:Agreement::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -805,13 +1806,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="IStarEdge">
-        <source>dependum:19:Participate</source>
-        <target>Participate</target>
+        <source>ObtainAvailDates</source>
+        <target>dependum:43:EnterAvailDates</target>
         <name>dependency</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::DEPENDENCY::dependum:19:Participate::Participate::WayPoint::0"
+                id="istar::DEPENDENCY::ObtainAvailDates::dependum:43:EnterAvailDates::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -824,7 +1825,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::DEPENDENCY::dependum:19:Participate::Participate::WayPoint::1"
+                id="istar::DEPENDENCY::ObtainAvailDates::dependum:43:EnterAvailDates::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -840,13 +1841,510 @@
         <hidden>false</hidden>
     </edge>
     <edge type="IStarEdge">
-        <source>CollectFromCalendar</source>
-        <target>TimetableCollected</target>
+        <source>ObtainAvailDates</source>
+        <target>dependum:49:EnterDateRange</target>
+        <name>dependency</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::DEPENDENCY::ObtainAvailDates::dependum:49:EnterDateRange::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::DEPENDENCY::ObtainAvailDates::dependum:49:EnterDateRange::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ParticipantAttends</source>
+        <target>dependum:51:AttendsMeeting</target>
+        <name>dependency</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::DEPENDENCY::ParticipantAttends::dependum:51:AttendsMeeting::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::DEPENDENCY::ParticipantAttends::dependum:51:AttendsMeeting::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>dependum:41:MeetingBeScheduled</source>
+        <target>SchedulingServiceProvided</target>
+        <name>dependency</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:41:MeetingBeScheduled::SchedulingServiceProvided::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:41:MeetingBeScheduled::SchedulingServiceProvided::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>dependum:43:EnterAvailDates</source>
+        <target>EnterAvailDates</target>
+        <name>dependency</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:43:EnterAvailDates::EnterAvailDates::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:43:EnterAvailDates::EnterAvailDates::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>dependum:45:Agreement</source>
+        <target>Agreement</target>
+        <name>dependency</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:45:Agreement::Agreement::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:45:Agreement::Agreement::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>dependum:47:ProposedDate</source>
+        <target>PublishProposedDate</target>
+        <name>dependency</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:47:ProposedDate::PublishProposedDate::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:47:ProposedDate::PublishProposedDate::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>dependum:49:EnterDateRange</source>
+        <target>EnterDateRange</target>
+        <name>dependency</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:49:EnterDateRange::EnterDateRange::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:49:EnterDateRange::EnterDateRange::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>dependum:51:AttendsMeeting</source>
+        <target>AttendMeeting</target>
+        <name>dependency</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:51:AttendsMeeting::AttendMeeting::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:51:AttendsMeeting::AttendMeeting::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>dependum:53:AttendsMeeting</source>
+        <target>ImportantAttendsMeeting</target>
+        <name>dependency</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:53:AttendsMeeting::ImportantAttendsMeeting::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:53:AttendsMeeting::ImportantAttendsMeeting::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>dependum:55:AssuredAttendsMeeting</source>
+        <target>AssuredAttendance</target>
+        <name>dependency</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:55:AssuredAttendsMeeting::AssuredAttendance::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::DEPENDENCY::dependum:55:AssuredAttendsMeeting::AssuredAttendance::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>Agreement</source>
+        <target>AgreeToDate</target>
+        <name>needed_by</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::NEEDED_BY::Agreement::AgreeToDate::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::NEEDED_BY::Agreement::AgreeToDate::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ExclusionDates</source>
+        <target>EnterAvailDates</target>
+        <name>needed_by</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::NEEDED_BY::ExclusionDates::EnterAvailDates::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::NEEDED_BY::ExclusionDates::EnterAvailDates::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>PreferredDates</source>
+        <target>EnterAvailDates</target>
+        <name>needed_by</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::NEEDED_BY::PreferredDates::EnterAvailDates::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::NEEDED_BY::PreferredDates::EnterAvailDates::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ProposedDate</source>
+        <target>AgreeToDate</target>
+        <name>needed_by</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::NEEDED_BY::ProposedDate::AgreeToDate::WayPoint::0"
+                sizeCalculated="true" type="WayPoint" userDefined="true" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToCorner">
+                    <userOffsetX>77.69820554649277</userOffsetX>
+                    <userOffsetY>-152.0</userOffsetY>
+                    <basisDeltaX>ABSOLUTE</basisDeltaX>
+                    <deltaX>0.0</deltaX>
+                    <maxDeltaX>1.7976931348623157E308</maxDeltaX>
+                    <basisDeltaY>ABSOLUTE</basisDeltaY>
+                    <deltaY>0.0</deltaY>
+                    <maxDeltaY>1.7976931348623157E308</maxDeltaY>
+                    <corner>NORTH_WEST</corner>
+                    <relativeNodeId>ProposedDate</relativeNodeId>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::NEEDED_BY::ProposedDate::AgreeToDate::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>FindAgreeableDateByTalkingToInitiator</source>
+        <target>AgreeableMeetingDate</target>
         <name>or_refine</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::OR_REFINE::CollectFromCalendar::TimetableCollected::WayPoint::0"
+                id="istar::OR_REFINE::FindAgreeableDateByTalkingToInitiator::AgreeableMeetingDate::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -859,7 +2357,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::OR_REFINE::CollectFromCalendar::TimetableCollected::WayPoint::1"
+                id="istar::OR_REFINE::FindAgreeableDateByTalkingToInitiator::AgreeableMeetingDate::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -875,13 +2373,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="IStarEdge">
-        <source>HavePPCalled</source>
-        <target>TimetableCollected</target>
+        <source>FindAgreeableDateUsingScheduler</source>
+        <target>AgreeableMeetingDate</target>
         <name>or_refine</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::OR_REFINE::HavePPCalled::TimetableCollected::WayPoint::0"
+                id="istar::OR_REFINE::FindAgreeableDateUsingScheduler::AgreeableMeetingDate::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -894,7 +2392,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::OR_REFINE::HavePPCalled::TimetableCollected::WayPoint::1"
+                id="istar::OR_REFINE::FindAgreeableDateUsingScheduler::AgreeableMeetingDate::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -910,13 +2408,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="IStarEdge">
-        <source>HaveSchedulingPerformedByOrganizer</source>
-        <target>HaveSchedulingPerformed</target>
+        <source>LetSchedulerScheduleMeeting</source>
+        <target>MeetingBeScheduled</target>
         <name>or_refine</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::OR_REFINE::HaveSchedulingPerformedByOrganizer::HaveSchedulingPerformed::WayPoint::0"
+                id="istar::OR_REFINE::LetSchedulerScheduleMeeting::MeetingBeScheduled::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -929,7 +2427,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::OR_REFINE::HaveSchedulingPerformedByOrganizer::HaveSchedulingPerformed::WayPoint::1"
+                id="istar::OR_REFINE::LetSchedulerScheduleMeeting::MeetingBeScheduled::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -945,13 +2443,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="IStarEdge">
-        <source>HaveSecretaryCallPP</source>
-        <target>HavePPCalled</target>
+        <source>MergeAvailDates</source>
+        <target>FindAgreeableSlot</target>
         <name>or_refine</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::OR_REFINE::HaveSecretaryCallPP::HavePPCalled::WayPoint::0"
+                id="istar::OR_REFINE::MergeAvailDates::FindAgreeableSlot::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -964,7 +2462,42 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::OR_REFINE::HaveSecretaryCallPP::HavePPCalled::WayPoint::1"
+                id="istar::OR_REFINE::MergeAvailDates::FindAgreeableSlot::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ScheduleMeetingManually</source>
+        <target>MeetingBeScheduled</target>
+        <name>or_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::OR_REFINE::ScheduleMeetingManually::MeetingBeScheduled::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::OR_REFINE::ScheduleMeetingManually::MeetingBeScheduled::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>

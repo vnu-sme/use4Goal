@@ -1,0 +1,440 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem}
+
+\newcommand{\StartE}{\mathit{StartE}}
+\newcommand{\EndE}{\mathit{EndE}}
+\newcommand{\GType}{\mathit{GType}}
+\newcommand{\gtype}{\mathit{gtype}}
+\newcommand{\ActB}{\mathit{Act}_{B}}
+\newcommand{\node}{\mathit{node}}
+\newcommand{\InF}{\mathit{InF}}
+\newcommand{\OutF}{\mathit{OutF}}
+\newcommand{\ArrB}{\mathit{Arr}_{B}}
+\newcommand{\JoinPre}{\mathit{JoinPre}_{B}}
+\newcommand{\SelectedB}{\mathit{Selected}_{B}}
+\newcommand{\ConsumeB}{\mathit{Consume}_{B}}
+\newcommand{\ProduceB}{\mathit{Produce}_{B}}
+
+\title{Core BPMN Process-State Semantics}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{BPMN Process Structure}
+
+A BPMN process is a tuple
+\[
+B = (T, F)
+\]
+where
+\[
+T = E \uplus A \uplus G
+\]
+is a finite set of process transitions, consisting of Events $E$, Activities $A$, and Gateways $G$. Events are partitioned into Start Events and End Events:
+\[
+E = \StartE \uplus \EndE.
+\]
+The sequence-flow relation is
+\[
+F \subseteq T \times T.
+\]
+
+\section{Predecessors and Successors}
+
+For each transition $t \in T$, its predecessor and successor sets are defined by
+\[
+{}^{\bullet}t = \{ t' \in T \mid (t',t) \in F \}
+\]
+and
+\[
+t^{\bullet} = \{ t' \in T \mid (t,t') \in F \}.
+\]
+
+\section{Structural Well-Formedness}
+
+The BPMN profile satisfies the following structural constraints.
+
+\paragraph{Start Events.}
+\[
+\forall s \in \StartE:\quad
+{}^{\bullet}s = \varnothing
+\;\land\;
+|s^{\bullet}| = 1
+\tag{WF-S}
+\]
+
+\paragraph{End Events.}
+\[
+\forall e \in \EndE:\quad
+|{}^{\bullet}e| \geq 1
+\;\land\;
+e^{\bullet} = \varnothing
+\tag{WF-E}
+\]
+
+\paragraph{Activities.}
+\[
+\forall a \in A:\quad
+|{}^{\bullet}a| \geq 1
+\;\land\;
+|a^{\bullet}| = 1
+\tag{WF-A}
+\]
+
+\paragraph{Gateways.}
+\[
+\forall g \in G:\quad
+|{}^{\bullet}g| \geq 1
+\;\land\;
+|g^{\bullet}| \geq 1
+\tag{WF-G1}
+\]
+A gateway with exactly one incoming and one outgoing sequence flow is excluded:
+\[
+\forall g \in G:\quad
+|{}^{\bullet}g| > 1
+\;\lor\;
+|g^{\bullet}| > 1
+\tag{WF-G2}
+\]
+
+\section{Gateway Types}
+
+The gateway types considered in the current profile are
+\[
+\GType = \{ \mathit{Exclusive}, \mathit{Inclusive}, \mathit{Parallel} \}.
+\]
+Each gateway has exactly one type:
+\[
+\gtype : G \rightarrow \GType.
+\]
+The operational effect of each gateway type is captured later by its join precondition and outgoing-flow selection rule.
+
+
+
+
+\section{Extended Flow Domain}
+
+Since Start Events have no incoming sequence flow, let $\bot \notin T$ be a distinguished process-entry symbol and define
+\[
+F^{0} = \{ (\bot, s) \mid s \in \StartE \}.
+\]
+The flow domain used by the process-state semantics is
+\[
+F_B = F \cup F^{0}.
+\]
+
+A BPMN process state is denoted by
+\[
+m(\sigma_F) \mid \sigma_F \subseteq F_B.
+\]
+
+The initial configuration is
+\[
+\mathit{Initial}_B(m(\sigma_F))
+\iff
+\sigma_F = F^{0}.
+\]
+
+A process state is final iff all active flows lead to End Events:
+\[
+\mathit{Final}_B(m(\sigma_F))
+\iff
+\forall f \in \sigma_F:\ \mathit{target}(f) \in \EndE.
+\]
+
+\section{State-Transition Semantics}
+
+For each flow $f = (u, t) \in F_B$, define
+\[
+\mathit{source}(f) = u,
+\qquad
+\mathit{target}(f) = t.
+\]
+
+Every flow in the extended flow domain is executable, including a flow whose
+target is an End Event:
+\[
+F_B^{exec}
+=F_B.
+\]
+
+The execution of $t$ induces a transition between two flow configurations:
+\[
+\sigma_F \xrightarrow{\mathit{target}(f)}_{B} \sigma_F',\quad f \in \sigma_F.
+\]
+
+The resulting configuration $\sigma_F'$ is determined by the successor function:
+\[
+\frac{
+f \in \sigma_F \cap F_B^{exec}
+\qquad
+\mathit{Pass}(f) \subseteq \sigma_F
+}{
+\sigma_F \xrightarrow{\mathit{target}(f)} \sigma_F' :
+\sigma_F' = \bigl(\sigma_F \setminus \mathit{Pass}(f)\bigr)
+\cup
+\mathit{Next}(f)
+}.
+\tag{EXEC}
+\]
+
+\section{Flow Passing and Successor Selection}
+
+Besides the predecessor and successor node sets, define the incident flow sets
+\[
+\InF(t) = \{ (u, t) \mid u \in T \land (u, t) \in F \}
+\qquad\text{and}\qquad
+\OutF(t) = \{ (t, v) \mid v \in T \land (t, v) \in F \}.
+\]
+
+Let $f \in F_B^{exec}$ and $t = \mathit{target}(f)$.
+
+For every nonempty family $\mathcal X$ of sets, let
+\[
+\mathit{choose}(\mathcal X)\in\mathcal X
+\]
+denote an arbitrary admissible member. Thus, $\mathit{choose}$ represents
+the nondeterministic choice made independently at each application of the
+transition rule when constructing the BPMN state space; its result is itself
+a set of flows.
+
+The flow-passing function
+$\mathit{Pass}: F_B^{exec} \rightarrow \mathcal{P}(F_B)$ is defined by:
+\[
+\mathit{Pass}(f) =
+\left\{
+\begin{array}{ll}
+\{ f \}, & \text{if } t \in A \cup \StartE \cup \EndE \\[4pt]
+\{ f \}, & \text{if } \gtype(t) = \mathit{Exclusive} \\[4pt]
+\InF(t), & \text{if } \gtype(t) = \mathit{Parallel} \\[4pt]
+\mathit{choose}\!\left(
+\{\,S\subseteq\InF(t)\mid f\in S\,\}
+\right), & \text{if } \gtype(t) = \mathit{Inclusive}
+\end{array}
+\right.
+\]
+
+The successor-selection function
+$\mathit{Next}: F_B^{exec} \rightarrow \mathcal{P}(F)$ is defined by:
+\[
+\mathit{Next}(f) =
+\left\{
+\begin{array}{ll}
+\OutF(t), & \text{if } t \in A \cup \StartE \\[4pt]
+\varnothing, & \text{if } t \in \EndE \\[4pt]
+\mathit{choose}\!\left(
+\{\,S\subseteq\OutF(t)\mid |S|=1\,\}
+\right), & \text{if } \gtype(t) = \mathit{Exclusive} \\[4pt]
+\mathit{choose}\!\left(
+\{\,S\subseteq\OutF(t)\mid S\neq\varnothing\,\}
+\right), & \text{if } \gtype(t) = \mathit{Inclusive} \\[4pt]
+\OutF(t), & \text{if } \gtype(t) = \mathit{Parallel}
+\end{array}
+\right.
+\]
+
+Consequently, executing a flow $f=(u,e)$ with $e\in\EndE$ consumes $f$
+and produces no successor flow. The End Event has no precondition, but the
+branch-specific postcondition contributed by its source $u$ is still checked
+through $\mathit{Post}_B(f)$ in the validation semantics below. Since
+$\varnothing\subseteq F_B$ and the final-state predicate is universal, the
+empty flow configuration obtained after all terminal flows have been consumed
+is also final.
+
+
+\section{BPMN Validation}
+
+OCL constrains this pair but neither constructs $\sigma_M'$ nor performs the state change.
+
+Let the node precondition and the branch-specific postcondition be given by
+\[
+\mathit{pre}_T:
+T\setminus\EndE\rightarrow\mathit{BoolExpr}(M),
+\qquad
+\mathit{post}_F:
+F\rightarrow\mathit{BoolPostExpr}(M).
+\]
+
+For a flow $f=(u,v)$, its precondition is taken from its target $v$, whereas
+its postcondition is taken from its source $u$ and is specific to the branch
+$f$. Define the flow contracts
+\[
+\mathit{Pre}_B(f)=
+\left\{
+\begin{array}{ll}
+\mathit{pre}_T(\mathit{target}(f)),
+& \text{if }\mathit{target}(f)\notin\EndE,\\[2mm]
+\top,
+& \text{if }\mathit{target}(f)\in\EndE,
+\end{array}
+\right.
+\]
+and
+\[
+\mathit{Post}_B(f)=
+\left\{
+\begin{array}{ll}
+\top,
+& \text{if } f\in F^{0},\\[2mm]
+\mathit{post}_F(f),
+& \text{if } f\in F.
+\end{array}
+\right.
+\]
+Hence no condition is evaluated merely because a flow is selected by
+$\mathit{Pass}$ or $\mathit{Next}$. The two contracts attached to $f$ are
+evaluated only when $f$ occurs as an execution step.
+
+Let $\mathcal{R}(B)$ denote the set of all finite executions reachable
+from the initial configuration of $B$.
+
+For
+
+\[
+\rho_B =
+\sigma_F^0
+\xrightarrow{\mathit{target}(f_1)}
+\sigma_F^1
+\cdots
+\xrightarrow{\mathit{target}(f_n)}
+\sigma_F^n,
+\qquad
+f_i \in \sigma_F^{i-1},
+\qquad
+1 \leq i \leq n,
+\]
+
+an ACL state path corresponding to $\rho_B$ is a sequence
+
+\[
+P_M =
+\langle
+\sigma_M^0,
+\sigma_M^1,
+\ldots,
+\sigma_M^n
+\rangle,
+\qquad
+\sigma_M^i \in \Sigma(M).
+\]
+
+We write
+
+\[
+P_M \models_M \rho_B
+\]
+
+iff
+
+\[
+\forall i\in\{0,\ldots,n\}:
+\quad
+\sigma_M^i \models Inv(M),
+\]
+
+\[
+\forall i\in\{1,\ldots,n\}:
+\quad
+\sigma_M^{i-1} \models \mathit{Pre}_B(f_i),
+\]
+
+and
+
+\[
+\forall i\in\{1,\ldots,n\}:
+\quad
+(\sigma_M^{i-1},\sigma_M^i)
+\models \mathit{Post}_B(f_i).
+\]
+
+The BPMN process $B$ is valid with respect to $M$ iff
+
+\[
+Valid_M(B)
+\iff
+\forall \rho_B\in\mathcal{R}(B)\;
+\exists P_M\in\Sigma(M)^{n+1}:
+P_M\models_M\rho_B.
+\tag{VALID}
+\]
+
+\subsection{Bounded relational validation}
+
+For an executable finite check, let the cyclic-flow set be
+\[
+\mathit{Cyc}(B)
+=
+\{\,(u,v)\in F\mid u\text{ is reachable from }v\text{ through }F\,\}.
+\]
+For a non-negative bound $k$, define
+\[
+\mathcal R_k(B)
+=
+\{\,\rho\in\mathcal R(B)
+\mid
+\forall f\in\mathit{Cyc}(B):\mathit{occ}_f(\rho)\leq k\,\}.
+\]
+Let a boundary $\beta$ assign a finite upper and lower object scope to every
+ACL classifier, finite value domains to primitive types, a maximum number of
+snapshots, and the cyclic-flow bound $k$. It induces
+\[
+D_\beta
+=
+\{\,\sigma_M\in\Sigma(M)\mid\sigma_M\text{ satisfies the scopes of }\beta\,\}.
+\]
+If $s_\beta$ is the maximum number of snapshots, define
+\[
+\mathcal R_{k,s_\beta}(B)
+=
+\{\,\rho\in\mathcal R_k(B)\mid |\rho|+1\leq s_\beta\,\}.
+\]
+Let
+$\mathit{Max}(\mathcal R_{k,s_\beta}(B))$ contain the executions that are
+maximal within both bounds (all flows have been consumed, or every remaining
+extension would exceed $k$ or $s_\beta$). The bounded validation problem is
+\[
+Valid_M^{k,D_\beta}(B)
+\iff
+\forall\rho_B\in\mathit{Max}(\mathcal R_{k,s_\beta}(B))\;
+\exists P_M\in D_\beta^{n+1}:
+P_M\models_M\rho_B.
+\tag{BVALID}
+\]
+Checking only maximal bounded executions is sufficient: a witness path for a
+maximal execution restricts to a witness for each of its prefixes.
+
+The executable validator enumerates the universal BPMN choices from
+\textsc{Exec}. For each resulting $\rho_B$, Kodkod introduces a symbolic copy
+of the ACL state relations at every time index:
+\[
+\sigma_M^i
+=
+(\sigma_{Class}^i,\sigma_{Att}^i,\sigma_{Assoc}^i,\sigma_{Play}^i).
+\]
+Their bounds are derived solely from $\beta$; no concrete object diagram is
+supplied. The SAT query is
+\[
+\bigwedge_{i=0}^{n}
+\bigl(WF_A(\sigma_M^i)\land Inv_M(\sigma_M^i)\bigr)
+\quad\land\quad
+\bigwedge_{i=1}^{n}
+\left(
+\mathit{Pre}_B(f_i)(\sigma_M^{i-1})
+\land
+\mathit{Post}_B(f_i)(\sigma_M^{i-1},\sigma_M^i)
+\right).
+\]
+SAT supplies the existential path $P_M$; UNSAT supplies a bounded BPMN
+execution for which no object-diagram path exists in $D_\beta$. Consequently,
+$Valid_M^{k,D_\beta}(B)$ is a bounded proof over all states admitted by
+$\beta$, not a proof of
+$Valid_M(B)$ over unenumerated elements of $\Sigma(M)$.
+
+
+\end{document}

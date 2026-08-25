@@ -1,5 +1,5 @@
 // Generated from IStar.g4 by ANTLR 4.9.3
- package org.vnu.sme.goal.istar.parser; 
+ package org.vnu.sme.goal.dsl.istar.parser; 
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -57,13 +57,6 @@ public interface IStarVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBodyQuality(IStarParser.BodyQualityContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code bodyObstacle}
-	 * labeled alternative in {@link IStarParser#actorBody}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBodyObstacle(IStarParser.BodyObstacleContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code bodyIsA}
 	 * labeled alternative in {@link IStarParser#actorBody}.
 	 * @param ctx the parse tree
@@ -90,18 +83,6 @@ public interface IStarVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitGoalTypeName(IStarParser.GoalTypeNameContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link IStarParser#obstacleType}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitObstacleType(IStarParser.ObstacleTypeContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link IStarParser#obstacleTypeName}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitObstacleTypeName(IStarParser.ObstacleTypeNameContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code relAnd}
 	 * labeled alternative in {@link IStarParser#rel}.
 	 * @param ctx the parse tree
@@ -115,20 +96,6 @@ public interface IStarVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitRelOr(IStarParser.RelOrContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code relForAll}
-	 * labeled alternative in {@link IStarParser#rel}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitRelForAll(IStarParser.RelForAllContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code relPick}
-	 * labeled alternative in {@link IStarParser#rel}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitRelPick(IStarParser.RelPickContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code relContribute}
 	 * labeled alternative in {@link IStarParser#rel}.
@@ -150,20 +117,6 @@ public interface IStarVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitRelNeededBy(IStarParser.RelNeededByContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code relObstructs}
-	 * labeled alternative in {@link IStarParser#rel}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitRelObstructs(IStarParser.RelObstructsContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code relResolves}
-	 * labeled alternative in {@link IStarParser#rel}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitRelResolves(IStarParser.RelResolvesContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link IStarParser#dependency}.
 	 * @param ctx the parse tree

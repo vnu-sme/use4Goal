@@ -1,0 +1,242 @@
+-- Generated from ACL. Regenerate instead of editing this file.
+-- Role 'extends' is a play chain (Owner[1]--Role[mult] association), not USE
+-- generalization: no two Role classes are ever related by '<'. Agent is an empty
+-- class. Every play association is parent[1]--child[0..*].
+-- Compatibility is 'inv NoConflict_<R1>_<R2>' on the nearest shared play-chain
+-- ancestor; every Owner-target Role also gets 'inv NoSelfConflict_<R>'.
+
+model MeetingScheduler_Verification
+
+enum TimetableChannel {none, calendar, phone}
+
+class Agent
+attributes
+  id : Integer
+end
+
+class MeetingParty
+attributes
+  id : Integer
+  name : String
+  phone : String
+  hasCalendar : Boolean
+end
+
+class Initiator
+attributes
+  id : Integer
+operations
+  start_meeting()
+  decideMeetingDetails()
+end
+
+class Organizer
+attributes
+  id : Integer
+operations
+  checkCalendar()
+  phoneCollectionRequired()
+  requestSecretaryCall()
+  timetableCollectionComplete()
+  chooseTimeAndDate()
+  announceMeeting()
+  end_meeting()
+  phoneCollectionRequired_to_requestSecretaryCall_guard() : Boolean =
+    self.meetingUnit.participant->exists(p | not p.meetingParty.hasCalendar)
+end
+
+class Secretary
+attributes
+  id : Integer
+operations
+  collectConstraintsByPhone()
+end
+
+class Participant
+attributes
+  id : Integer
+  timetableCollected : Boolean
+  timetableChannel : TimetableChannel
+  notified : Boolean
+  attended : Boolean
+operations
+  participate()
+end
+
+class MeetingUnit
+attributes
+  id : Integer
+  detailsDecided : Boolean
+  timeChosen : Boolean
+end
+
+association knowsPhoneOf between
+  MeetingParty[0..*] role knower
+  MeetingParty[0..*] role knownContact
+end
+
+association Agent_plays_MeetingParty between
+  Agent[1] role agent
+  MeetingParty[0..*] role play_meetingParty
+end
+
+association MeetingParty_plays_Initiator between
+  MeetingParty[1] role meetingParty
+  Initiator[0..*] role play_initiator
+end
+
+association MeetingParty_plays_Organizer between
+  MeetingParty[1] role meetingParty
+  Organizer[0..*] role play_organizer
+end
+
+association MeetingParty_plays_Secretary between
+  MeetingParty[1] role meetingParty
+  Secretary[0..*] role play_secretary
+end
+
+association MeetingParty_plays_Participant between
+  MeetingParty[1] role meetingParty
+  Participant[0..*] role play_participant
+end
+
+composition Initiator_in_MeetingUnit between
+  MeetingUnit[1] role meetingUnit
+  Initiator[1] role initiator
+end
+
+composition Organizer_in_MeetingUnit between
+  MeetingUnit[1] role meetingUnit
+  Organizer[1] role organizer
+end
+
+composition Secretary_in_MeetingUnit between
+  MeetingUnit[1] role meetingUnit
+  Secretary[0..1] role secretary
+end
+
+composition Participant_in_MeetingUnit between
+  MeetingUnit[1] role meetingUnit
+  Participant[2..*] role participant
+end
+
+constraints
+
+context MeetingParty inv NoSelfConflict_Initiator:
+  self.play_initiator->forAll(r1, r2 : Initiator |
+    r1 <> r2 implies r1.meetingUnit <> r2.meetingUnit)
+
+context MeetingParty inv NoSelfConflict_Organizer:
+  self.play_organizer->forAll(r1, r2 : Organizer |
+    r1 <> r2 implies r1.meetingUnit <> r2.meetingUnit)
+
+context MeetingParty inv NoSelfConflict_Secretary:
+  self.play_secretary->forAll(r1, r2 : Secretary |
+    r1 <> r2 implies r1.meetingUnit <> r2.meetingUnit)
+
+context MeetingParty inv NoSelfConflict_Participant:
+  self.play_participant->forAll(r1, r2 : Participant |
+    r1 <> r2 implies r1.meetingUnit <> r2.meetingUnit)
+
+context MeetingParty inv NoConflict_Initiator_Organizer:
+self.play_initiator->forAll(r1 : Initiator |
+self.play_organizer->forAll(r2 : Organizer |
+      not (r1.meetingUnit = r2.meetingUnit)))
+
+context MeetingParty inv NoConflict_Initiator_Secretary:
+self.play_initiator->forAll(r1 : Initiator |
+self.play_secretary->forAll(r2 : Secretary |
+      not (r1.meetingUnit = r2.meetingUnit)))
+
+context MeetingParty inv NoConflict_Organizer_Participant:
+self.play_organizer->forAll(r1 : Organizer |
+self.play_participant->forAll(r2 : Participant |
+      not (r1.meetingUnit = r2.meetingUnit)))
+
+context MeetingParty inv NoConflict_Secretary_Participant:
+self.play_secretary->forAll(r1 : Secretary |
+self.play_participant->forAll(r2 : Participant |
+      not (r1.meetingUnit = r2.meetingUnit)))
+
+
+constraints
+
+-- ===== BPMN operation contracts, hosted by lane Roles =====
+
+context Initiator::start_meeting()
+  pre BPMN_MeetingOrganization_start_meeting_DomainPre:
+    not self.meetingUnit.detailsDecided
+      and not self.meetingUnit.timeChosen
+      and self.meetingUnit.participant->forAll(p |
+        not p.timetableCollected
+        and p.timetableChannel = #none
+        and not p.notified
+        and not p.attended)
+
+context Initiator::decideMeetingDetails()
+  post BPMN_MeetingOrganization_decideMeetingDetails_DomainPost:
+    self.meetingUnit.detailsDecided
+
+context Organizer::checkCalendar()
+  pre BPMN_MeetingOrganization_checkCalendar_DomainPre:
+    self.meetingUnit.detailsDecided
+  post BPMN_MeetingOrganization_checkCalendar_DomainPost:
+    self.meetingUnit.participant
+        ->select(p | p.meetingParty.hasCalendar)
+        ->forAll(p | p.timetableCollected and p.timetableChannel = #calendar)
+
+context Organizer::phoneCollectionRequired()
+  pre BPMN_MeetingOrganization_phoneCollectionRequired_DomainPre:
+    self.meetingUnit.participant
+        ->select(p | p.meetingParty.hasCalendar)
+        ->forAll(p | p.timetableCollected)
+
+context Organizer::requestSecretaryCall()
+  pre BPMN_MeetingOrganization_requestSecretaryCall_DomainPre:
+    self.meetingUnit.detailsDecided
+      and self.meetingUnit.participant->exists(p | not p.meetingParty.hasCalendar)
+      and not self.meetingUnit.secretary.oclIsUndefined()
+      and self.meetingUnit.participant->select(p | not p.meetingParty.hasCalendar)->forAll(p |
+        p.meetingParty.phone <> ''
+        and self.meetingUnit.secretary.meetingParty.knownContact
+          ->includes(p.meetingParty))
+
+context Secretary::collectConstraintsByPhone()
+  pre BPMN_MeetingOrganization_collectConstraintsByPhone_DomainPre:
+    self.meetingUnit.participant->exists(p | not p.meetingParty.hasCalendar)
+      and not self.meetingUnit.secretary.oclIsUndefined()
+      and self.meetingUnit.participant->select(p | not p.meetingParty.hasCalendar)->forAll(p |
+        p.meetingParty.phone <> ''
+        and self.meetingUnit.secretary.meetingParty.knownContact
+          ->includes(p.meetingParty))
+  post BPMN_MeetingOrganization_collectConstraintsByPhone_DomainPost:
+    self.meetingUnit.participant
+        ->select(p | not p.meetingParty.hasCalendar)
+        ->forAll(p | p.timetableCollected and p.timetableChannel = #phone)
+
+context Organizer::timetableCollectionComplete()
+  pre BPMN_MeetingOrganization_timetableCollectionComplete_DomainPre:
+    self.meetingUnit.participant->forAll(p | p.timetableCollected)
+
+context Organizer::chooseTimeAndDate()
+  pre BPMN_MeetingOrganization_chooseTimeAndDate_DomainPre:
+    self.meetingUnit.participant->forAll(p | p.timetableCollected)
+  post BPMN_MeetingOrganization_chooseTimeAndDate_DomainPost:
+    self.meetingUnit.timeChosen
+
+context Organizer::announceMeeting()
+  pre BPMN_MeetingOrganization_announceMeeting_DomainPre:
+    self.meetingUnit.timeChosen
+  post BPMN_MeetingOrganization_announceMeeting_DomainPost:
+    self.meetingUnit.participant->forAll(p | p.notified)
+
+context Participant::participate()
+  pre BPMN_MeetingOrganization_participate_DomainPre:
+    self.meetingUnit.participant->forAll(p | p.notified)
+  post BPMN_MeetingOrganization_participate_DomainPost:
+    self.meetingUnit.participant->forAll(p | p.attended)
+
+context Organizer::end_meeting()
+  pre BPMN_MeetingOrganization_end_meeting_Enabled:
+    true
+

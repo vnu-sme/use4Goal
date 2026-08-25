@@ -1,5 +1,5 @@
 // Generated from IStar.g4 by ANTLR 4.9.3
- package org.vnu.sme.goal.istar.parser; 
+ package org.vnu.sme.goal.dsl.istar.parser; 
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -100,18 +100,6 @@ public class IStarBaseListener implements IStarListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterBodyObstacle(IStarParser.BodyObstacleContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitBodyObstacle(IStarParser.BodyObstacleContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterBodyIsA(IStarParser.BodyIsAContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -160,30 +148,6 @@ public class IStarBaseListener implements IStarListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterObstacleType(IStarParser.ObstacleTypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitObstacleType(IStarParser.ObstacleTypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterObstacleTypeName(IStarParser.ObstacleTypeNameContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitObstacleTypeName(IStarParser.ObstacleTypeNameContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterRelAnd(IStarParser.RelAndContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -203,30 +167,6 @@ public class IStarBaseListener implements IStarListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitRelOr(IStarParser.RelOrContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterRelForAll(IStarParser.RelForAllContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitRelForAll(IStarParser.RelForAllContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterRelPick(IStarParser.RelPickContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitRelPick(IStarParser.RelPickContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -263,30 +203,6 @@ public class IStarBaseListener implements IStarListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitRelNeededBy(IStarParser.RelNeededByContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterRelObstructs(IStarParser.RelObstructsContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitRelObstructs(IStarParser.RelObstructsContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterRelResolves(IStarParser.RelResolvesContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitRelResolves(IStarParser.RelResolvesContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

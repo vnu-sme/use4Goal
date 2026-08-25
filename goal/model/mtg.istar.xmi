@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Dynamic Ecore instance corresponding to
+     goal/src/main/resources/examples/mtg/mtg.istar. -->
+<istar:GoalModel xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:istar="https://vnu.edu.vn/sme/goal/istar/2.0"
+    xsi:schemaLocation="https://vnu.edu.vn/sme/goal/istar/2.0 istar.ecore"
+    name="MeetingScheduler">
+
+  <actors xsi:type="istar:Role" name="Initiator">
+    <elements xsi:type="istar:Goal" id="MeetingOrganized" goalType="Achieve">
+      <activation oclBody="true"/>
+    </elements>
+    <elements xsi:type="istar:Task" id="DecideDetails">
+      <precondition oclBody="not self.group.detailsDecided"/>
+      <postcondition oclBody="self.group.detailsDecided"/>
+    </elements>
+    <elements xsi:type="istar:Goal" id="MeetingScheduled" goalType="Achieve"/>
+    <elements xsi:type="istar:Goal" id="ParticipantsAttended" goalType="Achieve"/>
+    <elements xsi:type="istar:Goal" id="OrganizerScheduledMeeting" goalType="Achieve"/>
+    <elements xsi:type="istar:Goal" id="ParticipantAttended" goalType="Achieve">
+      <condition oclBody="self.attended"/>
+    </elements>
+
+    <relations xsi:type="istar:AndRefinement"
+        parent="//@actors.0/@elements.0"
+        children="//@actors.0/@elements.1 //@actors.0/@elements.2 //@actors.0/@elements.3"/>
+    <relations xsi:type="istar:PickRefinement"
+        parent="//@actors.0/@elements.2"
+        child="//@actors.0/@elements.4"
+        actorType="//@actors.1"/>
+    <relations xsi:type="istar:ForRefinement"
+        parent="//@actors.0/@elements.3"
+        child="//@actors.0/@elements.5"
+        actorType="//@actors.3"/>
+  </actors>
+
+  <actors xsi:type="istar:Role" name="Organizer">
+    <elements xsi:type="istar:Goal" id="ChosenTimeHasDetails" goalType="Maintain">
+      <activation oclBody="self.group.timeChosen"/>
+      <condition oclBody="self.group.detailsDecided"/>
+    </elements>
+    <elements xsi:type="istar:Goal" id="SchedulingCompleted" goalType="Achieve"/>
+    <elements xsi:type="istar:Goal" id="TimetablesCollected" goalType="Achieve"/>
+    <elements xsi:type="istar:Task" id="ChooseMeetingTime">
+      <precondition oclBody="self.group.detailsDecided and self.group.Participant->forAll(participant | participant.timetableCollected)"/>
+      <postcondition oclBody="self.group.timeChosen"/>
+    </elements>
+    <elements xsi:type="istar:Goal" id="ParticipantsNotified" goalType="Sustain">
+      <condition oclBody="self.group.Participant->forAll(participant | participant.notified)"/>
+    </elements>
+    <elements xsi:type="istar:Goal" id="TimetableCollected" goalType="Achieve">
+      <condition oclBody="self.timetableCollected"/>
+    </elements>
+    <elements xsi:type="istar:Goal" id="ContactedByPhone" goalType="Achieve">
+      <activation oclBody="not self.hasCalendar"/>
+      <condition oclBody="self.timetableCollected and self.timetableChannel = #phone"/>
+    </elements>
+    <elements xsi:type="istar:Task" id="CollectFromCalendar">
+      <precondition oclBody="self.hasCalendar and not self.timetableCollected"/>
+      <postcondition oclBody="self.hasCalendar and self.timetableCollected and self.timetableChannel = #calendar"/>
+    </elements>
+    <elements xsi:type="istar:Goal" id="SecretaryRequested" goalType="Achieve">
+      <activation oclBody="self.knownContact->includes(self.outer)"/>
+    </elements>
+    <elements xsi:type="istar:Task" id="NotifyParticipant">
+      <precondition oclBody="self.group.timeChosen"/>
+      <postcondition oclBody="self.notified"/>
+    </elements>
+    <elements xsi:type="istar:Quality" id="InclusiveCollection"/>
+    <elements xsi:type="istar:Quality" id="FastCollection"/>
+
+    <relations xsi:type="istar:AndRefinement"
+        parent="//@actors.1/@elements.1"
+        children="//@actors.1/@elements.2 //@actors.1/@elements.3 //@actors.1/@elements.4"/>
+    <relations xsi:type="istar:OrRefinement"
+        parent="//@actors.1/@elements.5"
+        children="//@actors.1/@elements.6"/>
+    <relations xsi:type="istar:OrRefinement"
+        parent="//@actors.1/@elements.5"
+        children="//@actors.1/@elements.7"/>
+    <relations xsi:type="istar:ForRefinement"
+        parent="//@actors.1/@elements.2"
+        child="//@actors.1/@elements.5"
+        actorType="//@actors.3"/>
+    <relations xsi:type="istar:PickRefinement"
+        parent="//@actors.1/@elements.6"
+        child="//@actors.1/@elements.8"
+        actorType="//@actors.2"/>
+    <relations xsi:type="istar:ForRefinement"
+        parent="//@actors.1/@elements.4"
+        child="//@actors.1/@elements.9"
+        actorType="//@actors.3"/>
+    <relations xsi:type="istar:Contribution" type="Make"
+        source="//@actors.1/@elements.6"
+        quality="//@actors.1/@elements.10"/>
+    <relations xsi:type="istar:Contribution" type="Make"
+        source="//@actors.1/@elements.7"
+        quality="//@actors.1/@elements.11"/>
+  </actors>
+
+  <actors xsi:type="istar:Role" name="Secretary">
+    <elements xsi:type="istar:Task" id="CollectByPhone">
+      <precondition oclBody="self.outer.phone &lt;> '' and not self.outer.hasCalendar and not self.outer.timetableCollected"/>
+      <postcondition oclBody="self.outer.timetableCollected and self.outer.timetableChannel = #phone"/>
+    </elements>
+  </actors>
+
+  <actors xsi:type="istar:Role" name="Participant">
+    <elements xsi:type="istar:Task" id="AttendMeeting">
+      <precondition oclBody="self.notified"/>
+      <postcondition oclBody="self.attended"/>
+    </elements>
+  </actors>
+
+  <dependencies depender="//@actors.0"
+      dependerElement="//@actors.0/@elements.4"
+      dependee="//@actors.1"
+      dependeeElement="//@actors.1/@elements.1">
+    <dependum xsi:type="istar:Task" id="ChooseMeetingTime"/>
+  </dependencies>
+  <dependencies depender="//@actors.1"
+      dependerElement="//@actors.1/@elements.8"
+      dependee="//@actors.2"
+      dependeeElement="//@actors.2/@elements.0">
+    <dependum xsi:type="istar:Task" id="CollectByPhone"/>
+  </dependencies>
+  <dependencies depender="//@actors.0"
+      dependerElement="//@actors.0/@elements.5"
+      dependee="//@actors.3"
+      dependeeElement="//@actors.3/@elements.0">
+    <dependum xsi:type="istar:Task" id="AttendMeeting"/>
+  </dependencies>
+</istar:GoalModel>

@@ -1,0 +1,239 @@
+// Extended meeting-scheduling case study adapted from gStar/Event-B.
+// Four executable pools model four cooperating business processes. They
+// coordinate through the state of the same MeetingUnit occurrence.
+model ExtendedMeetingScheduler {
+  pool RequestManagement for MeetingUnit {
+    name "Request management"
+    lane RequestInitiator;
+    lane RequestScheduler;
+  }
+  pool AvailabilityCoordination for MeetingUnit {
+    name "Availability coordination"
+    lane AvailabilityScheduler;
+    lane AvailabilityParticipant;
+    lane AvailabilityCalendarService;
+  }
+  pool ResourceReservation for MeetingUnit {
+    name "Resource reservation"
+    lane ReservationScheduler;
+    lane ReservationRoomService;
+  }
+  pool ConfirmationAndNotification for MeetingUnit {
+    name "Confirmation and notification"
+    lane ConfirmationScheduler;
+    lane ConfirmationNotificationService;
+    lane ConfirmationParticipant;
+    lane ConfirmationInitiator;
+  }
+
+  start requestStart {
+    lane RequestInitiator trigger none flow createMeetingRequest
+  }
+  activity createMeetingRequest {
+    name "Create meeting request" type task lane RequestInitiator
+    pre {[ not self.requestCreated ]}
+    post {[ self.requestCreated ]}
+    flow validateMeetingRequest
+  }
+  activity validateMeetingRequest {
+    name "Validate meeting request" type task lane RequestScheduler
+    pre {[ self.requestCreated and not self.requestValid ]}
+    post {[ self.requestValid ]}
+    flow acceptMeetingRequest
+  }
+  activity acceptMeetingRequest {
+    name "Accept meeting request" type task lane RequestScheduler
+    pre {[ self.requestValid and not self.requestRegistered ]}
+    post {[ self.requestRegistered ]}
+    flow protectAvailabilityData
+  }
+  activity protectAvailabilityData {
+    name "Protect availability data" type task lane RequestScheduler
+    pre {[ self.requestRegistered and not self.privacyPreserved ]}
+    post {[ self.privacyPreserved ]}
+    flow requestEnd
+  }
+  end requestEnd { lane RequestScheduler trigger none }
+
+  start availabilityStart {
+    lane AvailabilityScheduler trigger none
+    pre {[ self.requestRegistered and self.privacyPreserved ]}
+    flow sendAvailabilityRequests
+  }
+  activity sendAvailabilityRequests {
+    name "Send availability requests" type task lane AvailabilityScheduler
+    post {[ self.availabilityRequestSent ]}
+    flow readParticipantCalendars
+  }
+  activity readParticipantCalendars {
+    name "Read participant calendars" type task lane AvailabilityCalendarService
+    pre {[
+      self.availabilityRequestSent
+      and self.target_CalendarService_in_MeetingUnit.available
+    ]}
+    post {[ self.target_CalendarService_in_MeetingUnit.calendarDataRead ]}
+    flow returnCalendarAvailability
+  }
+  activity returnCalendarAvailability {
+    name "Return calendar availability" type task lane AvailabilityCalendarService
+    pre {[ self.target_CalendarService_in_MeetingUnit.calendarDataRead ]}
+    post {[ self.target_CalendarService_in_MeetingUnit.calendarDataReturned ]}
+    flow checkPersonalCalendars
+  }
+  activity checkPersonalCalendars {
+    name "Check personal calendars" type task lane AvailabilityParticipant
+    pre {[ self.target_CalendarService_in_MeetingUnit.calendarDataReturned ]}
+    post {[
+      self.target_Participant_in_MeetingUnit
+        ->forAll(participant | participant.availabilityChecked)
+    ]}
+    flow submitAvailability
+  }
+  activity submitAvailability {
+    name "Submit availability" type task lane AvailabilityParticipant
+    pre {[
+      self.target_Participant_in_MeetingUnit
+        ->forAll(participant | participant.availabilityChecked)
+    ]}
+    post {[
+      self.target_Participant_in_MeetingUnit
+        ->forAll(participant | participant.availabilitySubmitted)
+    ]}
+    flow computeIntersection
+  }
+  activity computeIntersection {
+    name "Compute availability intersection" type task lane AvailabilityScheduler
+    pre {[
+      self.target_Participant_in_MeetingUnit
+        ->forAll(participant | participant.availabilitySubmitted)
+    ]}
+    post {[ self.intersectionComputed ]}
+    flow commonSlotDecision
+  }
+  gateway commonSlotDecision {
+    lane AvailabilityScheduler type xor
+    flow proposeCandidateSlot when {[ self.commonSlotAvailable ]}
+    flow requestReschedule default
+  }
+  activity proposeCandidateSlot {
+    name "Propose candidate slot" type task lane AvailabilityScheduler
+    post {[ self.candidateSlotProposed and self.preferencesRespected ]}
+    flow availabilityEnd
+  }
+  activity requestReschedule {
+    name "Request rescheduling" type task lane AvailabilityScheduler
+    post {[ self.rescheduleRequested ]}
+    flow availabilityEnd
+  }
+  end availabilityEnd { lane AvailabilityScheduler trigger none }
+
+  start reservationStart {
+    lane ReservationScheduler trigger none
+    pre {[ self.candidateSlotProposed ]}
+    flow requestRoomReservation
+  }
+  activity requestRoomReservation {
+    name "Request room reservation" type task lane ReservationScheduler
+    post {[ self.roomReservationRequested ]}
+    flow checkRoomAvailability
+  }
+  activity checkRoomAvailability {
+    name "Check room availability" type task lane ReservationRoomService
+    pre {[ self.roomReservationRequested ]}
+    post {[ self.target_RoomBookingService_in_MeetingUnit.availabilityChecked ]}
+    flow roomDecision
+  }
+  gateway roomDecision {
+    lane ReservationRoomService type xor
+    flow reserveAvailableRoom when {[ self.roomAvailable ]}
+    flow handleRoomUnavailable default
+  }
+  activity reserveAvailableRoom {
+    name "Reserve available room" type task lane ReservationRoomService
+    post {[ self.target_RoomBookingService_in_MeetingUnit.reservationConfirmed ]}
+    flow recordRoomReservation
+  }
+  activity recordRoomReservation {
+    name "Record room reservation" type task lane ReservationScheduler
+    pre {[ self.target_RoomBookingService_in_MeetingUnit.reservationConfirmed ]}
+    post {[ self.roomReserved ]}
+    flow reservationEnd
+  }
+  activity handleRoomUnavailable {
+    name "Handle unavailable room" type task lane ReservationScheduler
+    post {[ self.rescheduleRequested ]}
+    flow reservationEnd
+  }
+  end reservationEnd { lane ReservationScheduler trigger none }
+
+  start confirmationStart {
+    lane ConfirmationScheduler trigger none
+    pre {[ self.roomReserved ]}
+    flow requestNotifications
+  }
+  activity requestNotifications {
+    name "Request participant notifications" type task lane ConfirmationScheduler
+    post {[ self.notificationsRequested ]}
+    flow selectNotificationChannel
+  }
+  activity selectNotificationChannel {
+    name "Select notification channel" type task lane ConfirmationNotificationService
+    pre {[
+      self.notificationsRequested
+      and self.target_NotificationService_in_MeetingUnit.available
+    ]}
+    post {[ self.target_NotificationService_in_MeetingUnit.channelSelected ]}
+    flow deliverNotifications
+  }
+  activity deliverNotifications {
+    name "Deliver meeting notifications" type task lane ConfirmationNotificationService
+    pre {[ self.target_NotificationService_in_MeetingUnit.channelSelected ]}
+    post {[
+      self.target_Participant_in_MeetingUnit
+        ->forAll(participant | participant.notified)
+    ]}
+    flow recordNotificationLog
+  }
+  activity recordNotificationLog {
+    name "Record notification log" type task lane ConfirmationNotificationService
+    post {[ self.target_NotificationService_in_MeetingUnit.deliveryLogged ]}
+    flow reviewCandidateSlot
+  }
+  activity reviewCandidateSlot {
+    name "Review candidate slot" type task lane ConfirmationParticipant
+    pre {[
+      self.target_Participant_in_MeetingUnit
+        ->forAll(participant | participant.notified)
+    ]}
+    post {[
+      self.target_Participant_in_MeetingUnit
+        ->forAll(participant | participant.slotReviewed)
+    ]}
+    flow confirmCandidateSlot
+  }
+  activity confirmCandidateSlot {
+    name "Confirm candidate slot" type task lane ConfirmationParticipant
+    post {[
+      self.target_Participant_in_MeetingUnit
+        ->forAll(participant | participant.slotConfirmed)
+    ]}
+    flow finalizeMeeting
+  }
+  activity finalizeMeeting {
+    name "Finalize meeting" type task lane ConfirmationScheduler
+    pre {[
+      self.roomReserved and
+      self.target_Participant_in_MeetingUnit
+        ->forAll(participant | participant.notified and participant.slotConfirmed)
+    ]}
+    post {[ self.scheduled ]}
+    flow sendInvitations
+  }
+  activity sendInvitations {
+    name "Send invitations" type task lane ConfirmationInitiator
+    pre {[ self.scheduled ]}
+    post {[ self.invitationsIssued ]}
+    flow confirmationEnd
+  }
+  end confirmationEnd { lane ConfirmationInitiator trigger none }
+}

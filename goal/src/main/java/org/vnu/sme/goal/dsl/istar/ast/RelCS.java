@@ -12,12 +12,6 @@ public sealed interface RelCS {
     /** '>' target (no keyword) = AND-refinement; '>' 'or' target = OR-refinement. */
     record RefineCS(String target, boolean or) implements RelCS {}
 
-    /** '>' 'forall' ActorType target */
-    record ForRefineCS(String target, String actorType) implements RelCS {}
-
-    /** '>' 'pick' ActorType target */
-    record PickRefineCS(String target, String actorType) implements RelCS {}
-
     /** '>' make|help|hurt|break target */
     record ContributesCS(String target, String type) implements RelCS {}
 
@@ -27,9 +21,4 @@ public sealed interface RelCS {
     /** '>' 'needed-by' target */
     record NeededByCS(String target) implements RelCS {}
 
-    /** '>' 'obstructs' target */
-    record ObstructsCS(String target) implements RelCS {}
-
-    /** '>' 'resolves' target */
-    record ResolvesCS(String target) implements RelCS {}
 }

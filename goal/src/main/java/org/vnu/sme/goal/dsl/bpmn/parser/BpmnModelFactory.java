@@ -81,17 +81,19 @@ public final class BpmnModelFactory {
         for (FlowElementCS feCS : elementsCS) {
             FlowElement source = scope.get(feCS.id());
             switch (feCS) {
-                case FlowElementCS.StartEventCS e -> flows.add(resolveFlow(source, e.flow(), null, false, scope));
+                case FlowElementCS.StartEventCS e ->
+                        flows.add(resolveFlow(source, e.flow(), null, null, false, scope));
                 case FlowElementCS.EndEventCS e -> { /* an end never has an outgoing flow */ }
                 case FlowElementCS.IntermediateEventCS e -> {
-                    if (e.flow() != null) flows.add(resolveFlow(source, e.flow(), null, false, scope));
+                    if (e.flow() != null) flows.add(resolveFlow(source, e.flow(), null, null, false, scope));
                 }
                 case FlowElementCS.ActivityCS e -> {
-                    if (e.flow() != null) flows.add(resolveFlow(source, e.flow(), null, false, scope));
+                    if (e.flow() != null) flows.add(resolveFlow(source, e.flow(), null, null, false, scope));
                 }
                 case FlowElementCS.GatewayCS e -> {
                     for (GatewayFlowCS gf : e.flows()) {
-                        flows.add(resolveFlow(source, gf.target(), gf.guardSource(), gf.isDefault(), scope));
+                        flows.add(resolveFlow(source, gf.target(), gf.postSource(),
+                                gf.guardSource(), gf.isDefault(), scope));
                     }
                 }
             }
@@ -100,13 +102,13 @@ public final class BpmnModelFactory {
         return new Process(cs.id(), cs.name(), cs.groupClass(), lanes, owned, flows);
     }
 
-    private static SequenceFlow resolveFlow(FlowElement source, String targetId, String guardSource,
-            boolean isDefault, Map<String, FlowElement> scope) {
+    private static SequenceFlow resolveFlow(FlowElement source, String targetId, String postSource,
+            String guardSource, boolean isDefault, Map<String, FlowElement> scope) {
         FlowElement target = scope.get(targetId);
         if (target == null) {
             throw new IllegalStateException("Unknown flow target '" + targetId + "' from " + source.id());
         }
-        return new SequenceFlow(source, target, null, guardSource, isDefault);
+        return new SequenceFlow(source, target, null, postSource, guardSource, isDefault);
     }
 
     private static FlowElement buildFlowElement(FlowElementCS cs) {

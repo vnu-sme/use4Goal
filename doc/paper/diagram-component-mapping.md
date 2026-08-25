@@ -40,7 +40,6 @@ gần giống nhau không đủ để coi hai khái niệm là cùng một compo
 | iStar | Task | `PlaceableNode` | Hình chữ nhật bo góc | Không dùng `StateNode`: task không phải UML state |
 | iStar | Resource | `PlaceableNode` | Hình chữ nhật | Resource intentional element, không phải UML object/class |
 | iStar | Quality | `PlaceableNode` | Cloud | Ký hiệu chuẩn iStar |
-| iStar | Obstacle | `PlaceableNode` | Lục giác | Ký hiệu riêng, không dùng gateway BPMN |
 | BPMN | Start/Intermediate/End event | `PlaceableNode` | Một vòng/tròn kép/viền đậm theo BPMN | `PseudoStateNode` gần hình nhưng sai marker và semantics |
 | BPMN | Task | `PlaceableNode` | Rounded rectangle | Task BPMN không phải UML state |
 | BPMN | Call activity | `PlaceableNode` | Rounded rectangle viền đậm | Ký hiệu BPMN chuẩn |
@@ -63,7 +62,7 @@ gần giống nhau không đủ để coi hai khái niệm là cùng một compo
 | iStar | Refinement | `EdgeBase` | Nét liền hướng child tới parent; nhãn AND/OR |
 | iStar | Contribution | `EdgeBase` | Nét liền có mũi tên; nhãn contribution |
 | iStar | Dependency | `EdgeBase` | Hai đoạn dependency qua dependum, badge `D` |
-| iStar | Qualification/Obstruction/Resolution | `EdgeBase` | Nét đứt để phân biệt constraint relation |
+| iStar | Qualification | `EdgeBase` | Nét đứt để phân biệt constraint relation |
 | BPMN | Sequence flow | `EdgeBase` + `DirectedEdgeFactory` | Nét liền, mũi tên đặc |
 | BPMN | Message flow | `EdgeBase` + `DirectedEdgeFactory` | Nét đứt, mũi tên rỗng; marker tròn rỗng ở đầu gửi |
 

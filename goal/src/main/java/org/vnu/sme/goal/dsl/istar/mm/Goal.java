@@ -1,49 +1,43 @@
 package org.vnu.sme.goal.dsl.istar.mm;
 
-/** iStar 2.0 Goal (oval) with an optional temporal contract. */
+/** iStar 2.0 Goal (oval) with an optional satisfaction predicate. */
 public final class Goal implements GoalTaskElement {
 
-    private String   id;
+    private String id;
     private GoalType goalType;
-    private java.util.List<IStarOclConstraint> constraints;
+    private IStarOclConstraint condition;
 
     public Goal(String id, GoalType goalType) {
-        this(id, goalType, java.util.List.of());
+        this(id, goalType, null);
     }
 
-    public Goal(String id, GoalType goalType, String oclSource) {
-        this(id, goalType, oclSource == null ? java.util.List.of() : java.util.List.of(
-                new IStarOclConstraint(IStarOclConstraint.Kind.CONDITION, oclSource)));
-    }
-
-    public Goal(String id, GoalType goalType, java.util.List<IStarOclConstraint> constraints) {
-        this.id       = id;
+    public Goal(String id, GoalType goalType, IStarOclConstraint condition) {
+        this.id = id;
         this.goalType = goalType;
-        this.constraints = java.util.List.copyOf(constraints);
+        this.condition = condition;
     }
 
     @Override public String id() { return id; }
-    public GoalType goalType()   { return goalType; }
-    @Override public java.util.List<IStarOclConstraint> constraints() { return constraints; }
-    public java.util.List<IStarOclConstraint> activations() {
-        return constraints.stream()
-                .filter(x -> x.kind() == IStarOclConstraint.Kind.ACTIVATION).toList();
-    }
-    public java.util.List<IStarOclConstraint> conditions() {
-        return constraints.stream().filter(x -> x.kind() == IStarOclConstraint.Kind.CONDITION).toList();
-    }
-    public java.util.List<IStarOclConstraint> releases() {
-        return constraints.stream().filter(x -> x.kind() == IStarOclConstraint.Kind.RELEASE).toList();
-    }
-    @Override public String oclSource() {
-        return conditions().stream().map(x -> "(" + x.oclBody() + ")")
-                .reduce((a, b) -> a + " and " + b).orElse(null);
+    public GoalType goalType() { return goalType; }
+
+    @Override
+    public java.util.List<IStarOclConstraint> constraints() {
+        return conditions();
     }
 
-    public void setId(String id)             { this.id = id; }
+    public java.util.List<IStarOclConstraint> conditions() {
+        return condition == null ? java.util.List.of() : java.util.List.of(condition);
+    }
+
+    @Override
+    public String oclSource() {
+        return condition == null ? null : condition.oclBody();
+    }
+
+    public void setId(String id) { this.id = id; }
     public void setGoalType(GoalType goalType) { this.goalType = goalType; }
+    public void setCondition(IStarOclConstraint condition) { this.condition = condition; }
     public void setOclSource(String oclSource) {
-        constraints = oclSource == null ? java.util.List.of() : java.util.List.of(
-                new IStarOclConstraint(IStarOclConstraint.Kind.CONDITION, oclSource));
+        condition = oclSource == null ? null : new IStarOclConstraint(oclSource);
     }
 }

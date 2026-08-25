@@ -23,10 +23,8 @@ public final class AclSemanticValidator {
 
         validateGeneralizations(model, kinds, errors);
         validateInheritedProperties(model, errors);
-        validateRelations(model.relations(), entities, kinds.keySet(), errors);
-        OwnerIndex owners = validateOwners(model.owners(), roles.keySet(), groups, errors);
-        validateRoleOwnerScopeMonotonicity(roles, owners, errors);
-        validateCompatibility(model.compatibilities(), roles, groups, owners, errors);
+        validateRelations(model.relations(), entities, groups, kinds.keySet(), errors);
+        validateCompatibility(model.compatibilities(), roles, groups, errors);
         return List.copyOf(errors);
     }
 
@@ -106,10 +104,9 @@ public final class AclSemanticValidator {
     }
 
     private static void validateRelations(List<AclRelation> relations, Set<String> entities,
-            Set<String> classifiers, List<String> errors) {
+            Set<String> groups, Set<String> classifiers, List<String> errors) {
         Set<String> names = new HashSet<>();
-        Set<String> compositeParts = new HashSet<>();
-        Map<String, String> compositionParent = new HashMap<>();
+        Set<String> groupCompositionPairs = new HashSet<>();
         for (AclRelation relation : relations) {
             if (!names.add(relation.name())) errors.add("duplicate relationship '" + relation.name() + "'");
             if (!classifiers.contains(relation.source().type()) || !classifiers.contains(relation.target().type())) {
@@ -121,27 +118,22 @@ public final class AclSemanticValidator {
                 errors.add("relationship '" + relation.name() + "' has duplicate MemberEnd role name '"
                         + relation.source().roleName().get() + "'");
             }
-            if (relation.kind() != RelationKind.ASSOCIATION
-                    && !entities.contains(relation.source().type())
-                    && !entities.contains(relation.target().type())) {
-                errors.add("aggregation/composition '" + relation.name()
-                        + "' must have at least one Entity endpoint; use Owner for Group containment");
-            }
-            if (relation.kind() == RelationKind.COMPOSITION) {
-                if (entities.contains(relation.source().type())
-                        && !entities.contains(relation.target().type())) {
-                    errors.add("composition '" + relation.name() + "' has Entity '"
-                            + relation.source().type() + "' as whole over non-Entity '"
-                            + relation.target().type() + "'; Group or Role cannot be owned by an Entity");
+            boolean sourceEntity = entities.contains(relation.source().type());
+            boolean targetEntity = entities.contains(relation.target().type());
+            if (!sourceEntity && !targetEntity) {
+                if (relation.kind() != RelationKind.COMPOSITION
+                        || !groups.contains(relation.source().type())
+                        || relation.source().type().equals(relation.target().type())) {
+                    errors.add("relationship '" + relation.name()
+                            + "' between Role/Group classifiers must be a binary composition"
+                            + " from a Group to a different Role or Group");
+                } else if (!groupCompositionPairs.add(relation.source().type() + "\0"
+                        + relation.target().type())) {
+                    errors.add("Group '" + relation.source().type() + "' and member '"
+                            + relation.target().type() + "' have more than one composition");
                 }
-                if (!compositeParts.add(relation.target().type())) {
-                    errors.add("classifier '" + relation.target().type()
-                            + "' has more than one explicit composite owner");
-                }
-                compositionParent.put(relation.target().type(), relation.source().type());
             }
         }
-        detectCycles(compositionParent, "composition", errors);
     }
 
     private record OwnerIndex(Map<String, String> targetOwner, Map<String, String> groupParent) {}
@@ -200,7 +192,7 @@ public final class AclSemanticValidator {
     }
 
     private static void validateCompatibility(List<AclCompatibility> compatibilities,
-            Map<String, AclRole> roles, Set<String> groups, OwnerIndex owners, List<String> errors) {
+            Map<String, AclRole> roles, Set<String> groups, List<String> errors) {
         Set<String> seen = new HashSet<>();
         for (AclCompatibility compatibility : compatibilities) {
             if (!roles.containsKey(compatibility.fromRole()) || !roles.containsKey(compatibility.toRole())) {
@@ -225,10 +217,6 @@ public final class AclSemanticValidator {
                 errors.add("duplicate Compatibility between '" + a + "' and '" + b
                         + "' in Group '" + compatibility.groupName() + "'");
             }
-            validateCompatibilityEndpointScope(compatibility.fromRole(), compatibility.groupName(),
-                    owners, errors);
-            validateCompatibilityEndpointScope(compatibility.toRole(), compatibility.groupName(),
-                    owners, errors);
         }
     }
 

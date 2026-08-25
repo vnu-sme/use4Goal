@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="ASCII"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/goal/target/generated-sources/acl-ecore" modelPluginID="org.vnu.sme.goal"
+    modelName="ACL" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    importerID="org.eclipse.emf.importer.ecore" complianceLevel="21.0" copyrightFields="false"
+    operationReflection="true">
+  <foreignModel>acl.ecore</foreignModel>
+  <genPackages prefix="Acl" basePackage="org.vnu.sme.goal.dsl.acl.ecore" disposableProviderFactory="true"
+      ecorePackage="acl.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="acl.ecore#//PrimitiveKind">
+      <genEnumLiterals ecoreEnumLiteral="acl.ecore#//PrimitiveKind/STRING"/>
+      <genEnumLiterals ecoreEnumLiteral="acl.ecore#//PrimitiveKind/INTEGER"/>
+      <genEnumLiterals ecoreEnumLiteral="acl.ecore#//PrimitiveKind/REAL"/>
+      <genEnumLiterals ecoreEnumLiteral="acl.ecore#//PrimitiveKind/BOOLEAN"/>
+    </genEnums>
+    <genClasses ecoreClass="acl.ecore#//AclModel">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//AclModel/version"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//AclModel/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//AclModel/classifiers"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//AclModel/relationships"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//AclModel/generalizations"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//AclModel/roleSpecializations"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//AclModel/owners"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//AclModel/compatibilities"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="acl.ecore#//Classifier">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//Classifier/name"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference acl.ecore#//Classifier/model"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="acl.ecore#//DataType"/>
+    <genClasses ecoreClass="acl.ecore#//PrimitiveType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//PrimitiveType/kind"/>
+    </genClasses>
+    <genClasses ecoreClass="acl.ecore#//Enumeration">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//Enumeration/literals"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="acl.ecore#//Class">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//Class/attributes"/>
+    </genClasses>
+    <genClasses ecoreClass="acl.ecore#//Entity"/>
+    <genClasses ecoreClass="acl.ecore#//Group"/>
+    <genClasses ecoreClass="acl.ecore#//Role"/>
+    <genClasses ecoreClass="acl.ecore#//Attribute">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//Attribute/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//Attribute/optional"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//Attribute/mutable"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//Attribute/defaultValue"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference acl.ecore#//Attribute/type"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference acl.ecore#//Attribute/owner"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="acl.ecore#//Relationship">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//Relationship/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//Relationship/memberEnds"/>
+    </genClasses>
+    <genClasses ecoreClass="acl.ecore#//Association"/>
+    <genClasses ecoreClass="acl.ecore#//Aggregation"/>
+    <genClasses ecoreClass="acl.ecore#//Composition"/>
+    <genClasses ecoreClass="acl.ecore#//MemberEnd">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//MemberEnd/roleName"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//MemberEnd/lower"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//MemberEnd/upper"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference acl.ecore#//MemberEnd/target"/>
+    </genClasses>
+    <genClasses ecoreClass="acl.ecore#//Generalization">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference acl.ecore#//Generalization/specific"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference acl.ecore#//Generalization/general"/>
+    </genClasses>
+    <genClasses ecoreClass="acl.ecore#//RoleSpecialization">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference acl.ecore#//RoleSpecialization/child"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference acl.ecore#//RoleSpecialization/parent"/>
+    </genClasses>
+    <genClasses ecoreClass="acl.ecore#//Owner">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//Owner/lower"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//Owner/upper"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference acl.ecore#//Owner/source"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference acl.ecore#//Owner/target"/>
+    </genClasses>
+    <genClasses ecoreClass="acl.ecore#//Compatibility">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference acl.ecore#//Compatibility/group"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference acl.ecore#//Compatibility/fromRole"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference acl.ecore#//Compatibility/toRole"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

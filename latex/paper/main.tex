@@ -125,7 +125,7 @@ and Process Models Based on Scenario Synchronization
 
 \author{
     \IEEEauthorblockN{
-        Duc-Quyen Nguyen, Minh-Phuc Bui, and Huy-Hung Dao, Duc-Hanh Dang
+        Duc-Quyen Nguyen, Minh-Phuc Hoang, and Huy-Hung Dao, Duc-Hanh Dang
     }\IEEEauthorblockA{
 	University of Engineering and Technology, Vietnam National University, Hanoi\\
      % NOTE: only "hanhdd" is a confirmed address (reused from the co-author's known VNU
@@ -154,15 +154,26 @@ Model-driven engineering often represents a system's intentions and operational 
 \label{sect:intro}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Model-driven engineering (MDE) is ``the systematic use of models as primary artifacts during a software engineering process''~\cite{hutchinson2014mde}. Within MDE, complementary models describe a system at different abstraction levels. Goal models capture stakeholders, intentions, and rationale, thereby explaining \emph{why} a system is needed. Process models specify activities, responsibilities, and execution order, thereby explaining \emph{how} those intentions are operationalized~\cite{gobis2015}. For a given execution scenario, a process model is consistent with a goal model when its execution satisfies the corresponding intentions. Establishing this relation shows whether operational behavior realizes the declared objectives and provides traceability from goals to their process-level realization~\cite{gobis2015,caballero2026alig}. Maintaining the relation as the models evolve supports change analysis, early detection of divergence, and maintenance of aligned software artifacts~\cite{gobis2015}.
+Model-driven engineering (MDE) places models at the center of the software engineering process and treats them as first-class engineering artifacts. Within MDE, a system is often described by multiple complementary models that capture different concerns and levels of abstraction. Goal models represent stakeholders, intentions, and rationale, thereby explaining \emph{why} a system is needed, whereas process models describe activities, responsibilities, and execution order, thereby explaining \emph{how} those intentions are operationalized~\cite{gobis2015}. The intentions expressed in a goal model are expected to be realized by the behavior described in the corresponding process model. Establishing and maintaining consistency between the two models provides traceability from goals to their process-level realization and supports the detection of divergence as the models evolve~\cite{gobis2015,caballero2026alig}.
 
-Checking consistency is difficult for three reasons. First, the abstraction gap between goal and process models makes correspondences difficult to identify: one goal may be realized by several activities, and one activity may contribute to several goals~\cite{groner2014vadl,caballero2026alig}. Second, the models are developed independently, often at different stages and by different roles, making manually defined mappings costly and error-prone to maintain~\cite{gobis2015,groner2014vadl}. Third, consistency may depend on execution order and the cumulative effects of activities, which become observable only along a process execution~\cite{caballero2026alig}. GoBIS integrates i* and Communication Analysis through metamodel integration and methodological guidelines, supporting traceability between goal and process models at design time~\cite{gobis2015}. Gr\"oner et al. formalize mappings between intentional relations and process structures in Description Logics and use automated reasoning to detect orchestration and choreography inconsistencies~\cite{groner2014vadl}. Caballero-Villalobos et al. translate goal and process models into transition systems and evaluate goal satisfaction over their synchronized executions~\cite{caballero2026alig}. Despite their different reasoning mechanisms, these approaches establish correspondences at the type level and therefore cannot distinguish multiple runtime instances represented by the same model element.
+Checking consistency between goal and process models is challenging for several reasons. First, the two types of models are developed at different levels of abstraction: one goal may be realized by multiple activities, while one activity may contribute to several goals~\cite{groner2014vadl,caballero2026alig}. Second, they are often developed independently, at different stages and by different roles, making manually established correspondences costly and prone to divergence as the models change~\cite{gobis2015,groner2014vadl}. Moreover, consistency may depend not only on model-level elements but also on the concrete instances involved in an execution. Multiple runtime instances may be represented by the same actor, role, or activity, yet reach different states and consequently yield different goal-satisfaction outcomes.
 
-To address these limitations, we build on our previous scenario-synchronization framework~\cite{dang2010jucs} and propose ACL as an intermediate model that represents the states over which goal and process models are interpreted. Process execution updates ACL states step by step, while the goal model evaluates its intentions over those same states. We instantiate the methodology with an extended i* and a simplified BPMN, both augmented with OCL constraints. Checkpoint traces support scenario-level consistency checking, while transformation rules from the three models to Event-B enable proof-based formal verification. Accordingly, each consistency verdict applies to the examined execution scenario rather than to the complete reachable behavior of the process. In the \textit{MeetingScheduler} case study, the checker detects a completed BPMN execution that leaves an applicable i* root goal unsatisfied for one participant, while the generated Event-B development passes Rodin static checking and discharges all 126 proof obligations.
+Existing approaches employ different mechanisms for checking consistency. GoBIS supports integration and traceability between the two views at design time~\cite{gobis2015}; Gr"oner et al. formalize correspondences using Description Logics to detect inconsistencies~\cite{groner2014vadl}; and Caballero-Villalobos et al. translate the two models into transition systems and evaluate goal satisfaction over synchronized executions~\cite{caballero2026alig}. Despite their different reasoning mechanisms, these approaches rely on correspondences established in advance between the two models, which must also be maintained as the models evolve independently.
+In our previous work, models at different abstraction levels were synchronized through a shared conceptual model represented in UML, while OCL was used to specify and check consistency conditions over synchronized states~\cite{dang2010jucs}. However, for the goal--process setting, this UML/OCL representation does not explicitly capture the organizational context required to interpret intentions.
 
-This paper contributes: i) ACL for representing organizational states; ii) extended i* and simplified BPMN languages incorporating OCL constraints; iii) a unified semantics for the three models and rules for transforming them into Event-B; and iv) a USE tool evaluated through the \textit{MeetingScheduler} case study.
+Building on this foundation, we propose ACL as an intermediate language for representing the shared organizational and domain state of goal and process models. ACL extends the shared-state principle of our previous work by explicitly representing domain entities, organizational concepts, and their runtime instances. In our approach, process execution updates the ACL state, while the goal model evaluates intention satisfaction over the same state, thereby distinguishing different instances represented by the same model element.
 
-The remainder of this paper is organized as follows. Section~\ref{sect:motivation} presents the motivating example. Section~\ref{sect:overview} gives an overview of the approach, introducing the metamodels, their semantics, and the checking mechanism. Section~\ref{sect:toolSupport} describes tool support. Section~\ref{sect:evaluative} presents the research questions and evaluates the approach against related techniques. Section~\ref{sect:discussion} discusses trade-offs and limitations. Section~\ref{sect:relatedWork} reviews related work. Finally, Section~\ref{sect:conclusion} concludes the paper.
+To interpret i* and BPMN over ACL, we adapt the two languages only where necessary and use OCL as a common expression language over the shared state. OCL specifies conditions of intentional elements in i* and guards, preconditions, and postconditions in BPMN. ACL, i*, and BPMN are thus given a unified state-based semantics: ACL represents the system state, BPMN describes how that state evolves, and i* specifies the intentions evaluated over that state.
+
+We also define systematic transformation rules from the unified semantics of ACL, i*, and BPMN into an integrated Event-B model. These rules preserve the relationships among the three models, allowing their shared semantics to be represented and formally checked in Rodin through static checking and proof obligations.
+
+In the \textit{MeetingScheduler} case study, the approach detects a completed BPMN execution in which an applicable i* root goal remains unsatisfied for a particular participant. The generated Event-B model passes Rodin static checking and discharges all 126 proof obligations. The \textit{Incident Response} case study applies the same approach without requiring changes to the processing pipeline.
+
+This paper makes three main contributions: i) ACL, an intermediate shared-state language for goal and process models; ii) a unified state-based semantics for ACL, i*, and BPMN, with OCL serving as the common expression language over the shared state; and iii) transformation rules from this unified semantics to Event-B to support formal checking in Rodin. The approach is implemented in a USE prototype and illustrated through the case studies.
+
+The remainder of this paper is organized as follows. Section~\ref{sect:motivation} presents the motivating example. Section~\ref{sect:overview} provides an overview of the approach, including the metamodels, their semantics, and the checking mechanism. Section~\ref{sect:toolSupport} describes the tool support. Section~\ref{sect:evaluative} presents the research questions and evaluates the approach against related techniques. Section~\ref{sect:discussion} discusses trade-offs and limitations. Section~\ref{sect:relatedWork} reviews related work. Finally, Section~\ref{sect:conclusion} concludes the paper.
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Motivating Example}
@@ -171,11 +182,38 @@ The remainder of this paper is organized as follows. Section~\ref{sect:motivatio
 
 \label{subsect:umlocl}
 
-Consider \textit{MeetingScheduler}, in which an initiator requests a meeting and an organizer collects participants' availability, selects a time, announces the meeting, and coordinates attendance. Availability is obtained from a participant's calendar or, when no calendar is available, by a secretary through a phone call.
+Consider \textit{ProposalReview}, a proposal-handling scenario involving a
+\textit{Proposal Manager} and a \textit{Customer}. The i* model captures the
+intentions that should be achieved, whereas the BPMN model describes the
+activities used to process the proposal.
 
-Consistency is evaluated over a concrete execution. BPMN activities update a shared state, and the i* model evaluates that state for every applicable actor instance. The models are consistent when the completed process leaves all applicable root goals satisfied; completing the control flow alone is insufficient.
+Figure~\ref{fig:istar-proposal-review} presents the intentional view. The root goal
+\texttt{Proposal completed} requires the proposal to be ready for
+finalization and then finalized and sent. In turn, readiness requires that
+the current proposal is prepared and validated, that the customer review has
+been received, and that any customer feedback has been resolved. If changes
+are requested, they must therefore be incorporated without losing the
+validation required for the proposal currently being processed. In other
+words, validation concerns the current proposal revision, rather than merely
+the fact that a validation task has occurred.
 
-Figure~\ref{fig:istar-mtg} shows the intentional view. The initiator's \texttt{HaveMeetingOrganized} goal requires the meeting details, a schedule, and participant attendance. The organizer's \texttt{HaveMeetingScheduled} goal requires collected timetables, a selected time, and an announcement. Availability may be obtained by calendar or phone, while attendance and announcement apply to every participant.
+\begin{figure}[htbp]
+\vspace{-.3em}
+\begin{center}
+\includegraphics[width=\columnwidth,keepaspectratio]{images/proposal_review_istar.jpg}
+\vspace{-1.1em}
+\begin{center}
+\caption{i* model of \textit{ProposalReview}.}
+\label{fig:istar-proposal-review}
+\end{center}
+\vspace{-2.7em}
+\end{center}
+\end{figure}
+
+
+% ===============================================================
+% ==== MUST BE DELETED LATER ON, REPLACED BY PROPOSAL REVIEW ====
+% ===============================================================
 
 \begin{figure}[htbp]
 \vspace{-.3em}
@@ -190,8 +228,29 @@ Figure~\ref{fig:istar-mtg} shows the intentional view. The initiator's \texttt{H
 \end{center}
 \end{figure}
 
-Figure~\ref{fig:bpmn-mtg} shows the operational view. Its lanes assign activities to the initiator, organizer, secretary, and participant. An exclusive gateway selects the calendar or phone path before the organizer chooses a time and announces the meeting, after which participants attend.
+The corresponding operational view is shown in
+Figure~\ref{fig:bpmn-proposal-review}. The proposal is first prepared and validated
+and is then reviewed by the customer. If the customer requests changes,
+\texttt{Update proposal} is executed before the process proceeds to
+\texttt{Finalize proposal} and \texttt{Send proposal}. At the model level, these activities appear to provide a complete operational realization of the intentions expressed in the i* model, and the process can proceed normally to completion.
 
+\begin{figure}[htbp]
+\vspace{-.3em}
+\begin{center}
+\includegraphics[width=\columnwidth,keepaspectratio]{images/proposal_review_bpmn_with_legend.jpg}
+\vspace{-1.1em}
+\begin{center}
+\caption{BPMN model of \textit{ProposalReview}.}
+\label{fig:bpmn-proposal-review}
+\end{center}
+\vspace{-2.7em}
+\end{center}
+\end{figure}
+
+
+% ===============================================================
+% ==== MUST BE DELETED LATER ON, REPLACED BY PROPOSAL REVIEW ====
+% ===============================================================
 \begin{figure}[htbp]
 \vspace{-.3em}
 \begin{center}
@@ -205,7 +264,18 @@ Figure~\ref{fig:bpmn-mtg} shows the operational view. Its lanes assign activitie
 \end{center}
 \end{figure}
 
-Suppose two participants have no calendar but the secretary contacts only one. The phone-related sub-goal can be satisfied by that successful contact, and every executed BPMN activity can satisfy its precondition and postcondition. However, the omitted participant never reaches the state required for attendance, so the universally quantified meeting-attendance goal remains false. A type-level mapping cannot distinguish the two participant instances, and a process-only check observes no failed activity. The inconsistency is exposed only when process effects and quantified goal satisfaction are evaluated over the same instance-level state.
+This apparent consistency, however, does not necessarily hold when the effects of these activities are interpreted over the evolving shared state. Semantically, a proposal is ready for completion only if the proposal currently being processed has been validated. After \texttt{Validate proposal}, this condition holds. However, when \texttt{Update proposal} modifies the proposal in response to customer feedback, the current proposal changes while its validation does not. The previously established validation condition therefore no longer holds. The BPMN control flow can nevertheless continue through \texttt{Finalize proposal} and \texttt{Send proposal} and reach the end event. Thus, the process completes successfully at the control-flow level, while the resulting state does not satisfy the intention that the current proposal must be validated.
+
+The resulting mismatch reveals a limitation of static goal--process correspondences. The
+mapping may correctly associate \texttt{Validate proposal} with the goal that
+the proposal is validated, and \texttt{Update proposal} with the goal that
+requested changes are incorporated. However, these mappings only describe how
+individual activities contribute to individual goals. They do not capture how
+the effect of one activity may undo a condition established by an earlier
+activity. In this example, \texttt{Update proposal} changes the current
+proposal revision and therefore invalidates the validation established before
+the update. Detecting such an inconsistency requires both process effects and
+goal conditions to be interpreted over the same evolving state.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Overview of Our Approach}
@@ -314,79 +384,18 @@ Figure~\ref{fig:istar-metamodel} also shows the two quantified refinements intro
 \end{center}
 \end{figure}
 
-\begin{definition}[Goal-occurrence semantics]
+\begin{definition}[i* marking]
 \label{def:goal-marking}
-Let $\Omega_I(\Sigma_i)$ be the intentional-element occurrences obtained by binding i* actors and context paths to role occurrences in ACL state $\Sigma_i$. For a goal occurrence $(g,o)\in\Omega_I(\Sigma_i)$, define
+Let $\Omega_I(\Sigma)$ be the intentional-element occurrences obtained by binding i* actors and context paths to role occurrences in an ACL state $\Sigma$. At checkpoint $i$, an i* marking is
 \[
- a_i=d_i(g,o)\land
-     \mathit{eval}(\mathit{activation}_g,\Sigma_i,o),
- \qquad
- c_i=\mathit{eval}(\mathit{satisfaction}_g,\Sigma_i,o).
+ M_i=(M_G^i,M_T^i,M_Q^i,M_O^i).
 \]
-Here, $d_i(g,o)$ is the demand inherited from an active refinement parent or strategic dependency; a root goal receives demand from the scenario. The OCL activation is an additional eligibility guard and defaults to true when omitted. For a leaf goal, $c_i$ is its OCL condition; for a structural goal without a direct condition, it is obtained from its children: conjunction for AND and \texttt{forall}, disjunction for OR and \texttt{pick}. A quantified refinement ranges only over matching role occurrences in the current ACL group; an empty range yields \texttt{UNKNOWN}.
-
-The marking $M_G^i(g,o)=(A_i,P_i,S_i)$ records activation, progress, and stability. If $a_i$ is false, the occurrence is reset:
-\[
- (A_i,P_i,S_i)=(0,0,1).
-\]
-Otherwise $A_i=1$. Let $e_i=\neg A_{i-1}$ indicate entry into a new activation episode and define the episode baselines
-\[
- \bar P_{i-1}=\begin{cases}
- 1 & e_i\land\mathit{kind}(g)=\texttt{Maintain},\\
- 0 & e_i\land\mathit{kind}(g)\ne\texttt{Maintain},\\
- P_{i-1} & \neg e_i,
- \end{cases}
- \qquad
- \bar S_{i-1}=\begin{cases}1&e_i,\\S_{i-1}&\neg e_i.\end{cases}
-\]
-Progress and stability are then updated by
-\begin{align*}
- P_i &={}
- \begin{cases}
-  \bar P_{i-1}\lor c_i & \mathit{kind}(g)=\texttt{Achieve},\\
-  c_i & \text{otherwise},
- \end{cases}\\
- S_i &= \bar S_{i-1}\land(\neg\bar P_{i-1}\lor P_i).
-\end{align*}
-Let $k=\mathit{kind}(g)$. The status function is
-\[
- \mathit{status}_i(g,o)=
- \begin{cases}
- \texttt{UNKNOWN} & \neg A_i,\\
- \texttt{FULFILLED} & k=\texttt{Achieve}\land P_i,\\
- \texttt{PENDING} & k=\texttt{Achieve}\land\neg P_i,\\
- \texttt{FULFILLED} & k=\texttt{Maintain}\land S_i\land P_i,\\
- \texttt{VIOLATED} & k=\texttt{Maintain}\land\neg(S_i\land P_i),\\
- \texttt{VIOLATED} & k=\texttt{Sustain}\land\neg S_i,\\
- \texttt{FULFILLED} & k=\texttt{Sustain}\land S_i\land P_i,\\
- \texttt{PENDING} & k=\texttt{Sustain}\land S_i\land\neg P_i,\\
- \texttt{FULFILLED} & k=\texttt{Recur}\land P_i,\\
- \texttt{PENDING} & k=\texttt{Recur}\land\neg P_i.
- \end{cases}
-\]
-Together with task, quality, and obstacle markings, these goal markings form $M_i=(M_G^i,M_T^i,M_Q^i,M_O^i)$ at checkpoint $i$.
+For a goal occurrence $(g,o)\in\Omega_I(\Sigma_i)$, $M_G^i(g,o)=(A_i,P_i,S_i)$ records whether it is active, whether its condition or refinement currently holds, and whether its obligation has remained valid during the current activation episode. A task occurrence is marked by $(Q_i,R_i)$, denoting that it has been requested and realized. Quality and obstacle markings are derived from their conditions and incoming contributions. The observable status of an occurrence is \texttt{UNKNOWN}, \texttt{PENDING}, \texttt{FULFILLED}, or \texttt{VIOLATED}; the temporal interpretation of $(A_i,P_i,S_i)$ is determined by the goal kind. Markings are reset when an occurrence is inactive and are propagated through AND, OR, \texttt{forall}, \texttt{pick}, contribution, obstruction, and dependency relations.
 \end{definition}
 
-For a task occurrence, $M_T^i(t,o)=(Q_i,R_i)$ is updated by $Q_i=Q_{i-1}\lor\mathit{pre}_i$ and $R_i=R_{i-1}\lor(Q_i\land\mathit{post}_i)$. Thus, the task is \texttt{UNKNOWN}, \texttt{PENDING}, or \texttt{FULFILLED} for $(Q_i,R_i)=(0,0)$, $(1,0)$, or $(1,1)$, respectively. These histories are why i* is evaluated at every checkpoint instead of only at the final state.
+An \texttt{Achieve} goal latches fulfillment once its condition becomes true during an activation episode. A \texttt{Maintain} goal requires its condition throughout that episode; \texttt{Sustain} begins this preservation obligation after its first achievement; and \texttt{Recur} permits repeated achievements. For tasks, $Q_i$ becomes true when the task is requested and $R_i$ when its postcondition is established. These histories are why the goal model is reevaluated at every checkpoint instead of only at the final state.
 
-In Figure~\ref{fig:istar-mtg}, \texttt{MeetingOrganized} is evaluated for the concrete initiator occurrence. Its scheduling branch is delegated to an organizer, while its attendance branch uses \texttt{forall} over the participant occurrences owned by the same meeting unit. For the \texttt{ContactedByPhone} occurrence of a participant $p$, the quantified context makes \texttt{self} denote $p$, and Definition~\ref{def:goal-marking} gives
-\begin{align*}
- a_i(p) &= d_i(p)\land\neg\mathit{hasCalendar}_i(p),\\
- c_i(p) &= \mathit{timetableCollected}_i(p)\land
-           (\mathit{timetableChannel}_i(p)=\mathit{phone}),\\
- P_i(p) &= P_{i-1}(p)\lor c_i(p)
-             \quad\text{while }a_i(p)\text{ remains true}.
-\end{align*}
-Consequently, the goal is \texttt{UNKNOWN} when it is not demanded or when the participant has a calendar, \texttt{PENDING} for a demanded calendar-less participant not yet contacted successfully, and \texttt{FULFILLED} once the telephone branch establishes both required state predicates. Because it is an \texttt{Achieve} goal, fulfillment is retained for the rest of that activation episode. In the textual syntax, \texttt{> or TimetableCollected} makes \texttt{ContactedByPhone} one alternative refining the parent \texttt{TimetableCollected}; the sibling alternative is \texttt{CollectFromCalendar}. The enclosing \texttt{forall} then requires that parent goal for every participant before the organizer's \texttt{TimetablesCollected} goal is fulfilled.
-Writing $\mathit{sat}_i(e,o)$ for ``occurrence $(e,o)$ is fulfilled'', and abbreviating the relevant intentional elements as $TC$, $CBP$, and $CFC$, the two refinements are
-\begin{align*}
- \mathit{sat}_i(TC,p)
-   &={}\mathit{sat}_i(CBP,p)\lor\mathit{sat}_i(CFC,p),\\
- \mathit{sat}_i(\mathit{TimetablesCollected},o)
-   &={}\bigwedge_{p\in\mathit{Participants}(o)}
-          \mathit{sat}_i(TC,p).
-\end{align*}
-The \texttt{make InclusiveCollection} relation additionally propagates a positive contribution from a fulfilled \texttt{ContactedByPhone} occurrence to the corresponding quality occurrence; it does not replace the goal's activation or condition.
+In Figure~\ref{fig:istar-mtg}, \texttt{MeetingOrganized} is evaluated for the concrete initiator occurrence. Its scheduling branch is delegated to an organizer, while its attendance branch uses \texttt{forall} over the participant occurrences owned by the same meeting unit. Timetable collection may use an OR between calendar and telephone channels, and a \texttt{pick} identifies the secretary occurrence that performs the call. Hence the same i* model can distinguish a meeting in which all participants attend from one in which only one of several participants is reached.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{The Simplified BPMN Language}
@@ -477,11 +486,28 @@ where the last conjunct is omitted when no oracle is supplied. The checker evalu
 \label{sect:toolSupport}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The method is implemented as a USE plugin, adding i*, BPMN, and ACL each as a compiler/metamodel/view triple following USE's own convention for a new modeling language, with OCL embedded directly in i*.
+We implemented the proposed approach as a prototype, called the \textit{Goal Plugin}, to support the model transformation and verification workflow. The plugin takes three source models---ACL, iStar, and BPMN---and translates them into a unified Event-B project for verification in Rodin. These models capture complementary system perspectives: ACL specifies the structural state space, BPMN defines the behavioral transitions, and iStar captures the intentional requirements.
 
-Two checking modes are exposed. The \emph{batch mode} runs the pipeline of Section~\ref{sect:overview} once over the model and scenario inputs and reports the four failure lists, suited to answering ``is the system conformant, and where is the first problem''. The \emph{step-by-step debugger} instead replays the checkpoint trace one activity at a time, coloring the i* diagram by goal/task status (\texttt{FULFILLED}/\texttt{PENDING}/violated/\texttt{UNKNOWN}) in sync with the BPMN diagram, so a user sees the exact point and diagram where the state diverges from expectation, rather than a text log of failures.
+Each source model is processed by a dedicated translator that generates a corresponding Event-B fragment. The ACL translator produces the structural elements, including carrier sets, variables, relations, invariants, and initialization actions. The BPMN translator maps process elements to Event-B events and translates their guards and effects into Event-B guards and actions. While the iStar translator generates the intentional elements required to represent and evaluate goal and task satisfaction.
 
-The tool has been applied to the \textit{MeetingScheduler} and \textit{Incident Response} case studies. Both run through the same pipeline unchanged, providing initial evidence that the shared-state semantics and checkpoint-trace checker can be applied across distinct process scenarios.
+The generated fragments are then composed into a single Event-B model. In the resulting composition, ACL defines the admissible state space, BPMN defines the transition system over that state space, and iStar provides the goal-satisfaction layer. The plugin generates a Rodin-compatible project containing the corresponding Event-B contexts, machines, events, invariants, and traceability information linking generated elements to their source models.
+
+Rodin serves as the verification backend, where the generated Event-B model is analysed through proof obligations to establish the consistency of the integrated structural, behavioral, and intentional specifications. The meeting-scheduling case study is used to demonstrate the complete tool-supported workflow, from source-model translation and composition to formal verification of the resulting Event-B model.
+
+Figure~\ref{fig:tool} illustrates the overall architecture of the Goal Plugin and its integration with the model transformation and verification workflow. It shows how the three source models are independently translated into Event-B fragments, composed into a unified Event-B project, and subsequently verified using Rodin.
+
+\begin{figure}[htbp]
+\vspace{-.3em}
+\begin{center}
+\includegraphics[width=\columnwidth,keepaspectratio]{images/ToolSupport.png}
+\vspace{-1.1em}
+\begin{center}
+\caption{Architecture of the \textbf{Goal Plugin}.}
+\label{fig:tool}
+\end{center}
+\vspace{-2.7em}
+\end{center}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Evaluation}
@@ -519,13 +545,27 @@ Checking one concrete scenario answers whether that scenario is consistent, not 
 \label{sect:relatedWork}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-A first line of work integrates goal and process models at design time. GoBIS~\cite{gobis2015} combines i* and Communication Analysis through a metamodel integration and methodological guidelines, improving traceability and model completeness. Gr\"oner et al.~\cite{groner2014vadl} formalize mappings between goal relations and process structures in Description Logics and automatically detect orchestration and choreography inconsistencies. These approaches validate the models and their correspondences as specified, rather than goal satisfaction along a concrete execution.
+% A first line of work integrates goal and process models at design time. GoBIS~\cite{gobis2015} combines i* and Communication Analysis through a metamodel integration and methodological guidelines, improving traceability and model completeness. Gr\"oner et al.~\cite{groner2014vadl} formalize mappings between goal relations and process structures in Description Logics and automatically detect orchestration and choreography inconsistencies. These approaches validate the models and their correspondences as specified, rather than goal satisfaction along a concrete execution.
 
-A second line of work evaluates behavioral consistency. Our previous work~\cite{dang2010jucs} synchronizes two scenarios through a common conceptual model and OCL, establishing consistency along one execution. Caballero-Villalobos et al.~\cite{caballero2026alig} translate goal and process models into transition systems and decide weak, strong, and monotonic compliance over reachable executions. The former is limited to the scenario examined, while the latter provides broader behavioral guarantees but still relates executions to model-level intentional elements.
+% A second line of work evaluates behavioral consistency. Our previous work~\cite{dang2010jucs} synchronizes two scenarios through a common conceptual model and OCL, establishing consistency along one execution. Caballero-Villalobos et al.~\cite{caballero2026alig} translate goal and process models into transition systems and decide weak, strong, and monotonic compliance over reachable executions. The former is limited to the scenario examined, while the latter provides broader behavioral guarantees but still relates executions to model-level intentional elements.
 
-Formal verification has also been applied to process models independently of their goal models. Bryans and Wei~\cite{bryans2010eventb} give an algorithmic translation of BPMN control and data flow into Event-B for verification with Rodin. Our transformation instead covers the integrated ACL, goal, and process specifications, preserving the shared state used for consistency checking.
+% Formal verification has also been applied to process models independently of their goal models. Bryans and Wei~\cite{bryans2010eventb} give an algorithmic translation of BPMN control and data flow into Event-B for verification with Rodin. Our transformation instead covers the integrated ACL, goal, and process specifications, preserving the shared state used for consistency checking.
 
-Across these lines of work, correspondence is primarily established between model-level elements or states. The proposed method instead evaluates both process effects and quantified goal satisfaction over the same actor and domain instances. ACL structural invariants are checked on that state as an additional validation layer, but the central consistency claim remains whether the process-generated state realizes the applicable goals.
+% Across these lines of work, correspondence is primarily established between model-level elements or states. The proposed method instead evaluates both process effects and quantified goal satisfaction over the same actor and domain instances. ACL structural invariants are checked on that state as an additional validation layer, but the central consistency claim remains whether the process-generated state realizes the applicable goals.
+
+Existing research on the relationship between goal and process models can be broadly organized into three areas: structural consistency checking, execution-based consistency checking, and goal--process integration.
+
+\textit{Structural consistency checking.}
+Gr\"oner et al.~\cite{groner2014vadl} formalize correspondences between intentional relations and process structures using Description Logics, enabling automated detection of inconsistencies in process orchestration and choreography. Such approaches primarily reason about model-level elements and their relationships, rather than the states resulting from a concrete process execution.
+
+\textit{Execution-based consistency checking.}
+Dang et al.~\cite{dang2010jucs} synchronize execution scenarios through a common conceptual model and use OCL constraints to assess conformance along a trace. Caballero-Villalobos et al.~\cite{caballero2026alig} adopt a broader behavioral perspective by translating goal and process models into transition systems and evaluating compliance over reachable executions. Our approach remains scenario-based, but evaluates goal satisfaction over the same instance-level ACL states modified during BPMN execution. Related work on formal process verification translates BPMN into Event-B for analysis with Rodin~\cite{bryans2010eventb}; in our approach, the transformation instead covers the integrated ACL, i*, and BPMN semantics.
+
+\textit{Goal--process integration.}
+Koliadis and Ghose~\cite{koliadis2006goalbpm} relate BPMN process models to KAOS goals through the GoalBPM methodology. In related work, Koliadis et al.~\cite{koliadis2006ibpmn} combine i* and BPMN to support business process model lifecycle management through fulfillment conditions and process activity effects. GoBIS~\cite{gobis2015} integrates i* and Communication Analysis through metamodel integration and methodological guidelines, while URN combines goal and scenario modelling within an integrated framework~\cite{amyot2022combining}. In contrast, our approach retains separate goal and process models and introduces ACL as a shared state model through which BPMN execution effects and i* intentions are related.
+
+Overall, our approach differs from existing work by checking consistency over concrete organizational and domain instances represented in the shared state. This makes it possible to identify executions in which the process completes, while a goal remains unsatisfied for a specific actor or role instance. However, the result is limited to the examined execution scenario rather than all possible executions.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}

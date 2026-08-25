@@ -9,11 +9,9 @@ import org.tzi.use.gui.main.MainWindow;
 import org.vnu.sme.goal.verify.conformance.semantics.GoalTaskStatus;
 import org.vnu.sme.goal.verify.conformance.semantics.IStarMarking;
 import org.vnu.sme.goal.verify.conformance.semantics.QualityStatus;
-import org.vnu.sme.goal.verify.conformance.semantics.ObstacleStatus;
 import org.vnu.sme.goal.dsl.istar.mm.Goal;
 import org.vnu.sme.goal.dsl.istar.mm.GoalModel;
 import org.vnu.sme.goal.dsl.istar.mm.IntentionalElement;
-import org.vnu.sme.goal.dsl.istar.mm.Obstacle;
 import org.vnu.sme.goal.dsl.istar.mm.Quality;
 import org.vnu.sme.goal.dsl.istar.mm.Resource;
 import org.vnu.sme.goal.dsl.istar.mm.Task;
@@ -64,7 +62,6 @@ public final class IStarUseTraceView {
                 case Task t -> addGoalTaskBadge(badges, t.id(), marking.goalTaskStatus(t.id()));
                 case Quality q -> addQualityBadge(badges, q.id(), marking.qualityStatus(q.id()));
                 case Resource r -> { }
-                case Obstacle o -> addObstacleBadge(badges, o.id(), marking.obstacleStatus(o.id()));
             }
         }
         return badges;
@@ -87,11 +84,4 @@ public final class IStarUseTraceView {
         }
     }
 
-    private static void addObstacleBadge(Map<String, NodeBadge> badges, String id, ObstacleStatus status) {
-        switch (status) {
-            case ACTIVE -> badges.put(id, new NodeBadge(C_FALSE, "A", "Active obstacle"));
-            case RESOLVED -> badges.put(id, new NodeBadge(C_TRUE, "R", "Resolved obstacle"));
-            case UNKNOWN -> badges.put(id, new NodeBadge(C_UNKNOWN, "?", "Obstacle has not occurred"));
-        }
-    }
 }

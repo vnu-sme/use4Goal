@@ -3,10 +3,10 @@ istar OJSGoals {
     goal SubmissionProcessed
     goal ReviewsCompleted > SubmissionProcessed
     goal DecisionRecorded > SubmissionProcessed
-    goal ReviewsCompletedForAll > forall Review ReviewsCompleted post {[
+    goal ReviewsCompletedForAll > forall Review ReviewsCompleted condition {[
       self.recommendation = Recommendation::accept
     ]}
-    goal DecisionRecordedByEditor > pick SectionEditor DecisionRecorded post {[
+    goal DecisionRecordedByEditor > pick SectionEditor DecisionRecorded condition {[
       ReviewRound.allInstances()->forAll(r | r.editorDecision = EditorDecision::accept)
     ]}
   }

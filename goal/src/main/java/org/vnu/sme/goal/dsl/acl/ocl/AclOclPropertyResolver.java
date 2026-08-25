@@ -20,7 +20,7 @@ import org.vnu.sme.goal.dsl.acl.mm.AclRole;
  *
  * <p>{@code self.x} is left untouched when {@code x} is local. When {@code x} is declared by a
  * play-chain ancestor Role (see {@code Acl2UseTranslator}, {@code goal/docs/ACL_OCL_SEMANTICS.md}
- * §3.4-§3.7), the value is read by walking the {@code source_<Owner>_plays_<Role>} navigation
+ * §3.4-§3.7), the value is read by walking the lower-camel owner navigation
  * one hop per {@code extends} edge between the context Role and the declaring ancestor. Every
  * hop is single-valued in that direction (the parent side of a play-chain association is
  * always {@code [1]}), so this is always a plain navigation chain -- never a search over
@@ -43,10 +43,17 @@ public final class AclOclPropertyResolver {
     public static String rewrite(AclModel acl, String contextRole,
                                  Map<String, String> contextualVariables, String source) {
         if (acl == null || source == null || source.isBlank()) return source;
+        // Older BPMN/iStar examples were written when every Role was linked
+        // directly to Agent.  Role `extends` is now represented by a play
+        // chain, so the direct owner of a child Role is its parent Role.  Do
+        // this compatibility rewrite even when the OCL context is a Group
+        // (the common BPMN case), where the role-specific rewriting below is
+        // intentionally not applicable.
+        String rewritten = rewriteLegacyGeneratedNavigation(acl, source);
         AclRole context = acl.findRole(contextRole).orElse(null);
-        if (context == null) return source;
+        if (context == null) return rewritten;
 
-        String rewritten = rewriteAclNavigationAliases(acl, context, source);
+        rewritten = rewriteAclNavigationAliases(acl, context, rewritten);
         Map<String, String> variables = new LinkedHashMap<>(contextualVariables);
         variables.put("self", contextRole);
         rewritten = rewriteContextualRoleProperties(acl, variables, rewritten);
@@ -61,6 +68,39 @@ public final class AclOclPropertyResolver {
         }
         matcher.appendTail(result);
         return result.toString();
+    }
+
+    /** Normalizes the verbose association-end names emitted by older ACL translators. */
+    private static String rewriteLegacyGeneratedNavigation(AclModel acl, String source) {
+        String result = source;
+        for (AclRole role : acl.roles()) {
+            Optional<String> parent = role.parentRoles().stream().findFirst();
+            String owner = parent.orElse("Agent");
+            String ownerNavigation = parent.map(AclOclPropertyResolver::lowerFirst).orElse("agent");
+            result = replaceWord(result, "source_Agent_plays_" + id(role.name()), ownerNavigation);
+            result = replaceWord(result, "source_ACLAgent_plays_" + id(role.name()), ownerNavigation);
+            result = replaceWord(result, "source_" + id(owner) + "_plays_" + id(role.name()), ownerNavigation);
+            result = replaceWord(result, "target_Agent_plays_" + id(role.name()), playRole(role.name()));
+            result = replaceWord(result, "target_ACLAgent_plays_" + id(role.name()), playRole(role.name()));
+            result = replaceWord(result, "target_" + id(owner) + "_plays_" + id(role.name()),
+                    playRole(role.name()));
+        }
+        for (AclOwner owner : acl.owners()) {
+            if (acl.findRole(owner.target()).isPresent()) {
+                String association = id(owner.target()) + "_in_" + id(owner.sourceGroup());
+                result = replaceWord(result, "source_" + association, lowerFirst(owner.sourceGroup()));
+                result = replaceWord(result, "target_" + association, lowerFirst(owner.target()));
+            } else {
+                String association = "Owner_" + id(owner.sourceGroup()) + "_" + id(owner.target());
+                result = replaceWord(result, "source_" + association, lowerFirst(owner.sourceGroup()));
+                result = replaceWord(result, "target_" + association, lowerFirst(owner.target()));
+            }
+        }
+        return result;
+    }
+
+    private static String replaceWord(String source, String oldName, String newName) {
+        return source.replaceAll("\\b" + Pattern.quote(oldName) + "\\b", Matcher.quoteReplacement(newName));
     }
 
     private static String rewriteContextualRoleProperties(
@@ -140,13 +180,13 @@ public final class AclOclPropertyResolver {
         String group = ownerGroup(acl, context.name());
         String result = source;
         if (group != null) {
-            String groupAccess = "self.source_" + id(context.name()) + "_in_" + id(group);
+            String groupAccess = "self." + lowerFirst(group);
             for (AclOwner owner : acl.owners()) {
                 if (!owner.sourceGroup().equals(group) || acl.findRole(owner.target()).isEmpty()) continue;
                 String member = owner.target();
                 result = result.replaceAll(
                         "\\bself\\s*\\.\\s*group\\s*\\.\\s*" + Pattern.quote(member) + "\\b",
-                        Matcher.quoteReplacement(groupAccess + ".target_" + id(member) + "_in_" + id(group)));
+                        Matcher.quoteReplacement(groupAccess + "." + lowerFirst(member)));
             }
             result = result.replaceAll("\\bself\\s*\\.\\s*group\\b", Matcher.quoteReplacement(groupAccess));
         }
@@ -182,7 +222,8 @@ public final class AclOclPropertyResolver {
      * Builds the play-chain navigation from {@code selfExpr} (typed {@code context}) up to the
      * occurrence of {@code stopAtRoleName} (or, if {@code null}, all the way to the Agent
      * playing {@code context}), optionally appending {@code .property}. Every hop is
-     * {@code source_<Owner>_plays_<Role>} -- always single-valued in this direction, since the
+     * lower-camel owner role ({@code agent} or the parent Role name) -- always
+     * single-valued in this direction, since the
      * owner side of a play-chain association is always {@code [1]} -- so this never needs a
      * search or an {@code ->any(...)}.
      */
@@ -192,8 +233,7 @@ public final class AclOclPropertyResolver {
         AclRole current = context;
         while (stopAtRoleName == null || !current.name().equals(stopAtRoleName)) {
             Optional<String> parent = current.parentRoles().stream().findFirst();
-            String ownerType = parent.orElse("Agent");
-            nav.append(".source_").append(id(ownerType)).append("_plays_").append(id(current.name()));
+            nav.append('.').append(parent.map(AclOclPropertyResolver::lowerFirst).orElse("agent"));
             if (parent.isEmpty()) break;
             AclRole next = acl.findRole(parent.get()).orElse(null);
             if (next == null) return null;
@@ -227,7 +267,12 @@ public final class AclOclPropertyResolver {
     }
 
     private static String lowerFirst(String value) {
-        return Character.toLowerCase(value.charAt(0)) + value.substring(1);
+        String clean = id(value);
+        return Character.toLowerCase(clean.charAt(0)) + clean.substring(1);
+    }
+
+    private static String playRole(String value) {
+        return "play_" + lowerFirst(value);
     }
 
     private record Declaration(AclRole role, AclAttribute attribute) {}

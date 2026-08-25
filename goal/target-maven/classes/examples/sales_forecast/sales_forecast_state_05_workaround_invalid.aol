@@ -1,0 +1,27 @@
+// End state of the observed workaround (sales_forecast_workaround.bpmn2) via
+// prepareProposalOutsideIS -> sendUnapprovedProposal, matching
+// workaround.soil: the Customer Manager sends the current revision directly
+// while approvalStatus is still #draft -- no request, no review, no
+// approval. This is the deliberately invalid state exercising the two
+// process-ordering invariants that the workaround skips.
+// Expected OCL result: 5 true, 2 false
+// (false: SentRequiresApproval, SentRequiresReview).
+aol v2.0 SalesForecastWorkaroundInvalid for "sales_forecast.acl" {
+  group SalesCase as salescase1 {
+    proposalPrepared = true;
+    proposalSent = true;
+    sentRevision = r1;
+    sentWithinWindow = true;
+    processCompleted = true;
+  }
+
+  role Management as management1;
+  role CustomerManager as manager1;
+  role Approver as approver1;
+  role Customer as customer1;
+
+  link SalesCase_contains_Management : salescase1 -> management1;
+  link SalesCase_contains_CustomerManager : salescase1 -> manager1;
+  link SalesCase_contains_Approver : salescase1 -> approver1;
+  link SalesCase_contains_Customer : salescase1 -> customer1;
+}

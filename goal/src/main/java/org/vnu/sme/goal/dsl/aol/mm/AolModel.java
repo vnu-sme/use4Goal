@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Map;
 
-/** An object-diagram-level snapshot conforming to one ACL StructuralSpecification. */
+/** @deprecated Legacy AOL v1 Agent-based state; use {@code AclSystemState}. */
+@Deprecated(forRemoval = false)
 public record AolModel(String version, String name, String aclFile,
                        List<String> agents, Map<String, String> agentProfileRoles,
                        Map<String, Map<String, String>> agentAttributeValues,

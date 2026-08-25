@@ -29,11 +29,11 @@ public final class GoalActivationGraph {
         }
         for (Dependency dependency : model.getDependencies()) {
             if (dependency.dependerElmt() == null || dependency.dependeeElmt() == null) continue;
-            boolean dependerIsGoal = model.findElement(dependency.dependerElmt())
-                    .filter(Goal.class::isInstance).isPresent();
+            boolean dependerCanDemand = model.findElement(dependency.dependerElmt())
+                    .filter(GoalTaskElement.class::isInstance).isPresent();
             boolean dependeeIsExecutable = model.findElement(dependency.dependeeElmt())
                     .filter(GoalTaskElement.class::isInstance).isPresent();
-            if (dependerIsGoal && dependeeIsExecutable) {
+            if (dependerCanDemand && dependeeIsExecutable) {
                 parents.putIfAbsent(dependency.dependeeElmt(), dependency.dependerElmt());
             }
         }
@@ -59,8 +59,6 @@ public final class GoalActivationGraph {
         return switch (refinement) {
             case AndRefinement and -> and.children();
             case OrRefinement or -> java.util.List.of(or.child());
-            case ForRefinement forall -> java.util.List.of(forall.child());
-            case PickRefinement pick -> java.util.List.of(pick.child());
         };
     }
 }

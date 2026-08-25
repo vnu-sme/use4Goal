@@ -1,0 +1,150 @@
+// AS-IS ProposalReview process.  Both control-flow branches reach End, but
+// the changes-requested branch omits the required re-validation of revision r2.
+model ProposalReviewProcess {
+  pool ProposalReview for ProposalReviewCase {
+    name "Proposal review — AS-IS missing re-validation"
+    lane ProposalManager;
+    lane Customer;
+  }
+
+  start reviewRequested {
+    lane ProposalManager
+    trigger none
+    pre {[
+      not self.prepared
+      and self.currentRevision = #none
+      and self.validationRevision = #none
+      and not self.sent
+    ]}
+    flow prepareProposal
+  }
+
+  activity prepareProposal {
+    name "Prepare proposal"
+    type task
+    lane ProposalManager
+    post {[
+      self.prepared
+      and self.currentRevision = #r1
+      and self.validationRevision = #none
+      and not self.reviewCompleted
+      and not self.finalized
+      and not self.sent
+    ]}
+    flow validateProposal
+  }
+
+  activity validateProposal {
+    name "Validate proposal"
+    type task
+    lane ProposalManager
+    post {[
+      self.prepared
+      and self.currentRevision = self.currentRevision@pre
+      and self.validationRevision = self.currentRevision@pre
+      and not self.reviewCompleted
+    ]}
+    flow reviewProposal
+  }
+
+  activity reviewProposal {
+    name "Review proposal"
+    type task
+    lane Customer
+    post {[
+      self.reviewCompleted
+      and self.changesRequested = self.reviewRequestsChanges
+      and self.currentRevision = self.currentRevision@pre
+      and self.validationRevision = self.validationRevision@pre
+    ]}
+    flow changesRequested
+  }
+
+  // Both branches are legal BPMN routes.  The branch predicate is represented
+  // by its flow-specific Post_B, not by a separate guard.
+  gateway changesRequested {
+    lane Customer
+    type xor
+    flow updateProposal post {[
+      self.changesRequested
+      and self.currentRevision = self.currentRevision@pre
+      and self.validationRevision = self.validationRevision@pre
+    ]}
+    flow feedbackMerge post {[
+      not self.changesRequested
+      and self.currentRevision = self.currentRevision@pre
+      and self.validationRevision = self.validationRevision@pre
+    ]}
+  }
+
+  activity updateProposal {
+    name "Update proposal"
+    type task
+    lane ProposalManager
+    pre {[
+      self.reviewCompleted and self.changesRequested
+    ]}
+    // The defect is the @pre equality below: validationRevision remains r1.
+    // A corrected process would return to validateProposal and establish r2.
+    post {[
+      self.changesIncorporated
+      and self.currentRevision = #r2
+      and self.validationRevision = self.validationRevision@pre
+      and self.reviewCompleted
+      and self.changesRequested
+    ]}
+    flow feedbackMerge
+  }
+
+  gateway feedbackMerge {
+    lane ProposalManager
+    type xor
+    flow finalizeProposal post {[
+      self.currentRevision = self.currentRevision@pre
+      and self.validationRevision = self.validationRevision@pre
+      and self.reviewCompleted
+      and self.changesRequested = self.changesRequested@pre
+      and self.changesIncorporated = self.changesIncorporated@pre
+    ]}
+  }
+
+  activity finalizeProposal {
+    name "Finalize proposal"
+    type task
+    lane ProposalManager
+    pre {[
+      self.reviewCompleted
+      and (not self.changesRequested or self.changesIncorporated)
+    ]}
+    post {[
+      self.finalized
+      and self.currentRevision = self.currentRevision@pre
+      and self.validationRevision = self.validationRevision@pre
+      and self.changesRequested = self.changesRequested@pre
+      and self.changesIncorporated = self.changesIncorporated@pre
+    ]}
+    flow sendProposal
+  }
+
+  activity sendProposal {
+    name "Send proposal"
+    type task
+    lane ProposalManager
+    post {[
+      self.sent
+      and self.sentRevision = self.currentRevision
+      and self.processCompleted
+      and self.finalized
+      and self.currentRevision = self.currentRevision@pre
+      and self.validationRevision = self.validationRevision@pre
+      and self.changesRequested = self.changesRequested@pre
+      and self.changesIncorporated = self.changesIncorporated@pre
+    ]}
+    flow proposalCompleted
+  }
+
+  end proposalCompleted {
+    lane ProposalManager
+    trigger none
+  }
+}

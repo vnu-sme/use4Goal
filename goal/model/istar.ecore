@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="istar" nsURI="https://vnu.edu.vn/sme/goal/istar/2.0" nsPrefix="istar">
+  <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+    <details key="documentation" value="Canonical Ecore metamodel for the project's extended iStar 2.0 DSL. Obstacle, Obstruction, Resolution and ObstacleType are intentionally absent."/>
+  </eAnnotations>
+  <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+    <details key="validationDelegates" value="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG"/>
+  </eAnnotations>
+  <eClassifiers xsi:type="ecore:EClass" name="GoalModel">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="Root of an iStar model. It owns actors and all cross-actor relationships."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.obeo.fr/dsl/dnc/archetype">
+      <details key="archetype" value="Role"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="UniqueActorNames UniqueElementIds AssociationsStayInModel DependenciesStayInModel"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="UniqueActorNames" value="actors->isUnique(name)"/>
+      <details key="UniqueElementIds" value="actors->collect(elements)->flatten()->isUnique(id)"/>
+      <details key="AssociationsStayInModel" value="actorAssociations->forAll(a | a.source.model = self and a.target.model = self)"/>
+      <details key="DependenciesStayInModel" value="dependencies->forAll(d | d.depender.model = self and d.dependee.model = self)"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="actors" lowerBound="1"
+        upperBound="-1" eType="#//Actor" containment="true" eOpposite="#//Actor/model"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dependencies" upperBound="-1"
+        eType="#//Dependency" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="actorAssociations" upperBound="-1"
+        eType="#//ActorAssociation" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Actor" abstract="true">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="Abstract intentional actor. Only Agent and Role are instantiable."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="model" lowerBound="1" eType="#//GoalModel"
+        eOpposite="#//GoalModel/actors"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="elements" upperBound="-1"
+        eType="#//IntentionalElement" containment="true" eOpposite="#//IntentionalElement/owner"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="relations" upperBound="-1"
+        eType="#//IntentionalRelation" containment="true" eOpposite="#//IntentionalRelation/owner"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Agent" eSuperTypes="#//Actor">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="A concrete physical or software actor."/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Role" eSuperTypes="#//Actor">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="An abstract set of responsibilities that an agent may play."/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IntentionalElement" abstract="true">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="Abstract intentional element. It is either owned by one Actor or composition-owned as one Dependency's dependum."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="NonEmptyId ActorOwnedXorDependum"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="NonEmptyId" value="id.size() > 0"/>
+      <details key="ActorOwnedXorDependum" value="(not owner.oclIsUndefined()) xor Dependency.allInstances()->exists(d | d.dependum = self)"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="description" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="owner" eType="#//Actor"
+        eOpposite="#//Actor/elements"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Quality" eSuperTypes="#//IntentionalElement">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="A quality target of contribution links and source of qualification links."/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConcreteIntentionalElement" abstract="true"
+      eSuperTypes="#//IntentionalElement">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="Common superclass of Resource, Goal and Task. Obstacle is not part of this metamodel."/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="GoalTaskElement" abstract="true" eSuperTypes="#//ConcreteIntentionalElement">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="An intentional element that may participate in a refinement and carry OCL contracts."/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Goal" eSuperTypes="#//GoalTaskElement">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="RootGoalHasActivationSource InheritedActivationIsNotRedeclared"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="RootGoalHasActivationSource" value="not activation.oclIsUndefined() or AndRefinement.allInstances()->exists(r | r.children->includes(self)) or OrRefinement.allInstances()->exists(r | r.children->includes(self)) or ParameterRefinement.allInstances()->exists(r | r.child = self) or Dependency.allInstances()->exists(d | not d.dependerElement.oclIsUndefined() and d.dependerElement.oclIsKindOf(Goal) and d.dependeeElement = self)"/>
+      <details key="InheritedActivationIsNotRedeclared" value="activation.oclIsUndefined() or (not AndRefinement.allInstances()->exists(r | r.children->includes(self)) and not ForRefinement.allInstances()->exists(r | r.child = self) and not Dependency.allInstances()->exists(d | not d.dependerElement.oclIsUndefined() and d.dependerElement.oclIsKindOf(Goal) and d.dependeeElement = self))"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="goalType" eType="#//GoalType"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="activation" eType="#//IStarOclConstraint"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="condition" eType="#//IStarOclConstraint"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Task" eSuperTypes="#//GoalTaskElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="precondition" eType="#//IStarOclConstraint"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="postcondition" eType="#//IStarOclConstraint"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Resource" eSuperTypes="#//ConcreteIntentionalElement"/>
+  <eClassifiers xsi:type="ecore:EClass" name="IStarOclConstraint">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="An OCL state contract attached to a Goal or Task."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="NonEmptyOclBody"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="NonEmptyOclBody" value="oclBody.size() > 0"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="oclBody" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IntentionalRelation" abstract="true">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="Abstract relationship owned by one actor boundary."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="owner" lowerBound="1" eType="#//Actor"
+        eOpposite="#//Actor/relations"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Refinement" abstract="true" eSuperTypes="#//IntentionalRelation">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="Abstract child-to-parent refinement. Every endpoint must be owned by the relation owner."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="ParentOwnedByRelationActor"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="ParentOwnedByRelationActor" value="parent.owner = owner"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parent" lowerBound="1"
+        eType="#//GoalTaskElement"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AndRefinement" eSuperTypes="#//Refinement">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="All children are required for the parent; at least two children are required."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="ChildrenOwnedByRelationActor ParentIsNotChild NoDuplicateChildren SingleRefinementParent OneRefinementKindPerParent GoalTypesAreCompatible RefinementIsAcyclic"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="ChildrenOwnedByRelationActor" value="children->forAll(c | c.owner = owner)"/>
+      <details key="ParentIsNotChild" value="not children->includes(parent)"/>
+      <details key="NoDuplicateChildren" value="children->isUnique(id)"/>
+      <details key="SingleRefinementParent" value="children->forAll(c | AndRefinement.allInstances()->select(r | r.children->includes(c))->forAll(r | r.parent = self.parent) and OrRefinement.allInstances()->select(r | r.children->includes(c))->forAll(r | r.parent = self.parent) and ParameterRefinement.allInstances()->select(r | r.child = c)->forAll(r | r.parent = self.parent))"/>
+      <details key="OneRefinementKindPerParent" value="Refinement.allInstances()->select(r | r.parent = self.parent)->forAll(r | r.oclIsTypeOf(AndRefinement))"/>
+      <details key="GoalTypesAreCompatible" value="not parent.oclIsKindOf(Goal) or children->select(c | c.oclIsKindOf(Goal))->forAll(c | parent.oclAsType(Goal).goalType = GoalType::ACHIEVE or (parent.oclAsType(Goal).goalType = GoalType::MAINTAIN and c.oclAsType(Goal).goalType = GoalType::MAINTAIN) or (parent.oclAsType(Goal).goalType = GoalType::SUSTAIN and (c.oclAsType(Goal).goalType = GoalType::MAINTAIN or c.oclAsType(Goal).goalType = GoalType::SUSTAIN)) or (parent.oclAsType(Goal).goalType = GoalType::RECUR and c.oclAsType(Goal).goalType &lt;> GoalType::ACHIEVE))"/>
+      <details key="RefinementIsAcyclic" value="children->closure(c | AndRefinement.allInstances()->select(r | r.parent = c)->collect(children)->flatten()->union(OrRefinement.allInstances()->select(r | r.parent = c)->collect(children)->flatten())->union(ParameterRefinement.allInstances()->select(r | r.parent = c)->collect(child)))->excludes(parent)"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="children" lowerBound="2"
+        upperBound="-1" eType="#//GoalTaskElement"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="OrRefinement" eSuperTypes="#//Refinement">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="At least one child is sufficient for the parent."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="ChildrenOwnedByRelationActor ParentIsNotChild NoDuplicateChildren SingleRefinementParent OneRefinementKindPerParent GoalTypesAreCompatible RefinementIsAcyclic"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="ChildrenOwnedByRelationActor" value="children->forAll(c | c.owner = owner)"/>
+      <details key="ParentIsNotChild" value="not children->includes(parent)"/>
+      <details key="NoDuplicateChildren" value="children->isUnique(id)"/>
+      <details key="SingleRefinementParent" value="children->forAll(c | AndRefinement.allInstances()->select(r | r.children->includes(c))->forAll(r | r.parent = self.parent) and OrRefinement.allInstances()->select(r | r.children->includes(c))->forAll(r | r.parent = self.parent) and ParameterRefinement.allInstances()->select(r | r.child = c)->forAll(r | r.parent = self.parent))"/>
+      <details key="OneRefinementKindPerParent" value="Refinement.allInstances()->select(r | r.parent = self.parent)->forAll(r | r.oclIsTypeOf(OrRefinement))"/>
+      <details key="GoalTypesAreCompatible" value="not parent.oclIsKindOf(Goal) or children->select(c | c.oclIsKindOf(Goal))->forAll(c | parent.oclAsType(Goal).goalType = GoalType::ACHIEVE or (parent.oclAsType(Goal).goalType = GoalType::MAINTAIN and c.oclAsType(Goal).goalType = GoalType::MAINTAIN) or (parent.oclAsType(Goal).goalType = GoalType::SUSTAIN and (c.oclAsType(Goal).goalType = GoalType::MAINTAIN or c.oclAsType(Goal).goalType = GoalType::SUSTAIN)) or (parent.oclAsType(Goal).goalType = GoalType::RECUR and c.oclAsType(Goal).goalType &lt;> GoalType::ACHIEVE))"/>
+      <details key="RefinementIsAcyclic" value="children->closure(c | AndRefinement.allInstances()->select(r | r.parent = c)->collect(children)->flatten()->union(OrRefinement.allInstances()->select(r | r.parent = c)->collect(children)->flatten())->union(ParameterRefinement.allInstances()->select(r | r.parent = c)->collect(child)))->excludes(parent)"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="children" lowerBound="1"
+        upperBound="-1" eType="#//GoalTaskElement"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ParameterRefinement" abstract="true"
+      eSuperTypes="#//Refinement">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="A refinement whose child is instantiated over an ACL actor type."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="ChildOwnedByRelationActor ParentIsNotChild ActorTypeInSameModel SingleRefinementParent GoalTypesAreCompatible RefinementIsAcyclic"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="ChildOwnedByRelationActor" value="child.owner = owner"/>
+      <details key="ParentIsNotChild" value="child &lt;> parent"/>
+      <details key="ActorTypeInSameModel" value="actorType.model = owner.model"/>
+      <details key="SingleRefinementParent" value="AndRefinement.allInstances()->select(r | r.children->includes(self.child))->forAll(r | r.parent = self.parent) and OrRefinement.allInstances()->select(r | r.children->includes(self.child))->forAll(r | r.parent = self.parent) and ParameterRefinement.allInstances()->select(r | r.child = self.child)->forAll(r | r.parent = self.parent)"/>
+      <details key="GoalTypesAreCompatible" value="not parent.oclIsKindOf(Goal) or not child.oclIsKindOf(Goal) or parent.oclAsType(Goal).goalType = GoalType::ACHIEVE or (parent.oclAsType(Goal).goalType = GoalType::MAINTAIN and child.oclAsType(Goal).goalType = GoalType::MAINTAIN) or (parent.oclAsType(Goal).goalType = GoalType::SUSTAIN and (child.oclAsType(Goal).goalType = GoalType::MAINTAIN or child.oclAsType(Goal).goalType = GoalType::SUSTAIN)) or (parent.oclAsType(Goal).goalType = GoalType::RECUR and child.oclAsType(Goal).goalType &lt;> GoalType::ACHIEVE)"/>
+      <details key="RefinementIsAcyclic" value="Set{child}->closure(c | AndRefinement.allInstances()->select(r | r.parent = c)->collect(children)->flatten()->union(OrRefinement.allInstances()->select(r | r.parent = c)->collect(children)->flatten())->union(ParameterRefinement.allInstances()->select(r | r.parent = c)->collect(child)))->excludes(parent)"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="child" lowerBound="1" eType="#//GoalTaskElement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="actorType" lowerBound="1"
+        eType="#//Actor"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ForRefinement" eSuperTypes="#//ParameterRefinement">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="Quantified AND refinement: instantiate the child for every matching actor occurrence."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="OneRefinementKindPerParent"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="OneRefinementKindPerParent" value="Refinement.allInstances()->select(r | r.parent = self.parent)->forAll(r | r.oclIsTypeOf(ForRefinement))"/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="PickRefinement" eSuperTypes="#//ParameterRefinement">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="Quantified choice: one matching actor occurrence is sufficient."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="OneRefinementKindPerParent"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="OneRefinementKindPerParent" value="Refinement.allInstances()->select(r | r.parent = self.parent)->forAll(r | r.oclIsTypeOf(PickRefinement))"/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Contribution" eSuperTypes="#//IntentionalRelation">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="EndpointsOwnedByRelationActor NoSelfContribution"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="EndpointsOwnedByRelationActor" value="source.owner = owner and quality.owner = owner"/>
+      <details key="NoSelfContribution" value="source &lt;> quality"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" lowerBound="1" eType="#//ContributionType"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="source" lowerBound="1"
+        eType="#//IntentionalElement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="quality" lowerBound="1"
+        eType="#//Quality"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Qualification" eSuperTypes="#//IntentionalRelation">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="EndpointsOwnedByRelationActor"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="EndpointsOwnedByRelationActor" value="quality.owner = owner and element.owner = owner"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="quality" lowerBound="1"
+        eType="#//Quality"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="element" lowerBound="1"
+        eType="#//ConcreteIntentionalElement"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="NeededBy" eSuperTypes="#//IntentionalRelation">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="EndpointsOwnedByRelationActor"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="EndpointsOwnedByRelationActor" value="resource.owner = owner and task.owner = owner"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="resource" lowerBound="1"
+        eType="#//Resource"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="task" lowerBound="1" eType="#//Task"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ActorAssociation">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="An acyclic is-a or participates-in relationship between two distinct actors."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="DistinctActors ActorsInSameModel AssociationIsAcyclic"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="DistinctActors" value="source &lt;> target"/>
+      <details key="ActorsInSameModel" value="source.model = target.model"/>
+      <details key="AssociationIsAcyclic" value="Set{target}->closure(a | ActorAssociation.allInstances()->select(r | r.kind = self.kind and r.source = a)->collect(target))->excludes(source)"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1" eType="#//AssociationKind"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="source" lowerBound="1"
+        eType="#//Actor"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="target" lowerBound="1"
+        eType="#//Actor"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Dependency">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="Cross-actor dependency: depender through a mandatory dependum to a distinct dependee. Boundary endpoint elements are optional."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="DistinctActors DependerEndpointOwnedByDepender DependeeEndpointOwnedByDependee DependumHasNoActorOwner"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="DistinctActors" value="depender &lt;> dependee"/>
+      <details key="DependerEndpointOwnedByDepender" value="dependerElement.oclIsUndefined() or dependerElement.owner = depender"/>
+      <details key="DependeeEndpointOwnedByDependee" value="dependeeElement.oclIsUndefined() or dependeeElement.owner = dependee"/>
+      <details key="DependumHasNoActorOwner" value="dependum.owner.oclIsUndefined()"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="depender" lowerBound="1"
+        eType="#//Actor"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dependerElement" eType="#//IntentionalElement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dependum" lowerBound="1"
+        eType="#//IntentionalElement" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dependee" lowerBound="1"
+        eType="#//Actor"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dependeeElement" eType="#//IntentionalElement"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="GoalType">
+    <eLiterals name="ACHIEVE" literal="Achieve"/>
+    <eLiterals name="MAINTAIN" value="1" literal="Maintain"/>
+    <eLiterals name="SUSTAIN" value="2" literal="Sustain"/>
+    <eLiterals name="RECUR" value="3" literal="Recur"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="ContributionType">
+    <eLiterals name="MAKE" literal="Make"/>
+    <eLiterals name="HELP" value="1" literal="Help"/>
+    <eLiterals name="HURT" value="2" literal="Hurt"/>
+    <eLiterals name="BREAK" value="3" literal="Break"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="AssociationKind">
+    <eLiterals name="IS_A" literal="is-a"/>
+    <eLiterals name="PARTICIPATES_IN" value="1" literal="participates-in"/>
+  </eClassifiers>
+</ecore:EPackage>

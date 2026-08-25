@@ -99,7 +99,7 @@ public final class IStarDiagramNode extends PlaceableNode implements ToolTipProv
             g2.fill(shape);
         }
         g2.setColor(statusFrameColor());
-        if (node.actorBoundary || node.kind == IStarNodeKind.OBSTACLE) {
+        if (node.actorBoundary) {
             g2.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
                     10f, new float[]{7f, 4f}, 0f));
         } else {
@@ -204,7 +204,7 @@ public final class IStarDiagramNode extends PlaceableNode implements ToolTipProv
             case GOAL -> new Ellipse2D.Double(x, y, w, h);
             case TASK -> hex(x, y, w, h);
             case QUALITY -> cloud(x, y, w, h);
-            case RESOURCE, OBSTACLE -> new Rectangle2D.Double(x, y, w, h);
+            case RESOURCE -> new Rectangle2D.Double(x, y, w, h);
         };
     }
 

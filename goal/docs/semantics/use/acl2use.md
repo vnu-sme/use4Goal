@@ -25,6 +25,18 @@ well-formedness cần kiểm tra bằng OCL.
 Tên navigation công khai của ACL phải được bảo toàn. Tên kỹ thuật cần sinh để
 tránh va chạm chỉ là chi tiết backend và không được xuất hiện trong OCL nguồn.
 
+Association-end do translator sinh dùng tên type viết lower-camel, theo đúng
+chiều navigation:
+
+- `Agent -> Role`: `.play_participant`; `Role -> Agent`: `.agent`;
+- `ParentRole -> ChildRole`: `.play_participant`; chiều ngược: `.meetingParty`;
+- `Group -> Role`: `.participant`; `Role -> Group`: `.meetingUnit`;
+- `ParentGroup -> ChildGroup`: `.department`; chiều ngược: `.company`.
+
+Tên association (`Agent_plays_Participant`, `Participant_in_MeetingUnit`, …)
+vẫn được giữ để SOIL có thể `insert ... into AssociationName`; chỉ tên role ở
+hai đầu association được rút gọn.
+
 ## Ví dụ
 
 Nguồn:
@@ -54,13 +66,13 @@ class MeetingUnit
 end
 
 composition Participant_in_MeetingUnit between
-  MeetingUnit[1] role group
-  Participant[2..*] role participants
+  MeetingUnit[1] role meetingUnit
+  Participant[2..*] role participant
 end
 
 association Agent_plays_Participant between
   Agent[1] role agent
-  Participant[*] role participantOccurrences
+  Participant[0..*] role play_participant
 end
 ```
 

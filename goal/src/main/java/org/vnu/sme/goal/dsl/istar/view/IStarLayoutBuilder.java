@@ -9,22 +9,16 @@ import org.vnu.sme.goal.dsl.istar.mm.Actor;
 import org.vnu.sme.goal.dsl.istar.mm.AndRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Contribution;
 import org.vnu.sme.goal.dsl.istar.mm.Dependency;
-import org.vnu.sme.goal.dsl.istar.mm.ForRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Goal;
 import org.vnu.sme.goal.dsl.istar.mm.GoalModel;
 import org.vnu.sme.goal.dsl.istar.mm.GoalTaskElement;
 import org.vnu.sme.goal.dsl.istar.mm.IStarOclConstraint;
 import org.vnu.sme.goal.dsl.istar.mm.IntentionalElement;
 import org.vnu.sme.goal.dsl.istar.mm.NeededBy;
-import org.vnu.sme.goal.dsl.istar.mm.Obstacle;
-import org.vnu.sme.goal.dsl.istar.mm.Obstruction;
 import org.vnu.sme.goal.dsl.istar.mm.OrRefinement;
-import org.vnu.sme.goal.dsl.istar.mm.ParameterRefinement;
-import org.vnu.sme.goal.dsl.istar.mm.PickRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Qualification;
 import org.vnu.sme.goal.dsl.istar.mm.Quality;
 import org.vnu.sme.goal.dsl.istar.mm.Refinement;
-import org.vnu.sme.goal.dsl.istar.mm.Resolution;
 import org.vnu.sme.goal.dsl.istar.mm.Resource;
 import org.vnu.sme.goal.dsl.istar.mm.Role;
 import org.vnu.sme.goal.dsl.istar.mm.Task;
@@ -51,7 +45,6 @@ public final class IStarLayoutBuilder {
     private static final int TW = 108, TH = 44;
     private static final int RW = 108, RH = 26;
     private static final int QW = 118, QH = 46;
-    private static final int OW = 108, OH = 32;
     private static final int DEP_Y_GAP = 92;
 
     /** Diameter of the actor circle glyph — shared by SD (standalone) and SR (boundary badge). */
@@ -123,7 +116,6 @@ public final class IStarLayoutBuilder {
                     case Task     t -> { kind = IStarNodeKind.TASK;     w = TW; h = TH; }
                     case Resource r -> { kind = IStarNodeKind.RESOURCE; w = RW; h = RH; }
                     case Quality  q -> { kind = IStarNodeKind.QUALITY;  w = QW; h = QH; }
-                    case Obstacle o -> { kind = IStarNodeKind.OBSTACLE; w = OW; h = OH; }
                 }
                 List<String> contracts = showOclContracts && elem instanceof GoalTaskElement gt
                         ? contractLines(gt) : List.of();
@@ -162,12 +154,6 @@ public final class IStarLayoutBuilder {
                     }
                     case OrRefinement or ->
                         edges.add(new IStarEdge(or.child(), or.parent(), IStarEdgeKind.OR_REFINE, "OR", null));
-                    case ForRefinement forRef ->
-                        edges.add(new IStarEdge(forRef.child(), forRef.parent(), IStarEdgeKind.AND_REFINE,
-                                "forall " + parameterLabel(forRef), null));
-                    case PickRefinement pick ->
-                        edges.add(new IStarEdge(pick.child(), pick.parent(), IStarEdgeKind.OR_REFINE,
-                                "pick " + parameterLabel(pick), null));
                 }
             }
             for (Contribution c : actor.contributions())
@@ -176,10 +162,6 @@ public final class IStarLayoutBuilder {
                 edges.add(new IStarEdge(q.quality(), q.element(), IStarEdgeKind.QUALIFICATION, null, null));
             for (NeededBy nb : actor.neededBys())
                 edges.add(new IStarEdge(nb.resource(), nb.task(), IStarEdgeKind.NEEDED_BY, null, null));
-            for (Obstruction ob : actor.obstructions())
-                edges.add(new IStarEdge(ob.obstacle(), ob.element(), IStarEdgeKind.OBSTRUCTION, null, null));
-            for (Resolution rs : actor.resolutions())
-                edges.add(new IStarEdge(rs.element(), rs.obstacle(), IStarEdgeKind.RESOLUTION, null, null));
         }
         for (Dependency dep : model.getDependencies()) {
             // Anchor to explicit boundary-opening elements. If omitted, fall back
@@ -206,7 +188,8 @@ public final class IStarLayoutBuilder {
         IStarNode from = nodes.get(fromId);
         IStarNode to = nodes.get(toId);
 
-        IStarNode n = new IStarNode("dependum:" + index + ":" + dep.dependum(), dep.dependum(),
+        IntentionalElement dependum = dep.dependum();
+        IStarNode n = new IStarNode("dependum:" + index + ":" + dependum.id(), dependum.id(),
                 kind, null, false, false, true);
         n.w = size[0];
         n.h = size[1];
@@ -224,29 +207,12 @@ public final class IStarLayoutBuilder {
     }
 
     private static IStarNodeKind dependumKind(GoalModel model, Dependency dep) {
-        if (dep.dependumKind() != null) {
-            return switch (dep.dependumKind()) {
-                case "task" -> IStarNodeKind.TASK;
-                case "resource" -> IStarNodeKind.RESOURCE;
-                case "quality" -> IStarNodeKind.QUALITY;
-                default -> IStarNodeKind.GOAL;
-            };
-        }
-        if (model != null) {
-            for (Actor actor : model.getActors()) {
-                for (IntentionalElement elem : actor.elements()) {
-                    if (!elem.id().equals(dep.dependum())) continue;
-                    return switch (elem) {
-                        case Goal g -> IStarNodeKind.GOAL;
-                        case Task t -> IStarNodeKind.TASK;
-                        case Resource r -> IStarNodeKind.RESOURCE;
-                        case Quality q -> IStarNodeKind.QUALITY;
-                        case Obstacle o -> IStarNodeKind.OBSTACLE;
-                    };
-                }
-            }
-        }
-        return IStarNodeKind.GOAL;
+        return switch (dep.dependum()) {
+            case Goal ignored -> IStarNodeKind.GOAL;
+            case Task ignored -> IStarNodeKind.TASK;
+            case Resource ignored -> IStarNodeKind.RESOURCE;
+            case Quality ignored -> IStarNodeKind.QUALITY;
+        };
     }
 
     private static String firstElementId(GoalModel model, String actorName) {
@@ -265,22 +231,25 @@ public final class IStarLayoutBuilder {
         return Math.max(ACTOR_D, textWidth + 24);
     }
 
-    private static String parameterLabel(ParameterRefinement ref) {
-        return ref.actorType();
-    }
-
     private static String displayGoalType(org.vnu.sme.goal.dsl.istar.mm.GoalType type) {
         String lower = type.name().toLowerCase();
         return Character.toUpperCase(lower.charAt(0)) + lower.substring(1);
     }
 
     private static List<String> contractLines(GoalTaskElement element) {
-        return element.constraints().stream().map(IStarLayoutBuilder::contractLine).toList();
+        List<String> result = new ArrayList<>();
+        if (element instanceof Goal goal) {
+            goal.conditions().forEach(c -> result.add(contractLine("condition", c)));
+        } else if (element instanceof Task task) {
+            task.preconditions().forEach(c -> result.add(contractLine("pre", c)));
+            task.postconditions().forEach(c -> result.add(contractLine("post", c)));
+        }
+        return List.copyOf(result);
     }
 
-    private static String contractLine(IStarOclConstraint constraint) {
+    private static String contractLine(String label, IStarOclConstraint constraint) {
         String body = constraint.oclBody() == null ? "" : constraint.oclBody().replaceAll("\\s+", " ").trim();
-        return constraint.kind().name().toLowerCase() + ": " + body;
+        return label + ": " + body;
     }
 
     private static int[] sizeFor(IStarNodeKind kind) {
@@ -289,7 +258,6 @@ public final class IStarLayoutBuilder {
             case TASK -> new int[]{TW, TH};
             case RESOURCE -> new int[]{RW, RH};
             case QUALITY -> new int[]{QW, QH};
-            case OBSTACLE -> new int[]{OW, OH};
             case ACTOR -> new int[]{ACTOR_D, ACTOR_D};
         };
     }

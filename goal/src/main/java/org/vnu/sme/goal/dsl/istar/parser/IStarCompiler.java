@@ -57,7 +57,12 @@ public final class IStarCompiler {
         if (!errors.isEmpty()) return new Result(null, errors);
 
         org.vnu.sme.goal.dsl.istar.ast.IStarModelCS ast = IStarBuildingVisitor.build(tree);
-        GoalModel model = IStarModelFactory.build(ast);
+        GoalModel model;
+        try {
+            model = IStarModelFactory.build(ast);
+        } catch (IllegalArgumentException ex) {
+            return new Result(null, List.of(ex.getMessage()));
+        }
 
         List<String> semErrors = GoalModelValidator.validate(model);
         if (!semErrors.isEmpty()) return new Result(null, semErrors);

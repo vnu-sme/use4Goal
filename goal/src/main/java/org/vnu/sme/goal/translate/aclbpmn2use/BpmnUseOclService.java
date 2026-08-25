@@ -22,13 +22,34 @@ public final class BpmnUseOclService {
 
     private BpmnUseOclService() {}
 
+    /** Command-line entry point mirroring the GUI action. */
+    public static void main(String[] args) {
+        if (args.length != 3) {
+            System.err.println("Usage: BpmnUseOclService <model.acl> <model.bpmn2> <output-folder>");
+            return;
+        }
+        Result result = translate(Path.of(args[0]), Path.of(args[1]), Path.of(args[2]));
+        result.allDiagnostics().forEach(System.err::println);
+        if (!result.ok()) {
+            throw new IllegalStateException("ACL + BPMN to USE translation failed");
+        }
+        if (result.written() != null) {
+            System.out.println(result.written().useFile());
+            if (result.written().toclFile() != null) {
+                System.out.println(result.written().toclFile());
+            }
+        }
+    }
+
     public record Result(
             Path outputFolder,
             UseOutputWriter.Written written,
             AclBpmn2UseTranslator.Result useResult,
             List<String> errors) {
 
-        public boolean ok() { return errors.isEmpty(); }
+        public boolean ok() {
+            return errors.isEmpty() && useResult != null && useResult.ok();
+        }
 
         public List<String> allDiagnostics() {
             List<String> all = new ArrayList<>(errors);

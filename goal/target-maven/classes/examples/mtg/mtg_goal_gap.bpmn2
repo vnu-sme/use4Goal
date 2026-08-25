@@ -2,58 +2,64 @@
 // It reaches EndEvent but never performs Participant.participate, so the i* root
 // goal concerning meeting attendance must remain unsatisfied.
 model MeetingSchedulerGoalGap {
-  pool MeetingOrganization {
-    lane Initiator {
-      start start_meeting { trigger none }
-      task decideMeetingDetails {
-        post {[ MeetingUnit.allInstances()->forAll(m | m.detailsDecided) ]}
-        effect {[
-          for m in MeetingUnit.allInstances() do
-            m.detailsDecided := true;
-          end
-        ]}
-      }
-    }
+  pool MeetingOrganization for MeetingUnit {
+    lane Initiator;
+    lane Organizer;
+  }
 
-    lane Organizer {
-      task checkCalendar {
-        pre {[ Participant.allInstances()->forAll(p | p.source_Agent_plays_Participant.hasCalendar) ]}
-        post {[
-          Participant.allInstances()->forAll(p |
-            p.timetableCollected and p.timetableChannel = #calendar)
-        ]}
-        effect {[
-          for p in Participant.allInstances() do
-            p.timetableCollected := true;
-            p.timetableChannel := #calendar;
-          end
-        ]}
-      }
-      task chooseTimeAndDate {
-        pre {[ Participant.allInstances()->forAll(p | p.timetableCollected) ]}
-        post {[ MeetingUnit.allInstances()->forAll(m | m.timeChosen) ]}
-        effect {[
-          for m in MeetingUnit.allInstances() do
-            m.timeChosen := true;
-          end
-        ]}
-      }
-      task announceMeeting {
-        pre {[ MeetingUnit.allInstances()->forAll(m | m.timeChosen) ]}
-        post {[ Participant.allInstances()->forAll(p | p.notified) ]}
-        effect {[
-          for p in Participant.allInstances() do
-            p.notified := true;
-          end
-        ]}
-      }
-      end end_meeting { trigger none }
-    }
+  start start_meeting {
+    lane Initiator
+    trigger none
+    flow decideMeetingDetails
+  }
 
-    flow start_meeting -> decideMeetingDetails
-    flow decideMeetingDetails -> checkCalendar
-    flow checkCalendar -> chooseTimeAndDate
-    flow chooseTimeAndDate -> announceMeeting
-    flow announceMeeting -> end_meeting
+  activity decideMeetingDetails {
+    type task
+    lane Initiator
+    post {[
+      self.detailsDecided
+    ]}
+    flow checkCalendar
+  }
+
+  activity checkCalendar {
+    type task
+    lane Organizer
+    pre {[
+      self.target_Participant_in_MeetingUnit->forAll(p | p.source_Agent_plays_Participant.hasCalendar)
+    ]}
+    post {[
+      self.target_Participant_in_MeetingUnit->forAll(p | p.timetableCollected and p.timetableChannel = #calendar)
+    ]}
+    flow chooseTimeAndDate
+  }
+
+  activity chooseTimeAndDate {
+    type task
+    lane Organizer
+    pre {[
+      self.target_Participant_in_MeetingUnit->forAll(p | p.timetableCollected)
+    ]}
+    post {[
+      self.timeChosen
+    ]}
+    flow announceMeeting
+  }
+
+  activity announceMeeting {
+    type task
+    lane Organizer
+    pre {[
+      self.timeChosen
+    ]}
+    post {[
+      self.target_Participant_in_MeetingUnit->forAll(p | p.notified)
+    ]}
+    flow end_meeting
+  }
+
+  end end_meeting {
+    lane Organizer
+    trigger none
   }
 }

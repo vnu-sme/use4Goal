@@ -1,0 +1,105 @@
+// Two independent root Corporation instances in one file -- mirrors
+// mtg_two_meetings.aol's role for MeetingUnit: exercises multiple concrete
+// instances of the SAME top-level Group type, each with its own nested
+// Department/Team/AuditCommittee tree and its own agent pool (no agent
+// shared across the two corporations).
+
+aol v1.0 EnterpriseTwoCorporations for "enterprise.acl" {
+
+  // ---- Corporation #1: TechNova ----
+  agent Executive     as alice { name = "Alice Nguyen"; email = "alice@technova.example"; employeeId = "TN-001"; hireDate = "2015-01-01"; managementLevel = 5; budgetAuthority = 300000.0; title = "CEO"; }
+  agent Executive     as bob   { name = "Bob Tran";     email = "bob@technova.example";   employeeId = "TN-002"; hireDate = "2016-02-02"; managementLevel = 5; budgetAuthority = 280000.0; title = "CTO"; }
+  agent Executive     as carol { name = "Carol Le";     email = "carol@technova.example"; employeeId = "TN-003"; hireDate = "2017-03-03"; managementLevel = 5; budgetAuthority = 260000.0; title = "CFO"; }
+  agent SeniorManager as dave  { name = "Dave Pham";    email = "dave@technova.example";  employeeId = "TN-004"; hireDate = "2018-04-04"; managementLevel = 4; budgetAuthority = 90000.0; }
+  agent Employee       as erin  { name = "Erin Vo";     email = "erin@technova.example";  employeeId = "TN-005"; hireDate = "2020-05-05"; }
+  agent Employee       as frank { name = "Frank Do";    email = "frank@technova.example"; employeeId = "TN-006"; hireDate = "2020-06-06"; }
+  agent Reviewer       as gina  { name = "Gina Ho";     email = "gina@technova.example";  reviewLevel = 3; }
+  agent Reviewer       as henry { name = "Henry Ta";    email = "henry@technova.example"; reviewLevel = 2; }
+
+  group Corporation as technova {
+    name = "TechNova"; foundedYear = 2015;
+
+    play BoardMember as tn_board_alice by alice { votingRights = true; }
+    play BoardMember as tn_board_bob   by bob   { votingRights = true; }
+    play BoardMember as tn_board_carol by carol { votingRights = true; }
+
+    entity Contract as tn_contract { value = 750000.0; signedDate = "2025-06-01"; }
+
+    group Department as tn_dept {
+      budgetCode = "TN-ENG";
+      play DepartmentHead as tn_head by dave { departmentGoals = "Launch v2 platform"; }
+      entity Budget as tn_budget { amount = 600000.0; currency = "USD"; }
+      group Team as tn_team {
+        teamName = "Core"; sprintLength = 10;
+        play TeamMember as tn_member_erin  by erin  { taskCount = 8; }
+        play TeamLead   as tn_lead_erin    by erin  { teamBudget = 70000.0; }
+        play TeamMember as tn_member_frank by frank { taskCount = 6; }
+        entity Deliverable as tn_deliv { dueDate = "2026-07-01"; status = InProgress; }
+      }
+    }
+
+    group AuditCommittee as tn_audit {
+      play Auditor as tn_auditor_gina by gina { certificationId = "TN-CIA-01"; }
+      play ComplianceOfficer as tn_compliance_henry by henry { specialization = "Data privacy"; }
+      play Auditor as tn_auditor_henry by henry { certificationId = "TN-CIA-02"; }
+    }
+  }
+
+  // Document is reached only through the explicit `auditDocuments`
+  // composition, not a Group member list -- Budget extends Document, and
+  // Budget is a Group member elsewhere in this ACL via the legacy form.
+  entity Document as tn_doc { title = "TechNova Security Review"; version = 2; classification = Confidential; }
+
+  link mentors: alice -> dave;
+  link reportsTo: tn_member_frank -> tn_lead_erin;
+  link reviewsWork: tn_auditor_gina -> tn_member_erin;
+  link escalatesTo: tn_head -> tn_board_alice;
+  link contractFunding: tn_dept -> tn_contract;
+  link reviewedBy: tn_doc -> tn_auditor_gina, tn_auditor_henry;
+  link auditDocuments: tn_audit -> tn_doc;
+
+  // ---- Corporation #2: GreenLeaf ----
+  agent Executive     as ivy   { name = "Ivy Mai";   email = "ivy@greenleaf.example";   employeeId = "GL-001"; hireDate = "2012-01-01"; managementLevel = 5; budgetAuthority = 220000.0; title = "President"; }
+  agent Executive     as jack  { name = "Jack Ly";   email = "jack@greenleaf.example";  employeeId = "GL-002"; hireDate = "2013-02-02"; managementLevel = 5; budgetAuthority = 210000.0; title = "COO"; }
+  agent Executive     as karen { name = "Karen Vu";  email = "karen@greenleaf.example"; employeeId = "GL-003"; hireDate = "2014-03-03"; managementLevel = 5; budgetAuthority = 200000.0; title = "CFO"; }
+  agent SeniorManager as leo   { name = "Leo Tran";  email = "leo@greenleaf.example";   employeeId = "GL-004"; hireDate = "2015-04-04"; managementLevel = 4; budgetAuthority = 70000.0; }
+  agent Employee       as mia   { name = "Mia Pham"; email = "mia@greenleaf.example";   employeeId = "GL-005"; hireDate = "2019-05-05"; }
+  agent Employee       as noah  { name = "Noah Do";  email = "noah@greenleaf.example";  employeeId = "GL-006"; hireDate = "2019-06-06"; }
+  agent Person         as olga  { name = "Olga Le";  email = "olga@contractor.example"; }
+  agent Reviewer       as petra { name = "Petra Nguyen"; email = "petra@greenleaf.example"; reviewLevel = 4; }
+  agent Reviewer       as quinn { name = "Quinn Vo";     email = "quinn@greenleaf.example"; reviewLevel = 3; }
+
+  group Corporation as greenleaf {
+    name = "GreenLeaf"; foundedYear = 2009;
+
+    play BoardMember as gl_board_ivy   by ivy   { votingRights = true; }
+    play BoardMember as gl_board_jack  by jack  { votingRights = true; }
+    play BoardMember as gl_board_karen by karen { votingRights = false; }
+
+    group Department as gl_dept {
+      budgetCode = "GL-OPS";
+      play DepartmentHead as gl_head by leo { departmentGoals = "Carbon-neutral logistics"; }
+      play Contractor as gl_contractor_olga by olga { contractEndDate = "2026-09-30"; dailyRate = 550.0; }
+      entity Budget as gl_budget { amount = 350000.0; currency = "EUR"; }
+      group Team as gl_team {
+        teamName = "Logistics"; sprintLength = 14;
+        play TeamMember as gl_member_mia  by mia  { taskCount = 5; }
+        play TeamMember as gl_member_noah by noah { taskCount = 4; }
+        play TeamLead   as gl_lead_noah   by noah { teamBudget = 40000.0; }
+        entity Deliverable as gl_deliv { dueDate = "2026-08-01"; status = Planned; }
+      }
+    }
+
+    group AuditCommittee as gl_audit {
+      play Auditor as gl_auditor_petra by petra { certificationId = "GL-CIA-01"; }
+      play Auditor as gl_auditor_quinn by quinn { certificationId = "GL-CIA-02"; }
+      play ComplianceOfficer as gl_compliance_quinn by quinn { specialization = "Environmental compliance"; }
+    }
+  }
+
+  link mentors: ivy -> leo;
+  link reportsTo: gl_member_mia -> gl_lead_noah;
+  link collaboratesWith: gl_member_mia -> gl_contractor_olga;
+  link escalatesTo: gl_head -> gl_board_ivy;
+  link assignedTo: gl_deliv -> gl_member_mia, gl_member_noah;
+}

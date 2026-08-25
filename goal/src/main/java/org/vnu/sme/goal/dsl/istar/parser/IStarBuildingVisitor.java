@@ -64,10 +64,6 @@ public final class IStarBuildingVisitor extends IStarBaseVisitor<Object> {
                     new ElementBodyCS.ResourceCS(b.IDENT().getText(), buildRels(b.rel()));
             case IStarParser.BodyQualityContext b ->
                     new ElementBodyCS.QualityCS(b.IDENT().getText(), buildRels(b.rel()));
-            case IStarParser.BodyObstacleContext b -> new ElementBodyCS.ObstacleCS(
-                    b.IDENT().getText(),
-                    b.obstacleType() != null ? b.obstacleType().obstacleTypeName().getText() : null,
-                    buildRels(b.rel()));
             case IStarParser.BodyIsAContext b ->
                     new ElementBodyCS.IsACS(b.IDENT(0).getText(), b.IDENT(1).getText());
             case IStarParser.BodyParticipatesContext b ->
@@ -104,9 +100,7 @@ public final class IStarBuildingVisitor extends IStarBaseVisitor<Object> {
             String body = extractOclBody(ctx.OCL_BLOCK().getText());
             if (body == null) continue;
             IStarOclConstraintCS.Kind kind = switch (keyword) {
-                case "activation", "trigger", "while" -> IStarOclConstraintCS.Kind.ACTIVATION;
                 case "condition", "satisfy", "ensure" -> IStarOclConstraintCS.Kind.CONDITION;
-                case "release" -> IStarOclConstraintCS.Kind.RELEASE;
                 default -> throw new IllegalStateException("Unknown goal contract clause: " + keyword);
             };
             result.add(new IStarOclConstraintCS(kind, body));
@@ -138,16 +132,10 @@ public final class IStarBuildingVisitor extends IStarBaseVisitor<Object> {
         return switch (ctx) {
             case IStarParser.RelAndContext r -> new RelCS.RefineCS(r.target.getText(), false);
             case IStarParser.RelOrContext r -> new RelCS.RefineCS(r.target.getText(), true);
-            case IStarParser.RelForAllContext r -> new RelCS.ForRefineCS(
-                    r.target.getText(), r.actorType.getText());
-            case IStarParser.RelPickContext r -> new RelCS.PickRefineCS(
-                    r.target.getText(), r.actorType.getText());
             case IStarParser.RelContributeContext r ->
                     new RelCS.ContributesCS(r.target.getText(), r.contribType().getText());
             case IStarParser.RelQualifiesContext r -> new RelCS.QualifiesCS(r.target.getText());
             case IStarParser.RelNeededByContext r -> new RelCS.NeededByCS(r.target.getText());
-            case IStarParser.RelObstructsContext r -> new RelCS.ObstructsCS(r.target.getText());
-            case IStarParser.RelResolvesContext r -> new RelCS.ResolvesCS(r.target.getText());
             default -> throw new IllegalStateException("Unknown relation: " + ctx.getText());
         };
     }
@@ -162,7 +150,7 @@ public final class IStarBuildingVisitor extends IStarBaseVisitor<Object> {
         return new DependencyCS(
                 dependerEnd.IDENT(0).getText(),
                 dependerEnd.IDENT().size() > 1 ? dependerEnd.IDENT(1).getText() : null,
-                dependum.dependumKind() != null ? dependum.dependumKind().getText() : null,
+                dependum.dependumKind().getText(),
                 dependum.IDENT().getText(),
                 dependeeEnd.IDENT(0).getText(),
                 dependeeEnd.IDENT().size() > 1 ? dependeeEnd.IDENT(1).getText() : null);

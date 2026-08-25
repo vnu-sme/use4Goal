@@ -43,6 +43,23 @@
             <version>${antlr4.version}</version>
         </dependency>
 
+        <!--
+            Relational bounded verification. These are the same Kodkod and
+            SAT4J binaries used by pluginClone/validator. The initialize
+            executions below make the repository build self-contained.
+        -->
+        <dependency>
+            <groupId>kodkod</groupId>
+            <artifactId>kodkod</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.sat4j</groupId>
+            <artifactId>core</artifactId>
+            <version>1.0</version>
+        </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -54,6 +71,38 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <id>install-validator-kodkod</id>
+                        <phase>initialize</phase>
+                        <goals><goal>install-file</goal></goals>
+                        <configuration>
+                            <file>${project.basedir}/../pluginClone/validator/lib/kodkod.jar</file>
+                            <groupId>kodkod</groupId>
+                            <artifactId>kodkod</artifactId>
+                            <version>1.0</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-validator-sat4j</id>
+                        <phase>initialize</phase>
+                        <goals><goal>install-file</goal></goals>
+                        <configuration>
+                            <file>${project.basedir}/../pluginClone/validator/lib/org.sat4j.core.jar</file>
+                            <groupId>org.sat4j</groupId>
+                            <artifactId>core</artifactId>
+                            <version>1.0</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>

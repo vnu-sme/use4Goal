@@ -1,5 +1,5 @@
 // Generated from ACL.g4 by ANTLR 4.9.3
- package org.vnu.sme.goal.acl.parser; 
+ package org.vnu.sme.goal.dsl.acl.parser; 
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -35,6 +35,42 @@ public class ACLBaseListener implements ACLListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitTopLevelDecl(ACLParser.TopLevelDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterInvariantDecl(ACLParser.InvariantDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitInvariantDecl(ACLParser.InvariantDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterOclExpression(ACLParser.OclExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitOclExpression(ACLParser.OclExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterOclToken(ACLParser.OclTokenContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitOclToken(ACLParser.OclTokenContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -184,30 +220,6 @@ public class ACLBaseListener implements ACLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLegacyTypedMemberDecl(ACLParser.LegacyTypedMemberDeclContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitLegacyTypedMemberDecl(ACLParser.LegacyTypedMemberDeclContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterLegacySubgroupDecl(ACLParser.LegacySubgroupDeclContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitLegacySubgroupDecl(ACLParser.LegacySubgroupDeclContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterEntityRelationDecl(ACLParser.EntityRelationDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -251,66 +263,6 @@ public class ACLBaseListener implements ACLListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitCompatibilityDecl(ACLParser.CompatibilityDeclContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterLinkArrow(ACLParser.LinkArrowContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitLinkArrow(ACLParser.LinkArrowContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterLinkScope(ACLParser.LinkScopeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitLinkScope(ACLParser.LinkScopeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterCompatibilityOption(ACLParser.CompatibilityOptionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitCompatibilityOption(ACLParser.CompatibilityOptionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterCompatibilityType(ACLParser.CompatibilityTypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitCompatibilityType(ACLParser.CompatibilityTypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterScopeValue(ACLParser.ScopeValueContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitScopeValue(ACLParser.ScopeValueContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

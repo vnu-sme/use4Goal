@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_ProposalReview" targetNamespace="http://example.org/proposal-review" exporter="bpmn-js (https://demo.bpmn.io)" exporterVersion="18.24.0">
+  <bpmn:collaboration id="Collaboration_ProposalReview">
+    <bpmn:participant id="Participant_ProposalReview" name="Proposal review process" processRef="Process_ProposalReview" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_ProposalReview" name="Proposal Review — AS-IS (missing re-validation loop)" isExecutable="false">
+    <bpmn:documentation>Intentionally incomplete process used as the motivating example. The proposal is prepared and validated, then reviewed by the customer. If the customer requests changes, the proposal is updated. The AS-IS model incorrectly continues directly to finalization and sending. The missing behavior is a loop from 'Update proposal' back to 'Validate proposal'.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_ProposalReview">
+      <bpmn:lane id="Lane_Customer" name="Customer">
+        <bpmn:flowNodeRef>Review</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ChangedGateway</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_ProposalManager" name="Proposal Manager">
+        <bpmn:flowNodeRef>Start</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Prepare</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Validate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Update</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Merge</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Finalize</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Send</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start" name="Start">
+      <bpmn:documentation>Initial state.</bpmn:documentation>
+      <bpmn:outgoing>Flow_01</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Prepare" name="Prepare proposal">
+      <bpmn:documentation>ACL effect: proposalPrepared := true; currentRevision := 1.</bpmn:documentation>
+      <bpmn:incoming>Flow_01</bpmn:incoming>
+      <bpmn:outgoing>Flow_02</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Validate" name="Validate proposal">
+      <bpmn:documentation>ACL effect: validationRevision := currentRevision.</bpmn:documentation>
+      <bpmn:incoming>Flow_02</bpmn:incoming>
+      <bpmn:outgoing>Flow_03</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Review" name="Review proposal">
+      <bpmn:documentation>ACL effect: reviewCompleted := true; changesRequested is set by the review outcome.</bpmn:documentation>
+      <bpmn:incoming>Flow_03</bpmn:incoming>
+      <bpmn:outgoing>Flow_04</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="ChangedGateway" name="Changes requested?" default="Flow_06_NoChange">
+      <bpmn:documentation>XOR split based on changesRequested.</bpmn:documentation>
+      <bpmn:incoming>Flow_04</bpmn:incoming>
+      <bpmn:outgoing>Flow_05_Changed</bpmn:outgoing>
+      <bpmn:outgoing>Flow_06_NoChange</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Update" name="Update proposal">
+      <bpmn:documentation>ACL precondition: changesRequested. ACL effect: changesIncorporated := true; currentRevision := currentRevision + 1. validationRevision is NOT updated here. This activity realizes 'Requested changes incorporated' but can invalidate 'Current proposal prepared and validated'.</bpmn:documentation>
+      <bpmn:incoming>Flow_05_Changed</bpmn:incoming>
+      <bpmn:outgoing>Flow_07</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Merge">
+      <bpmn:documentation>Merge after the changed/no-change branches.</bpmn:documentation>
+      <bpmn:incoming>Flow_06_NoChange</bpmn:incoming>
+      <bpmn:incoming>Flow_07</bpmn:incoming>
+      <bpmn:outgoing>Flow_08</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Finalize" name="Finalize proposal">
+      <bpmn:documentation>ACL effect: proposalFinalized := true.</bpmn:documentation>
+      <bpmn:incoming>Flow_08</bpmn:incoming>
+      <bpmn:outgoing>Flow_09</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Send" name="Send proposal">
+      <bpmn:documentation>ACL effect: proposalSent := true; sentRevision := currentRevision.</bpmn:documentation>
+      <bpmn:incoming>Flow_09</bpmn:incoming>
+      <bpmn:outgoing>Flow_10</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="End" name="Proposal sent">
+      <bpmn:documentation>The AS-IS process reaches completion even when the updated proposal was not re-validated.</bpmn:documentation>
+      <bpmn:incoming>Flow_10</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_01" sourceRef="Start" targetRef="Prepare" />
+    <bpmn:sequenceFlow id="Flow_02" sourceRef="Prepare" targetRef="Validate" />
+    <bpmn:sequenceFlow id="Flow_03" sourceRef="Validate" targetRef="Review" />
+    <bpmn:sequenceFlow id="Flow_04" sourceRef="Review" targetRef="ChangedGateway" />
+    <bpmn:sequenceFlow id="Flow_05_Changed" sourceRef="ChangedGateway" targetRef="Update">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">changesRequested = true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_06_NoChange" sourceRef="ChangedGateway" targetRef="Merge" />
+    <bpmn:sequenceFlow id="Flow_07" sourceRef="Update" targetRef="Merge" />
+    <bpmn:sequenceFlow id="Flow_08" sourceRef="Merge" targetRef="Finalize" />
+    <bpmn:sequenceFlow id="Flow_09" sourceRef="Finalize" targetRef="Send" />
+    <bpmn:sequenceFlow id="Flow_10" sourceRef="Send" targetRef="End" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_ProposalReview">
+    <bpmndi:BPMNPlane id="BPMNPlane_ProposalReview" bpmnElement="Collaboration_ProposalReview">
+      <bpmndi:BPMNShape id="Participant_ProposalReview_di" bpmnElement="Participant_ProposalReview" isHorizontal="true">
+        <dc:Bounds x="150" y="40" width="1530" height="440" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Customer_di" bpmnElement="Lane_Customer" isHorizontal="true">
+        <dc:Bounds x="180" y="260" width="1500" height="220" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_ProposalManager_di" bpmnElement="Lane_ProposalManager" isHorizontal="true">
+        <dc:Bounds x="180" y="40" width="1500" height="220" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_di" bpmnElement="Start">
+        <dc:Bounds x="260" y="132" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="266" y="168" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Prepare_di" bpmnElement="Prepare">
+        <dc:Bounds x="390" y="110" width="140" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Validate_di" bpmnElement="Validate">
+        <dc:Bounds x="580" y="110" width="140" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Review_di" bpmnElement="Review">
+        <dc:Bounds x="770" y="330" width="140" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ChangedGateway_di" bpmnElement="ChangedGateway" isMarkerVisible="true">
+        <dc:Bounds x="970" y="345" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="967" y="395" width="56" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Update_di" bpmnElement="Update">
+        <dc:Bounds x="925" y="110" width="140" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Merge_di" bpmnElement="Merge" isMarkerVisible="true">
+        <dc:Bounds x="1115" y="125" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Finalize_di" bpmnElement="Finalize">
+        <dc:Bounds x="1210" y="110" width="140" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Send_di" bpmnElement="Send">
+        <dc:Bounds x="1400" y="110" width="140" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_di" bpmnElement="End">
+        <dc:Bounds x="1602" y="132" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1586" y="193" width="68" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_01_di" bpmnElement="Flow_01">
+        <di:waypoint x="296" y="150" />
+        <di:waypoint x="390" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_02_di" bpmnElement="Flow_02">
+        <di:waypoint x="530" y="150" />
+        <di:waypoint x="580" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_03_di" bpmnElement="Flow_03">
+        <di:waypoint x="720" y="150" />
+        <di:waypoint x="745" y="150" />
+        <di:waypoint x="745" y="370" />
+        <di:waypoint x="770" y="370" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_04_di" bpmnElement="Flow_04">
+        <di:waypoint x="910" y="370" />
+        <di:waypoint x="970" y="370" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_05_Changed_di" bpmnElement="Flow_05_Changed">
+        <di:waypoint x="995" y="345" />
+        <di:waypoint x="995" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_06_NoChange_di" bpmnElement="Flow_06_NoChange">
+        <di:waypoint x="1020" y="370" />
+        <di:waypoint x="1140" y="370" />
+        <di:waypoint x="1140" y="175" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_07_di" bpmnElement="Flow_07">
+        <di:waypoint x="1065" y="150" />
+        <di:waypoint x="1115" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_08_di" bpmnElement="Flow_08">
+        <di:waypoint x="1165" y="150" />
+        <di:waypoint x="1210" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_09_di" bpmnElement="Flow_09">
+        <di:waypoint x="1350" y="150" />
+        <di:waypoint x="1400" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10_di" bpmnElement="Flow_10">
+        <di:waypoint x="1540" y="150" />
+        <di:waypoint x="1602" y="150" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

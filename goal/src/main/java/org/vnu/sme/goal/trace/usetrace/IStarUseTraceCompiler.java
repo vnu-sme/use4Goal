@@ -41,7 +41,6 @@ import org.vnu.sme.goal.verify.conformance.semantics.QualityStatus;
 import org.vnu.sme.goal.verify.conformance.semantics.IStarMarking;
 import org.vnu.sme.goal.verify.conformance.semantics.IStarPropagation;
 import org.vnu.sme.goal.verify.conformance.semantics.TaskMarking;
-import org.vnu.sme.goal.dsl.istar.mm.ForRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Goal;
 import org.vnu.sme.goal.dsl.istar.mm.GoalActivationGraph;
 import org.vnu.sme.goal.dsl.istar.mm.GoalModel;
@@ -251,12 +250,10 @@ public final class IStarUseTraceCompiler {
                 } else if (element instanceof Goal goal) {
                     GoalMarking old = oldMarking.goalMarking(c.elementId());
                     if (old == null) old = GoalMarking.initial(goal.goalType());
-                    boolean inherited = isDemanded(c.elementId(), activationGraph, constraints,
+                    boolean active = isDemanded(c.elementId(), activationGraph, constraints,
                             Map.of(c.actorType(), o), markings, occurrenceGoals, occurrenceTasks);
-                    boolean active = inherited && (c.activations().isEmpty()
-                            || c.activations().stream().allMatch(expr -> evalBoolean(expr, state, o)));
                     // A structural goal without a predicate is derived from its children.
-                    // Its activation is retained by the child-demand propagation below.
+                    // Its demand is retained by the child-demand propagation below.
                     boolean predicate = c.expr() != null && evalBoolean(c.expr(), state, o);
                     markings.put(key, markings.get(key).withGoalMarking(
                             c.elementId(), old.update(active, predicate)));
@@ -293,43 +290,12 @@ public final class IStarUseTraceCompiler {
                             ? GoalMarking.initial(goal.goalType())
                             : previous.occurrenceGoals().getOrDefault(
                                     key, GoalMarking.initial(goal.goalType()));
-                    boolean inherited = isDemanded(c.elementId(), activationGraph, constraints,
+                    boolean active = isDemanded(c.elementId(), activationGraph, constraints,
                             bindings, markings, occurrenceGoals, occurrenceTasks);
-                    boolean active = inherited && (c.activations().isEmpty() || c.activations().stream()
-                            .allMatch(expr -> evalBoolean(expr, state, c.actorType(), bindings)));
                     boolean predicate = c.expr() != null
                             && evalBoolean(c.expr(), state, c.actorType(), bindings);
                     occurrenceGoals.put(key, old.update(active, predicate));
                 }
-            }
-        }
-
-        for (ConstraintInfo c : constraints.values()) {
-            var quantified = resolution.quantifiedEdge(c.elementId());
-            if (quantified.isEmpty()) continue;
-
-            List<MObject> universe = instancesByActorType.getOrDefault(c.actorType(), List.of());
-            boolean isForall = quantified.get().quantifier() instanceof ForRefinement;
-            // An empty universe must not vacuously satisfy forall (nobody's condition has
-            // actually been checked yet) -- only genuinely universal satisfaction counts.
-            String quantifiedParent = quantified.get().parentId();
-            boolean directParentCondition = gm.findElement(quantifiedParent)
-                    .filter(Goal.class::isInstance).map(Goal.class::cast)
-                    .map(goal -> !goal.conditions().isEmpty()).orElse(false);
-            if (directParentCondition) continue;
-            String ownerActorType = gm.ownerOf(quantifiedParent).orElseThrow();
-            for (MObject owner : instancesByActorType.getOrDefault(ownerActorType, List.of())) {
-                List<MObject> scopedUniverse = acl == null ? universe : universe.stream()
-                        .filter(candidate -> sharesAclGroupContext(
-                                acl, state, ownerActorType, owner, c.actorType(), candidate))
-                        .toList();
-                GoalTaskStatus aggregate = IStarPropagation.aggregateQuantified(isForall,
-                        scopedUniverse.stream().map(candidate -> markings
-                                .get(new InstanceKey(c.actorType(), candidate.name()))
-                                .goalTaskStatus(c.elementId())).toList());
-                InstanceKey key = new InstanceKey(ownerActorType, owner.name());
-                markings.put(key, IStarPropagation.assignGoalTask(gm, markings.get(key), quantifiedParent,
-                        aggregate));
             }
         }
 

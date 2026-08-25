@@ -1,0 +1,123 @@
+-------------------------------------------------------------------------------
+Test set: org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest
+-------------------------------------------------------------------------------
+Tests run: 9, Failures: 3, Errors: 6, Skipped: 0, Time elapsed: 0.037 s <<< FAILURE! -- in org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest
+org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest.allCalendarScenarioGeneratesShortTraceAndSatisfiesRoots -- Time elapsed: 0.001 s <<< ERROR!
+java.lang.IllegalArgumentException: expected existing .istar file: src/main/resources/examples/mtg/mtg.istar
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.require(VisualConformanceSession.java:344)
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.prepare(VisualConformanceSession.java:127)
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.prepare(VisualConformanceSession.java:122)
+	at org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest.run(MtgScenarioConformanceTest.java:132)
+	at org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest.allCalendarScenarioGeneratesShortTraceAndSatisfiesRoots(MtgScenarioConformanceTest.java:23)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest.validInputCanExposeBpmnThatEndsWithoutSatisfyingRootGoal -- Time elapsed: 0.001 s <<< ERROR!
+java.lang.IllegalArgumentException: expected existing .istar file: src/main/resources/examples/mtg/mtg.istar
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.require(VisualConformanceSession.java:344)
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.prepare(VisualConformanceSession.java:127)
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.prepare(VisualConformanceSession.java:122)
+	at org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest.run(MtgScenarioConformanceTest.java:132)
+	at org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest.validInputCanExposeBpmnThatEndsWithoutSatisfyingRootGoal(MtgScenarioConformanceTest.java:60)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest.incidentResponseWasMigratedFromFinalSnapshotToExecutableInputScenario -- Time elapsed: 0.016 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: 
+i*+USE/SOIL failed:
+  - line 20:53 no viable alternative at input 'AnalystEvidenceCollected'
+  - line 22:53 no viable alternative at input 'TechnicianRemediationDone'
+  - line 24:50 no viable alternative at input 'AuditorClosureDone' ==> expected: <true> but was: <false>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertTrue.failNotTrue(AssertTrue.java:63)
+	at org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:42)
+	at org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:191)
+	at org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest.incidentResponseWasMigratedFromFinalSnapshotToExecutableInputScenario(MtgScenarioConformanceTest.java:116)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest.diagramComponentsAcceptRuntimeModelsAndScenarioSnapshot -- Time elapsed: 0.001 s <<< ERROR!
+java.lang.IllegalArgumentException: expected existing .istar file: src/main/resources/examples/mtg/mtg.istar
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.require(VisualConformanceSession.java:344)
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.prepare(VisualConformanceSession.java:127)
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.prepare(VisualConformanceSession.java:122)
+	at org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest.run(MtgScenarioConformanceTest.java:132)
+	at org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest.diagramComponentsAcceptRuntimeModelsAndScenarioSnapshot(MtgScenarioConformanceTest.java:81)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest.mixedScenarioGeneratesPhoneThenCalendarTrace -- Time elapsed: 0.001 s <<< ERROR!
+java.lang.IllegalArgumentException: expected existing .istar file: src/main/resources/examples/mtg/mtg.istar
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.require(VisualConformanceSession.java:344)
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.prepare(VisualConformanceSession.java:127)
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.prepare(VisualConformanceSession.java:122)
+	at org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest.run(MtgScenarioConformanceTest.java:132)
+	at org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest.mixedScenarioGeneratesPhoneThenCalendarTrace(MtgScenarioConformanceTest.java:32)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest.ojsNowHasAnExecutableInputScenarioInsteadOfOnlyAolFinalSnapshots -- Time elapsed: 0.011 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: 
+i*+USE/SOIL failed:
+  - line 6:48 no viable alternative at input 'ReviewReviewsCompleted'
+  - line 9:55 no viable alternative at input 'SectionEditorDecisionRecorded' ==> expected: <true> but was: <false>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertTrue.failNotTrue(AssertTrue.java:63)
+	at org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:42)
+	at org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:191)
+	at org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest.ojsNowHasAnExecutableInputScenarioInsteadOfOnlyAolFinalSnapshots(MtgScenarioConformanceTest.java:126)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest.collectByPhoneUsesTheSecretaryParticipantContextOccurrence -- Time elapsed: 0.001 s <<< ERROR!
+java.lang.IllegalArgumentException: expected existing .istar file: src/main/resources/examples/mtg/mtg.istar
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.require(VisualConformanceSession.java:344)
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.prepare(VisualConformanceSession.java:127)
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.prepare(VisualConformanceSession.java:122)
+	at org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest.run(MtgScenarioConformanceTest.java:132)
+	at org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest.collectByPhoneUsesTheSecretaryParticipantContextOccurrence(MtgScenarioConformanceTest.java:44)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest.oneShotCheckerUsesTheSameScenarioDrivenSemantics -- Time elapsed: 0 s <<< ERROR!
+java.nio.file.NoSuchFileException: src/main/resources/examples/mtg/mtg.acl
+	at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:92)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:106)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)
+	at java.base/sun.nio.fs.UnixFileAttributeViews$Basic.readAttributes(UnixFileAttributeViews.java:55)
+	at java.base/sun.nio.fs.UnixFileSystemProvider.readAttributes(UnixFileSystemProvider.java:171)
+	at java.base/sun.nio.fs.LinuxFileSystemProvider.readAttributes(LinuxFileSystemProvider.java:99)
+	at java.base/java.nio.file.Files.readAttributes(Files.java:1854)
+	at java.base/java.nio.file.Files.size(Files.java:2463)
+	at org.antlr.v4.runtime.CharStreams.fromPath(CharStreams.java:86)
+	at org.antlr.v4.runtime.CharStreams.fromPath(CharStreams.java:76)
+	at org.vnu.sme.goal.dsl.acl.parser.AclCompiler.compile(AclCompiler.java:35)
+	at org.vnu.sme.goal.verify.conformance.AclBpmnIStarConformanceChecker.checkInternal(AclBpmnIStarConformanceChecker.java:82)
+	at org.vnu.sme.goal.verify.conformance.AclBpmnIStarConformanceChecker.check(AclBpmnIStarConformanceChecker.java:62)
+	at org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest.oneShotCheckerUsesTheSameScenarioDrivenSemantics(MtgScenarioConformanceTest.java:68)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest.nondeterministicBpmnIsWeakButNotStrongWhenOnlyOneTraceSatisfiesRoots -- Time elapsed: 0.001 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <2> but was: <1>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:150)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:145)
+	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:531)
+	at org.vnu.sme.goal.verify.conformance.MtgScenarioConformanceTest.nondeterministicBpmnIsWeakButNotStrongWhenOnlyOneTraceSatisfiesRoots(MtgScenarioConformanceTest.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+

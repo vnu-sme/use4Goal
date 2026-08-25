@@ -7,7 +7,6 @@ import org.vnu.sme.goal.dsl.istar.mm.Actor;
 import org.vnu.sme.goal.dsl.istar.mm.Goal;
 import org.vnu.sme.goal.dsl.istar.mm.GoalModel;
 import org.vnu.sme.goal.dsl.istar.mm.GoalType;
-import org.vnu.sme.goal.dsl.istar.mm.IStarOclConstraint;
 import org.vnu.sme.goal.dsl.istar.mm.IntentionalElement;
 import org.vnu.sme.goal.dsl.istar.mm.Task;
 
@@ -23,21 +22,16 @@ import static org.vnu.sme.goal.translate.aclistar2use.AclIStar2UseTranslator.san
  * <h2>GoalType → TOCL mapping</h2>
  * <table>
  *   <tr><th>GoalType</th><th>TOCL pattern</th></tr>
- *   <tr><td>ACHIEVE</td>
- *       <td>{@code always (activation implies sometime condition)}</td></tr>
- *   <tr><td>MAINTAIN</td>
- *       <td>{@code always (activation implies always condition)}</td></tr>
- *   <tr><td>SUSTAIN</td>
- *       <td>{@code always (sometime condition implies alwaysPast condition)}</td></tr>
- *   <tr><td>RECUR</td>
- *       <td>{@code always (activation implies (sometime (condition and sometime (not condition implies sometime condition))))}</td></tr>
+ *   <tr><td>ACHIEVE</td><td>{@code sometime holds}</td></tr>
+ *   <tr><td>MAINTAIN</td><td>{@code always holds}</td></tr>
+ *   <tr><td>SUSTAIN</td><td>{@code sometime (always holds)}</td></tr>
+ *   <tr><td>RECUR</td><td>not generated yet</td></tr>
  * </table>
  *
- * <p>For Goals where the activation/condition OCL guards are known, the generated
- * TOCL directly references the per-actor operations produced by
- * {@link AclIStar2UseTranslator} (e.g. {@code self.MeetingOrganized_activation()}).
- * This lets the TOCL plugin evaluate the formula directly against a filmstrip
- * without a separate evaluation step.
+ * <p>The generated TOCL references the structural {@code condition()} query
+ * produced by {@link AclIStar2UseTranslator}. That query already combines the goal's own
+ * OCL predicate with its AND/OR children, so temporal constraints and
+ * refinement propagation use exactly the same Boolean definition.
  *
  * <p>Tasks are not given TOCL constraints (they are atomic actions, not temporal
  * properties); instead, a comment is emitted to document where pre/post OCL
@@ -64,41 +58,44 @@ public final class IStar2ToclTranslator {
 
         out.append("-- TOCL constraints generated from ").append(gm.getName()).append(".istar\n");
         out.append("-- Each 'context C inv Name:' block encodes one iStar GoalType property.\n");
-        out.append("-- Operators used: always, sometime, alwaysPast, not, implies\n\n");
+        out.append("-- Mapping: Achieve=eventually, Maintain=always, Sustain=eventually-always.\n\n");
 
         for (Actor actor : gm.getActors()) {
             String actorName  = actor.name();
             String safeActor  = sanitize(actorName);
-            boolean hasOutput = false;
-
             for (IntentionalElement element : actor.elements()) {
                 if (!(element instanceof Goal goal)) continue;
 
                 GoalType goalType = goal.goalType() != null ? goal.goalType() : GoalType.ACHIEVE;
                 String gId        = sanitize(goal.id());
 
-                // References to the per-actor operations emitted by AclIStar2UseTranslator
-                // (declared in each actor's 'operations' section, so calls need '()')
-                String activationRef = "self." + gId + "_activation()";
-                String conditionRef  = "self." + gId + "_condition()";
+                String conditionRef = "self." + gId + "_condition()";
 
-                // Warn if activation/condition def will be constant (no real OCL)
-                boolean hasActivation = hasConstraintOf(goal, IStarOclConstraint.Kind.ACTIVATION);
-                boolean hasCondition  = hasConstraintOf(goal, IStarOclConstraint.Kind.CONDITION);
-                if (!hasCondition) {
+                // Warn when neither local OCL nor a refinement defines the condition.
+                boolean hasCondition  = !goal.conditions().isEmpty();
+                boolean hasRefinement = actor.refinements().stream()
+                        .anyMatch(r -> r.parent().equals(goal.id()));
+                if (!hasCondition && !hasRefinement) {
                     diagnostics.add("Info: goal '" + goal.id() + "' in actor '" + actorName
-                            + "' has no condition OCL — TOCL will use 'false' placeholder.");
+                            + "' is a leaf without condition OCL — condition() is false.");
+                }
+
+                if (goalType == GoalType.RECUR) {
+                    diagnostics.add("Info: Recur goal '" + goal.id()
+                            + "' is omitted from TOCL generation in the current translation.");
+                    out.append("-- OMITTED Recur goal ").append(actorName).append("::")
+                       .append(goal.id()).append("\n\n");
+                    continue;
                 }
 
                 String invName = goalType.name() + "_" + gId;
-                String toclBody = toToclBody(goalType, activationRef, conditionRef);
+                String toclBody = toToclBody(goalType, conditionRef);
 
                 out.append("-- ").append(actorName).append("::").append(goal.id())
                    .append(" [").append(goalType).append("]\n");
                 out.append("context ").append(safeActor).append("\n");
                 out.append("inv ").append(invName).append(":\n");
                 out.append("  ").append(toclBody).append("\n\n");
-                hasOutput = true;
             }
 
             // Document tasks in a comment block (no TOCL, only OCL pre/post in .use)
@@ -127,51 +124,19 @@ public final class IStar2ToclTranslator {
      * Produces the TOCL expression body (without leading "inv Name:") for a given GoalType.
      *
      * <ul>
-     *   <li>ACHIEVE  → {@code always (A implies sometime C)}</li>
-     *   <li>MAINTAIN → {@code always (A implies always C)}</li>
-     *   <li>SUSTAIN  → {@code always (sometime C implies alwaysPast C)}</li>
-     *   <li>RECUR    → {@code always (A implies (sometime (C and sometime (not C implies sometime C))))}</li>
+     *   <li>ACHIEVE  → {@code sometime H}</li>
+     *   <li>MAINTAIN → {@code always H}</li>
+     *   <li>SUSTAIN  → {@code sometime (always H)}</li>
+     *   <li>RECUR    → omitted by {@link #generate(GoalModel)}</li>
      * </ul>
      */
-    static String toToclBody(GoalType type, String activation, String condition) {
+    static String toToclBody(GoalType type, String holds) {
         return switch (type) {
-            case ACHIEVE ->
-                "always (\n" +
-                "    " + activation + "\n" +
-                "    implies\n" +
-                "    sometime " + condition + "\n" +
-                "  )";
-
-            case MAINTAIN ->
-                "always (\n" +
-                "    " + activation + "\n" +
-                "    implies\n" +
-                "    always " + condition + "\n" +
-                "  )";
-
-            case SUSTAIN ->
-                "always (\n" +
-                "    sometime " + condition + "\n" +
-                "    implies\n" +
-                "    alwaysPast " + condition + "\n" +
-                "  )";
-
-            case RECUR ->
-                "always (\n" +
-                "    " + activation + "\n" +
-                "    implies\n" +
-                "    sometime (\n" +
-                "      " + condition + " and\n" +
-                "      sometime (\n" +
-                "        not " + condition + " implies\n" +
-                "        sometime " + condition + "\n" +
-                "      )\n" +
-                "    )\n" +
-                "  )";
+            case ACHIEVE -> "sometime " + holds;
+            case MAINTAIN -> "always " + holds;
+            case SUSTAIN -> "sometime (always " + holds + ")";
+            case RECUR -> throw new IllegalArgumentException("RECUR TOCL mapping is not defined yet");
         };
     }
 
-    private static boolean hasConstraintOf(Goal goal, IStarOclConstraint.Kind kind) {
-        return goal.constraints().stream().anyMatch(c -> c.kind() == kind);
-    }
 }

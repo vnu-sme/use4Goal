@@ -17,7 +17,6 @@ import org.tzi.use.uml.mm.MClass;
 import org.tzi.use.uml.mm.MModel;
 import org.tzi.use.uml.ocl.expr.Expression;
 import org.vnu.sme.goal.dsl.istar.mm.Actor;
-import org.vnu.sme.goal.dsl.istar.mm.Goal;
 import org.vnu.sme.goal.dsl.istar.mm.GoalModel;
 import org.vnu.sme.goal.dsl.istar.mm.GoalTaskElement;
 import org.vnu.sme.goal.dsl.istar.mm.IntentionalElement;
@@ -35,8 +34,7 @@ import org.vnu.sme.goal.dsl.acl.ocl.AclOclPropertyResolver;
 public final class IStarOclConstraintCompiler {
 
     public record ConstraintInfo(String elementId, String actorType, List<String> contextTypes, MClass contextClass,
-                                 Expression expr, List<Expression> preconditions,
-                                 List<Expression> activations) {}
+                                 Expression expr, List<Expression> preconditions) {}
 
     private static final Pattern CONTEXT_PARENT = Pattern.compile(
             "\\bself((?:\\s*\\.\\s*outer)+)\\b");
@@ -64,8 +62,7 @@ public final class IStarOclConstraintCompiler {
             for (IntentionalElement e : actor.elements()) {
                 if (!(e instanceof GoalTaskElement gte)) continue;
                 boolean hasSatisfaction = gte.oclSource() != null && !gte.oclSource().isBlank();
-                boolean hasActivation = gte instanceof Goal goal && !goal.activations().isEmpty();
-                if (!hasSatisfaction && !hasActivation) continue;
+                if (!hasSatisfaction) continue;
 
                 String actorType = resolution.actorTypeOf(gm, gte.id());
                 List<String> contextTypes = resolution.contextTypesOf(gm, gte.id());
@@ -81,25 +78,6 @@ public final class IStarOclConstraintCompiler {
                             actorType, contextClass, actorClasses, errors);
                     if (compiled != null) compiledPreconditions.add(compiled);
                 }
-                List<Expression> compiledActivations = new ArrayList<>();
-                if (gte instanceof Goal goal) {
-                    int activationIndex = 1;
-                    for (var activation : goal.activations()) {
-                        String label = gte.id() + "::activation#" + activationIndex++;
-                        Expression compiled = compileExpression(useModel,
-                                resolvedSource(acl, actorType, contextTypes, activation.oclBody(), label, errors), label, actorType,
-                                contextClass, actorClasses, errors);
-                        if (compiled != null) compiledActivations.add(compiled);
-                    }
-                }
-
-                if (!hasSatisfaction) {
-                    constraints.put(gte.id(), new ConstraintInfo(gte.id(), actorType, contextTypes,
-                            contextClass, null, List.copyOf(compiledPreconditions),
-                            List.copyOf(compiledActivations)));
-                    continue;
-                }
-
                 StringWriter sw = new StringWriter();
                 PrintWriter err = new PrintWriter(sw);
                 Symtable vars = new Symtable();
@@ -122,7 +100,7 @@ public final class IStarOclConstraintCompiler {
                     errors.add("ocl '" + gte.id() + "' (self : " + actorType + "): " + sw);
                 } else {
                     constraints.put(gte.id(), new ConstraintInfo(gte.id(), actorType, contextTypes, contextClass,
-                            expr, List.copyOf(compiledPreconditions), List.copyOf(compiledActivations)));
+                            expr, List.copyOf(compiledPreconditions)));
                 }
             }
         }

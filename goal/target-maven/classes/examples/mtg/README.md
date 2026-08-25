@@ -19,6 +19,20 @@ Alice's and Carol's numbers.
 `mtg.aol` is the canonical object-language example of this separation. The `.soil` files are
 equivalent executable fixtures retained for the conformance runner.
 
+## Interactive iStar execution trace
+
+The primary verifier now consumes the already-generated `mtg1.bpmntrace` directly. Open
+**GoalModel Plugin → iStar BPMN Trace Verifier** and select `mtg.acl`, `mtg.istar`, and
+`mtg1.bpmntrace`. Each `STEP` snapshot is evaluated as native ACL/AOL state; the verifier does
+not generate a USE model, execute SOIL, reload AOL, or rerun BPMN. Consequently, missing state
+in the trace remains missing and is visible as an Unknown/Pending/Violated iStar occurrence.
+
+The marking matrix below the diagram provides the complete trace at once. Rows are expanded
+Goal/Task occurrences (so `forall`, `pick`, and dependency contexts remain distinguishable),
+columns are `s0`, `s1`, ... and cells use `U/P/F/V` for
+Unknown/Pending/Fulfilled/Violated. Clicking a state column moves the diagram and detail panel
+to that checkpoint.
+
 ## Naming
 
 `mtg_i<I>o<O>p<P>s<S>.soil` records the number of Initiator, Organizer, Participant and
@@ -46,9 +60,18 @@ input for which a BPMN solution reaches EndEvent while at least one root goal re
 | `mtg.acl` | `mtg_i1o1p3s1.soil` | `mtg_goal_gap.bpmn2` | NOT CONFORMANT |
 | `mtg.acl` | `mtg_i1o1p3s1.soil` | `mtg_nondeterministic.bpmn2` | WEAKLY CONFORMANT |
 
-The last BPMN deliberately omits `participate`. It nevertheless reaches EndEvent, thereby
+The last BPMN deliberately omits `AttendMeeting`. It nevertheless reaches EndEvent, thereby
 exposing that the attendance part of the i* root goal is not fulfilled.
 
 The nondeterministic BPMN has two simultaneously valid XOR completions. One performs
-`participate`, the other reaches EndEvent without attendance. The explorer therefore reports
+`AttendMeeting`, the other reaches EndEvent without attendance. The explorer therefore reports
 weak=true, strong=false and lets the debugger select either generated trace.
+
+## Concurrent processes
+
+`mtg.bpmn2`'s pool is declared `for MeetingUnit`: one `Bpmn2ExecutionEngine`, with `self`
+bound to just that instance, runs per concrete `MeetingUnit`. `mtg_two_meetings.aol` is the
+fixture that actually exercises this — `architectureReview` and `budgetPlanning`, staffed by
+entirely disjoint agents, advance independently in the same session. Every other `.aol`/`.soil`
+fixture above creates exactly one `MeetingUnit`, so it never shows more than a single process
+instance running.

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<istars:GoalTrace xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:acls="https://vnu.edu.vn/sme/goal/acl/state/3.0"
+    xmlns:istars="https://vnu.edu.vn/sme/goal/istar/state/3.0"
+    xsi:schemaLocation="https://vnu.edu.vn/sme/goal/istar/state/3.0 istar-state.ecore https://vnu.edu.vn/sme/goal/acl/state/3.0 acl-state.ecore"
+    xmi:id="goalTrace" name="MeetingSchedulerGoalTrace"
+    goalModel="mtg-development.istar.xmi#goalModel"
+    history="mtg-development.state.xmi#systemHistory">
+
+  <!-- A complete reevaluation over s0. No goal value is copied from an earlier checkpoint. -->
+  <snapshots xmi:id="gs0" systemState="mtg-development.state.xmi#s0" complete="true">
+    <markings status="pending" evidence="coordinationScore = 0">
+      <element xsi:type="istars:Goal" href="mtg-development.istar.xmi#improveCoordination"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#org1"/>
+    </markings>
+
+    <markings status="pending" evidence="AND child MeetingScheduled is pending">
+      <element xsi:type="istars:Goal" href="mtg-development.istar.xmi#haveMeetingOrganized"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#unit1"/>
+    </markings>
+    <markings status="satisfied" evidence="meeting1.detailsDecided = true">
+      <element xsi:type="istars:Goal" href="mtg-development.istar.xmi#detailsDecidedGoal"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#unit1"/>
+    </markings>
+    <markings status="pending" evidence="meeting1.timeChosen = false">
+      <element xsi:type="istars:Goal" href="mtg-development.istar.xmi#meetingScheduledGoal"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#unit1"/>
+    </markings>
+    <markings status="pending" evidence="forall Participant has one pending instance">
+      <element xsi:type="istars:Goal" href="mtg-development.istar.xmi#participantsAttendedGoal"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#unit1"/>
+    </markings>
+    <markings status="pending" evidence="participant1.attended = false">
+      <element xsi:type="istars:Goal" href="mtg-development.istar.xmi#participantAttendanceExpectation"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#participant1"/>
+      <outer xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#unit1"/>
+    </markings>
+
+    <markings status="pending" evidence="the related meeting is not scheduled">
+      <element xsi:type="istars:Goal" href="mtg-development.istar.xmi#organizerSchedules"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#organizer1"/>
+    </markings>
+    <markings status="pending" evidence="precondition true; postcondition false">
+      <element xsi:type="istars:Task" href="mtg-development.istar.xmi#chooseTime"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#organizer1"/>
+    </markings>
+    <markings status="inactive" evidence="meeting time has not been chosen">
+      <element xsi:type="istars:Task" href="mtg-development.istar.xmi#announceMeeting"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#organizer1"/>
+    </markings>
+
+    <markings status="inactive" evidence="participant1.notified = false">
+      <element xsi:type="istars:Goal" href="mtg-development.istar.xmi#participantAttends"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#participant1"/>
+    </markings>
+
+    <markings status="satisfied" evidence="Alice.workingHours = 7">
+      <element xsi:type="istars:Goal" href="mtg-development.istar.xmi#avoidOvertime"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#alice"/>
+    </markings>
+    <markings status="satisfied" evidence="Alice.workingHours = 7">
+      <element xsi:type="istars:Quality" href="mtg-development.istar.xmi#sustainableWorkload"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#alice"/>
+    </markings>
+    <markings status="satisfied" evidence="Bob.workingHours = 6">
+      <element xsi:type="istars:Goal" href="mtg-development.istar.xmi#avoidOvertime"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#bob"/>
+    </markings>
+    <markings status="satisfied" evidence="Bob.workingHours = 6">
+      <element xsi:type="istars:Quality" href="mtg-development.istar.xmi#sustainableWorkload"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#bob"/>
+    </markings>
+  </snapshots>
+
+  <!-- A fresh complete reevaluation after the state-changing process step. -->
+  <snapshots xmi:id="gs1" systemState="mtg-development.state.xmi#s1" complete="true">
+    <markings status="satisfied" evidence="coordinationScore = 1 and the child unit delivered its goal">
+      <element xsi:type="istars:Goal" href="mtg-development.istar.xmi#improveCoordination"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#org1"/>
+    </markings>
+
+    <markings status="satisfied" evidence="all three AND children are satisfied">
+      <element xsi:type="istars:Goal" href="mtg-development.istar.xmi#haveMeetingOrganized"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#unit1"/>
+    </markings>
+    <markings status="satisfied" evidence="meeting1.detailsDecided = true">
+      <element xsi:type="istars:Goal" href="mtg-development.istar.xmi#detailsDecidedGoal"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#unit1"/>
+    </markings>
+    <markings status="satisfied" evidence="meeting1.timeChosen and meeting1.announced">
+      <element xsi:type="istars:Goal" href="mtg-development.istar.xmi#meetingScheduledGoal"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#unit1"/>
+    </markings>
+    <markings status="satisfied" evidence="forall active Participant occurrences is satisfied">
+      <element xsi:type="istars:Goal" href="mtg-development.istar.xmi#participantsAttendedGoal"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#unit1"/>
+    </markings>
+    <markings status="satisfied" evidence="participant1.attended = true">
+      <element xsi:type="istars:Goal" href="mtg-development.istar.xmi#participantAttendanceExpectation"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#participant1"/>
+      <outer xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#unit1"/>
+    </markings>
+
+    <markings status="satisfied" evidence="the related meeting has a chosen time and announcement">
+      <element xsi:type="istars:Goal" href="mtg-development.istar.xmi#organizerSchedules"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#organizer1"/>
+    </markings>
+    <markings status="satisfied" evidence="postcondition meeting1.timeChosen = true">
+      <element xsi:type="istars:Task" href="mtg-development.istar.xmi#chooseTime"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#organizer1"/>
+    </markings>
+    <markings status="satisfied" evidence="postcondition meeting1.announced = true">
+      <element xsi:type="istars:Task" href="mtg-development.istar.xmi#announceMeeting"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#organizer1"/>
+    </markings>
+
+    <markings status="satisfied" evidence="participant1.notified and participant1.attended">
+      <element xsi:type="istars:Goal" href="mtg-development.istar.xmi#participantAttends"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#participant1"/>
+    </markings>
+
+    <markings status="violated" evidence="Alice.workingHours = 9; organizational success harmed a personal maintain goal">
+      <element xsi:type="istars:Goal" href="mtg-development.istar.xmi#avoidOvertime"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#alice"/>
+    </markings>
+    <markings status="violated" evidence="Alice.workingHours = 9">
+      <element xsi:type="istars:Quality" href="mtg-development.istar.xmi#sustainableWorkload"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#alice"/>
+    </markings>
+    <markings status="satisfied" evidence="Bob.workingHours = 6">
+      <element xsi:type="istars:Goal" href="mtg-development.istar.xmi#avoidOvertime"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#bob"/>
+    </markings>
+    <markings status="satisfied" evidence="Bob.workingHours = 6">
+      <element xsi:type="istars:Quality" href="mtg-development.istar.xmi#sustainableWorkload"/>
+      <subject xsi:type="acls:ActorOccurrence" href="mtg-development.state.xmi#bob"/>
+    </markings>
+  </snapshots>
+</istars:GoalTrace>

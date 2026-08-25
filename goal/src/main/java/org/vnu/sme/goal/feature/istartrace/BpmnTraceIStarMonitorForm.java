@@ -39,7 +39,6 @@ import org.tzi.use.main.Session;
 import org.vnu.sme.goal.verify.conformance.semantics.GoalTaskStatus;
 import org.vnu.sme.goal.dsl.istar.mm.Goal;
 import org.vnu.sme.goal.dsl.istar.mm.IntentionalElement;
-import org.vnu.sme.goal.dsl.istar.mm.Obstacle;
 import org.vnu.sme.goal.dsl.istar.mm.Quality;
 import org.vnu.sme.goal.dsl.istar.mm.Resource;
 import org.vnu.sme.goal.dsl.istar.mm.Task;
@@ -351,7 +350,6 @@ public final class BpmnTraceIStarMonitorForm extends JDialog {
                 case Task t -> out.put(t.id(), badge(marking.goalTaskStatus(t.id())));
                 case Quality q -> { }
                 case Resource r -> { }
-                case Obstacle o -> { }
             }
         }
         return out;

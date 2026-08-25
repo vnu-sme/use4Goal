@@ -1,0 +1,209 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem}
+
+\newcommand{\StartE}{\mathit{StartE}}
+\newcommand{\EndE}{\mathit{EndE}}
+\newcommand{\NextB}{\mathit{Next}_{B}}
+\newcommand{\GType}{\mathit{GType}}
+\newcommand{\gtype}{\mathit{gtype}}
+
+\title{Core BPMN Process-State Semantics}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{BPMN Process Structure}
+
+A BPMN process is a tuple
+\[
+\boxed{B=(T,F)}
+\]
+where
+\[
+\boxed{T=E\uplus A\uplus G}
+\]
+is a finite set of process transitions, consisting of Events $E$, Activities $A$, and Gateways $G$. Events are partitioned into Start Events and End Events:
+\[
+\boxed{E=\StartE\uplus\EndE.}
+\]
+The sequence-flow relation is
+\[
+\boxed{F\subseteq T\times T.}
+\]
+
+\section{Predecessors and Successors}
+
+For each transition $t\in T$, its predecessor and successor sets are defined by
+\[
+\boxed{{}^{\bullet}t=\{t'\in T\mid (t',t)\in F\}}
+\]
+and
+\[
+\boxed{t^{\bullet}=\{t'\in T\mid (t,t')\in F\}.}
+\]
+
+\section{Structural Well-Formedness}
+
+The BPMN profile satisfies the following structural constraints.
+
+\paragraph{Start Events.}
+\[
+\boxed{
+\forall s\in\StartE:\quad
+{}^{\bullet}s=\varnothing
+\;\land\;
+|s^{\bullet}|=1
+}
+\tag{WF-S}
+\]
+
+\paragraph{End Events.}
+\[
+\boxed{
+\forall e\in\EndE:\quad
+|{}^{\bullet}e|\geq 1
+\;\land\;
+e^{\bullet}=\varnothing
+}
+\tag{WF-E}
+\]
+
+\paragraph{Activities.}
+\[
+\boxed{
+\forall a\in A:\quad
+|{}^{\bullet}a|\geq 1
+\;\land\;
+|a^{\bullet}|=1
+}
+\tag{WF-A}
+\]
+
+\paragraph{Gateways.}
+\[
+\boxed{
+\forall g\in G:\quad
+|{}^{\bullet}g|\geq 1
+\;\land\;
+|g^{\bullet}|\geq 1
+}
+\tag{WF-G1}
+\]
+A gateway with exactly one incoming and one outgoing sequence flow is excluded:
+\[
+\boxed{
+\forall g\in G:\quad
+|{}^{\bullet}g|>1
+\;\lor\;
+|g^{\bullet}|>1
+}
+\tag{WF-G2}
+\]
+
+\section{Gateway Types}
+
+The gateway types considered in the current profile are
+\[
+\boxed{
+\GType=\{\mathit{Exclusive},\mathit{Inclusive},\mathit{Parallel}\}.
+}
+\]
+Each gateway has exactly one type:
+\[
+\boxed{
+\gtype:G\rightarrow\GType.
+}
+\]
+The operational effect of each gateway type is captured later by $\NextB$.
+
+\section{BPMN Process State}
+
+A transition configuration is a non-empty set
+\[
+\boxed{\varnothing\neq\sigma_T\subseteq T.}
+\]
+A BPMN process state is denoted by
+\[
+\boxed{m(\sigma_T).}
+\]
+For ordinary transitions,
+\[
+\boxed{
+t\in\sigma_T
+\iff
+t\text{ is currently activated and ready to be executed at }m(\sigma_T).
+}
+\]
+An End Event contained in $\sigma_T$ denotes that the corresponding process branch has reached an End Event; End Events are terminal and are not executed further.
+
+\section{Initial and Final States}
+
+All Start Events constitute the initial transition configuration:
+\[
+\boxed{\sigma_T^{0}=\StartE}
+\]
+and therefore
+\[
+\boxed{m_0=m(\StartE).}
+\]
+No empty initial marking is required.
+
+A state is considered a final process state exactly when all End Events have been reached:
+\[
+\boxed{
+\mathit{Final}_B\bigl(m(\sigma_T)\bigr)
+\iff
+\EndE\subseteq\sigma_T.
+}
+\tag{FINAL}
+\]
+Before all End Events have been reached, an individual End Event may coexist with other activated transitions. Once the process is final, no non-End transition may remain activated:
+\[
+\boxed{
+\EndE\subseteq\sigma_T
+\;\Rightarrow\;
+\sigma_T=\EndE.
+}
+\tag{WF-FINAL}
+\]
+
+\section{General State-Transition Rule}
+
+Let
+\[
+\boxed{
+\NextB(t,\sigma_T)\subseteq t^{\bullet}
+}
+\]
+denote the set of successor transitions activated as a consequence of executing $t$. Its precise definition is left to the operational semantics of Activities and Gateway types.
+
+The general process-transition rule is
+\[
+\boxed{
+\frac{t\in\sigma_T\setminus\EndE}
+{m(\sigma_T)
+\xrightarrow{\;t\;}_{B}
+ m\!\left((\sigma_T\setminus\{t\})\cup\NextB(t,\sigma_T)\right)}
+}
+\tag{EXEC}
+\]
+Thus, executing $t$ removes $t$ from the current configuration, preserves all other currently activated transitions, and activates the transitions returned by $\NextB(t,\sigma_T)$.
+
+\section{Process State Space}
+
+The BPMN process-state space is
+\[
+\boxed{
+\Sigma_B
+=
+\{m(\sigma_T)\mid \varnothing\neq\sigma_T\subseteq T\}.
+}
+\]
+Only states satisfying the well-formedness conditions above are considered valid process states.
+
+\end{document}

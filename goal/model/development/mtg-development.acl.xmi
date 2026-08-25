@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<acls:AclModel xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:acls="https://vnu.edu.vn/sme/goal/acl/state/3.0"
+    xsi:schemaLocation="https://vnu.edu.vn/sme/goal/acl/state/3.0 acl-state.ecore"
+    xmi:id="aclModel" name="MeetingSchedulerDevelopment" version="3.0-development">
+
+  <classifiers xsi:type="acls:PrimitiveType" xmi:id="stringType" name="String" kind="String"/>
+  <classifiers xsi:type="acls:PrimitiveType" xmi:id="integerType" name="Integer" kind="Integer"/>
+  <classifiers xsi:type="acls:PrimitiveType" xmi:id="booleanType" name="Boolean" kind="Boolean"/>
+  <classifiers xsi:type="acls:Enumeration" xmi:id="channelType" name="TimetableChannel"
+      literals="none calendar phone"/>
+
+  <!-- Intentional classifiers: one Actor metaclass, three explicit usages. -->
+  <classifiers xsi:type="acls:Actor" xmi:id="personActor" name="Person" kind="individual">
+    <attributes xmi:id="personName" name="name" type="stringType" mutable="false"/>
+    <attributes xmi:id="workingHours" name="workingHours" type="integerType"/>
+  </classifiers>
+  <classifiers xsi:type="acls:Actor" xmi:id="organizationActor" name="MeetingOrganization" kind="collective">
+    <attributes xmi:id="coordinationScore" name="coordinationScore" type="integerType"/>
+  </classifiers>
+  <classifiers xsi:type="acls:Actor" xmi:id="meetingUnitActor" name="MeetingUnit" kind="collective"/>
+  <classifiers xsi:type="acls:Actor" xmi:id="meetingPartyActor" name="MeetingParty" kind="role" abstract="true">
+    <attributes xmi:id="partyContact" name="contact" lower="0" upper="1" type="stringType"/>
+  </classifiers>
+  <classifiers xsi:type="acls:Actor" xmi:id="initiatorActor" name="Initiator" kind="role"/>
+  <classifiers xsi:type="acls:Actor" xmi:id="organizerActor" name="Organizer" kind="role"/>
+  <classifiers xsi:type="acls:Actor" xmi:id="secretaryActor" name="Secretary" kind="role"/>
+  <classifiers xsi:type="acls:Actor" xmi:id="participantActor" name="Participant" kind="role">
+    <attributes xmi:id="participantTimetableCollected" name="timetableCollected" type="booleanType"/>
+    <attributes xmi:id="participantChannel" name="timetableChannel" type="channelType"/>
+    <attributes xmi:id="participantNotified" name="notified" type="booleanType"/>
+    <attributes xmi:id="participantAttended" name="attended" type="booleanType"/>
+  </classifiers>
+
+  <!-- Non-intentional state-bearing classifiers. -->
+  <classifiers xsi:type="acls:Entity" xmi:id="meetingEntity" name="Meeting">
+    <attributes xmi:id="meetingDetailsDecided" name="detailsDecided" type="booleanType"/>
+    <attributes xmi:id="meetingTimeChosen" name="timeChosen" type="booleanType"/>
+    <attributes xmi:id="meetingAnnounced" name="announced" type="booleanType"/>
+  </classifiers>
+  <classifiers xsi:type="acls:Entity" xmi:id="calendarEntity" name="Calendar">
+    <attributes xmi:id="calendarAvailable" name="available" type="booleanType"/>
+  </classifiers>
+  <classifiers xsi:type="acls:Entity" xmi:id="requestEntity" name="MeetingRequest">
+    <attributes xmi:id="requestSubject" name="subject" type="stringType"/>
+  </classifiers>
+
+  <!-- Composition replaces the former Group Owner relation. -->
+  <relationships xsi:type="acls:Composition" xmi:id="organizationUnits" name="organizationUnits">
+    <memberEnds roleName="organization" lower="1" upper="1" target="organizationActor"/>
+    <memberEnds roleName="units" lower="1" upper="-1" target="meetingUnitActor"/>
+  </relationships>
+  <relationships xsi:type="acls:Composition" xmi:id="unitInitiators" name="unitInitiators">
+    <memberEnds roleName="unit" lower="1" upper="1" target="meetingUnitActor"/>
+    <memberEnds roleName="initiators" lower="1" upper="1" target="initiatorActor"/>
+  </relationships>
+  <relationships xsi:type="acls:Composition" xmi:id="unitOrganizers" name="unitOrganizers">
+    <memberEnds roleName="unit" lower="1" upper="1" target="meetingUnitActor"/>
+    <memberEnds roleName="organizers" lower="1" upper="1" target="organizerActor"/>
+  </relationships>
+  <relationships xsi:type="acls:Composition" xmi:id="unitSecretaries" name="unitSecretaries">
+    <memberEnds roleName="unit" lower="1" upper="1" target="meetingUnitActor"/>
+    <memberEnds roleName="secretaries" lower="0" upper="1" target="secretaryActor"/>
+  </relationships>
+  <relationships xsi:type="acls:Composition" xmi:id="unitParticipants" name="unitParticipants">
+    <memberEnds roleName="unit" lower="1" upper="1" target="meetingUnitActor"/>
+    <memberEnds roleName="participants" lower="1" upper="-1" target="participantActor"/>
+  </relationships>
+  <relationships xsi:type="acls:Composition" xmi:id="unitMeetings" name="unitMeetings">
+    <memberEnds roleName="unit" lower="1" upper="1" target="meetingUnitActor"/>
+    <memberEnds roleName="meetings" lower="1" upper="-1" target="meetingEntity"/>
+  </relationships>
+
+  <!-- A regular association records enactment; its occurrences may change while role slots persist. -->
+  <relationships xsi:type="acls:Association" xmi:id="enactsMeetingParty" name="enactsMeetingParty">
+    <memberEnds roleName="bearer" lower="1" upper="1" target="personActor"/>
+    <memberEnds roleName="position" lower="0" upper="-1" target="meetingPartyActor"/>
+  </relationships>
+  <relationships xsi:type="acls:Aggregation" xmi:id="participantCalendars" name="participantCalendars">
+    <memberEnds roleName="user" lower="1" upper="1" target="participantActor"/>
+    <memberEnds roleName="calendar" lower="0" upper="1" target="calendarEntity"/>
+  </relationships>
+
+  <generalizations specific="initiatorActor" general="meetingPartyActor"/>
+  <generalizations specific="organizerActor" general="meetingPartyActor"/>
+  <generalizations specific="secretaryActor" general="meetingPartyActor"/>
+  <generalizations specific="participantActor" general="meetingPartyActor"/>
+
+  <compatibilities name="initiatorMayParticipate" scope="meetingUnitActor"
+      left="initiatorActor" right="participantActor"/>
+  <compatibilities name="organizerMayBeSecretary" scope="meetingUnitActor"
+      left="organizerActor" right="secretaryActor"/>
+</acls:AclModel>

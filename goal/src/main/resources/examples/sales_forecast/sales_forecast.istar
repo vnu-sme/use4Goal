@@ -1,0 +1,145 @@
+// Intentional slice of the Sales Forecast case.  Deliberately no Hurt/Break
+// edges are copied from the source paper: the point of this reconstruction is
+// to let the shared ACL state expose which concrete execution violates which
+// intention, rather than encoding the answer in advance.
+istar SalesForecastGoals {
+
+  role Management {
+    goal SalesRiskControlled : Maintain
+
+    goal OnlyApprovedProposalSent : Maintain
+      > SalesRiskControlled
+    condition {[
+      not self.group.proposalSent
+      or (
+        self.group.sentRevision = self.group.approvedRevision
+        and self.group.sentRevision = self.group.currentRevision
+      )
+    ]}
+
+    goal RiskyCommitmentAvoided : Maintain
+      > SalesRiskControlled
+    condition {[
+      not self.group.proposalSent
+      or self.group.sentRevision = self.group.approvedRevision
+    ]}
+  }
+
+  role CustomerManager {
+    // AND tree: a completed customer response must be delivered, compliant,
+    // timely, and satisfactory.  The official process can complete while the
+    // timely/satisfactory leaves remain false for a tight deadline.
+    goal CustomerRelationshipMaintained : Achieve
+
+    goal ProposalDelivered : Achieve
+      > CustomerRelationshipMaintained
+    condition {[
+      self.group.proposalSent
+    ]}
+
+    goal ProposalCompliant : Achieve
+      > CustomerRelationshipMaintained
+    condition {[
+      self.group.proposalSent
+      and self.group.sentRevision = self.group.approvedRevision
+      and self.group.sentRevision = self.group.currentRevision
+    ]}
+
+    goal RespondQuicklyAndFlexibly : Achieve
+      > CustomerRelationshipMaintained
+    condition {[
+      self.group.proposalSent
+      and self.group.sentWithinWindow
+    ]}
+
+    goal CustomerSatisfied : Achieve
+      > CustomerRelationshipMaintained
+    condition {[
+      self.group.proposalSent
+      and self.group.sentWithinWindow
+    ]}
+
+    task ObtainApproval
+    pre {[
+      self.group.proposalPrepared
+      and self.group.approvalRequested
+    ]}
+    post {[
+      self.group.approvalStatus = #approved
+      and self.group.approvedRevision = self.group.currentRevision
+    ]}
+
+    // This task is an operational leaf, not a second decomposition of the
+    // state-based ProposalDelivered goal.  The BPMN activity performs it;
+    // the goal independently observes the resulting shared state.
+    task SendApprovedProposal
+    pre {[
+      self.group.approvalStatus = #approved
+      and self.group.approvedRevision = self.group.currentRevision
+    ]}
+    post {[
+      self.group.proposalSent
+      and self.group.sentRevision = self.group.currentRevision
+      and self.group.approvalStatus = #approved
+      and self.group.approvedRevision = self.group.currentRevision
+    ]}
+
+    // Observed workaround.  It is intentionally not connected by a negative
+    // contribution: its consequences are evaluated from ACL state.
+    task SendUnapprovedProposal
+    pre {[
+      self.group.proposalPrepared
+      and self.group.approvalStatus = #draft
+    ]}
+    post {[
+      self.group.proposalSent
+      and self.group.sentRevision = self.group.currentRevision
+      and self.group.approvalStatus = #draft
+    ]}
+  }
+
+  role Approver {
+    goal ApprovalProvided : Achieve
+
+    goal ProposalReviewed : Achieve
+      > ApprovalProvided
+    condition {[
+      self.group.reviewCompleted
+    ]}
+
+    goal ApprovalDecisionRecorded : Achieve
+      > ApprovalProvided
+    condition {[
+      self.group.approvalStatus = #approved
+      or self.group.approvalStatus = #rejected
+    ]}
+
+    task ReviewAndApprove
+    pre {[
+      self.group.approvalRequested
+      and self.authorised
+    ]}
+    post {[
+      self.group.approvalStatus = #approved
+      and self.group.approvedRevision = self.group.currentRevision
+    ]}
+  }
+
+  role Customer {
+    goal ApprovedProposalReceived : Achieve
+    condition {[
+      self.group.proposalSent
+      and self.group.sentRevision = self.group.approvedRevision
+    ]}
+  }
+
+  // Management delegates approved delivery to the Customer Manager.
+  depend Management.OnlyApprovedProposalSent
+    -> goal ApprovedProposalDelivery
+    -> CustomerManager.SendApprovedProposal
+
+  // The Customer Manager depends on an authorised approver for the decision.
+  depend CustomerManager.ObtainApproval
+    -> task ApprovalDecision
+    -> Approver.ReviewAndApprove
+}

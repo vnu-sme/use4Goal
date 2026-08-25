@@ -2,7 +2,8 @@ package org.vnu.sme.goal.dsl.acl.mm;
 
 import java.util.Objects;
 
-/** Group ownership of a Role or child Group. Rendered solid with a small square at the parent Group. */
+/** @deprecated Projection of a Group composition retained for legacy translators. */
+@Deprecated(forRemoval = false)
 public record AclOwner(String sourceGroup, String target, AclCardinality multiplicity) {
     public AclOwner {
         Objects.requireNonNull(sourceGroup, "sourceGroup");

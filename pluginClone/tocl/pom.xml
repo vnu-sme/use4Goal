@@ -35,11 +35,6 @@
 			<artifactId>antlr4-maven-plugin</artifactId>
 			<version>4.9.3</version>
 		</dependency>
-		<dependency>
-			<groupId>org.tzi.use</groupId>
-			<artifactId>filmstrip</artifactId>
-			<version>7.1.1</version>
-		</dependency>
 	</dependencies>
 	<packaging>jar</packaging>
 
@@ -189,12 +184,6 @@
 										<include>org/antlr/**</include>
 									</includes>
 								</filter>
-								<filter>
-									<artifact>*:filmstrip</artifact>
-									<includes>
-										<include>org/tzi/use/**</include>
-									</includes>
-								</filter>
 							</filters>
 						</configuration>
 					</execution>
@@ -215,11 +204,14 @@
 						</goals>
 						<configuration>
 							<target>
-<!--								<copy file="${project.build.directory}/${project.build.finalName}.jar"-->
-<!--									  tofile="../use/use-assembly/target/use-7.1.1/lib/plugins/${project.build.finalName}.jar"-->
-<!--								      overwrite="true"/>-->
 								<copy file="${project.build.directory}/${project.build.finalName}-complete.jar"
 									  tofile="../use-main/use-assembly/target/extracted/use-7.1.1/lib/plugins/${project.build.finalName}-complete.jar"
+									  overwrite="true"/>
+								<copy file="${project.build.directory}/${project.build.finalName}-complete.jar"
+									  tofile="../../use/use-assembly/src/main/resources/plugins/${project.build.finalName}-complete.jar"
+									  overwrite="true"/>
+								<copy file="${project.build.directory}/${project.build.finalName}-complete.jar"
+									  tofile="../../use/use-assembly/target/use-7.1.1/lib/plugins/${project.build.finalName}-complete.jar"
 									  overwrite="true"/>
 							</target>
 						</configuration>

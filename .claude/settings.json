@@ -24,5 +24,21 @@
         ]
       }
     ]
+  },
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Bash(mvn -q -o compile *)",
+      "Bash(command grep *)",
+      "Bash(mvn -q -o test *)",
+      "Bash(unzip -l *)",
+      "Bash(hyprctl clients*)",
+      "Bash(pacman -Q*)",
+      "mcp__code-review-graph__semantic_search_nodes_tool",
+      "Bash(mvn -q -o test-compile *)",
+      "Bash(journalctl -b --no-pager -k *)",
+      "Bash(command -v *)",
+      "Bash(rtk find *)"
+    ]
   }
 }

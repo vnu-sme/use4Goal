@@ -1,0 +1,169 @@
+-- Generated from ACL. Regenerate instead of editing this file.
+-- Role 'extends' is a play chain (Owner[1]--Role[mult] association), not USE
+-- generalization: no two Role classes are ever related by '<'. Every generated
+-- class has a technical id : Integer used to preserve object identity in filmstrips.
+-- Every play association is parent[1]--child[0..*].
+-- Compatibility is 'inv NoConflict_<R1>_<R2>' on the nearest shared play-chain
+-- ancestor; every Owner-target Role also gets 'inv NoSelfConflict_<R>'.
+
+model ClassroomGoals_ClassroomProcess_Verification
+
+enum AttendanceMethod {none, manual, electronic}
+
+class Agent
+attributes
+  id : Integer
+end
+
+class Person
+attributes
+  id : Integer
+end
+
+class Teacher
+attributes
+  id : Integer
+  attendanceStarted : Boolean
+operations
+  ClassCompleted_condition() : Boolean =
+    self.LessonDelivered_condition() and self.AttendanceSummaryRecorded_condition()
+  LessonDelivered_condition() : Boolean =
+    self.classroom.lessonDelivered
+  AttendanceSummaryRecorded_condition() : Boolean =
+    self.RecordAttendanceManually_postHolds() or self.RecordAttendanceElectronically_postHolds()
+  RecordAttendanceManually_preHolds() : Boolean =
+    self.classroom.lessonStarted
+      and self.attendanceStarted
+  RecordAttendanceManually_postHolds() : Boolean =
+    self.classroom.attendanceRecorded
+      and self.classroom.attendanceMethod = #manual
+  RecordAttendanceElectronically_preHolds() : Boolean =
+    self.classroom.lessonStarted
+      and self.attendanceStarted
+  RecordAttendanceElectronically_postHolds() : Boolean =
+    self.classroom.attendanceRecorded
+      and self.classroom.attendanceMethod = #electronic
+  classroomReady()
+  beginLesson()
+  recordAttendanceElectronically()
+  deliverLesson()
+  classFinished()
+end
+
+class Student
+attributes
+  id : Integer
+  present : Boolean
+  attendanceMarked : Boolean
+operations
+  ParticipatesInClass_condition() : Boolean =
+    self.AttendanceMarked_condition() and self.PresentForLesson_condition()
+  AttendanceMarked_condition() : Boolean =
+    self.attendanceMarked
+  PresentForLesson_condition() : Boolean =
+    self.present
+      and self.classroom.lessonDelivered
+  attendLesson()
+end
+
+class Classroom
+attributes
+  id : Integer
+  lessonStarted : Boolean
+  attendanceRecorded : Boolean
+  attendanceMethod : AttendanceMethod
+  lessonDelivered : Boolean
+end
+
+association Agent_plays_Person between
+  Agent[1] role agent
+  Person[0..*] role play_person
+end
+
+association Person_plays_Teacher between
+  Person[1] role person
+  Teacher[0..*] role play_teacher
+end
+
+association Person_plays_Student between
+  Person[1] role person
+  Student[0..*] role play_student
+end
+
+composition Teacher_in_Classroom between
+  Classroom[1] role classroom
+  Teacher[1] role teacher
+end
+
+composition Student_in_Classroom between
+  Classroom[1] role classroom
+  Student[1..*] role student
+end
+
+constraints
+
+context Person inv NoSelfConflict_Teacher:
+  self.play_teacher->forAll(r1, r2 : Teacher |
+    r1 <> r2 implies r1.classroom <> r2.classroom)
+
+context Person inv NoSelfConflict_Student:
+  self.play_student->forAll(r1, r2 : Student |
+    r1 <> r2 implies r1.classroom <> r2.classroom)
+
+context Person inv NoConflict_Teacher_Student:
+self.play_teacher->forAll(r1 : Teacher |
+self.play_student->forAll(r2 : Student |
+      not (r1.classroom = r2.classroom)))
+
+constraints
+
+-- ===== ACL compatibility constraints already included above =====
+
+-- ===== iStar Goal conditions and Task pre/post predicates are class operations, declared above on each host class (see USE 'operations' section) =====
+
+-- ===== TOCL temporal goal properties are in the companion .tocl file =====
+-- (load it via the TOCL plugin; see 'always'/'sometime')
+
+
+constraints
+
+-- ===== BPMN operation contracts, hosted by lane Roles =====
+
+context Teacher::classroomReady()
+  pre BPMN_TeachingSession_classroomReady_DomainPre:
+    not self.classroom.lessonStarted
+      and not self.classroom.attendanceRecorded
+      and not self.classroom.lessonDelivered
+
+context Teacher::beginLesson()
+  post BPMN_TeachingSession_beginLesson_DomainPost:
+    self.classroom.lessonStarted
+      and self.classroom.teacher.attendanceStarted
+
+context Teacher::recordAttendanceElectronically()
+  pre BPMN_TeachingSession_recordAttendanceElectronically_DomainPre:
+    self.classroom.lessonStarted
+      and self.classroom.teacher.attendanceStarted
+  post BPMN_TeachingSession_recordAttendanceElectronically_DomainPost:
+    self.classroom.attendanceRecorded
+      and self.classroom.attendanceMethod = #electronic
+      and self.classroom.student->forAll(student |
+        student.attendanceMarked)
+
+context Teacher::deliverLesson()
+  pre BPMN_TeachingSession_deliverLesson_DomainPre:
+    self.classroom.attendanceRecorded
+  post BPMN_TeachingSession_deliverLesson_DomainPost:
+    self.classroom.lessonDelivered
+
+context Student::attendLesson()
+  pre BPMN_TeachingSession_attendLesson_DomainPre:
+    self.classroom.lessonDelivered
+  post BPMN_TeachingSession_attendLesson_DomainPost:
+    self.classroom.student->forAll(student |
+        student.present)
+
+context Teacher::classFinished()
+  pre BPMN_TeachingSession_classFinished_Enabled:
+    true
+

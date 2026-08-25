@@ -10,17 +10,10 @@ import org.vnu.sme.goal.verify.conformance.semantics.GoalTaskStatus;
 import org.vnu.sme.goal.verify.conformance.semantics.IStarMarking;
 import org.vnu.sme.goal.verify.conformance.semantics.IStarPropagation;
 import org.vnu.sme.goal.verify.conformance.semantics.QualityStatus;
-import org.vnu.sme.goal.verify.conformance.semantics.ObstacleStatus;
-import org.vnu.sme.goal.dsl.istar.mm.Actor;
-import org.vnu.sme.goal.dsl.istar.mm.ForRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.GoalModel;
 import org.vnu.sme.goal.dsl.istar.mm.GoalTaskElement;
 import org.vnu.sme.goal.dsl.istar.mm.IntentionalElement;
-import org.vnu.sme.goal.dsl.istar.mm.Obstacle;
-import org.vnu.sme.goal.dsl.istar.mm.ParameterRefinement;
-import org.vnu.sme.goal.dsl.istar.mm.PickRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Quality;
-import org.vnu.sme.goal.dsl.istar.mm.Refinement;
 import org.vnu.sme.goal.dsl.istar.parser.IStarCompiler;
 import org.vnu.sme.goal.dsl.iscn.goalmodelinstance.parser.GoalModelInstanceEvaluation;
 import org.vnu.sme.goal.dsl.iscn.goalmodelinstance.parser.GoalModelInstanceTranslator;
@@ -166,7 +159,6 @@ public final class IStarScenarioCompiler {
             markings.put(instanceId, marking);
         }
 
-        applyParameterRefinementAggregation(model, markings, instanceActorType, allInstances);
         broadcastSingletonActorFacts(model, markings, instanceActorType, allInstances);
 
         return new Result(model, modelFile, scenario, markings, evaluation.aggregates(), evaluation, Collections.emptyList());
@@ -183,52 +175,13 @@ public final class IStarScenarioCompiler {
     }
 
     /**
-     * Rolls a forall/pick-quantified child up into its parent, across the declared instances
-     * of the quantifying ActorType, and writes the result into the parent's owning actor's own
-     * instance(s) -- the piece {@link IStarPropagation#saturate} cannot do on its own, since it
-     * only ever sees one flat, per-instance marking and has no notion of "the child's value in
-     * every OTHER instance's own trace". Without this, a forall/pick-quantified goal's owning
-     * actor (e.g. Initiator, for ParticipantAttended -> forall Participant ->
-     * ParticipantsAttended) would never see its own top-level goal (MeetingOrganized) become
-     * Fulfilled in its OWN private trace, even once every participant's own trace individually
-     * satisfies the per-participant condition -- exactly the gap {@code GoalModelInstanceTranslator}
-     * already closes for the SR diagram, just not, until now, for this per-instance report.
-     */
-    private static void applyParameterRefinementAggregation(GoalModel model, Map<String, IStarMarking> markings,
-                                                             Map<String, String> instanceActorType,
-                                                             List<String> allInstances) {
-        Map<String, List<String>> instancesByType = new LinkedHashMap<>();
-        for (String id : allInstances) {
-            instancesByType.computeIfAbsent(instanceActorType.get(id), k -> new ArrayList<>()).add(id);
-        }
-
-        for (Actor actor : model.getActors()) {
-            for (Refinement ref : actor.refinements()) {
-                if (!(ref instanceof ParameterRefinement pr)) continue;
-
-                List<String> universe = instancesByType.getOrDefault(pr.actorType(), List.of());
-                GoalTaskStatus aggregate = IStarPropagation.aggregateQuantified(
-                        pr instanceof ForRefinement,
-                        universe.stream().map(id -> markings.get(id).goalTaskStatus(pr.child())).toList());
-
-                String ownerType = model.ownerOf(pr.parent()).orElse(null);
-                for (String ownerInstance : instancesByType.getOrDefault(ownerType, List.of())) {
-                    markings.put(ownerInstance, IStarPropagation.assignGoalTask(model, markings.get(ownerInstance),
-                            pr.parent(), aggregate));
-                }
-            }
-        }
-    }
-
-    /**
-     * A singleton actor's own facts (including ones only just derived by
-     * {@link #applyParameterRefinementAggregation}, e.g. SchedulingCompleted) are, in effect,
-     * exactly the kind of "fact shared by the whole scenario" {@link #appliesTo} already
-     * broadcasts for a literal unqualified fire/assign -- there is only one instance of that
-     * actor type, so nothing was ever really "qualified" about them in the first place. Without
-     * this, a singleton actor's fully-propagated state (not just its literally fired/assigned
-     * leaves) would only ever show up in that one instance's own trace, never in any other
-     * declared instance's private trace.
+     * A singleton actor's own facts are, in effect, exactly the kind of "fact shared by the
+     * whole scenario" {@link #appliesTo} already broadcasts for a literal unqualified
+     * fire/assign -- there is only one instance of that actor type, so nothing was ever really
+     * "qualified" about them in the first place. Without this, a singleton actor's
+     * fully-propagated state (not just its literally fired/assigned leaves) would only ever
+     * show up in that one instance's own trace, never in any other declared instance's private
+     * trace.
      */
     private static void broadcastSingletonActorFacts(GoalModel model, Map<String, IStarMarking> markings,
                                                       Map<String, String> instanceActorType, List<String> allInstances) {
@@ -271,9 +224,8 @@ public final class IStarScenarioCompiler {
         Optional<IntentionalElement> elem = model.findElement(elementId);
         if (elem.isEmpty()) {
             errors.add("semantic: " + verb + " '" + elementId + "' — no such element in '" + modelFile + "'");
-        } else if (verb.equals("fire") && !(elem.get() instanceof GoalTaskElement)
-                && !(elem.get() instanceof Obstacle)) {
-            errors.add("semantic: fire '" + elementId + "' — only Goal/Task or Obstacle can be fired, found "
+        } else if (verb.equals("fire") && !(elem.get() instanceof GoalTaskElement)) {
+            errors.add("semantic: fire '" + elementId + "' — only Goal/Task can be fired, found "
                     + elem.get().getClass().getSimpleName());
         }
     }
@@ -283,10 +235,8 @@ public final class IStarScenarioCompiler {
         if (elem.isEmpty()) return; // already reported by validateQualifiedTarget
         boolean isQuality = elem.get() instanceof Quality;
         boolean isGoalTask = elem.get() instanceof GoalTaskElement;
-        boolean isObstacle = elem.get() instanceof Obstacle;
         boolean valueIsBoolean = a.statusValue().equals("True") || a.statusValue().equals("False");
         boolean valueIsGoalTask = a.statusValue().equals("Fulfilled") || a.statusValue().equals("Pending");
-        boolean valueIsObstacle = a.statusValue().equals("Active") || a.statusValue().equals("Resolved");
 
         if (isQuality && !valueIsBoolean) {
             errors.add("semantic: assign '" + a.elementId() + "' = " + a.statusValue()
@@ -294,12 +244,9 @@ public final class IStarScenarioCompiler {
         } else if (isGoalTask && !valueIsGoalTask) {
             errors.add("semantic: assign '" + a.elementId() + "' = " + a.statusValue()
                     + " — a Goal/Task can only be assigned Fulfilled/Pending");
-        } else if (isObstacle && !valueIsObstacle) {
-            errors.add("semantic: assign '" + a.elementId() + "' = " + a.statusValue()
-                    + " — an Obstacle can only be assigned Active/Resolved");
-        } else if (!isQuality && !isGoalTask && !isObstacle) {
+        } else if (!isQuality && !isGoalTask) {
             errors.add("semantic: assign '" + a.elementId()
-                    + "' — target must be a Goal/Task, Quality or Obstacle, found "
+                    + "' — target must be a Goal/Task or Quality, found "
                     + elem.get().getClass().getSimpleName());
         }
     }
@@ -326,8 +273,6 @@ public final class IStarScenarioCompiler {
             case "Pending"   -> IStarPropagation.assignGoalTask(model, marking, a.elementId(), GoalTaskStatus.PENDING);
             case "True"      -> IStarPropagation.assignQuality(model, marking, a.elementId(), QualityStatus.TRUE);
             case "False"     -> IStarPropagation.assignQuality(model, marking, a.elementId(), QualityStatus.FALSE);
-            case "Active"    -> IStarPropagation.assignObstacle(model, marking, a.elementId(), ObstacleStatus.ACTIVE);
-            case "Resolved"  -> IStarPropagation.assignObstacle(model, marking, a.elementId(), ObstacleStatus.RESOLVED);
             default -> throw new IllegalStateException("Unknown status value: " + a.statusValue());
         };
     }

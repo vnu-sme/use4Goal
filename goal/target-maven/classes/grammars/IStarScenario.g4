@@ -1,6 +1,6 @@
 grammar IStarScenario;
 
-@header { package org.vnu.sme.goal.iscn.parser; }
+@header { package org.vnu.sme.goal.dsl.iscn.parser; }
 
 // =====================================================================
 //  i* Scenario — a SOIL-style instance script for an i* 2.0 goal model.
@@ -47,7 +47,6 @@ grammar IStarScenario;
 //
 //      fire c1.SubmitApplication;
 //      assign c1.ReviewDelegatedToManager = Fulfilled;
-//
 //      aggregate AllHired : all of Candidate over TeamQuality;
 //    }
 //

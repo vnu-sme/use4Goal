@@ -11,25 +11,19 @@ import org.vnu.sme.goal.verify.conformance.semantics.GoalTaskStatus;
 import org.vnu.sme.goal.verify.conformance.semantics.IStarMarking;
 import org.vnu.sme.goal.verify.conformance.semantics.IStarPropagation;
 import org.vnu.sme.goal.verify.conformance.semantics.QualityStatus;
-import org.vnu.sme.goal.verify.conformance.semantics.ObstacleStatus;
 import org.vnu.sme.goal.dsl.istar.mm.Actor;
 import org.vnu.sme.goal.dsl.istar.mm.Agent;
 import org.vnu.sme.goal.dsl.istar.mm.AndRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Contribution;
 import org.vnu.sme.goal.dsl.istar.mm.Dependency;
-import org.vnu.sme.goal.dsl.istar.mm.ForRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Goal;
 import org.vnu.sme.goal.dsl.istar.mm.GoalModel;
 import org.vnu.sme.goal.dsl.istar.mm.GoalTaskElement;
 import org.vnu.sme.goal.dsl.istar.mm.IntentionalElement;
-import org.vnu.sme.goal.dsl.istar.mm.Obstacle;
-import org.vnu.sme.goal.dsl.istar.mm.Obstruction;
 import org.vnu.sme.goal.dsl.istar.mm.OrRefinement;
-import org.vnu.sme.goal.dsl.istar.mm.PickRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Quality;
 import org.vnu.sme.goal.dsl.istar.mm.Refinement;
 import org.vnu.sme.goal.dsl.istar.mm.Resource;
-import org.vnu.sme.goal.dsl.istar.mm.Resolution;
 import org.vnu.sme.goal.dsl.istar.mm.Role;
 import org.vnu.sme.goal.dsl.istar.mm.Task;
 import org.vnu.sme.goal.dsl.iscn.mm.AggregateMode;
@@ -48,8 +42,7 @@ import org.vnu.sme.goal.dsl.iscn.mm.ScenarioStmt;
  *   <li>create one concrete actor box per {@code instance ... : ActorType};</li>
  *   <li>find root intentional elements per source actor;</li>
  *   <li>walk root-first/top-down, carrying a binding stack;</li>
- *   <li>{@code forall} becomes one AND edge to all bound children, {@code pick} becomes OR
- *       edges to the bound children;</li>
+ *   <li>AND/OR refinements replicate within the same actor instance's stack;</li>
  *   <li>each occurrence remembers its source element id and binding stack;</li>
  *   <li>only after the instance graph exists do we execute {@code fire}/{@code assign}.</li>
  * </ol>
@@ -75,7 +68,6 @@ public final class GoalModelInstanceTranslator {
         Builder builder = new Builder(source, scenario, contextMatcher);
         builder.instantiateActors();
         builder.instantiateIntentionalTrees();
-        builder.instantiateObstacleRelations();
         builder.instantiateDependencyEndpoints();
         builder.instantiateContributions();
         builder.instantiateDependencies();
@@ -125,13 +117,10 @@ public final class GoalModelInstanceTranslator {
                     switch (r) {
                         case AndRefinement and -> childIds.addAll(and.children());
                         case OrRefinement or -> childIds.add(or.child());
-                        case ForRefinement f -> childIds.add(f.child());
-                        case PickRefinement p -> childIds.add(p.child());
                     }
                 }
             }
             for (Dependency d : source.getDependencies()) {
-                if (d.dependum() != null) dependencyTargetIds.add(d.dependum());
                 if (d.dependeeElmt() != null) dependencyTargetIds.add(d.dependeeElmt());
             }
             if (scenario.instances().isEmpty()) {
@@ -197,21 +186,6 @@ public final class GoalModelInstanceTranslator {
                         Occurrence child = walk(or.child(), stack);
                         addRefinement(parent.ownerActorId(), new OrRefinement(parent.id(), child.id()));
                     }
-                    case ForRefinement f -> {
-                        List<String> children = new ArrayList<>();
-                        for (String instanceId : instancesByType.getOrDefault(f.actorType(), List.of())) {
-                            if (!compatibleWithStack(stack, f.actorType(), instanceId)) continue;
-                            children.add(walk(f.child(), stack.push(f.actorType(), instanceId)).id());
-                        }
-                        addRefinement(parent.ownerActorId(), new AndRefinement(parent.id(), children));
-                    }
-                    case PickRefinement p -> {
-                        for (String instanceId : instancesByType.getOrDefault(p.actorType(), List.of())) {
-                            if (!compatibleWithStack(stack, p.actorType(), instanceId)) continue;
-                            Occurrence child = walk(p.child(), stack.push(p.actorType(), instanceId));
-                            addRefinement(parent.ownerActorId(), new OrRefinement(parent.id(), child.id()));
-                        }
-                    }
                 }
             }
             return parent;
@@ -221,15 +195,13 @@ public final class GoalModelInstanceTranslator {
             String key = switch (refinement) {
                 case AndRefinement and -> ownerActorId + "|AND|" + and.parent() + "|" + String.join(",", and.children());
                 case OrRefinement or -> ownerActorId + "|OR|" + or.parent() + "|" + or.child();
-                case ForRefinement forR -> ownerActorId + "|FOR|" + forR.parent() + "|" + forR.actorType() + "|" + forR.child();
-                case PickRefinement pick -> ownerActorId + "|PICK|" + pick.parent() + "|" + pick.actorType() + "|" + pick.child();
             };
             if (refinementKeys.add(key)) bucket(ownerActorId).refinements.add(refinement);
         }
 
         void instantiateDependencyEndpoints() {
             for (Dependency d : source.getDependencies()) {
-                List<String> ids = nonNull(d.dependerElmt(), d.dependum(), d.dependeeElmt());
+                List<String> ids = nonNull(d.dependerElmt(), d.dependeeElmt());
                 if (ids.isEmpty()) continue;
                 for (BindingStack stack : compatibleStacks(ids)) {
                     for (String id : ids) instantiateFromContext(id, stack);
@@ -260,14 +232,6 @@ public final class GoalModelInstanceTranslator {
             }
         }
 
-        private boolean compatibleWithStack(BindingStack stack, String actorType, String instanceId) {
-            for (Binding binding : stack.entries()) {
-                if (!contextMatcher.sharesContext(binding.actorType(), binding.instanceId(),
-                        actorType, instanceId)) return false;
-            }
-            return true;
-        }
-
         void instantiateContributions() {
             for (Actor actor : source.getActors()) {
                 for (Contribution c : actor.contributions()) {
@@ -281,40 +245,17 @@ public final class GoalModelInstanceTranslator {
             }
         }
 
-        void instantiateObstacleRelations() {
-            for (Actor actor : source.getActors()) {
-                for (Obstruction relation : actor.obstructions()) {
-                    for (BindingStack stack : compatibleStacks(
-                            List.of(relation.obstacle(), relation.element()))) {
-                        Occurrence obstacle = instantiateFromContext(relation.obstacle(), stack);
-                        Occurrence element = instantiateFromContext(relation.element(), stack);
-                        bucket(obstacle.ownerActorId()).obstructions.add(
-                                new Obstruction(obstacle.id(), element.id()));
-                    }
-                }
-                for (Resolution relation : actor.resolutions()) {
-                    for (BindingStack stack : compatibleStacks(
-                            List.of(relation.element(), relation.obstacle()))) {
-                        Occurrence element = instantiateFromContext(relation.element(), stack);
-                        Occurrence obstacle = instantiateFromContext(relation.obstacle(), stack);
-                        bucket(element.ownerActorId()).resolutions.add(
-                                new Resolution(element.id(), obstacle.id()));
-                    }
-                }
-            }
-        }
-
         void instantiateDependencies() {
             for (Dependency d : source.getDependencies()) {
-                List<String> ids = nonNull(d.dependerElmt(), d.dependum(), d.dependeeElmt());
+                List<String> ids = nonNull(d.dependerElmt(), d.dependeeElmt());
                 for (BindingStack stack : compatibleStacks(ids)) {
                     String dependerActor = actorIdFor(d.depender(), stack);
                     String dependeeActor = actorIdFor(d.dependee(), stack);
                     String dependerElement = d.dependerElmt() == null ? null : instantiateFromContext(d.dependerElmt(), stack).id();
-                    String dependum = instantiateFromContext(d.dependum(), stack).id();
                     String dependeeElement = d.dependeeElmt() == null ? null : instantiateFromContext(d.dependeeElmt(), stack).id();
+                    String dependumId = occurrenceId(d.dependum().id(), stack);
                     addDependency(dependerActor, new Dependency(dependerActor, dependerElement,
-                            d.dependumKind(), dependum, dependeeActor, dependeeElement));
+                            copyElement(d.dependum(), dependumId), dependeeActor, dependeeElement));
                 }
             }
         }
@@ -323,8 +264,7 @@ public final class GoalModelInstanceTranslator {
             String key = String.join("|",
                     dependency.depender(),
                     dependency.dependerElmt() == null ? "" : dependency.dependerElmt(),
-                    dependency.dependumKind(),
-                    dependency.dependum(),
+                    dependency.dependum().id(),
                     dependency.dependee(),
                     dependency.dependeeElmt() == null ? "" : dependency.dependeeElmt());
             if (dependencyKeys.add(key)) bucket(dependerActor).dependencies.add(dependency);
@@ -388,11 +328,9 @@ public final class GoalModelInstanceTranslator {
                 Actor sourceActor = actors.get(actorType);
                 Actor actor = sourceActor instanceof Role
                         ? new Role(actorId, new ArrayList<>(bucket.elements.values()), bucket.refinements,
-                                bucket.contributions, List.of(), List.of(), bucket.obstructions,
-                                bucket.resolutions, List.of())
+                                bucket.contributions, List.of(), List.of(), List.of())
                         : new Agent(actorId, new ArrayList<>(bucket.elements.values()), bucket.refinements,
-                                bucket.contributions, List.of(), List.of(), bucket.obstructions,
-                                bucket.resolutions, List.of());
+                                bucket.contributions, List.of(), List.of(), List.of());
                 out.addActor(actor);
                 for (Dependency d : bucket.dependencies) out.addDependency(d);
             }
@@ -479,8 +417,6 @@ public final class GoalModelInstanceTranslator {
             case "Pending" -> IStarPropagation.assignGoalTask(model, marking, id, GoalTaskStatus.PENDING);
             case "True" -> IStarPropagation.assignQuality(model, marking, id, QualityStatus.TRUE);
             case "False" -> IStarPropagation.assignQuality(model, marking, id, QualityStatus.FALSE);
-            case "Active" -> IStarPropagation.assignObstacle(model, marking, id, ObstacleStatus.ACTIVE);
-            case "Resolved" -> IStarPropagation.assignObstacle(model, marking, id, ObstacleStatus.RESOLVED);
             default -> marking;
         };
     }
@@ -492,9 +428,9 @@ public final class GoalModelInstanceTranslator {
         while (changed && steps++ < MAX_DEPENDENCY_STEPS) {
             changed = false;
             for (Dependency d : model.getDependencies()) {
-                if (d.dependerElmt() == null) continue;
+                if (d.dependerElmt() == null || d.dependeeElmt() == null) continue;
                 if (current.goalTaskStatus(d.dependerElmt()) == GoalTaskStatus.FULFILLED) continue;
-                if (current.goalTaskStatus(d.dependum()) == GoalTaskStatus.FULFILLED) {
+                if (current.goalTaskStatus(d.dependeeElmt()) == GoalTaskStatus.FULFILLED) {
                     current = IStarPropagation.assignGoalTask(model, current, d.dependerElmt(), GoalTaskStatus.FULFILLED);
                     changed = true;
                 }
@@ -550,7 +486,6 @@ public final class GoalModelInstanceTranslator {
             case Task t -> marking.goalTaskStatus(id) == GoalTaskStatus.FULFILLED;
             case Quality q -> marking.qualityStatus(id) == QualityStatus.TRUE;
             case Resource r -> false;
-            case Obstacle o -> false;
         };
     }
 
@@ -581,21 +516,22 @@ public final class GoalModelInstanceTranslator {
 
     private static IntentionalElement copyElement(IntentionalElement elem, String id) {
         return switch (elem) {
-            case Goal g -> new Goal(id, g.goalType(), g.constraints());
-            case Task t -> new Task(id, t.constraints());
+            case Goal g -> new Goal(id, g.goalType(),
+                    g.conditions().stream().findFirst().orElse(null));
+            case Task t -> new Task(id,
+                    t.preconditions().stream().findFirst().orElse(null),
+                    t.postconditions().stream().findFirst().orElse(null));
             case Resource r -> new Resource(id);
             case Quality q -> new Quality(id);
-            case Obstacle o -> new Obstacle(id, o.type());
         };
     }
 
     private record ActorBucket(String actorId, Map<String, IntentionalElement> elements,
                                List<Refinement> refinements, List<Contribution> contributions,
-                               List<Dependency> dependencies, List<Obstruction> obstructions,
-                               List<Resolution> resolutions) {
+                               List<Dependency> dependencies) {
         ActorBucket(String actorId) {
             this(actorId, new LinkedHashMap<>(), new ArrayList<>(), new ArrayList<>(),
-                    new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+                    new ArrayList<>());
         }
     }
 

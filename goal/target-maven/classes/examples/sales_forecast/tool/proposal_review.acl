@@ -1,0 +1,88 @@
+// Executable state slice of a price-proposal project.  The model distinguishes
+// the organizational project, its review unit, the proposal, and the concrete
+// document versions produced during review.
+acl v2.0 ProposalReviewState {
+
+  enum ProposalRevision {
+    none,
+    r1,
+    r2
+  }
+
+  // A person must first participate in the enclosing project before taking a
+  // specialized role in its proposal-review unit.  In ACL, specialization is
+  // a play requirement, rather than ordinary object-oriented inheritance.
+  role ProjectMember {
+    participationActive : Boolean default true;
+  }
+
+  role ProposalManager extends ProjectMember {
+    changesIncorporated : Boolean default false;
+    projectClosed : Boolean default false;
+  }
+
+  role CustomerReviewer extends ProjectMember {
+    reviewCompleted : Boolean default false;
+    changesRequested : Boolean default false;
+
+    // Scenario input: true selects the revision branch of the review.
+    reviewRequestsChanges : Boolean default true;
+  }
+
+  // Stable identity of the proposal across all of its document versions.
+  entity Proposal {
+    proposalNumber : String;
+    title : String;
+    currentRevision : ProposalRevision default none;
+  }
+
+  // Each occurrence represents one concrete document version and records the
+  // state of that version, not a summary copied onto the Project Group.
+  entity ProposalVersion {
+    versionNumber : Integer;
+    created : Boolean default false;
+    prepared : Boolean default false;
+    verified : Boolean default false;
+    readerApproved : Boolean default false;
+    finalized : Boolean default false;
+    sent : Boolean default false;
+  }
+
+  // The project owns the base ProjectMember occurrences.  The specialized
+  // roles are deliberately owned by the nested review unit below: an agent
+  // playing either child role must be linked to a ProjectMember occurrence in
+  // this enclosing project.
+  group ProposalProject {
+    projectCode : String;
+    active : Boolean default true;
+
+    ProjectMember [2];
+    ProposalReviewCase [1];
+  }
+
+  group ProposalReviewCase {
+    processStarted : Boolean default false;
+    processCompleted : Boolean default false;
+
+    ProposalManager [1];
+    CustomerReviewer [1];
+  }
+
+  // A review case processes one proposal.  The two version slots bound this
+  // motivating scenario to an original version and one revised version while
+  // still representing both as first-class document entities.
+  composition ReviewCaseProposal {
+    ProposalReviewCase [1] role reviewCase;
+    Proposal [1] role proposal;
+  }
+
+  composition OriginalDocumentVersion {
+    Proposal [1] role originalOf;
+    ProposalVersion [1] role initialVersion;
+  }
+
+  composition RevisedDocumentVersion {
+    Proposal [1] role revisionOf;
+    ProposalVersion [1] role revisedVersion;
+  }
+}

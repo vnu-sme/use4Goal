@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="org.vnu.sme.goal.dsl.acl.Acl2UseCanonicalRulesTest" time="0.2" tests="3" errors="0" skipped="0" failures="2">
+  <properties>
+    <property name="isolatedPluginBuild" value="true"/>
+    <property name="java.specification.version" value="21"/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
+    <property name="java.class.path" value="/run/media/qbert/1C8099B8809998BA/code/Lab/USE_spaces/use-goal-BPMN/goal/target-maven/test-classes:/run/media/qbert/1C8099B8809998BA/code/Lab/USE_spaces/use-goal-BPMN/goal/target-maven/classes:/home/qbert/.m2/repository/org/tzi/use/use-core/7.1.1/use-core-7.1.1.jar:/home/qbert/.m2/repository/com/google/guava/guava/33.7.1-jre/guava-33.7.1-jre.jar:/home/qbert/.m2/repository/com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3.jar:/home/qbert/.m2/repository/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/home/qbert/.m2/repository/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.jar:/home/qbert/.m2/repository/com/google/errorprone/error_prone_annotations/2.50.0/error_prone_annotations-2.50.0.jar:/home/qbert/.m2/repository/com/google/j2objc/j2objc-annotations/3.1/j2objc-annotations-3.1.jar:/home/qbert/.m2/repository/org/eclipse/jdt/org.eclipse.jdt.annotation/2.2.600/org.eclipse.jdt.annotation-2.2.600.jar:/home/qbert/.m2/repository/org/antlr/antlr-runtime/3.4/antlr-runtime-3.4.jar:/home/qbert/.m2/repository/org/antlr/stringtemplate/3.2.1/stringtemplate-3.2.1.jar:/home/qbert/.m2/repository/antlr/antlr/2.7.7/antlr-2.7.7.jar:/home/qbert/.m2/repository/jline/jline/2.14.6/jline-2.14.6.jar:/home/qbert/.m2/repository/com/googlecode/combinatoricslib/combinatoricslib/2.3/combinatoricslib-2.3.jar:/home/qbert/.m2/repository/org/jruby/jruby-core/9.3.1.0/jruby-core-9.3.1.0.jar:/home/qbert/.m2/repository/com/ximpleware/vtd-xml/2.13.4/vtd-xml-2.13.4.jar:/home/qbert/.m2/repository/org/tzi/use/use-gui/7.1.1/use-gui-7.1.1.jar:/home/qbert/.m2/repository/com/itextpdf/itextpdf/5.5.12/itextpdf-5.5.12.jar:/home/qbert/.m2/repository/xerces/xercesImpl/2.12.2/xercesImpl-2.12.2.jar:/home/qbert/.m2/repository/org/antlr/antlr4-runtime/4.9.3/antlr4-runtime-4.9.3.jar:/home/qbert/.m2/repository/kodkod/kodkod/1.0/kodkod-1.0.jar:/home/qbert/.m2/repository/org/sat4j/core/1.0/core-1.0.jar:/home/qbert/.m2/repository/org/junit/jupiter/junit-jupiter/5.11.4/junit-jupiter-5.11.4.jar:/home/qbert/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.11.4/junit-jupiter-api-5.11.4.jar:/home/qbert/.m2/repository/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/home/qbert/.m2/repository/org/junit/platform/junit-platform-commons/1.11.4/junit-platform-commons-1.11.4.jar:/home/qbert/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/home/qbert/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.11.4/junit-jupiter-params-5.11.4.jar:/home/qbert/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.11.4/junit-jupiter-engine-5.11.4.jar:/home/qbert/.m2/repository/org/junit/platform/junit-platform-engine/1.11.4/junit-platform-engine-1.11.4.jar:"/>
+    <property name="java.vm.vendor" value="Arch Linux"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="java.vendor.url" value="https://openjdk.org/"/>
+    <property name="os.name" value="Linux"/>
+    <property name="java.vm.specification.version" value="21"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.boot.library.path" value="/usr/lib/jvm/java-21-openjdk/lib"/>
+    <property name="sun.java.command" value="/run/media/qbert/1C8099B8809998BA/code/Lab/USE_spaces/use-goal-BPMN/goal/target-maven/surefire/surefirebooter-20260825134735702_3.jar /run/media/qbert/1C8099B8809998BA/code/Lab/USE_spaces/use-goal-BPMN/goal/target-maven/surefire 2026-08-25T13-47-35_609-jvmRun1 surefire-20260825134735702_1tmp surefire_0-20260825134735702_2tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="/run/media/qbert/1C8099B8809998BA/code/Lab/USE_spaces/use-goal-BPMN/goal/target-maven/test-classes:/run/media/qbert/1C8099B8809998BA/code/Lab/USE_spaces/use-goal-BPMN/goal/target-maven/classes:/home/qbert/.m2/repository/org/tzi/use/use-core/7.1.1/use-core-7.1.1.jar:/home/qbert/.m2/repository/com/google/guava/guava/33.7.1-jre/guava-33.7.1-jre.jar:/home/qbert/.m2/repository/com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3.jar:/home/qbert/.m2/repository/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/home/qbert/.m2/repository/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.jar:/home/qbert/.m2/repository/com/google/errorprone/error_prone_annotations/2.50.0/error_prone_annotations-2.50.0.jar:/home/qbert/.m2/repository/com/google/j2objc/j2objc-annotations/3.1/j2objc-annotations-3.1.jar:/home/qbert/.m2/repository/org/eclipse/jdt/org.eclipse.jdt.annotation/2.2.600/org.eclipse.jdt.annotation-2.2.600.jar:/home/qbert/.m2/repository/org/antlr/antlr-runtime/3.4/antlr-runtime-3.4.jar:/home/qbert/.m2/repository/org/antlr/stringtemplate/3.2.1/stringtemplate-3.2.1.jar:/home/qbert/.m2/repository/antlr/antlr/2.7.7/antlr-2.7.7.jar:/home/qbert/.m2/repository/jline/jline/2.14.6/jline-2.14.6.jar:/home/qbert/.m2/repository/com/googlecode/combinatoricslib/combinatoricslib/2.3/combinatoricslib-2.3.jar:/home/qbert/.m2/repository/org/jruby/jruby-core/9.3.1.0/jruby-core-9.3.1.0.jar:/home/qbert/.m2/repository/com/ximpleware/vtd-xml/2.13.4/vtd-xml-2.13.4.jar:/home/qbert/.m2/repository/org/tzi/use/use-gui/7.1.1/use-gui-7.1.1.jar:/home/qbert/.m2/repository/com/itextpdf/itextpdf/5.5.12/itextpdf-5.5.12.jar:/home/qbert/.m2/repository/xerces/xercesImpl/2.12.2/xercesImpl-2.12.2.jar:/home/qbert/.m2/repository/org/antlr/antlr4-runtime/4.9.3/antlr4-runtime-4.9.3.jar:/home/qbert/.m2/repository/kodkod/kodkod/1.0/kodkod-1.0.jar:/home/qbert/.m2/repository/org/sat4j/core/1.0/core-1.0.jar:/home/qbert/.m2/repository/org/junit/jupiter/junit-jupiter/5.11.4/junit-jupiter-5.11.4.jar:/home/qbert/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.11.4/junit-jupiter-api-5.11.4.jar:/home/qbert/.m2/repository/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/home/qbert/.m2/repository/org/junit/platform/junit-platform-commons/1.11.4/junit-platform-commons-1.11.4.jar:/home/qbert/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/home/qbert/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.11.4/junit-jupiter-params-5.11.4.jar:/home/qbert/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.11.4/junit-jupiter-engine-5.11.4.jar:/home/qbert/.m2/repository/org/junit/platform/junit-platform-engine/1.11.4/junit-platform-engine-1.11.4.jar:"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="/home/qbert"/>
+    <property name="user.language" value="en"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2026-04-21"/>
+    <property name="java.home" value="/usr/lib/jvm/java-21-openjdk"/>
+    <property name="file.separator" value="/"/>
+    <property name="basedir" value="/run/media/qbert/1C8099B8809998BA/code/Lab/USE_spaces/use-goal-BPMN/goal"/>
+    <property name="java.vm.compressedOopsMode" value="32-bit"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="surefire.real.class.path" value="/run/media/qbert/1C8099B8809998BA/code/Lab/USE_spaces/use-goal-BPMN/goal/target-maven/surefire/surefirebooter-20260825134735702_3.jar"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="21.0.11+10"/>
+    <property name="user.name" value="qbert"/>
+    <property name="stdout.encoding" value="UTF-8"/>
+    <property name="path.separator" value=":"/>
+    <property name="os.version" value="7.0.12-arch1-1"/>
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
+    <property name="localRepository" value="/home/qbert/.m2/repository"/>
+    <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
+    <property name="java.io.tmpdir" value="/tmp"/>
+    <property name="java.version" value="21.0.11"/>
+    <property name="user.dir" value="/run/media/qbert/1C8099B8809998BA/code/Lab/USE_spaces/use-goal-BPMN/goal"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="native.encoding" value="UTF-8"/>
+    <property name="java.library.path" value="/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib"/>
+    <property name="stderr.encoding" value="UTF-8"/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="java.vendor" value="Arch Linux"/>
+    <property name="java.vm.version" value="21.0.11+10"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="65.0"/>
+  </properties>
+  <testcase name="translatesCanonicalClassifierRelationshipAndOwnerRules" classname="org.vnu.sme.goal.dsl.acl.Acl2UseCanonicalRulesTest" time="0.012">
+    <failure message="&lt;memory&gt;:1:0: semantic: relationship &apos;mentors&apos; between Role/Group classifiers must be a binary composition from a Group to a different Role or Group ==&gt; expected: &lt;true&gt; but was: &lt;false&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: <memory>:1:0: semantic: relationship 'mentors' between Role/Group classifiers must be a binary composition from a Group to a different Role or Group ==> expected: <true> but was: <false>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertTrue.failNotTrue(AssertTrue.java:63)
+	at org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:42)
+	at org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:191)
+	at org.vnu.sme.goal.dsl.acl.Acl2UseCanonicalRulesTest.translatesCanonicalClassifierRelationshipAndOwnerRules(Acl2UseCanonicalRulesTest.java:50)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+]]></failure>
+  </testcase>
+  <testcase name="translatesEveryBundledAclExampleToCompilableUse" classname="org.vnu.sme.goal.dsl.acl.Acl2UseCanonicalRulesTest" time="0.179">
+    <failure message="src/main/resources/examples/enterprise/enterprise.acl&#10;src/main/resources/examples/enterprise/enterprise.acl:17:0: semantic: relationship &apos;mentors&apos; between Role/Group classifiers must be a binary composition from a Group to a different Role or Group&#10;src/main/resources/examples/enterprise/enterprise.acl:17:0: semantic: relationship &apos;reportsTo&apos; between Role/Group classifiers must be a binary composition from a Group to a different Role or Group&#10;src/main/resources/examples/enterprise/enterprise.acl:17:0: semantic: relationship &apos;reviewsWork&apos; between Role/Group classifiers must be a binary composition from a Group to a different Role or Group&#10;src/main/resources/examples/enterprise/enterprise.acl:17:0: semantic: relationship &apos;collaboratesWith&apos; between Role/Group classifiers must be a binary composition from a Group to a different Role or Group&#10;src/main/resources/examples/enterprise/enterprise.acl:17:0: semantic: relationship &apos;escalatesTo&apos; between Role/Group classifiers must be a binary composition from a Group to a different Role or Group ==&gt; expected: &lt;true&gt; but was: &lt;false&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: 
+src/main/resources/examples/enterprise/enterprise.acl
+src/main/resources/examples/enterprise/enterprise.acl:17:0: semantic: relationship 'mentors' between Role/Group classifiers must be a binary composition from a Group to a different Role or Group
+src/main/resources/examples/enterprise/enterprise.acl:17:0: semantic: relationship 'reportsTo' between Role/Group classifiers must be a binary composition from a Group to a different Role or Group
+src/main/resources/examples/enterprise/enterprise.acl:17:0: semantic: relationship 'reviewsWork' between Role/Group classifiers must be a binary composition from a Group to a different Role or Group
+src/main/resources/examples/enterprise/enterprise.acl:17:0: semantic: relationship 'collaboratesWith' between Role/Group classifiers must be a binary composition from a Group to a different Role or Group
+src/main/resources/examples/enterprise/enterprise.acl:17:0: semantic: relationship 'escalatesTo' between Role/Group classifiers must be a binary composition from a Group to a different Role or Group ==> expected: <true> but was: <false>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertTrue.failNotTrue(AssertTrue.java:63)
+	at org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:42)
+	at org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:191)
+	at org.vnu.sme.goal.dsl.acl.Acl2UseCanonicalRulesTest.translatesEveryBundledAclExampleToCompilableUse(Acl2UseCanonicalRulesTest.java:23)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+]]></failure>
+  </testcase>
+  <testcase name="emitsOccurrenceLevelRoleOwnerScopeInvariantAcrossIndirectGroupAncestor" classname="org.vnu.sme.goal.dsl.acl.Acl2UseCanonicalRulesTest" time="0.005"/>
+</testsuite>

@@ -1,0 +1,1027 @@
+-------------------------------------------------------------------------------
+Test set: org.vnu.sme.goal.verify.conformance.SalesForecastConformanceTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 0.393 s <<< FAILURE! -- in org.vnu.sme.goal.verify.conformance.SalesForecastConformanceTest
+org.vnu.sme.goal.verify.conformance.SalesForecastConformanceTest.prescribedApprovalWithinWindowSatisfiesEveryRootGoal -- Time elapsed: 0.182 s <<< ERROR!
+java.lang.IllegalStateException: 
+initialization gate failed ACL/USE constraints:
+checking structure...
+Multiplicity constraint violation in association `SalesCase_contains_Approver':
+  Object `case1' of class `SalesCase' is connected to 0 objects of class `Approver'
+  at association end `Approver' but the multiplicity is specified as `1..*'.
+Multiplicity constraint violation in association `SalesCase_contains_Approver':
+  Object `approver1' of class `Approver' is connected to 0 objects of class `SalesCase'
+  at association end `group' but the multiplicity is specified as `1'.
+Multiplicity constraint violation in association `SalesCase_contains_Customer':
+  Object `case1' of class `SalesCase' is connected to 0 objects of class `Customer'
+  at association end `Customer' but the multiplicity is specified as `1'.
+Multiplicity constraint violation in association `SalesCase_contains_Customer':
+  Object `customer1' of class `Customer' is connected to 0 objects of class `SalesCase'
+  at association end `group' but the multiplicity is specified as `1'.
+Multiplicity constraint violation in association `SalesCase_contains_CustomerManager':
+  Object `case1' of class `SalesCase' is connected to 0 objects of class `CustomerManager'
+  at association end `CustomerManager' but the multiplicity is specified as `1'.
+Multiplicity constraint violation in association `SalesCase_contains_CustomerManager':
+  Object `manager1' of class `CustomerManager' is connected to 0 objects of class `SalesCase'
+  at association end `group' but the multiplicity is specified as `1'.
+Multiplicity constraint violation in association `SalesCase_contains_Management':
+  Object `case1' of class `SalesCase' is connected to 0 objects of class `Management'
+  at association end `Management' but the multiplicity is specified as `1'.
+Multiplicity constraint violation in association `SalesCase_contains_Management':
+  Object `management1' of class `Management' is connected to 0 objects of class `SalesCase'
+  at association end `group' but the multiplicity is specified as `1'.
+checked structure in 4ms.
+checking invariants...
+checking invariant (1) `Agent::NoConflict_Approver_Approvers': OK.
+checking invariant (2) `Agent::NoConflict_Approver_BISystem': OK.
+checking invariant (3) `Agent::NoConflict_Approver_BSaleSystem': OK.
+checking invariant (4) `Agent::NoConflict_Approver_BusinessVP': OK.
+checking invariant (5) `Agent::NoConflict_Approver_CreditControl': OK.
+checking invariant (6) `Agent::NoConflict_Approver_Customer': OK.
+checking invariant (7) `Agent::NoConflict_Approver_DepartmentManager': OK.
+checking invariant (8) `Agent::NoConflict_Approver_DirectorOfSalesSector': OK.
+checking invariant (9) `Agent::NoConflict_Approver_Economy': OK.
+checking invariant (10) `Agent::NoConflict_Approver_FinancialControl': OK.
+checking invariant (11) `Agent::NoConflict_Approver_InventoryManager': OK.
+checking invariant (12) `Agent::NoConflict_Approver_PresaleDepartment': OK.
+checking invariant (13) `Agent::NoConflict_Approver_PresaleEngineer': OK.
+checking invariant (14) `Agent::NoConflict_Approver_ProjectDepartment': OK.
+checking invariant (15) `Agent::NoConflict_Approver_SalesDepartmentManager': OK.
+checking invariant (16) `Agent::NoConflict_Approver_SectorManager': OK.
+checking invariant (17) `Agent::NoConflict_Approver_ServiceAgreements': OK.
+checking invariant (18) `Agent::NoConflict_Approver_ServiceAgreementsDepartment': OK.
+checking invariant (19) `Agent::NoConflict_Approver_ServiceProvider': OK.
+checking invariant (20) `Agent::NoConflict_Approver_VPBusinessDivision': OK.
+checking invariant (21) `Agent::NoConflict_Approver_Vendor': OK.
+checking invariant (22) `Agent::NoConflict_Approvers_BISystem': OK.
+checking invariant (23) `Agent::NoConflict_Approvers_BSaleSystem': OK.
+checking invariant (24) `Agent::NoConflict_Approvers_BusinessVP': OK.
+checking invariant (25) `Agent::NoConflict_Approvers_DepartmentManager': OK.
+checking invariant (26) `Agent::NoConflict_Approvers_FinancialControl': OK.
+checking invariant (27) `Agent::NoConflict_Approvers_InventoryManager': OK.
+checking invariant (28) `Agent::NoConflict_Approvers_PresaleDepartment': OK.
+checking invariant (29) `Agent::NoConflict_Approvers_PresaleEngineer': OK.
+checking invariant (30) `Agent::NoConflict_Approvers_ProjectDepartment': OK.
+checking invariant (31) `Agent::NoConflict_Approvers_SectorManager': OK.
+checking invariant (32) `Agent::NoConflict_Approvers_ServiceAgreements': OK.
+checking invariant (33) `Agent::NoConflict_Approvers_ServiceAgreementsDepartment': OK.
+checking invariant (34) `Agent::NoConflict_Approvers_ServiceProvider': OK.
+checking invariant (35) `Agent::NoConflict_Approvers_Vendor': OK.
+checking invariant (36) `Agent::NoConflict_BISystem_BSaleSystem': OK.
+checking invariant (37) `Agent::NoConflict_BISystem_BusinessVP': OK.
+checking invariant (38) `Agent::NoConflict_BISystem_DepartmentManager': OK.
+checking invariant (39) `Agent::NoConflict_BISystem_FinancialControl': OK.
+checking invariant (40) `Agent::NoConflict_BISystem_PresaleEngineer': OK.
+checking invariant (41) `Agent::NoConflict_BISystem_SectorManager': OK.
+checking invariant (42) `Agent::NoConflict_BISystem_ServiceAgreements': OK.
+checking invariant (43) `Agent::NoConflict_BSaleSystem_BusinessVP': OK.
+checking invariant (44) `Agent::NoConflict_BSaleSystem_DepartmentManager': OK.
+checking invariant (45) `Agent::NoConflict_BSaleSystem_FinancialControl': OK.
+checking invariant (46) `Agent::NoConflict_BSaleSystem_PresaleEngineer': OK.
+checking invariant (47) `Agent::NoConflict_BSaleSystem_SectorManager': OK.
+checking invariant (48) `Agent::NoConflict_BSaleSystem_ServiceAgreements': OK.
+checking invariant (49) `Agent::NoConflict_BusinessVP_DepartmentManager': OK.
+checking invariant (50) `Agent::NoConflict_BusinessVP_PresaleEngineer': OK.
+checking invariant (51) `Agent::NoConflict_BusinessVP_SectorManager': OK.
+checking invariant (52) `Agent::NoConflict_BusinessVP_ServiceAgreements': OK.
+checking invariant (53) `Agent::NoConflict_CreditControl_BISystem': OK.
+checking invariant (54) `Agent::NoConflict_CreditControl_BSaleSystem': OK.
+checking invariant (55) `Agent::NoConflict_CreditControl_BusinessVP': OK.
+checking invariant (56) `Agent::NoConflict_CreditControl_DepartmentManager': OK.
+checking invariant (57) `Agent::NoConflict_CreditControl_FinancialControl': OK.
+checking invariant (58) `Agent::NoConflict_CreditControl_InventoryManager': OK.
+checking invariant (59) `Agent::NoConflict_CreditControl_PresaleDepartment': OK.
+checking invariant (60) `Agent::NoConflict_CreditControl_PresaleEngineer': OK.
+checking invariant (61) `Agent::NoConflict_CreditControl_ProjectDepartment': OK.
+checking invariant (62) `Agent::NoConflict_CreditControl_SectorManager': OK.
+checking invariant (63) `Agent::NoConflict_CreditControl_ServiceAgreements': OK.
+checking invariant (64) `Agent::NoConflict_CreditControl_ServiceAgreementsDepartment': OK.
+checking invariant (65) `Agent::NoConflict_CreditControl_ServiceProvider': OK.
+checking invariant (66) `Agent::NoConflict_CreditControl_Vendor': OK.
+checking invariant (67) `Agent::NoConflict_CustomerManager_Approver': OK.
+checking invariant (68) `Agent::NoConflict_CustomerManager_Approvers': OK.
+checking invariant (69) `Agent::NoConflict_CustomerManager_BISystem': OK.
+checking invariant (70) `Agent::NoConflict_CustomerManager_BSaleSystem': OK.
+checking invariant (71) `Agent::NoConflict_CustomerManager_BusinessVP': OK.
+checking invariant (72) `Agent::NoConflict_CustomerManager_CreditControl': OK.
+checking invariant (73) `Agent::NoConflict_CustomerManager_Customer': OK.
+checking invariant (74) `Agent::NoConflict_CustomerManager_DepartmentManager': OK.
+checking invariant (75) `Agent::NoConflict_CustomerManager_DirectorOfSalesSector': OK.
+checking invariant (76) `Agent::NoConflict_CustomerManager_Economy': OK.
+checking invariant (77) `Agent::NoConflict_CustomerManager_FinancialControl': OK.
+checking invariant (78) `Agent::NoConflict_CustomerManager_InventoryManager': OK.
+checking invariant (79) `Agent::NoConflict_CustomerManager_PresaleDepartment': OK.
+checking invariant (80) `Agent::NoConflict_CustomerManager_PresaleEngineer': OK.
+checking invariant (81) `Agent::NoConflict_CustomerManager_ProjectDepartment': OK.
+checking invariant (82) `Agent::NoConflict_CustomerManager_SalesDepartmentManager': OK.
+checking invariant (83) `Agent::NoConflict_CustomerManager_SectorManager': OK.
+checking invariant (84) `Agent::NoConflict_CustomerManager_ServiceAgreements': OK.
+checking invariant (85) `Agent::NoConflict_CustomerManager_ServiceAgreementsDepartment': OK.
+checking invariant (86) `Agent::NoConflict_CustomerManager_ServiceProvider': OK.
+checking invariant (87) `Agent::NoConflict_CustomerManager_VPBusinessDivision': OK.
+checking invariant (88) `Agent::NoConflict_CustomerManager_Vendor': OK.
+checking invariant (89) `Agent::NoConflict_Customer_Approvers': OK.
+checking invariant (90) `Agent::NoConflict_Customer_BISystem': OK.
+checking invariant (91) `Agent::NoConflict_Customer_BSaleSystem': OK.
+checking invariant (92) `Agent::NoConflict_Customer_BusinessVP': OK.
+checking invariant (93) `Agent::NoConflict_Customer_CreditControl': OK.
+checking invariant (94) `Agent::NoConflict_Customer_DepartmentManager': OK.
+checking invariant (95) `Agent::NoConflict_Customer_DirectorOfSalesSector': OK.
+checking invariant (96) `Agent::NoConflict_Customer_Economy': OK.
+checking invariant (97) `Agent::NoConflict_Customer_FinancialControl': OK.
+checking invariant (98) `Agent::NoConflict_Customer_InventoryManager': OK.
+checking invariant (99) `Agent::NoConflict_Customer_PresaleDepartment': OK.
+checking invariant (100) `Agent::NoConflict_Customer_PresaleEngineer': OK.
+checking invariant (101) `Agent::NoConflict_Customer_ProjectDepartment': OK.
+checking invariant (102) `Agent::NoConflict_Customer_SalesDepartmentManager': OK.
+checking invariant (103) `Agent::NoConflict_Customer_SectorManager': OK.
+checking invariant (104) `Agent::NoConflict_Customer_ServiceAgreements': OK.
+checking invariant (105) `Agent::NoConflict_Customer_ServiceAgreementsDepartment': OK.
+checking invariant (106) `Agent::NoConflict_Customer_ServiceProvider': OK.
+checking invariant (107) `Agent::NoConflict_Customer_VPBusinessDivision': OK.
+checking invariant (108) `Agent::NoConflict_Customer_Vendor': OK.
+checking invariant (109) `Agent::NoConflict_DepartmentManager_PresaleEngineer': OK.
+checking invariant (110) `Agent::NoConflict_DepartmentManager_ServiceAgreements': OK.
+checking invariant (111) `Agent::NoConflict_DirectorOfSalesSector_BISystem': OK.
+checking invariant (112) `Agent::NoConflict_DirectorOfSalesSector_BSaleSystem': OK.
+checking invariant (113) `Agent::NoConflict_DirectorOfSalesSector_BusinessVP': OK.
+checking invariant (114) `Agent::NoConflict_DirectorOfSalesSector_DepartmentManager': OK.
+checking invariant (115) `Agent::NoConflict_DirectorOfSalesSector_FinancialControl': OK.
+checking invariant (116) `Agent::NoConflict_DirectorOfSalesSector_InventoryManager': OK.
+checking invariant (117) `Agent::NoConflict_DirectorOfSalesSector_PresaleDepartment': OK.
+checking invariant (118) `Agent::NoConflict_DirectorOfSalesSector_PresaleEngineer': OK.
+checking invariant (119) `Agent::NoConflict_DirectorOfSalesSector_ProjectDepartment': OK.
+checking invariant (120) `Agent::NoConflict_DirectorOfSalesSector_SectorManager': OK.
+checking invariant (121) `Agent::NoConflict_DirectorOfSalesSector_ServiceAgreements': OK.
+checking invariant (122) `Agent::NoConflict_DirectorOfSalesSector_ServiceAgreementsDepartment': OK.
+checking invariant (123) `Agent::NoConflict_DirectorOfSalesSector_ServiceProvider': OK.
+checking invariant (124) `Agent::NoConflict_DirectorOfSalesSector_Vendor': OK.
+checking invariant (125) `Agent::NoConflict_Economy_BISystem': OK.
+checking invariant (126) `Agent::NoConflict_Economy_BSaleSystem': OK.
+checking invariant (127) `Agent::NoConflict_Economy_BusinessVP': OK.
+checking invariant (128) `Agent::NoConflict_Economy_DepartmentManager': OK.
+checking invariant (129) `Agent::NoConflict_Economy_FinancialControl': OK.
+checking invariant (130) `Agent::NoConflict_Economy_InventoryManager': OK.
+checking invariant (131) `Agent::NoConflict_Economy_PresaleDepartment': OK.
+checking invariant (132) `Agent::NoConflict_Economy_PresaleEngineer': OK.
+checking invariant (133) `Agent::NoConflict_Economy_ProjectDepartment': OK.
+checking invariant (134) `Agent::NoConflict_Economy_SectorManager': OK.
+checking invariant (135) `Agent::NoConflict_Economy_ServiceAgreements': OK.
+checking invariant (136) `Agent::NoConflict_Economy_ServiceAgreementsDepartment': OK.
+checking invariant (137) `Agent::NoConflict_Economy_ServiceProvider': OK.
+checking invariant (138) `Agent::NoConflict_Economy_Vendor': OK.
+checking invariant (139) `Agent::NoConflict_FinancialControl_BusinessVP': OK.
+checking invariant (140) `Agent::NoConflict_FinancialControl_DepartmentManager': OK.
+checking invariant (141) `Agent::NoConflict_FinancialControl_PresaleEngineer': OK.
+checking invariant (142) `Agent::NoConflict_FinancialControl_SectorManager': OK.
+checking invariant (143) `Agent::NoConflict_FinancialControl_ServiceAgreements': OK.
+checking invariant (144) `Agent::NoConflict_InventoryManager_BISystem': OK.
+checking invariant (145) `Agent::NoConflict_InventoryManager_BSaleSystem': OK.
+checking invariant (146) `Agent::NoConflict_InventoryManager_BusinessVP': OK.
+checking invariant (147) `Agent::NoConflict_InventoryManager_DepartmentManager': OK.
+checking invariant (148) `Agent::NoConflict_InventoryManager_FinancialControl': OK.
+checking invariant (149) `Agent::NoConflict_InventoryManager_PresaleEngineer': OK.
+checking invariant (150) `Agent::NoConflict_InventoryManager_ProjectDepartment': OK.
+checking invariant (151) `Agent::NoConflict_InventoryManager_SectorManager': OK.
+checking invariant (152) `Agent::NoConflict_InventoryManager_ServiceAgreements': OK.
+checking invariant (153) `Agent::NoConflict_InventoryManager_Vendor': OK.
+checking invariant (154) `Agent::NoConflict_Management_Approver': OK.
+checking invariant (155) `Agent::NoConflict_Management_Approvers': OK.
+checking invariant (156) `Agent::NoConflict_Management_BISystem': OK.
+checking invariant (157) `Agent::NoConflict_Management_BSaleSystem': OK.
+checking invariant (158) `Agent::NoConflict_Management_BusinessVP': OK.
+checking invariant (159) `Agent::NoConflict_Management_CreditControl': OK.
+checking invariant (160) `Agent::NoConflict_Management_Customer': OK.
+checking invariant (161) `Agent::NoConflict_Management_CustomerManager': OK.
+checking invariant (162) `Agent::NoConflict_Management_DepartmentManager': OK.
+checking invariant (163) `Agent::NoConflict_Management_DirectorOfSalesSector': OK.
+checking invariant (164) `Agent::NoConflict_Management_Economy': OK.
+checking invariant (165) `Agent::NoConflict_Management_FinancialControl': OK.
+checking invariant (166) `Agent::NoConflict_Management_InventoryManager': OK.
+checking invariant (167) `Agent::NoConflict_Management_PresaleDepartment': OK.
+checking invariant (168) `Agent::NoConflict_Management_PresaleEngineer': OK.
+checking invariant (169) `Agent::NoConflict_Management_ProjectDepartment': OK.
+checking invariant (170) `Agent::NoConflict_Management_SalesDepartmentManager': OK.
+checking invariant (171) `Agent::NoConflict_Management_SectorManager': OK.
+checking invariant (172) `Agent::NoConflict_Management_ServiceAgreements': OK.
+checking invariant (173) `Agent::NoConflict_Management_ServiceAgreementsDepartment': OK.
+checking invariant (174) `Agent::NoConflict_Management_ServiceProvider': OK.
+checking invariant (175) `Agent::NoConflict_Management_VPBusinessDivision': OK.
+checking invariant (176) `Agent::NoConflict_Management_Vendor': OK.
+checking invariant (177) `Agent::NoConflict_PresaleDepartment_BISystem': OK.
+checking invariant (178) `Agent::NoConflict_PresaleDepartment_BSaleSystem': OK.
+checking invariant (179) `Agent::NoConflict_PresaleDepartment_BusinessVP': OK.
+checking invariant (180) `Agent::NoConflict_PresaleDepartment_DepartmentManager': OK.
+checking invariant (181) `Agent::NoConflict_PresaleDepartment_FinancialControl': OK.
+checking invariant (182) `Agent::NoConflict_PresaleDepartment_InventoryManager': OK.
+checking invariant (183) `Agent::NoConflict_PresaleDepartment_PresaleEngineer': OK.
+checking invariant (184) `Agent::NoConflict_PresaleDepartment_ProjectDepartment': OK.
+checking invariant (185) `Agent::NoConflict_PresaleDepartment_SectorManager': OK.
+checking invariant (186) `Agent::NoConflict_PresaleDepartment_ServiceAgreements': OK.
+checking invariant (187) `Agent::NoConflict_PresaleDepartment_ServiceProvider': OK.
+checking invariant (188) `Agent::NoConflict_PresaleDepartment_Vendor': OK.
+checking invariant (189) `Agent::NoConflict_ProjectDepartment_BISystem': OK.
+checking invariant (190) `Agent::NoConflict_ProjectDepartment_BSaleSystem': OK.
+checking invariant (191) `Agent::NoConflict_ProjectDepartment_BusinessVP': OK.
+checking invariant (192) `Agent::NoConflict_ProjectDepartment_DepartmentManager': OK.
+checking invariant (193) `Agent::NoConflict_ProjectDepartment_FinancialControl': OK.
+checking invariant (194) `Agent::NoConflict_ProjectDepartment_PresaleEngineer': OK.
+checking invariant (195) `Agent::NoConflict_ProjectDepartment_SectorManager': OK.
+checking invariant (196) `Agent::NoConflict_ProjectDepartment_ServiceAgreements': OK.
+checking invariant (197) `Agent::NoConflict_ProjectDepartment_Vendor': OK.
+checking invariant (198) `Agent::NoConflict_SalesDepartmentManager_BISystem': OK.
+checking invariant (199) `Agent::NoConflict_SalesDepartmentManager_BSaleSystem': OK.
+checking invariant (200) `Agent::NoConflict_SalesDepartmentManager_BusinessVP': OK.
+checking invariant (201) `Agent::NoConflict_SalesDepartmentManager_DepartmentManager': OK.
+checking invariant (202) `Agent::NoConflict_SalesDepartmentManager_FinancialControl': OK.
+checking invariant (203) `Agent::NoConflict_SalesDepartmentManager_InventoryManager': OK.
+checking invariant (204) `Agent::NoConflict_SalesDepartmentManager_PresaleDepartment': OK.
+checking invariant (205) `Agent::NoConflict_SalesDepartmentManager_PresaleEngineer': OK.
+checking invariant (206) `Agent::NoConflict_SalesDepartmentManager_ProjectDepartment': OK.
+checking invariant (207) `Agent::NoConflict_SalesDepartmentManager_SectorManager': OK.
+checking invariant (208) `Agent::NoConflict_SalesDepartmentManager_ServiceAgreements': OK.
+checking invariant (209) `Agent::NoConflict_SalesDepartmentManager_ServiceAgreementsDepartment': OK.
+checking invariant (210) `Agent::NoConflict_SalesDepartmentManager_ServiceProvider': OK.
+checking invariant (211) `Agent::NoConflict_SalesDepartmentManager_Vendor': OK.
+checking invariant (212) `Agent::NoConflict_SectorManager_DepartmentManager': OK.
+checking invariant (213) `Agent::NoConflict_SectorManager_PresaleEngineer': OK.
+checking invariant (214) `Agent::NoConflict_SectorManager_ServiceAgreements': OK.
+checking invariant (215) `Agent::NoConflict_ServiceAgreementsDepartment_BISystem': OK.
+checking invariant (216) `Agent::NoConflict_ServiceAgreementsDepartment_BSaleSystem': OK.
+checking invariant (217) `Agent::NoConflict_ServiceAgreementsDepartment_BusinessVP': OK.
+checking invariant (218) `Agent::NoConflict_ServiceAgreementsDepartment_DepartmentManager': OK.
+checking invariant (219) `Agent::NoConflict_ServiceAgreementsDepartment_FinancialControl': OK.
+checking invariant (220) `Agent::NoConflict_ServiceAgreementsDepartment_InventoryManager': OK.
+checking invariant (221) `Agent::NoConflict_ServiceAgreementsDepartment_PresaleDepartment': OK.
+checking invariant (222) `Agent::NoConflict_ServiceAgreementsDepartment_PresaleEngineer': OK.
+checking invariant (223) `Agent::NoConflict_ServiceAgreementsDepartment_ProjectDepartment': OK.
+checking invariant (224) `Agent::NoConflict_ServiceAgreementsDepartment_SectorManager': OK.
+checking invariant (225) `Agent::NoConflict_ServiceAgreementsDepartment_ServiceAgreements': OK.
+checking invariant (226) `Agent::NoConflict_ServiceAgreementsDepartment_ServiceProvider': OK.
+checking invariant (227) `Agent::NoConflict_ServiceAgreementsDepartment_Vendor': OK.
+checking invariant (228) `Agent::NoConflict_ServiceAgreements_PresaleEngineer': OK.
+checking invariant (229) `Agent::NoConflict_ServiceProvider_BISystem': OK.
+checking invariant (230) `Agent::NoConflict_ServiceProvider_BSaleSystem': OK.
+checking invariant (231) `Agent::NoConflict_ServiceProvider_BusinessVP': OK.
+checking invariant (232) `Agent::NoConflict_ServiceProvider_DepartmentManager': OK.
+checking invariant (233) `Agent::NoConflict_ServiceProvider_FinancialControl': OK.
+checking invariant (234) `Agent::NoConflict_ServiceProvider_InventoryManager': OK.
+checking invariant (235) `Agent::NoConflict_ServiceProvider_PresaleEngineer': OK.
+checking invariant (236) `Agent::NoConflict_ServiceProvider_ProjectDepartment': OK.
+checking invariant (237) `Agent::NoConflict_ServiceProvider_SectorManager': OK.
+checking invariant (238) `Agent::NoConflict_ServiceProvider_ServiceAgreements': OK.
+checking invariant (239) `Agent::NoConflict_ServiceProvider_Vendor': OK.
+checking invariant (240) `Agent::NoConflict_VPBusinessDivision_BISystem': OK.
+checking invariant (241) `Agent::NoConflict_VPBusinessDivision_BSaleSystem': OK.
+checking invariant (242) `Agent::NoConflict_VPBusinessDivision_BusinessVP': OK.
+checking invariant (243) `Agent::NoConflict_VPBusinessDivision_DepartmentManager': OK.
+checking invariant (244) `Agent::NoConflict_VPBusinessDivision_FinancialControl': OK.
+checking invariant (245) `Agent::NoConflict_VPBusinessDivision_InventoryManager': OK.
+checking invariant (246) `Agent::NoConflict_VPBusinessDivision_PresaleDepartment': OK.
+checking invariant (247) `Agent::NoConflict_VPBusinessDivision_PresaleEngineer': OK.
+checking invariant (248) `Agent::NoConflict_VPBusinessDivision_ProjectDepartment': OK.
+checking invariant (249) `Agent::NoConflict_VPBusinessDivision_SectorManager': OK.
+checking invariant (250) `Agent::NoConflict_VPBusinessDivision_ServiceAgreements': OK.
+checking invariant (251) `Agent::NoConflict_VPBusinessDivision_ServiceAgreementsDepartment': OK.
+checking invariant (252) `Agent::NoConflict_VPBusinessDivision_ServiceProvider': OK.
+checking invariant (253) `Agent::NoConflict_VPBusinessDivision_Vendor': OK.
+checking invariant (254) `Agent::NoConflict_Vendor_BISystem': OK.
+checking invariant (255) `Agent::NoConflict_Vendor_BSaleSystem': OK.
+checking invariant (256) `Agent::NoConflict_Vendor_BusinessVP': OK.
+checking invariant (257) `Agent::NoConflict_Vendor_DepartmentManager': OK.
+checking invariant (258) `Agent::NoConflict_Vendor_FinancialControl': OK.
+checking invariant (259) `Agent::NoConflict_Vendor_PresaleEngineer': OK.
+checking invariant (260) `Agent::NoConflict_Vendor_SectorManager': OK.
+checking invariant (261) `Agent::NoConflict_Vendor_ServiceAgreements': OK.
+checking invariant (262) `Agent::NoSelfConflict_Approver': OK.
+checking invariant (263) `Agent::NoSelfConflict_Approvers': OK.
+checking invariant (264) `Agent::NoSelfConflict_BISystem': OK.
+checking invariant (265) `Agent::NoSelfConflict_BSaleSystem': OK.
+checking invariant (266) `Agent::NoSelfConflict_BusinessVP': OK.
+checking invariant (267) `Agent::NoSelfConflict_Customer': OK.
+checking invariant (268) `Agent::NoSelfConflict_CustomerManager': OK.
+checking invariant (269) `Agent::NoSelfConflict_DepartmentManager': OK.
+checking invariant (270) `Agent::NoSelfConflict_FinancialControl': OK.
+checking invariant (271) `Agent::NoSelfConflict_InventoryManager': OK.
+checking invariant (272) `Agent::NoSelfConflict_Management': OK.
+checking invariant (273) `Agent::NoSelfConflict_PresaleDepartment': OK.
+checking invariant (274) `Agent::NoSelfConflict_PresaleEngineer': OK.
+checking invariant (275) `Agent::NoSelfConflict_ProjectDepartment': OK.
+checking invariant (276) `Agent::NoSelfConflict_SectorManager': OK.
+checking invariant (277) `Agent::NoSelfConflict_ServiceAgreements': OK.
+checking invariant (278) `Agent::NoSelfConflict_ServiceAgreementsDepartment': OK.
+checking invariant (279) `Agent::NoSelfConflict_ServiceProvider': OK.
+checking invariant (280) `Agent::NoSelfConflict_Vendor': OK.
+checking invariant (281) `Approvers::NoConflict_CreditControl_DirectorOfSalesSector': OK.
+checking invariant (282) `Approvers::NoConflict_CreditControl_SalesDepartmentManager': OK.
+checking invariant (283) `Approvers::NoConflict_CreditControl_VPBusinessDivision': OK.
+checking invariant (284) `Approvers::NoConflict_DirectorOfSalesSector_VPBusinessDivision': OK.
+checking invariant (285) `Approvers::NoConflict_Economy_CreditControl': OK.
+checking invariant (286) `Approvers::NoConflict_Economy_DirectorOfSalesSector': OK.
+checking invariant (287) `Approvers::NoConflict_Economy_SalesDepartmentManager': OK.
+checking invariant (288) `Approvers::NoConflict_Economy_VPBusinessDivision': OK.
+checking invariant (289) `Approvers::NoConflict_SalesDepartmentManager_DirectorOfSalesSector': OK.
+checking invariant (290) `Approvers::NoConflict_SalesDepartmentManager_VPBusinessDivision': OK.
+checking invariant (291) `Approvers::NoSelfConflict_CreditControl': OK.
+checking invariant (292) `Approvers::NoSelfConflict_DirectorOfSalesSector': OK.
+checking invariant (293) `Approvers::NoSelfConflict_Economy': OK.
+checking invariant (294) `Approvers::NoSelfConflict_SalesDepartmentManager': OK.
+checking invariant (295) `Approvers::NoSelfConflict_VPBusinessDivision': OK.
+checking invariant (296) `CreditControl::RoleOwnerScope_Approvers_CreditControl': OK.
+checking invariant (297) `DirectorOfSalesSector::RoleOwnerScope_Approvers_DirectorOfSalesSector': OK.
+checking invariant (298) `Economy::RoleOwnerScope_Approvers_Economy': OK.
+checking invariant (299) `SalesDepartmentManager::RoleOwnerScope_Approvers_SalesDepartmentManager': OK.
+checking invariant (300) `VPBusinessDivision::RoleOwnerScope_Approvers_VPBusinessDivision': OK.
+checked 300 invariants in 0.013s, 0 failures.
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.requireValidState(VisualConformanceSession.java:337)
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.<init>(VisualConformanceSession.java:93)
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.prepare(VisualConformanceSession.java:149)
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.prepare(VisualConformanceSession.java:122)
+	at org.vnu.sme.goal.verify.conformance.SalesForecastConformanceTest.run(SalesForecastConformanceTest.java:94)
+	at org.vnu.sme.goal.verify.conformance.SalesForecastConformanceTest.prescribedApprovalWithinWindowSatisfiesEveryRootGoal(SalesForecastConformanceTest.java:49)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+org.vnu.sme.goal.verify.conformance.SalesForecastConformanceTest.directSendWorkaroundRestoresSpeedButViolatesApprovalGoals -- Time elapsed: 0.091 s <<< ERROR!
+java.lang.IllegalStateException: 
+initialization gate failed ACL/USE constraints:
+checking structure...
+Multiplicity constraint violation in association `SalesCase_contains_Approver':
+  Object `case1' of class `SalesCase' is connected to 0 objects of class `Approver'
+  at association end `Approver' but the multiplicity is specified as `1..*'.
+Multiplicity constraint violation in association `SalesCase_contains_Approver':
+  Object `approver1' of class `Approver' is connected to 0 objects of class `SalesCase'
+  at association end `group' but the multiplicity is specified as `1'.
+Multiplicity constraint violation in association `SalesCase_contains_Customer':
+  Object `case1' of class `SalesCase' is connected to 0 objects of class `Customer'
+  at association end `Customer' but the multiplicity is specified as `1'.
+Multiplicity constraint violation in association `SalesCase_contains_Customer':
+  Object `customer1' of class `Customer' is connected to 0 objects of class `SalesCase'
+  at association end `group' but the multiplicity is specified as `1'.
+Multiplicity constraint violation in association `SalesCase_contains_CustomerManager':
+  Object `case1' of class `SalesCase' is connected to 0 objects of class `CustomerManager'
+  at association end `CustomerManager' but the multiplicity is specified as `1'.
+Multiplicity constraint violation in association `SalesCase_contains_CustomerManager':
+  Object `manager1' of class `CustomerManager' is connected to 0 objects of class `SalesCase'
+  at association end `group' but the multiplicity is specified as `1'.
+Multiplicity constraint violation in association `SalesCase_contains_Management':
+  Object `case1' of class `SalesCase' is connected to 0 objects of class `Management'
+  at association end `Management' but the multiplicity is specified as `1'.
+Multiplicity constraint violation in association `SalesCase_contains_Management':
+  Object `management1' of class `Management' is connected to 0 objects of class `SalesCase'
+  at association end `group' but the multiplicity is specified as `1'.
+checked structure in 1ms.
+checking invariants...
+checking invariant (1) `Agent::NoConflict_Approver_Approvers': OK.
+checking invariant (2) `Agent::NoConflict_Approver_BISystem': OK.
+checking invariant (3) `Agent::NoConflict_Approver_BSaleSystem': OK.
+checking invariant (4) `Agent::NoConflict_Approver_BusinessVP': OK.
+checking invariant (5) `Agent::NoConflict_Approver_CreditControl': OK.
+checking invariant (6) `Agent::NoConflict_Approver_Customer': OK.
+checking invariant (7) `Agent::NoConflict_Approver_DepartmentManager': OK.
+checking invariant (8) `Agent::NoConflict_Approver_DirectorOfSalesSector': OK.
+checking invariant (9) `Agent::NoConflict_Approver_Economy': OK.
+checking invariant (10) `Agent::NoConflict_Approver_FinancialControl': OK.
+checking invariant (11) `Agent::NoConflict_Approver_InventoryManager': OK.
+checking invariant (12) `Agent::NoConflict_Approver_PresaleDepartment': OK.
+checking invariant (13) `Agent::NoConflict_Approver_PresaleEngineer': OK.
+checking invariant (14) `Agent::NoConflict_Approver_ProjectDepartment': OK.
+checking invariant (15) `Agent::NoConflict_Approver_SalesDepartmentManager': OK.
+checking invariant (16) `Agent::NoConflict_Approver_SectorManager': OK.
+checking invariant (17) `Agent::NoConflict_Approver_ServiceAgreements': OK.
+checking invariant (18) `Agent::NoConflict_Approver_ServiceAgreementsDepartment': OK.
+checking invariant (19) `Agent::NoConflict_Approver_ServiceProvider': OK.
+checking invariant (20) `Agent::NoConflict_Approver_VPBusinessDivision': OK.
+checking invariant (21) `Agent::NoConflict_Approver_Vendor': OK.
+checking invariant (22) `Agent::NoConflict_Approvers_BISystem': OK.
+checking invariant (23) `Agent::NoConflict_Approvers_BSaleSystem': OK.
+checking invariant (24) `Agent::NoConflict_Approvers_BusinessVP': OK.
+checking invariant (25) `Agent::NoConflict_Approvers_DepartmentManager': OK.
+checking invariant (26) `Agent::NoConflict_Approvers_FinancialControl': OK.
+checking invariant (27) `Agent::NoConflict_Approvers_InventoryManager': OK.
+checking invariant (28) `Agent::NoConflict_Approvers_PresaleDepartment': OK.
+checking invariant (29) `Agent::NoConflict_Approvers_PresaleEngineer': OK.
+checking invariant (30) `Agent::NoConflict_Approvers_ProjectDepartment': OK.
+checking invariant (31) `Agent::NoConflict_Approvers_SectorManager': OK.
+checking invariant (32) `Agent::NoConflict_Approvers_ServiceAgreements': OK.
+checking invariant (33) `Agent::NoConflict_Approvers_ServiceAgreementsDepartment': OK.
+checking invariant (34) `Agent::NoConflict_Approvers_ServiceProvider': OK.
+checking invariant (35) `Agent::NoConflict_Approvers_Vendor': OK.
+checking invariant (36) `Agent::NoConflict_BISystem_BSaleSystem': OK.
+checking invariant (37) `Agent::NoConflict_BISystem_BusinessVP': OK.
+checking invariant (38) `Agent::NoConflict_BISystem_DepartmentManager': OK.
+checking invariant (39) `Agent::NoConflict_BISystem_FinancialControl': OK.
+checking invariant (40) `Agent::NoConflict_BISystem_PresaleEngineer': OK.
+checking invariant (41) `Agent::NoConflict_BISystem_SectorManager': OK.
+checking invariant (42) `Agent::NoConflict_BISystem_ServiceAgreements': OK.
+checking invariant (43) `Agent::NoConflict_BSaleSystem_BusinessVP': OK.
+checking invariant (44) `Agent::NoConflict_BSaleSystem_DepartmentManager': OK.
+checking invariant (45) `Agent::NoConflict_BSaleSystem_FinancialControl': OK.
+checking invariant (46) `Agent::NoConflict_BSaleSystem_PresaleEngineer': OK.
+checking invariant (47) `Agent::NoConflict_BSaleSystem_SectorManager': OK.
+checking invariant (48) `Agent::NoConflict_BSaleSystem_ServiceAgreements': OK.
+checking invariant (49) `Agent::NoConflict_BusinessVP_DepartmentManager': OK.
+checking invariant (50) `Agent::NoConflict_BusinessVP_PresaleEngineer': OK.
+checking invariant (51) `Agent::NoConflict_BusinessVP_SectorManager': OK.
+checking invariant (52) `Agent::NoConflict_BusinessVP_ServiceAgreements': OK.
+checking invariant (53) `Agent::NoConflict_CreditControl_BISystem': OK.
+checking invariant (54) `Agent::NoConflict_CreditControl_BSaleSystem': OK.
+checking invariant (55) `Agent::NoConflict_CreditControl_BusinessVP': OK.
+checking invariant (56) `Agent::NoConflict_CreditControl_DepartmentManager': OK.
+checking invariant (57) `Agent::NoConflict_CreditControl_FinancialControl': OK.
+checking invariant (58) `Agent::NoConflict_CreditControl_InventoryManager': OK.
+checking invariant (59) `Agent::NoConflict_CreditControl_PresaleDepartment': OK.
+checking invariant (60) `Agent::NoConflict_CreditControl_PresaleEngineer': OK.
+checking invariant (61) `Agent::NoConflict_CreditControl_ProjectDepartment': OK.
+checking invariant (62) `Agent::NoConflict_CreditControl_SectorManager': OK.
+checking invariant (63) `Agent::NoConflict_CreditControl_ServiceAgreements': OK.
+checking invariant (64) `Agent::NoConflict_CreditControl_ServiceAgreementsDepartment': OK.
+checking invariant (65) `Agent::NoConflict_CreditControl_ServiceProvider': OK.
+checking invariant (66) `Agent::NoConflict_CreditControl_Vendor': OK.
+checking invariant (67) `Agent::NoConflict_CustomerManager_Approver': OK.
+checking invariant (68) `Agent::NoConflict_CustomerManager_Approvers': OK.
+checking invariant (69) `Agent::NoConflict_CustomerManager_BISystem': OK.
+checking invariant (70) `Agent::NoConflict_CustomerManager_BSaleSystem': OK.
+checking invariant (71) `Agent::NoConflict_CustomerManager_BusinessVP': OK.
+checking invariant (72) `Agent::NoConflict_CustomerManager_CreditControl': OK.
+checking invariant (73) `Agent::NoConflict_CustomerManager_Customer': OK.
+checking invariant (74) `Agent::NoConflict_CustomerManager_DepartmentManager': OK.
+checking invariant (75) `Agent::NoConflict_CustomerManager_DirectorOfSalesSector': OK.
+checking invariant (76) `Agent::NoConflict_CustomerManager_Economy': OK.
+checking invariant (77) `Agent::NoConflict_CustomerManager_FinancialControl': OK.
+checking invariant (78) `Agent::NoConflict_CustomerManager_InventoryManager': OK.
+checking invariant (79) `Agent::NoConflict_CustomerManager_PresaleDepartment': OK.
+checking invariant (80) `Agent::NoConflict_CustomerManager_PresaleEngineer': OK.
+checking invariant (81) `Agent::NoConflict_CustomerManager_ProjectDepartment': OK.
+checking invariant (82) `Agent::NoConflict_CustomerManager_SalesDepartmentManager': OK.
+checking invariant (83) `Agent::NoConflict_CustomerManager_SectorManager': OK.
+checking invariant (84) `Agent::NoConflict_CustomerManager_ServiceAgreements': OK.
+checking invariant (85) `Agent::NoConflict_CustomerManager_ServiceAgreementsDepartment': OK.
+checking invariant (86) `Agent::NoConflict_CustomerManager_ServiceProvider': OK.
+checking invariant (87) `Agent::NoConflict_CustomerManager_VPBusinessDivision': OK.
+checking invariant (88) `Agent::NoConflict_CustomerManager_Vendor': OK.
+checking invariant (89) `Agent::NoConflict_Customer_Approvers': OK.
+checking invariant (90) `Agent::NoConflict_Customer_BISystem': OK.
+checking invariant (91) `Agent::NoConflict_Customer_BSaleSystem': OK.
+checking invariant (92) `Agent::NoConflict_Customer_BusinessVP': OK.
+checking invariant (93) `Agent::NoConflict_Customer_CreditControl': OK.
+checking invariant (94) `Agent::NoConflict_Customer_DepartmentManager': OK.
+checking invariant (95) `Agent::NoConflict_Customer_DirectorOfSalesSector': OK.
+checking invariant (96) `Agent::NoConflict_Customer_Economy': OK.
+checking invariant (97) `Agent::NoConflict_Customer_FinancialControl': OK.
+checking invariant (98) `Agent::NoConflict_Customer_InventoryManager': OK.
+checking invariant (99) `Agent::NoConflict_Customer_PresaleDepartment': OK.
+checking invariant (100) `Agent::NoConflict_Customer_PresaleEngineer': OK.
+checking invariant (101) `Agent::NoConflict_Customer_ProjectDepartment': OK.
+checking invariant (102) `Agent::NoConflict_Customer_SalesDepartmentManager': OK.
+checking invariant (103) `Agent::NoConflict_Customer_SectorManager': OK.
+checking invariant (104) `Agent::NoConflict_Customer_ServiceAgreements': OK.
+checking invariant (105) `Agent::NoConflict_Customer_ServiceAgreementsDepartment': OK.
+checking invariant (106) `Agent::NoConflict_Customer_ServiceProvider': OK.
+checking invariant (107) `Agent::NoConflict_Customer_VPBusinessDivision': OK.
+checking invariant (108) `Agent::NoConflict_Customer_Vendor': OK.
+checking invariant (109) `Agent::NoConflict_DepartmentManager_PresaleEngineer': OK.
+checking invariant (110) `Agent::NoConflict_DepartmentManager_ServiceAgreements': OK.
+checking invariant (111) `Agent::NoConflict_DirectorOfSalesSector_BISystem': OK.
+checking invariant (112) `Agent::NoConflict_DirectorOfSalesSector_BSaleSystem': OK.
+checking invariant (113) `Agent::NoConflict_DirectorOfSalesSector_BusinessVP': OK.
+checking invariant (114) `Agent::NoConflict_DirectorOfSalesSector_DepartmentManager': OK.
+checking invariant (115) `Agent::NoConflict_DirectorOfSalesSector_FinancialControl': OK.
+checking invariant (116) `Agent::NoConflict_DirectorOfSalesSector_InventoryManager': OK.
+checking invariant (117) `Agent::NoConflict_DirectorOfSalesSector_PresaleDepartment': OK.
+checking invariant (118) `Agent::NoConflict_DirectorOfSalesSector_PresaleEngineer': OK.
+checking invariant (119) `Agent::NoConflict_DirectorOfSalesSector_ProjectDepartment': OK.
+checking invariant (120) `Agent::NoConflict_DirectorOfSalesSector_SectorManager': OK.
+checking invariant (121) `Agent::NoConflict_DirectorOfSalesSector_ServiceAgreements': OK.
+checking invariant (122) `Agent::NoConflict_DirectorOfSalesSector_ServiceAgreementsDepartment': OK.
+checking invariant (123) `Agent::NoConflict_DirectorOfSalesSector_ServiceProvider': OK.
+checking invariant (124) `Agent::NoConflict_DirectorOfSalesSector_Vendor': OK.
+checking invariant (125) `Agent::NoConflict_Economy_BISystem': OK.
+checking invariant (126) `Agent::NoConflict_Economy_BSaleSystem': OK.
+checking invariant (127) `Agent::NoConflict_Economy_BusinessVP': OK.
+checking invariant (128) `Agent::NoConflict_Economy_DepartmentManager': OK.
+checking invariant (129) `Agent::NoConflict_Economy_FinancialControl': OK.
+checking invariant (130) `Agent::NoConflict_Economy_InventoryManager': OK.
+checking invariant (131) `Agent::NoConflict_Economy_PresaleDepartment': OK.
+checking invariant (132) `Agent::NoConflict_Economy_PresaleEngineer': OK.
+checking invariant (133) `Agent::NoConflict_Economy_ProjectDepartment': OK.
+checking invariant (134) `Agent::NoConflict_Economy_SectorManager': OK.
+checking invariant (135) `Agent::NoConflict_Economy_ServiceAgreements': OK.
+checking invariant (136) `Agent::NoConflict_Economy_ServiceAgreementsDepartment': OK.
+checking invariant (137) `Agent::NoConflict_Economy_ServiceProvider': OK.
+checking invariant (138) `Agent::NoConflict_Economy_Vendor': OK.
+checking invariant (139) `Agent::NoConflict_FinancialControl_BusinessVP': OK.
+checking invariant (140) `Agent::NoConflict_FinancialControl_DepartmentManager': OK.
+checking invariant (141) `Agent::NoConflict_FinancialControl_PresaleEngineer': OK.
+checking invariant (142) `Agent::NoConflict_FinancialControl_SectorManager': OK.
+checking invariant (143) `Agent::NoConflict_FinancialControl_ServiceAgreements': OK.
+checking invariant (144) `Agent::NoConflict_InventoryManager_BISystem': OK.
+checking invariant (145) `Agent::NoConflict_InventoryManager_BSaleSystem': OK.
+checking invariant (146) `Agent::NoConflict_InventoryManager_BusinessVP': OK.
+checking invariant (147) `Agent::NoConflict_InventoryManager_DepartmentManager': OK.
+checking invariant (148) `Agent::NoConflict_InventoryManager_FinancialControl': OK.
+checking invariant (149) `Agent::NoConflict_InventoryManager_PresaleEngineer': OK.
+checking invariant (150) `Agent::NoConflict_InventoryManager_ProjectDepartment': OK.
+checking invariant (151) `Agent::NoConflict_InventoryManager_SectorManager': OK.
+checking invariant (152) `Agent::NoConflict_InventoryManager_ServiceAgreements': OK.
+checking invariant (153) `Agent::NoConflict_InventoryManager_Vendor': OK.
+checking invariant (154) `Agent::NoConflict_Management_Approver': OK.
+checking invariant (155) `Agent::NoConflict_Management_Approvers': OK.
+checking invariant (156) `Agent::NoConflict_Management_BISystem': OK.
+checking invariant (157) `Agent::NoConflict_Management_BSaleSystem': OK.
+checking invariant (158) `Agent::NoConflict_Management_BusinessVP': OK.
+checking invariant (159) `Agent::NoConflict_Management_CreditControl': OK.
+checking invariant (160) `Agent::NoConflict_Management_Customer': OK.
+checking invariant (161) `Agent::NoConflict_Management_CustomerManager': OK.
+checking invariant (162) `Agent::NoConflict_Management_DepartmentManager': OK.
+checking invariant (163) `Agent::NoConflict_Management_DirectorOfSalesSector': OK.
+checking invariant (164) `Agent::NoConflict_Management_Economy': OK.
+checking invariant (165) `Agent::NoConflict_Management_FinancialControl': OK.
+checking invariant (166) `Agent::NoConflict_Management_InventoryManager': OK.
+checking invariant (167) `Agent::NoConflict_Management_PresaleDepartment': OK.
+checking invariant (168) `Agent::NoConflict_Management_PresaleEngineer': OK.
+checking invariant (169) `Agent::NoConflict_Management_ProjectDepartment': OK.
+checking invariant (170) `Agent::NoConflict_Management_SalesDepartmentManager': OK.
+checking invariant (171) `Agent::NoConflict_Management_SectorManager': OK.
+checking invariant (172) `Agent::NoConflict_Management_ServiceAgreements': OK.
+checking invariant (173) `Agent::NoConflict_Management_ServiceAgreementsDepartment': OK.
+checking invariant (174) `Agent::NoConflict_Management_ServiceProvider': OK.
+checking invariant (175) `Agent::NoConflict_Management_VPBusinessDivision': OK.
+checking invariant (176) `Agent::NoConflict_Management_Vendor': OK.
+checking invariant (177) `Agent::NoConflict_PresaleDepartment_BISystem': OK.
+checking invariant (178) `Agent::NoConflict_PresaleDepartment_BSaleSystem': OK.
+checking invariant (179) `Agent::NoConflict_PresaleDepartment_BusinessVP': OK.
+checking invariant (180) `Agent::NoConflict_PresaleDepartment_DepartmentManager': OK.
+checking invariant (181) `Agent::NoConflict_PresaleDepartment_FinancialControl': OK.
+checking invariant (182) `Agent::NoConflict_PresaleDepartment_InventoryManager': OK.
+checking invariant (183) `Agent::NoConflict_PresaleDepartment_PresaleEngineer': OK.
+checking invariant (184) `Agent::NoConflict_PresaleDepartment_ProjectDepartment': OK.
+checking invariant (185) `Agent::NoConflict_PresaleDepartment_SectorManager': OK.
+checking invariant (186) `Agent::NoConflict_PresaleDepartment_ServiceAgreements': OK.
+checking invariant (187) `Agent::NoConflict_PresaleDepartment_ServiceProvider': OK.
+checking invariant (188) `Agent::NoConflict_PresaleDepartment_Vendor': OK.
+checking invariant (189) `Agent::NoConflict_ProjectDepartment_BISystem': OK.
+checking invariant (190) `Agent::NoConflict_ProjectDepartment_BSaleSystem': OK.
+checking invariant (191) `Agent::NoConflict_ProjectDepartment_BusinessVP': OK.
+checking invariant (192) `Agent::NoConflict_ProjectDepartment_DepartmentManager': OK.
+checking invariant (193) `Agent::NoConflict_ProjectDepartment_FinancialControl': OK.
+checking invariant (194) `Agent::NoConflict_ProjectDepartment_PresaleEngineer': OK.
+checking invariant (195) `Agent::NoConflict_ProjectDepartment_SectorManager': OK.
+checking invariant (196) `Agent::NoConflict_ProjectDepartment_ServiceAgreements': OK.
+checking invariant (197) `Agent::NoConflict_ProjectDepartment_Vendor': OK.
+checking invariant (198) `Agent::NoConflict_SalesDepartmentManager_BISystem': OK.
+checking invariant (199) `Agent::NoConflict_SalesDepartmentManager_BSaleSystem': OK.
+checking invariant (200) `Agent::NoConflict_SalesDepartmentManager_BusinessVP': OK.
+checking invariant (201) `Agent::NoConflict_SalesDepartmentManager_DepartmentManager': OK.
+checking invariant (202) `Agent::NoConflict_SalesDepartmentManager_FinancialControl': OK.
+checking invariant (203) `Agent::NoConflict_SalesDepartmentManager_InventoryManager': OK.
+checking invariant (204) `Agent::NoConflict_SalesDepartmentManager_PresaleDepartment': OK.
+checking invariant (205) `Agent::NoConflict_SalesDepartmentManager_PresaleEngineer': OK.
+checking invariant (206) `Agent::NoConflict_SalesDepartmentManager_ProjectDepartment': OK.
+checking invariant (207) `Agent::NoConflict_SalesDepartmentManager_SectorManager': OK.
+checking invariant (208) `Agent::NoConflict_SalesDepartmentManager_ServiceAgreements': OK.
+checking invariant (209) `Agent::NoConflict_SalesDepartmentManager_ServiceAgreementsDepartment': OK.
+checking invariant (210) `Agent::NoConflict_SalesDepartmentManager_ServiceProvider': OK.
+checking invariant (211) `Agent::NoConflict_SalesDepartmentManager_Vendor': OK.
+checking invariant (212) `Agent::NoConflict_SectorManager_DepartmentManager': OK.
+checking invariant (213) `Agent::NoConflict_SectorManager_PresaleEngineer': OK.
+checking invariant (214) `Agent::NoConflict_SectorManager_ServiceAgreements': OK.
+checking invariant (215) `Agent::NoConflict_ServiceAgreementsDepartment_BISystem': OK.
+checking invariant (216) `Agent::NoConflict_ServiceAgreementsDepartment_BSaleSystem': OK.
+checking invariant (217) `Agent::NoConflict_ServiceAgreementsDepartment_BusinessVP': OK.
+checking invariant (218) `Agent::NoConflict_ServiceAgreementsDepartment_DepartmentManager': OK.
+checking invariant (219) `Agent::NoConflict_ServiceAgreementsDepartment_FinancialControl': OK.
+checking invariant (220) `Agent::NoConflict_ServiceAgreementsDepartment_InventoryManager': OK.
+checking invariant (221) `Agent::NoConflict_ServiceAgreementsDepartment_PresaleDepartment': OK.
+checking invariant (222) `Agent::NoConflict_ServiceAgreementsDepartment_PresaleEngineer': OK.
+checking invariant (223) `Agent::NoConflict_ServiceAgreementsDepartment_ProjectDepartment': OK.
+checking invariant (224) `Agent::NoConflict_ServiceAgreementsDepartment_SectorManager': OK.
+checking invariant (225) `Agent::NoConflict_ServiceAgreementsDepartment_ServiceAgreements': OK.
+checking invariant (226) `Agent::NoConflict_ServiceAgreementsDepartment_ServiceProvider': OK.
+checking invariant (227) `Agent::NoConflict_ServiceAgreementsDepartment_Vendor': OK.
+checking invariant (228) `Agent::NoConflict_ServiceAgreements_PresaleEngineer': OK.
+checking invariant (229) `Agent::NoConflict_ServiceProvider_BISystem': OK.
+checking invariant (230) `Agent::NoConflict_ServiceProvider_BSaleSystem': OK.
+checking invariant (231) `Agent::NoConflict_ServiceProvider_BusinessVP': OK.
+checking invariant (232) `Agent::NoConflict_ServiceProvider_DepartmentManager': OK.
+checking invariant (233) `Agent::NoConflict_ServiceProvider_FinancialControl': OK.
+checking invariant (234) `Agent::NoConflict_ServiceProvider_InventoryManager': OK.
+checking invariant (235) `Agent::NoConflict_ServiceProvider_PresaleEngineer': OK.
+checking invariant (236) `Agent::NoConflict_ServiceProvider_ProjectDepartment': OK.
+checking invariant (237) `Agent::NoConflict_ServiceProvider_SectorManager': OK.
+checking invariant (238) `Agent::NoConflict_ServiceProvider_ServiceAgreements': OK.
+checking invariant (239) `Agent::NoConflict_ServiceProvider_Vendor': OK.
+checking invariant (240) `Agent::NoConflict_VPBusinessDivision_BISystem': OK.
+checking invariant (241) `Agent::NoConflict_VPBusinessDivision_BSaleSystem': OK.
+checking invariant (242) `Agent::NoConflict_VPBusinessDivision_BusinessVP': OK.
+checking invariant (243) `Agent::NoConflict_VPBusinessDivision_DepartmentManager': OK.
+checking invariant (244) `Agent::NoConflict_VPBusinessDivision_FinancialControl': OK.
+checking invariant (245) `Agent::NoConflict_VPBusinessDivision_InventoryManager': OK.
+checking invariant (246) `Agent::NoConflict_VPBusinessDivision_PresaleDepartment': OK.
+checking invariant (247) `Agent::NoConflict_VPBusinessDivision_PresaleEngineer': OK.
+checking invariant (248) `Agent::NoConflict_VPBusinessDivision_ProjectDepartment': OK.
+checking invariant (249) `Agent::NoConflict_VPBusinessDivision_SectorManager': OK.
+checking invariant (250) `Agent::NoConflict_VPBusinessDivision_ServiceAgreements': OK.
+checking invariant (251) `Agent::NoConflict_VPBusinessDivision_ServiceAgreementsDepartment': OK.
+checking invariant (252) `Agent::NoConflict_VPBusinessDivision_ServiceProvider': OK.
+checking invariant (253) `Agent::NoConflict_VPBusinessDivision_Vendor': OK.
+checking invariant (254) `Agent::NoConflict_Vendor_BISystem': OK.
+checking invariant (255) `Agent::NoConflict_Vendor_BSaleSystem': OK.
+checking invariant (256) `Agent::NoConflict_Vendor_BusinessVP': OK.
+checking invariant (257) `Agent::NoConflict_Vendor_DepartmentManager': OK.
+checking invariant (258) `Agent::NoConflict_Vendor_FinancialControl': OK.
+checking invariant (259) `Agent::NoConflict_Vendor_PresaleEngineer': OK.
+checking invariant (260) `Agent::NoConflict_Vendor_SectorManager': OK.
+checking invariant (261) `Agent::NoConflict_Vendor_ServiceAgreements': OK.
+checking invariant (262) `Agent::NoSelfConflict_Approver': OK.
+checking invariant (263) `Agent::NoSelfConflict_Approvers': OK.
+checking invariant (264) `Agent::NoSelfConflict_BISystem': OK.
+checking invariant (265) `Agent::NoSelfConflict_BSaleSystem': OK.
+checking invariant (266) `Agent::NoSelfConflict_BusinessVP': OK.
+checking invariant (267) `Agent::NoSelfConflict_Customer': OK.
+checking invariant (268) `Agent::NoSelfConflict_CustomerManager': OK.
+checking invariant (269) `Agent::NoSelfConflict_DepartmentManager': OK.
+checking invariant (270) `Agent::NoSelfConflict_FinancialControl': OK.
+checking invariant (271) `Agent::NoSelfConflict_InventoryManager': OK.
+checking invariant (272) `Agent::NoSelfConflict_Management': OK.
+checking invariant (273) `Agent::NoSelfConflict_PresaleDepartment': OK.
+checking invariant (274) `Agent::NoSelfConflict_PresaleEngineer': OK.
+checking invariant (275) `Agent::NoSelfConflict_ProjectDepartment': OK.
+checking invariant (276) `Agent::NoSelfConflict_SectorManager': OK.
+checking invariant (277) `Agent::NoSelfConflict_ServiceAgreements': OK.
+checking invariant (278) `Agent::NoSelfConflict_ServiceAgreementsDepartment': OK.
+checking invariant (279) `Agent::NoSelfConflict_ServiceProvider': OK.
+checking invariant (280) `Agent::NoSelfConflict_Vendor': OK.
+checking invariant (281) `Approvers::NoConflict_CreditControl_DirectorOfSalesSector': OK.
+checking invariant (282) `Approvers::NoConflict_CreditControl_SalesDepartmentManager': OK.
+checking invariant (283) `Approvers::NoConflict_CreditControl_VPBusinessDivision': OK.
+checking invariant (284) `Approvers::NoConflict_DirectorOfSalesSector_VPBusinessDivision': OK.
+checking invariant (285) `Approvers::NoConflict_Economy_CreditControl': OK.
+checking invariant (286) `Approvers::NoConflict_Economy_DirectorOfSalesSector': OK.
+checking invariant (287) `Approvers::NoConflict_Economy_SalesDepartmentManager': OK.
+checking invariant (288) `Approvers::NoConflict_Economy_VPBusinessDivision': OK.
+checking invariant (289) `Approvers::NoConflict_SalesDepartmentManager_DirectorOfSalesSector': OK.
+checking invariant (290) `Approvers::NoConflict_SalesDepartmentManager_VPBusinessDivision': OK.
+checking invariant (291) `Approvers::NoSelfConflict_CreditControl': OK.
+checking invariant (292) `Approvers::NoSelfConflict_DirectorOfSalesSector': OK.
+checking invariant (293) `Approvers::NoSelfConflict_Economy': OK.
+checking invariant (294) `Approvers::NoSelfConflict_SalesDepartmentManager': OK.
+checking invariant (295) `Approvers::NoSelfConflict_VPBusinessDivision': OK.
+checking invariant (296) `CreditControl::RoleOwnerScope_Approvers_CreditControl': OK.
+checking invariant (297) `DirectorOfSalesSector::RoleOwnerScope_Approvers_DirectorOfSalesSector': OK.
+checking invariant (298) `Economy::RoleOwnerScope_Approvers_Economy': OK.
+checking invariant (299) `SalesDepartmentManager::RoleOwnerScope_Approvers_SalesDepartmentManager': OK.
+checking invariant (300) `VPBusinessDivision::RoleOwnerScope_Approvers_VPBusinessDivision': OK.
+checked 300 invariants in 0.004s, 0 failures.
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.requireValidState(VisualConformanceSession.java:337)
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.<init>(VisualConformanceSession.java:93)
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.prepare(VisualConformanceSession.java:149)
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.prepare(VisualConformanceSession.java:122)
+	at org.vnu.sme.goal.verify.conformance.SalesForecastConformanceTest.run(SalesForecastConformanceTest.java:94)
+	at org.vnu.sme.goal.verify.conformance.SalesForecastConformanceTest.directSendWorkaroundRestoresSpeedButViolatesApprovalGoals(SalesForecastConformanceTest.java:80)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+org.vnu.sme.goal.verify.conformance.SalesForecastConformanceTest.prescribedButDelayedApprovalReproducesTheReportedMisalignment -- Time elapsed: 0.077 s <<< ERROR!
+java.lang.IllegalStateException: 
+initialization gate failed ACL/USE constraints:
+checking structure...
+Multiplicity constraint violation in association `SalesCase_contains_Approver':
+  Object `case1' of class `SalesCase' is connected to 0 objects of class `Approver'
+  at association end `Approver' but the multiplicity is specified as `1..*'.
+Multiplicity constraint violation in association `SalesCase_contains_Approver':
+  Object `approver1' of class `Approver' is connected to 0 objects of class `SalesCase'
+  at association end `group' but the multiplicity is specified as `1'.
+Multiplicity constraint violation in association `SalesCase_contains_Customer':
+  Object `case1' of class `SalesCase' is connected to 0 objects of class `Customer'
+  at association end `Customer' but the multiplicity is specified as `1'.
+Multiplicity constraint violation in association `SalesCase_contains_Customer':
+  Object `customer1' of class `Customer' is connected to 0 objects of class `SalesCase'
+  at association end `group' but the multiplicity is specified as `1'.
+Multiplicity constraint violation in association `SalesCase_contains_CustomerManager':
+  Object `case1' of class `SalesCase' is connected to 0 objects of class `CustomerManager'
+  at association end `CustomerManager' but the multiplicity is specified as `1'.
+Multiplicity constraint violation in association `SalesCase_contains_CustomerManager':
+  Object `manager1' of class `CustomerManager' is connected to 0 objects of class `SalesCase'
+  at association end `group' but the multiplicity is specified as `1'.
+Multiplicity constraint violation in association `SalesCase_contains_Management':
+  Object `case1' of class `SalesCase' is connected to 0 objects of class `Management'
+  at association end `Management' but the multiplicity is specified as `1'.
+Multiplicity constraint violation in association `SalesCase_contains_Management':
+  Object `management1' of class `Management' is connected to 0 objects of class `SalesCase'
+  at association end `group' but the multiplicity is specified as `1'.
+checked structure in 0ms.
+checking invariants...
+checking invariant (1) `Agent::NoConflict_Approver_Approvers': OK.
+checking invariant (2) `Agent::NoConflict_Approver_BISystem': OK.
+checking invariant (3) `Agent::NoConflict_Approver_BSaleSystem': OK.
+checking invariant (4) `Agent::NoConflict_Approver_BusinessVP': OK.
+checking invariant (5) `Agent::NoConflict_Approver_CreditControl': OK.
+checking invariant (6) `Agent::NoConflict_Approver_Customer': OK.
+checking invariant (7) `Agent::NoConflict_Approver_DepartmentManager': OK.
+checking invariant (8) `Agent::NoConflict_Approver_DirectorOfSalesSector': OK.
+checking invariant (9) `Agent::NoConflict_Approver_Economy': OK.
+checking invariant (10) `Agent::NoConflict_Approver_FinancialControl': OK.
+checking invariant (11) `Agent::NoConflict_Approver_InventoryManager': OK.
+checking invariant (12) `Agent::NoConflict_Approver_PresaleDepartment': OK.
+checking invariant (13) `Agent::NoConflict_Approver_PresaleEngineer': OK.
+checking invariant (14) `Agent::NoConflict_Approver_ProjectDepartment': OK.
+checking invariant (15) `Agent::NoConflict_Approver_SalesDepartmentManager': OK.
+checking invariant (16) `Agent::NoConflict_Approver_SectorManager': OK.
+checking invariant (17) `Agent::NoConflict_Approver_ServiceAgreements': OK.
+checking invariant (18) `Agent::NoConflict_Approver_ServiceAgreementsDepartment': OK.
+checking invariant (19) `Agent::NoConflict_Approver_ServiceProvider': OK.
+checking invariant (20) `Agent::NoConflict_Approver_VPBusinessDivision': OK.
+checking invariant (21) `Agent::NoConflict_Approver_Vendor': OK.
+checking invariant (22) `Agent::NoConflict_Approvers_BISystem': OK.
+checking invariant (23) `Agent::NoConflict_Approvers_BSaleSystem': OK.
+checking invariant (24) `Agent::NoConflict_Approvers_BusinessVP': OK.
+checking invariant (25) `Agent::NoConflict_Approvers_DepartmentManager': OK.
+checking invariant (26) `Agent::NoConflict_Approvers_FinancialControl': OK.
+checking invariant (27) `Agent::NoConflict_Approvers_InventoryManager': OK.
+checking invariant (28) `Agent::NoConflict_Approvers_PresaleDepartment': OK.
+checking invariant (29) `Agent::NoConflict_Approvers_PresaleEngineer': OK.
+checking invariant (30) `Agent::NoConflict_Approvers_ProjectDepartment': OK.
+checking invariant (31) `Agent::NoConflict_Approvers_SectorManager': OK.
+checking invariant (32) `Agent::NoConflict_Approvers_ServiceAgreements': OK.
+checking invariant (33) `Agent::NoConflict_Approvers_ServiceAgreementsDepartment': OK.
+checking invariant (34) `Agent::NoConflict_Approvers_ServiceProvider': OK.
+checking invariant (35) `Agent::NoConflict_Approvers_Vendor': OK.
+checking invariant (36) `Agent::NoConflict_BISystem_BSaleSystem': OK.
+checking invariant (37) `Agent::NoConflict_BISystem_BusinessVP': OK.
+checking invariant (38) `Agent::NoConflict_BISystem_DepartmentManager': OK.
+checking invariant (39) `Agent::NoConflict_BISystem_FinancialControl': OK.
+checking invariant (40) `Agent::NoConflict_BISystem_PresaleEngineer': OK.
+checking invariant (41) `Agent::NoConflict_BISystem_SectorManager': OK.
+checking invariant (42) `Agent::NoConflict_BISystem_ServiceAgreements': OK.
+checking invariant (43) `Agent::NoConflict_BSaleSystem_BusinessVP': OK.
+checking invariant (44) `Agent::NoConflict_BSaleSystem_DepartmentManager': OK.
+checking invariant (45) `Agent::NoConflict_BSaleSystem_FinancialControl': OK.
+checking invariant (46) `Agent::NoConflict_BSaleSystem_PresaleEngineer': OK.
+checking invariant (47) `Agent::NoConflict_BSaleSystem_SectorManager': OK.
+checking invariant (48) `Agent::NoConflict_BSaleSystem_ServiceAgreements': OK.
+checking invariant (49) `Agent::NoConflict_BusinessVP_DepartmentManager': OK.
+checking invariant (50) `Agent::NoConflict_BusinessVP_PresaleEngineer': OK.
+checking invariant (51) `Agent::NoConflict_BusinessVP_SectorManager': OK.
+checking invariant (52) `Agent::NoConflict_BusinessVP_ServiceAgreements': OK.
+checking invariant (53) `Agent::NoConflict_CreditControl_BISystem': OK.
+checking invariant (54) `Agent::NoConflict_CreditControl_BSaleSystem': OK.
+checking invariant (55) `Agent::NoConflict_CreditControl_BusinessVP': OK.
+checking invariant (56) `Agent::NoConflict_CreditControl_DepartmentManager': OK.
+checking invariant (57) `Agent::NoConflict_CreditControl_FinancialControl': OK.
+checking invariant (58) `Agent::NoConflict_CreditControl_InventoryManager': OK.
+checking invariant (59) `Agent::NoConflict_CreditControl_PresaleDepartment': OK.
+checking invariant (60) `Agent::NoConflict_CreditControl_PresaleEngineer': OK.
+checking invariant (61) `Agent::NoConflict_CreditControl_ProjectDepartment': OK.
+checking invariant (62) `Agent::NoConflict_CreditControl_SectorManager': OK.
+checking invariant (63) `Agent::NoConflict_CreditControl_ServiceAgreements': OK.
+checking invariant (64) `Agent::NoConflict_CreditControl_ServiceAgreementsDepartment': OK.
+checking invariant (65) `Agent::NoConflict_CreditControl_ServiceProvider': OK.
+checking invariant (66) `Agent::NoConflict_CreditControl_Vendor': OK.
+checking invariant (67) `Agent::NoConflict_CustomerManager_Approver': OK.
+checking invariant (68) `Agent::NoConflict_CustomerManager_Approvers': OK.
+checking invariant (69) `Agent::NoConflict_CustomerManager_BISystem': OK.
+checking invariant (70) `Agent::NoConflict_CustomerManager_BSaleSystem': OK.
+checking invariant (71) `Agent::NoConflict_CustomerManager_BusinessVP': OK.
+checking invariant (72) `Agent::NoConflict_CustomerManager_CreditControl': OK.
+checking invariant (73) `Agent::NoConflict_CustomerManager_Customer': OK.
+checking invariant (74) `Agent::NoConflict_CustomerManager_DepartmentManager': OK.
+checking invariant (75) `Agent::NoConflict_CustomerManager_DirectorOfSalesSector': OK.
+checking invariant (76) `Agent::NoConflict_CustomerManager_Economy': OK.
+checking invariant (77) `Agent::NoConflict_CustomerManager_FinancialControl': OK.
+checking invariant (78) `Agent::NoConflict_CustomerManager_InventoryManager': OK.
+checking invariant (79) `Agent::NoConflict_CustomerManager_PresaleDepartment': OK.
+checking invariant (80) `Agent::NoConflict_CustomerManager_PresaleEngineer': OK.
+checking invariant (81) `Agent::NoConflict_CustomerManager_ProjectDepartment': OK.
+checking invariant (82) `Agent::NoConflict_CustomerManager_SalesDepartmentManager': OK.
+checking invariant (83) `Agent::NoConflict_CustomerManager_SectorManager': OK.
+checking invariant (84) `Agent::NoConflict_CustomerManager_ServiceAgreements': OK.
+checking invariant (85) `Agent::NoConflict_CustomerManager_ServiceAgreementsDepartment': OK.
+checking invariant (86) `Agent::NoConflict_CustomerManager_ServiceProvider': OK.
+checking invariant (87) `Agent::NoConflict_CustomerManager_VPBusinessDivision': OK.
+checking invariant (88) `Agent::NoConflict_CustomerManager_Vendor': OK.
+checking invariant (89) `Agent::NoConflict_Customer_Approvers': OK.
+checking invariant (90) `Agent::NoConflict_Customer_BISystem': OK.
+checking invariant (91) `Agent::NoConflict_Customer_BSaleSystem': OK.
+checking invariant (92) `Agent::NoConflict_Customer_BusinessVP': OK.
+checking invariant (93) `Agent::NoConflict_Customer_CreditControl': OK.
+checking invariant (94) `Agent::NoConflict_Customer_DepartmentManager': OK.
+checking invariant (95) `Agent::NoConflict_Customer_DirectorOfSalesSector': OK.
+checking invariant (96) `Agent::NoConflict_Customer_Economy': OK.
+checking invariant (97) `Agent::NoConflict_Customer_FinancialControl': OK.
+checking invariant (98) `Agent::NoConflict_Customer_InventoryManager': OK.
+checking invariant (99) `Agent::NoConflict_Customer_PresaleDepartment': OK.
+checking invariant (100) `Agent::NoConflict_Customer_PresaleEngineer': OK.
+checking invariant (101) `Agent::NoConflict_Customer_ProjectDepartment': OK.
+checking invariant (102) `Agent::NoConflict_Customer_SalesDepartmentManager': OK.
+checking invariant (103) `Agent::NoConflict_Customer_SectorManager': OK.
+checking invariant (104) `Agent::NoConflict_Customer_ServiceAgreements': OK.
+checking invariant (105) `Agent::NoConflict_Customer_ServiceAgreementsDepartment': OK.
+checking invariant (106) `Agent::NoConflict_Customer_ServiceProvider': OK.
+checking invariant (107) `Agent::NoConflict_Customer_VPBusinessDivision': OK.
+checking invariant (108) `Agent::NoConflict_Customer_Vendor': OK.
+checking invariant (109) `Agent::NoConflict_DepartmentManager_PresaleEngineer': OK.
+checking invariant (110) `Agent::NoConflict_DepartmentManager_ServiceAgreements': OK.
+checking invariant (111) `Agent::NoConflict_DirectorOfSalesSector_BISystem': OK.
+checking invariant (112) `Agent::NoConflict_DirectorOfSalesSector_BSaleSystem': OK.
+checking invariant (113) `Agent::NoConflict_DirectorOfSalesSector_BusinessVP': OK.
+checking invariant (114) `Agent::NoConflict_DirectorOfSalesSector_DepartmentManager': OK.
+checking invariant (115) `Agent::NoConflict_DirectorOfSalesSector_FinancialControl': OK.
+checking invariant (116) `Agent::NoConflict_DirectorOfSalesSector_InventoryManager': OK.
+checking invariant (117) `Agent::NoConflict_DirectorOfSalesSector_PresaleDepartment': OK.
+checking invariant (118) `Agent::NoConflict_DirectorOfSalesSector_PresaleEngineer': OK.
+checking invariant (119) `Agent::NoConflict_DirectorOfSalesSector_ProjectDepartment': OK.
+checking invariant (120) `Agent::NoConflict_DirectorOfSalesSector_SectorManager': OK.
+checking invariant (121) `Agent::NoConflict_DirectorOfSalesSector_ServiceAgreements': OK.
+checking invariant (122) `Agent::NoConflict_DirectorOfSalesSector_ServiceAgreementsDepartment': OK.
+checking invariant (123) `Agent::NoConflict_DirectorOfSalesSector_ServiceProvider': OK.
+checking invariant (124) `Agent::NoConflict_DirectorOfSalesSector_Vendor': OK.
+checking invariant (125) `Agent::NoConflict_Economy_BISystem': OK.
+checking invariant (126) `Agent::NoConflict_Economy_BSaleSystem': OK.
+checking invariant (127) `Agent::NoConflict_Economy_BusinessVP': OK.
+checking invariant (128) `Agent::NoConflict_Economy_DepartmentManager': OK.
+checking invariant (129) `Agent::NoConflict_Economy_FinancialControl': OK.
+checking invariant (130) `Agent::NoConflict_Economy_InventoryManager': OK.
+checking invariant (131) `Agent::NoConflict_Economy_PresaleDepartment': OK.
+checking invariant (132) `Agent::NoConflict_Economy_PresaleEngineer': OK.
+checking invariant (133) `Agent::NoConflict_Economy_ProjectDepartment': OK.
+checking invariant (134) `Agent::NoConflict_Economy_SectorManager': OK.
+checking invariant (135) `Agent::NoConflict_Economy_ServiceAgreements': OK.
+checking invariant (136) `Agent::NoConflict_Economy_ServiceAgreementsDepartment': OK.
+checking invariant (137) `Agent::NoConflict_Economy_ServiceProvider': OK.
+checking invariant (138) `Agent::NoConflict_Economy_Vendor': OK.
+checking invariant (139) `Agent::NoConflict_FinancialControl_BusinessVP': OK.
+checking invariant (140) `Agent::NoConflict_FinancialControl_DepartmentManager': OK.
+checking invariant (141) `Agent::NoConflict_FinancialControl_PresaleEngineer': OK.
+checking invariant (142) `Agent::NoConflict_FinancialControl_SectorManager': OK.
+checking invariant (143) `Agent::NoConflict_FinancialControl_ServiceAgreements': OK.
+checking invariant (144) `Agent::NoConflict_InventoryManager_BISystem': OK.
+checking invariant (145) `Agent::NoConflict_InventoryManager_BSaleSystem': OK.
+checking invariant (146) `Agent::NoConflict_InventoryManager_BusinessVP': OK.
+checking invariant (147) `Agent::NoConflict_InventoryManager_DepartmentManager': OK.
+checking invariant (148) `Agent::NoConflict_InventoryManager_FinancialControl': OK.
+checking invariant (149) `Agent::NoConflict_InventoryManager_PresaleEngineer': OK.
+checking invariant (150) `Agent::NoConflict_InventoryManager_ProjectDepartment': OK.
+checking invariant (151) `Agent::NoConflict_InventoryManager_SectorManager': OK.
+checking invariant (152) `Agent::NoConflict_InventoryManager_ServiceAgreements': OK.
+checking invariant (153) `Agent::NoConflict_InventoryManager_Vendor': OK.
+checking invariant (154) `Agent::NoConflict_Management_Approver': OK.
+checking invariant (155) `Agent::NoConflict_Management_Approvers': OK.
+checking invariant (156) `Agent::NoConflict_Management_BISystem': OK.
+checking invariant (157) `Agent::NoConflict_Management_BSaleSystem': OK.
+checking invariant (158) `Agent::NoConflict_Management_BusinessVP': OK.
+checking invariant (159) `Agent::NoConflict_Management_CreditControl': OK.
+checking invariant (160) `Agent::NoConflict_Management_Customer': OK.
+checking invariant (161) `Agent::NoConflict_Management_CustomerManager': OK.
+checking invariant (162) `Agent::NoConflict_Management_DepartmentManager': OK.
+checking invariant (163) `Agent::NoConflict_Management_DirectorOfSalesSector': OK.
+checking invariant (164) `Agent::NoConflict_Management_Economy': OK.
+checking invariant (165) `Agent::NoConflict_Management_FinancialControl': OK.
+checking invariant (166) `Agent::NoConflict_Management_InventoryManager': OK.
+checking invariant (167) `Agent::NoConflict_Management_PresaleDepartment': OK.
+checking invariant (168) `Agent::NoConflict_Management_PresaleEngineer': OK.
+checking invariant (169) `Agent::NoConflict_Management_ProjectDepartment': OK.
+checking invariant (170) `Agent::NoConflict_Management_SalesDepartmentManager': OK.
+checking invariant (171) `Agent::NoConflict_Management_SectorManager': OK.
+checking invariant (172) `Agent::NoConflict_Management_ServiceAgreements': OK.
+checking invariant (173) `Agent::NoConflict_Management_ServiceAgreementsDepartment': OK.
+checking invariant (174) `Agent::NoConflict_Management_ServiceProvider': OK.
+checking invariant (175) `Agent::NoConflict_Management_VPBusinessDivision': OK.
+checking invariant (176) `Agent::NoConflict_Management_Vendor': OK.
+checking invariant (177) `Agent::NoConflict_PresaleDepartment_BISystem': OK.
+checking invariant (178) `Agent::NoConflict_PresaleDepartment_BSaleSystem': OK.
+checking invariant (179) `Agent::NoConflict_PresaleDepartment_BusinessVP': OK.
+checking invariant (180) `Agent::NoConflict_PresaleDepartment_DepartmentManager': OK.
+checking invariant (181) `Agent::NoConflict_PresaleDepartment_FinancialControl': OK.
+checking invariant (182) `Agent::NoConflict_PresaleDepartment_InventoryManager': OK.
+checking invariant (183) `Agent::NoConflict_PresaleDepartment_PresaleEngineer': OK.
+checking invariant (184) `Agent::NoConflict_PresaleDepartment_ProjectDepartment': OK.
+checking invariant (185) `Agent::NoConflict_PresaleDepartment_SectorManager': OK.
+checking invariant (186) `Agent::NoConflict_PresaleDepartment_ServiceAgreements': OK.
+checking invariant (187) `Agent::NoConflict_PresaleDepartment_ServiceProvider': OK.
+checking invariant (188) `Agent::NoConflict_PresaleDepartment_Vendor': OK.
+checking invariant (189) `Agent::NoConflict_ProjectDepartment_BISystem': OK.
+checking invariant (190) `Agent::NoConflict_ProjectDepartment_BSaleSystem': OK.
+checking invariant (191) `Agent::NoConflict_ProjectDepartment_BusinessVP': OK.
+checking invariant (192) `Agent::NoConflict_ProjectDepartment_DepartmentManager': OK.
+checking invariant (193) `Agent::NoConflict_ProjectDepartment_FinancialControl': OK.
+checking invariant (194) `Agent::NoConflict_ProjectDepartment_PresaleEngineer': OK.
+checking invariant (195) `Agent::NoConflict_ProjectDepartment_SectorManager': OK.
+checking invariant (196) `Agent::NoConflict_ProjectDepartment_ServiceAgreements': OK.
+checking invariant (197) `Agent::NoConflict_ProjectDepartment_Vendor': OK.
+checking invariant (198) `Agent::NoConflict_SalesDepartmentManager_BISystem': OK.
+checking invariant (199) `Agent::NoConflict_SalesDepartmentManager_BSaleSystem': OK.
+checking invariant (200) `Agent::NoConflict_SalesDepartmentManager_BusinessVP': OK.
+checking invariant (201) `Agent::NoConflict_SalesDepartmentManager_DepartmentManager': OK.
+checking invariant (202) `Agent::NoConflict_SalesDepartmentManager_FinancialControl': OK.
+checking invariant (203) `Agent::NoConflict_SalesDepartmentManager_InventoryManager': OK.
+checking invariant (204) `Agent::NoConflict_SalesDepartmentManager_PresaleDepartment': OK.
+checking invariant (205) `Agent::NoConflict_SalesDepartmentManager_PresaleEngineer': OK.
+checking invariant (206) `Agent::NoConflict_SalesDepartmentManager_ProjectDepartment': OK.
+checking invariant (207) `Agent::NoConflict_SalesDepartmentManager_SectorManager': OK.
+checking invariant (208) `Agent::NoConflict_SalesDepartmentManager_ServiceAgreements': OK.
+checking invariant (209) `Agent::NoConflict_SalesDepartmentManager_ServiceAgreementsDepartment': OK.
+checking invariant (210) `Agent::NoConflict_SalesDepartmentManager_ServiceProvider': OK.
+checking invariant (211) `Agent::NoConflict_SalesDepartmentManager_Vendor': OK.
+checking invariant (212) `Agent::NoConflict_SectorManager_DepartmentManager': OK.
+checking invariant (213) `Agent::NoConflict_SectorManager_PresaleEngineer': OK.
+checking invariant (214) `Agent::NoConflict_SectorManager_ServiceAgreements': OK.
+checking invariant (215) `Agent::NoConflict_ServiceAgreementsDepartment_BISystem': OK.
+checking invariant (216) `Agent::NoConflict_ServiceAgreementsDepartment_BSaleSystem': OK.
+checking invariant (217) `Agent::NoConflict_ServiceAgreementsDepartment_BusinessVP': OK.
+checking invariant (218) `Agent::NoConflict_ServiceAgreementsDepartment_DepartmentManager': OK.
+checking invariant (219) `Agent::NoConflict_ServiceAgreementsDepartment_FinancialControl': OK.
+checking invariant (220) `Agent::NoConflict_ServiceAgreementsDepartment_InventoryManager': OK.
+checking invariant (221) `Agent::NoConflict_ServiceAgreementsDepartment_PresaleDepartment': OK.
+checking invariant (222) `Agent::NoConflict_ServiceAgreementsDepartment_PresaleEngineer': OK.
+checking invariant (223) `Agent::NoConflict_ServiceAgreementsDepartment_ProjectDepartment': OK.
+checking invariant (224) `Agent::NoConflict_ServiceAgreementsDepartment_SectorManager': OK.
+checking invariant (225) `Agent::NoConflict_ServiceAgreementsDepartment_ServiceAgreements': OK.
+checking invariant (226) `Agent::NoConflict_ServiceAgreementsDepartment_ServiceProvider': OK.
+checking invariant (227) `Agent::NoConflict_ServiceAgreementsDepartment_Vendor': OK.
+checking invariant (228) `Agent::NoConflict_ServiceAgreements_PresaleEngineer': OK.
+checking invariant (229) `Agent::NoConflict_ServiceProvider_BISystem': OK.
+checking invariant (230) `Agent::NoConflict_ServiceProvider_BSaleSystem': OK.
+checking invariant (231) `Agent::NoConflict_ServiceProvider_BusinessVP': OK.
+checking invariant (232) `Agent::NoConflict_ServiceProvider_DepartmentManager': OK.
+checking invariant (233) `Agent::NoConflict_ServiceProvider_FinancialControl': OK.
+checking invariant (234) `Agent::NoConflict_ServiceProvider_InventoryManager': OK.
+checking invariant (235) `Agent::NoConflict_ServiceProvider_PresaleEngineer': OK.
+checking invariant (236) `Agent::NoConflict_ServiceProvider_ProjectDepartment': OK.
+checking invariant (237) `Agent::NoConflict_ServiceProvider_SectorManager': OK.
+checking invariant (238) `Agent::NoConflict_ServiceProvider_ServiceAgreements': OK.
+checking invariant (239) `Agent::NoConflict_ServiceProvider_Vendor': OK.
+checking invariant (240) `Agent::NoConflict_VPBusinessDivision_BISystem': OK.
+checking invariant (241) `Agent::NoConflict_VPBusinessDivision_BSaleSystem': OK.
+checking invariant (242) `Agent::NoConflict_VPBusinessDivision_BusinessVP': OK.
+checking invariant (243) `Agent::NoConflict_VPBusinessDivision_DepartmentManager': OK.
+checking invariant (244) `Agent::NoConflict_VPBusinessDivision_FinancialControl': OK.
+checking invariant (245) `Agent::NoConflict_VPBusinessDivision_InventoryManager': OK.
+checking invariant (246) `Agent::NoConflict_VPBusinessDivision_PresaleDepartment': OK.
+checking invariant (247) `Agent::NoConflict_VPBusinessDivision_PresaleEngineer': OK.
+checking invariant (248) `Agent::NoConflict_VPBusinessDivision_ProjectDepartment': OK.
+checking invariant (249) `Agent::NoConflict_VPBusinessDivision_SectorManager': OK.
+checking invariant (250) `Agent::NoConflict_VPBusinessDivision_ServiceAgreements': OK.
+checking invariant (251) `Agent::NoConflict_VPBusinessDivision_ServiceAgreementsDepartment': OK.
+checking invariant (252) `Agent::NoConflict_VPBusinessDivision_ServiceProvider': OK.
+checking invariant (253) `Agent::NoConflict_VPBusinessDivision_Vendor': OK.
+checking invariant (254) `Agent::NoConflict_Vendor_BISystem': OK.
+checking invariant (255) `Agent::NoConflict_Vendor_BSaleSystem': OK.
+checking invariant (256) `Agent::NoConflict_Vendor_BusinessVP': OK.
+checking invariant (257) `Agent::NoConflict_Vendor_DepartmentManager': OK.
+checking invariant (258) `Agent::NoConflict_Vendor_FinancialControl': OK.
+checking invariant (259) `Agent::NoConflict_Vendor_PresaleEngineer': OK.
+checking invariant (260) `Agent::NoConflict_Vendor_SectorManager': OK.
+checking invariant (261) `Agent::NoConflict_Vendor_ServiceAgreements': OK.
+checking invariant (262) `Agent::NoSelfConflict_Approver': OK.
+checking invariant (263) `Agent::NoSelfConflict_Approvers': OK.
+checking invariant (264) `Agent::NoSelfConflict_BISystem': OK.
+checking invariant (265) `Agent::NoSelfConflict_BSaleSystem': OK.
+checking invariant (266) `Agent::NoSelfConflict_BusinessVP': OK.
+checking invariant (267) `Agent::NoSelfConflict_Customer': OK.
+checking invariant (268) `Agent::NoSelfConflict_CustomerManager': OK.
+checking invariant (269) `Agent::NoSelfConflict_DepartmentManager': OK.
+checking invariant (270) `Agent::NoSelfConflict_FinancialControl': OK.
+checking invariant (271) `Agent::NoSelfConflict_InventoryManager': OK.
+checking invariant (272) `Agent::NoSelfConflict_Management': OK.
+checking invariant (273) `Agent::NoSelfConflict_PresaleDepartment': OK.
+checking invariant (274) `Agent::NoSelfConflict_PresaleEngineer': OK.
+checking invariant (275) `Agent::NoSelfConflict_ProjectDepartment': OK.
+checking invariant (276) `Agent::NoSelfConflict_SectorManager': OK.
+checking invariant (277) `Agent::NoSelfConflict_ServiceAgreements': OK.
+checking invariant (278) `Agent::NoSelfConflict_ServiceAgreementsDepartment': OK.
+checking invariant (279) `Agent::NoSelfConflict_ServiceProvider': OK.
+checking invariant (280) `Agent::NoSelfConflict_Vendor': OK.
+checking invariant (281) `Approvers::NoConflict_CreditControl_DirectorOfSalesSector': OK.
+checking invariant (282) `Approvers::NoConflict_CreditControl_SalesDepartmentManager': OK.
+checking invariant (283) `Approvers::NoConflict_CreditControl_VPBusinessDivision': OK.
+checking invariant (284) `Approvers::NoConflict_DirectorOfSalesSector_VPBusinessDivision': OK.
+checking invariant (285) `Approvers::NoConflict_Economy_CreditControl': OK.
+checking invariant (286) `Approvers::NoConflict_Economy_DirectorOfSalesSector': OK.
+checking invariant (287) `Approvers::NoConflict_Economy_SalesDepartmentManager': OK.
+checking invariant (288) `Approvers::NoConflict_Economy_VPBusinessDivision': OK.
+checking invariant (289) `Approvers::NoConflict_SalesDepartmentManager_DirectorOfSalesSector': OK.
+checking invariant (290) `Approvers::NoConflict_SalesDepartmentManager_VPBusinessDivision': OK.
+checking invariant (291) `Approvers::NoSelfConflict_CreditControl': OK.
+checking invariant (292) `Approvers::NoSelfConflict_DirectorOfSalesSector': OK.
+checking invariant (293) `Approvers::NoSelfConflict_Economy': OK.
+checking invariant (294) `Approvers::NoSelfConflict_SalesDepartmentManager': OK.
+checking invariant (295) `Approvers::NoSelfConflict_VPBusinessDivision': OK.
+checking invariant (296) `CreditControl::RoleOwnerScope_Approvers_CreditControl': OK.
+checking invariant (297) `DirectorOfSalesSector::RoleOwnerScope_Approvers_DirectorOfSalesSector': OK.
+checking invariant (298) `Economy::RoleOwnerScope_Approvers_Economy': OK.
+checking invariant (299) `SalesDepartmentManager::RoleOwnerScope_Approvers_SalesDepartmentManager': OK.
+checking invariant (300) `VPBusinessDivision::RoleOwnerScope_Approvers_VPBusinessDivision': OK.
+checked 300 invariants in 0.004s, 0 failures.
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.requireValidState(VisualConformanceSession.java:337)
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.<init>(VisualConformanceSession.java:93)
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.prepare(VisualConformanceSession.java:149)
+	at org.vnu.sme.goal.verify.conformance.VisualConformanceSession.prepare(VisualConformanceSession.java:122)
+	at org.vnu.sme.goal.verify.conformance.SalesForecastConformanceTest.run(SalesForecastConformanceTest.java:94)
+	at org.vnu.sme.goal.verify.conformance.SalesForecastConformanceTest.prescribedButDelayedApprovalReproducesTheReportedMisalignment(SalesForecastConformanceTest.java:61)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+

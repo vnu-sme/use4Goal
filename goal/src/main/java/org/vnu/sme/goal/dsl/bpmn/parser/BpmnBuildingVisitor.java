@@ -125,11 +125,15 @@ public final class BpmnBuildingVisitor extends BpmnBaseVisitor<Object> {
     private GatewayFlowCS gatewayFlow(BpmnParser.GatewayFlowContext ctx) {
         String target = ctx.IDENT().getText();
         BpmnParser.GatewayFlowConditionContext cond = ctx.gatewayFlowCondition();
-        if (cond == null) return new GatewayFlowCS(target, null, false);
+        if (cond == null) return new GatewayFlowCS(target, null, null, false);
         if (cond.stateClause() != null) {
-            return new GatewayFlowCS(target, clauseBody(cond.stateClause().getText()), false);
+            String expression = clauseBody(cond.stateClause().getText());
+            if ("post".equals(cond.getStart().getText())) {
+                return new GatewayFlowCS(target, expression, null, false);
+            }
+            return new GatewayFlowCS(target, null, expression, false);
         }
-        return new GatewayFlowCS(target, null, true); // 'default'
+        return new GatewayFlowCS(target, null, null, true); // legacy 'default'
     }
 
     // ── messages ─────────────────────────────────────────────────────────────

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<acls:SystemHistory xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:acls="https://vnu.edu.vn/sme/goal/acl/state/3.0"
+    xsi:schemaLocation="https://vnu.edu.vn/sme/goal/acl/state/3.0 acl-state.ecore"
+    xmi:id="systemHistory" name="MeetingSchedulerRuntime">
+
+  <model href="mtg-development.acl.xmi#aclModel"/>
+
+  <!-- Stable runtime identities. Their attribute values and links live in checkpoints. -->
+  <instances xsi:type="acls:ActorOccurrence" xmi:id="org1" id="org1">
+    <classifier xsi:type="acls:Actor" href="mtg-development.acl.xmi#organizationActor"/>
+  </instances>
+  <instances xsi:type="acls:ActorOccurrence" xmi:id="unit1" id="unit1">
+    <classifier xsi:type="acls:Actor" href="mtg-development.acl.xmi#meetingUnitActor"/>
+  </instances>
+  <instances xsi:type="acls:ActorOccurrence" xmi:id="alice" id="alice">
+    <classifier xsi:type="acls:Actor" href="mtg-development.acl.xmi#personActor"/>
+  </instances>
+  <instances xsi:type="acls:ActorOccurrence" xmi:id="bob" id="bob">
+    <classifier xsi:type="acls:Actor" href="mtg-development.acl.xmi#personActor"/>
+  </instances>
+  <instances xsi:type="acls:ActorOccurrence" xmi:id="organizer1" id="organizer1">
+    <classifier xsi:type="acls:Actor" href="mtg-development.acl.xmi#organizerActor"/>
+  </instances>
+  <instances xsi:type="acls:ActorOccurrence" xmi:id="participant1" id="participant1">
+    <classifier xsi:type="acls:Actor" href="mtg-development.acl.xmi#participantActor"/>
+  </instances>
+  <instances xsi:type="acls:EntityObject" xmi:id="meeting1" id="meeting1">
+    <classifier xsi:type="acls:Entity" href="mtg-development.acl.xmi#meetingEntity"/>
+  </instances>
+  <instances xsi:type="acls:EntityObject" xmi:id="calendar1" id="calendar1">
+    <classifier xsi:type="acls:Entity" href="mtg-development.acl.xmi#calendarEntity"/>
+  </instances>
+
+  <!-- s0: organization and role structure exists, but the meeting goal is pending. -->
+  <states xmi:id="s0" name="BeforeScheduling" step="0"
+      activeInstances="org1 unit1 alice bob organizer1 participant1 meeting1 calendar1">
+    <values owner="org1" attribute="mtg-development.acl.xmi#coordinationScore" value="0"/>
+    <values owner="alice" attribute="mtg-development.acl.xmi#personName" value="Alice"/>
+    <values owner="alice" attribute="mtg-development.acl.xmi#workingHours" value="7"/>
+    <values owner="bob" attribute="mtg-development.acl.xmi#personName" value="Bob"/>
+    <values owner="bob" attribute="mtg-development.acl.xmi#workingHours" value="6"/>
+    <values owner="participant1" attribute="mtg-development.acl.xmi#participantTimetableCollected" value="true"/>
+    <values owner="participant1" attribute="mtg-development.acl.xmi#participantChannel" value="calendar"/>
+    <values owner="participant1" attribute="mtg-development.acl.xmi#participantNotified" value="false"/>
+    <values owner="participant1" attribute="mtg-development.acl.xmi#participantAttended" value="false"/>
+    <values owner="meeting1" attribute="mtg-development.acl.xmi#meetingDetailsDecided" value="true"/>
+    <values owner="meeting1" attribute="mtg-development.acl.xmi#meetingTimeChosen" value="false"/>
+    <values owner="meeting1" attribute="mtg-development.acl.xmi#meetingAnnounced" value="false"/>
+    <values owner="calendar1" attribute="mtg-development.acl.xmi#calendarAvailable" value="true"/>
+
+    <links source="org1" target="unit1">
+      <relationship xsi:type="acls:Composition" href="mtg-development.acl.xmi#organizationUnits"/>
+    </links>
+    <links source="unit1" target="organizer1">
+      <relationship xsi:type="acls:Composition" href="mtg-development.acl.xmi#unitOrganizers"/>
+    </links>
+    <links source="unit1" target="participant1">
+      <relationship xsi:type="acls:Composition" href="mtg-development.acl.xmi#unitParticipants"/>
+    </links>
+    <links source="unit1" target="meeting1">
+      <relationship xsi:type="acls:Composition" href="mtg-development.acl.xmi#unitMeetings"/>
+    </links>
+    <links source="alice" target="organizer1">
+      <relationship xsi:type="acls:Association" href="mtg-development.acl.xmi#enactsMeetingParty"/>
+    </links>
+    <links source="bob" target="participant1">
+      <relationship xsi:type="acls:Association" href="mtg-development.acl.xmi#enactsMeetingParty"/>
+    </links>
+    <links source="participant1" target="calendar1">
+      <relationship xsi:type="acls:Aggregation" href="mtg-development.acl.xmi#participantCalendars"/>
+    </links>
+  </states>
+
+  <!-- s1: a BPMN execution established the group goal but caused Alice's personal goal to fail. -->
+  <states xmi:id="s1" name="AfterMeetingExecution" step="1"
+      activeInstances="org1 unit1 alice bob organizer1 participant1 meeting1 calendar1">
+    <values owner="org1" attribute="mtg-development.acl.xmi#coordinationScore" value="1"/>
+    <values owner="alice" attribute="mtg-development.acl.xmi#personName" value="Alice"/>
+    <values owner="alice" attribute="mtg-development.acl.xmi#workingHours" value="9"/>
+    <values owner="bob" attribute="mtg-development.acl.xmi#personName" value="Bob"/>
+    <values owner="bob" attribute="mtg-development.acl.xmi#workingHours" value="6"/>
+    <values owner="participant1" attribute="mtg-development.acl.xmi#participantTimetableCollected" value="true"/>
+    <values owner="participant1" attribute="mtg-development.acl.xmi#participantChannel" value="calendar"/>
+    <values owner="participant1" attribute="mtg-development.acl.xmi#participantNotified" value="true"/>
+    <values owner="participant1" attribute="mtg-development.acl.xmi#participantAttended" value="true"/>
+    <values owner="meeting1" attribute="mtg-development.acl.xmi#meetingDetailsDecided" value="true"/>
+    <values owner="meeting1" attribute="mtg-development.acl.xmi#meetingTimeChosen" value="true"/>
+    <values owner="meeting1" attribute="mtg-development.acl.xmi#meetingAnnounced" value="true"/>
+    <values owner="calendar1" attribute="mtg-development.acl.xmi#calendarAvailable" value="true"/>
+
+    <links source="org1" target="unit1">
+      <relationship xsi:type="acls:Composition" href="mtg-development.acl.xmi#organizationUnits"/>
+    </links>
+    <links source="unit1" target="organizer1">
+      <relationship xsi:type="acls:Composition" href="mtg-development.acl.xmi#unitOrganizers"/>
+    </links>
+    <links source="unit1" target="participant1">
+      <relationship xsi:type="acls:Composition" href="mtg-development.acl.xmi#unitParticipants"/>
+    </links>
+    <links source="unit1" target="meeting1">
+      <relationship xsi:type="acls:Composition" href="mtg-development.acl.xmi#unitMeetings"/>
+    </links>
+    <links source="alice" target="organizer1">
+      <relationship xsi:type="acls:Association" href="mtg-development.acl.xmi#enactsMeetingParty"/>
+    </links>
+    <links source="bob" target="participant1">
+      <relationship xsi:type="acls:Association" href="mtg-development.acl.xmi#enactsMeetingParty"/>
+    </links>
+    <links source="participant1" target="calendar1">
+      <relationship xsi:type="acls:Aggregation" href="mtg-development.acl.xmi#participantCalendars"/>
+    </links>
+  </states>
+</acls:SystemHistory>

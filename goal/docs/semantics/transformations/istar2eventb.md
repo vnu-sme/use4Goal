@@ -42,8 +42,9 @@ Compose → shared Context/Machine + READY/DIRTY protocol
 bắt đầu dịch iStar.
 
 Ví dụ `I_n` tăng tiến: mỗi luật giữ toàn bộ source/target trước và thêm concept
-mới. Resource và Obstacle nằm ngoài phạm vi hiện tại. Quality và Contribution
-được dịch ở R14 vì Quality có occurrence/marking theo context giống Goal.
+mới. Resource nằm ngoài phạm vi chuyển đổi hiện tại; Obstacle không thuộc
+metamodel. Quality và Contribution được dịch ở R14 vì Quality có
+occurrence/marking theo context giống Goal.
 
 Các `partition(GOAL_DECL/TASK_DECL,...)` là closed-world axioms.
 Khi một luật thêm declaration, generator thay axiom partition cũ bằng axiom

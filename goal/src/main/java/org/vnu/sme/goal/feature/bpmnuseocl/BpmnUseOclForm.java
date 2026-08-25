@@ -30,7 +30,7 @@ import org.tzi.use.gui.main.MainWindow;
 import org.vnu.sme.goal.translate.aclbpmn2use.BpmnUseOclService;
 
 /**
- * GUI form for the "BPMN + ACL → USE/OCL (Folder)" translation action --
+ * GUI form for the "ACL + BPMN → USE/OCL" translation action --
  * same layout as {@code IStarUseOclFolderForm}, but for BPMN via {@link
  * org.vnu.sme.goal.translate.aclbpmn2use.AclBpmn2UseTranslator}. Output is a chosen FOLDER;
  * filenames ({@code <model>.use}, {@code <model>.tocl} if applicable) are
@@ -54,13 +54,14 @@ public final class BpmnUseOclForm extends JDialog {
     private final JLabel    statusBar  = new JLabel(" ");
     private final JTextArea summaryArea = textArea();
     private final JTextArea useArea     = textArea();
+    private final JTextArea toclArea    = textArea();
 
     private JButton generateBtn;
 
     // ── Constructor ───────────────────────────────────────────────────────────
 
     public BpmnUseOclForm(MainWindow owner) {
-        super(owner, "BPMN + ACL → USE/OCL (Folder)", false);
+        super(owner, "ACL + BPMN → USE/OCL", false);
         buildUi();
         restorePrefs();
         setSize(1000, 700);
@@ -82,11 +83,11 @@ public final class BpmnUseOclForm extends JDialog {
         addFileRow(inputPanel, 2, "Output folder:",           outputField, null,     true,  false);
 
         JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
-        generateBtn = new JButton("Generate USE/OCL");
+        generateBtn = new JButton("Generate USE + TOCL");
         generateBtn.setFont(generateBtn.getFont().deriveFont(Font.BOLD));
         generateBtn.addActionListener(e -> runGenerate());
         buttonRow.add(generateBtn);
-        buttonRow.add(new JLabel("Writes <model>.use into the folder (BPMN currently has no TOCL source)."));
+        buttonRow.add(new JLabel("Writes <model>.use and BPMN sequence-flow properties in <model>.tocl."));
 
         JPanel north = new JPanel(new BorderLayout());
         north.add(inputPanel, BorderLayout.CENTER);
@@ -97,6 +98,7 @@ public final class BpmnUseOclForm extends JDialog {
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Summary", new JScrollPane(summaryArea));
         tabs.addTab("USE preview", new JScrollPane(useArea));
+        tabs.addTab("TOCL preview", new JScrollPane(toclArea));
         add(tabs, BorderLayout.CENTER);
 
         // ── South: status bar ──
@@ -108,19 +110,18 @@ public final class BpmnUseOclForm extends JDialog {
         summaryArea.setText(
                 "WORKFLOW\n\n" +
                 "1. Select an .acl file that defines roles, groups and entities.\n" +
-                "2. Select a .bpmn2 file. Lane names should match ACL role names\n" +
-                "   (elements outside any lane fall back to the pool's 'for <Group>'\n" +
-                "   groupClass, then to a standalone class).\n" +
+                "2. Select a .bpmn2 file. Every lane must match an ACL Role\n" +
+                "   owned by the Group in 'pool P for GroupType'.\n" +
                 "3. Choose an output FOLDER (filenames are derived from the model name).\n" +
-                "4. Click 'Generate USE/OCL'.\n\n" +
+                "4. Click 'Generate USE + TOCL'.\n\n" +
                 "OUTPUT (into the chosen folder)\n\n" +
                 "  <model>.use — plain OCL, compiles standalone in USE:\n" +
                 "    • USE class diagram (from ACL)\n" +
-                "    • derived operations (preHolds/postHolds per Task/Event/Gateway,\n" +
-                "      guard() per SequenceFlow)\n" +
-                "    • Gateway structural invariants (XOR/OR branch selection)\n\n" +
-                "  <model>.tocl is only written when a translator produces temporal\n" +
-                "  content; BPMN currently has no such source, so none is written.");
+                "    • each BPMN operation on its corresponding lane Role\n" +
+                "    • activity domain pre/postconditions\n" +
+                "    • no generated ProcessState/token class\n\n" +
+                "  <model>.tocl — sequence-flow precedence between operation calls,\n" +
+                "    scoped to Role occurrences in the same Group.");
     }
 
     // ── File-picker row ───────────────────────────────────────────────────────
@@ -196,6 +197,7 @@ public final class BpmnUseOclForm extends JDialog {
         setStatus("Generating…", COLOR_RUN);
         generateBtn.setEnabled(false);
         useArea.setText("");
+        toclArea.setText("");
 
         new SwingWorker<BpmnUseOclService.Result, Void>() {
             @Override
@@ -248,6 +250,8 @@ public final class BpmnUseOclForm extends JDialog {
         if (result.useResult() != null) {
             useArea.setText(result.useResult().useText());
             useArea.setCaretPosition(0);
+            toclArea.setText(result.useResult().toclText());
+            toclArea.setCaretPosition(0);
         }
     }
 

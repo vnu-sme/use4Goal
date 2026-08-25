@@ -6,13 +6,13 @@ grammar IStar;
 //  iStar 2.0 — SD (Strategic Dependency) + SR (Strategic Rationale) views
 //
 //  Declaration-only body: only intentional elements (goal/task/resource/
-//  quality/obstacle) are declared. Every element-to-element relation is
+//  quality) are declared. Every element-to-element relation is
 //  written inline at the child's own declaration — '>' relation target —
 //  the same way Java writes 'class Foo extends Bar' at Foo's declaration
 //  instead of as a separate statement. AND-refinement is the only relation
 //  with no keyword (the default): multiple children written '> SameParent'
 //  are grouped into one AND-refinement by the factory. Every other relation
-//  (or, make/help/hurt/break, qualifies, needed-by, obstructs, resolves)
+//  (or, make/help/hurt/break, qualifies, needed-by)
 //  requires its keyword — see doc/04-istar-metamodel.drawio.
 //
 //  Actor is abstract — only Role and Agent are concrete, both generalizing
@@ -26,11 +26,12 @@ grammar IStar;
 //      task     TaskId                            rel* [ocl {[ raw-OCL ]}]
 //      resource ResourceId                        rel*
 //      quality  QualityId                         rel*
-//      obstacle ObstacleId [: Prevention|Restoration|Mitigation] rel*
 //      ActorId is-a           SuperActorId
 //      ActorId participates-in RoleId
 //    }
-//    // dependum is mandatory; ".Elmt" on either end is the optional SD "boundary
+//    // dependency composition-owns one newly declared dependum intentional element;
+//    // goal|task|resource|quality selects its concrete EClass. ".Elmt"
+//    // on either end is the optional SD "boundary
 //    // opening" (Dependency.dependerElmt/dependeeElmt) — the SR element inside that
 //    // actor's boundary the dependency arrow visually attaches to.
 //    depend DependerId['.'DependerElmt] -> goal|task|resource|quality DependumId -> DependeeId['.'DependeeElmt]
@@ -49,13 +50,9 @@ grammar IStar;
 //  rel : '>' relation target
 //    '> Parent'                                      AND-refinement
 //    '> or Parent'                                   OR-refinement
-//    '> forall ActorType Parent'                     quantified AND-refinement
-//    '> pick ActorType Parent'                       quantified OR/refinement choice
 //    '> make|help|hurt|break Quality'                contributes
 //    '> qualifies Element'                           qualifies
 //    '> needed-by Task'                              needed-by (from a resource)
-//    '> obstructs GoalTask'                          obstructs (from an obstacle)
-//    '> resolves Obstacle'                           resolves (from a goal/task)
 // =====================================================================
 
 model : 'istar' IDENT '{' actorDef* dependency* '}' EOF ;
@@ -69,7 +66,6 @@ actorBody
     | 'task'     IDENT                rel* oclCondition*  # bodyTask
     | 'resource' IDENT                rel*  # bodyResource
     | 'quality'  IDENT                rel*  # bodyQuality
-    | 'obstacle' IDENT obstacleType?  rel*  # bodyObstacle
     | IDENT 'is-a'           IDENT         # bodyIsA
     | IDENT 'participates-in' IDENT        # bodyParticipates
     ;
@@ -77,19 +73,12 @@ actorBody
 goalType : ':' goalTypeName ;
 goalTypeName : 'Achieve' | 'Maintain' | 'Sustain' | 'Recur' ;
 
-obstacleType : ':' obstacleTypeName ;
-obstacleTypeName : 'Prevention' | 'Restoration' | 'Mitigation' ;
-
 rel
     : '>' target=IDENT                                                                    # relAnd
     | '>' 'or' target=IDENT                                                               # relOr
-    | '>' 'forall' actorType=IDENT target=IDENT                                           # relForAll
-    | '>' 'pick' actorType=IDENT target=IDENT                                             # relPick
     | '>' contribType target=IDENT                                                        # relContribute
     | '>' 'qualifies' target=IDENT                                                        # relQualifies
     | '>' 'needed-by' target=IDENT                                                        # relNeededBy
-    | '>' 'obstructs' target=IDENT                                                        # relObstructs
-    | '>' 'resolves' target=IDENT                                                         # relResolves
     ;
 
 dependency : 'depend' depEnd '->' dependumRef '->' depEnd ;
@@ -112,13 +101,10 @@ oclCondition
     | OCL_CLAUSE
     ;
 
-// Goal and Task share the readable pre/post surface syntax. For a Goal, pre is
-// its activation condition and post is its satisfaction/required condition;
-// for a Task, pre is its enabling condition and post is its resulting state.
-// activation/condition are the canonical Goal clauses. The older
-// trigger/satisfy/while/ensure spellings remain accepted aliases.
+// Goal owns a condition contract. Task owns pre/post contracts.
+// The older satisfy/ensure spellings remain accepted aliases.
 goalCondition
-    : ('activation' | 'condition' | 'trigger' | 'satisfy' | 'while' | 'ensure' | 'release') OCL_BLOCK
+    : ('condition' | 'satisfy' | 'ensure') OCL_BLOCK
     | OCL_CLAUSE
     ;
 

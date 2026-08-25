@@ -6,13 +6,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.vnu.sme.goal.dsl.acl.mm.AclModel;
+import org.vnu.sme.goal.dsl.acl.ocl.AclOclState;
 import org.vnu.sme.goal.dsl.aol.mm.AolEntityInstance;
 import org.vnu.sme.goal.dsl.aol.mm.AolGroupInstance;
 import org.vnu.sme.goal.dsl.aol.mm.AolModel;
 import org.vnu.sme.goal.dsl.aol.mm.AolPlay;
 
-/** Native ACL/AOL object graph used by the bpmntrace monitor; contains no USE objects. */
-public final class AclSnapshot {
+/** @deprecated Legacy AOL v1 Agent graph; ACL state evaluation uses {@code AclSystemState}. */
+@Deprecated(forRemoval = false)
+public final class AclSnapshot implements AclOclState {
     public enum Kind { AGENT, GROUP, ROLE, ENTITY }
     public record ObjectValue(String id, String type, Kind kind, Map<String, String> attributes,
                               String agentId, String groupId) {
@@ -23,6 +25,7 @@ public final class AclSnapshot {
     private final Map<String, ObjectValue> objects = new LinkedHashMap<>();
     private final Map<String, List<ObjectValue>> byType = new LinkedHashMap<>();
     private final Map<String, List<String>> links = new LinkedHashMap<>();
+    private int explicitLinkCount;
 
     private AclSnapshot(AclModel acl) { this.acl = acl; }
 
@@ -34,8 +37,10 @@ public final class AclSnapshot {
         }
         for (AolGroupInstance group : model.groupInstances()) out.addGroup(group, null);
         for (AolEntityInstance entity : model.topLevelEntities()) out.addEntity(entity, null);
-        model.links().forEach(link -> link.targetInstanceIds().forEach(target ->
-                out.addLink(link.relationName(), link.sourceInstanceId(), target)));
+        model.links().forEach(link -> link.targetInstanceIds().forEach(target -> {
+            out.explicitLinkCount++;
+            out.addLink(link.relationName(), link.sourceInstanceId(), target);
+        }));
         return out;
     }
 
@@ -77,6 +82,11 @@ public final class AclSnapshot {
 
     public AclModel acl() { return acl; }
     public ObjectValue object(String id) { return objects.get(id); }
+    public int objectCount() { return objects.size(); }
+    public int linkCount() {
+        long contained = objects.values().stream().filter(x -> x.groupId() != null).count();
+        return Math.toIntExact(contained + explicitLinkCount);
+    }
     public List<ObjectValue> objectsOfType(String type) {
         List<ObjectValue> result = new ArrayList<>();
         for (ObjectValue value : objects.values()) {
@@ -88,6 +98,7 @@ public final class AclSnapshot {
         return objects.values().stream().filter(x -> x.kind() == Kind.ROLE).toList();
     }
 
+    @Override
     public Object property(Object base, String name) {
         if (base == null) return null;
         if (base instanceof List<?> list) {
@@ -102,6 +113,8 @@ public final class AclSnapshot {
         if (name.equals("group")) return object(object.groupId());
         if (name.equals("agent")) return object(object.agentId());
         if (object.attributes().containsKey(name)) return literal(object.attributes().get(name));
+        String defaultValue = defaultAttributeValue(object.type(), name);
+        if (defaultValue != null) return literal(defaultValue);
         if (object.kind() == Kind.ROLE && object.agentId() != null) {
             ObjectValue agent = object(object.agentId());
             if (agent != null && agent.attributes().containsKey(name)) return literal(agent.attributes().get(name));
@@ -116,14 +129,58 @@ public final class AclSnapshot {
         return null;
     }
 
+    @Override
+    public String identity(Object value) {
+        if (!(value instanceof ObjectValue object)) return String.valueOf(value);
+        return object.agentId() == null ? object.id() : object.agentId();
+    }
+
+    private String defaultAttributeValue(String type, String attributeName) {
+        String current = type;
+        java.util.Set<String> seen = new java.util.LinkedHashSet<>();
+        while (current != null && seen.add(current)) {
+            var role = acl.findRole(current).orElse(null);
+            if (role != null) {
+                for (var attribute : role.attributes()) if (attribute.name().equals(attributeName))
+                    return attribute.defaultValue().orElse(null);
+                current = role.parentRoles().stream().findFirst().orElse(null);
+                continue;
+            }
+            var entity = acl.findEntity(current).orElse(null);
+            if (entity != null) {
+                for (var attribute : entity.attributes()) if (attribute.name().equals(attributeName))
+                    return attribute.defaultValue().orElse(null);
+                current = entity.specializes().orElse(null);
+                continue;
+            }
+            var group = acl.findGroup(current).orElse(null);
+            if (group != null) {
+                for (var attribute : group.attributes()) if (attribute.name().equals(attributeName))
+                    return attribute.defaultValue().orElse(null);
+                current = group.specializes().orElse(null);
+                continue;
+            }
+            return null;
+        }
+        return null;
+    }
+
     private boolean isType(String actual, String expected) {
         if (actual.equals(expected)) return true;
         String current = actual;
         java.util.Set<String> seen = new java.util.LinkedHashSet<>();
         while (seen.add(current)) {
             var role = acl.findRole(current).orElse(null);
-            if (role == null || role.parentRoles().isEmpty()) return false;
-            current = role.parentRoles().get(0);
+            if (role != null) current = role.parentRoles().stream().findFirst().orElse(null);
+            else {
+                var entity = acl.findEntity(current).orElse(null);
+                if (entity != null) current = entity.specializes().orElse(null);
+                else {
+                    var group = acl.findGroup(current).orElse(null);
+                    current = group == null ? null : group.specializes().orElse(null);
+                }
+            }
+            if (current == null) return false;
             if (current.equals(expected)) return true;
         }
         return false;

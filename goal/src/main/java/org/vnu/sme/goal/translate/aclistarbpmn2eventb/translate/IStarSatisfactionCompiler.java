@@ -56,8 +56,8 @@ final class IStarSatisfactionCompiler {
         return new IStarSatisfactionCompiler(model,acl,attributes,diagnostics,true).compile();
     }
 
-    /** iStar-only monitoring has no BPMN Start event; existing ACL occurrences are
-     * the default activation universe unless a Goal declares an activation clause. */
+    /** iStar-only monitoring has no BPMN Start event, so every existing ACL occurrence
+     * is active by default (no process-started gate). */
     static Result compileStandalone(GoalModel model, AclModel acl, Map<String,String> attributes,
                                     List<String> diagnostics) {
         return new IStarSatisfactionCompiler(model,acl,attributes,diagnostics,false).compile();
@@ -119,7 +119,7 @@ final class IStarSatisfactionCompiler {
                     ? request.active() + " ∖ " + request.progress() + " ≠ ∅"
                     : request.queued() + " ∖ " + request.result() + " ≠ ∅";
             String provided = completionSet(provide) + " ≠ ∅";
-            properties.add(new Property("LTL_DEP_" + id(d.dependum()), "ASSUMPTION_GUARANTEE",
+            properties.add(new Property("LTL_DEP_" + id(d.dependum().id()), "ASSUMPTION_GUARANTEE",
                     "G({" + requested + "} => F {" + provided + "})",
                     "iStar dependency " + d.dependerElmt() + " -> " + d.dependeeElmt()));
         }
@@ -259,27 +259,6 @@ final class IStarSatisfactionCompiler {
                         occurrence.type())));
             }
         }
-        for(Actor actor:model.getActors()) for(Refinement refinement:actor.refinements()) {
-            if(!(refinement instanceof PickRefinement pick)) continue;
-            Occurrence parent=occurrences.get(pick.parent());
-            IntentionalElement child=model.findElement(pick.child()).orElse(null);
-            if(parent==null||child==null) continue;
-            String variable="Pick_"+id(pick.child())+"_candidates";
-            String selected="selectedPick";
-            List<String> childTypes=new ArrayList<>(); childTypes.add(pick.actorType()); childTypes.addAll(parent.types());
-            List<String> childVars=new ArrayList<>(); childVars.add(selected); childVars.addAll(parent.vars());
-            String childSat=satisfaction(child,childTypes,childVars,new LinkedHashSet<>());
-            if(childSat==null) childSat="FALSE = TRUE";
-            variables.add(variable);
-            invariants.add(variable+" ⊆ "+parent.type()+" × "+typeSet(pick.actorType()));
-            init.add(new AssignmentSpec("act_"+variable,variable+" ≔ ∅"));
-            String domain=parent.domain()+" ∧ "+candidate(selected,pick.actorType(),parent.vars().get(0),parent.types().get(0));
-            String candidates="{"
-                    +String.join(",",parent.vars())+","+selected+"·"+domain+" ∧ ("+childSat+")∣("
-                    +parent.value()+" ↦ "+selected+")}";
-            observe.add(new AssignmentSpec("obs_"+variable,subsetAssignment(variable,candidates,
-                    parent.type()+" × "+typeSet(pick.actorType()))));
-        }
         return new State(List.copyOf(variables),List.copyOf(invariants),List.copyOf(init),
                 List.copyOf(observe),List.copyOf(completion));
     }
@@ -298,8 +277,9 @@ final class IStarSatisfactionCompiler {
                 if(predicate!=null) contributors.add("("+predicate+")");
                 continue;
             }
-            // A contributor may live below a forall/pick context while its Quality is
-            // declared at the enclosing actor. Aggregate all matching inner occurrences.
+            // A contributor may live below a dependency-transferred context while its
+            // Quality is declared at the enclosing actor. Aggregate all matching inner
+            // occurrences.
             int extra=sourceOccurrence.types().size()-target.types().size();
             if(extra<=0||!sourceOccurrence.types().subList(extra,sourceOccurrence.types().size()).equals(target.types())) continue;
             List<String> sourceVars=new ArrayList<>(),bound=new ArrayList<>();
@@ -327,8 +307,8 @@ final class IStarSatisfactionCompiler {
         List<String> alternatives=new ArrayList<>();
         // A depender goal with no local condition is fulfilled by the intentional element at
         // the dependee boundary.  In the well-formed model both ends have the same occurrence
-        // context (including forall/pick bindings), so the provider predicate can be inlined.
-        // This avoids treating dependency-backed goals as the constant FALSE predicate and also
+        // context, so the provider predicate can be inlined. This avoids treating
+        // dependency-backed goals as the constant FALSE predicate and also
         // lets one observation compute the complete goal tree from the current data state.
         for (Dependency dependency : dependenciesByRequester.getOrDefault(element.id(), List.of())) {
             IntentionalElement provider = model.findElement(dependency.dependeeElmt()).orElse(null);
@@ -348,18 +328,6 @@ final class IStarSatisfactionCompiler {
             } else if(refinement instanceof OrRefinement or) {
                 IntentionalElement child=model.findElement(or.child()).orElse(null);
                 if(child!=null) alternatives.add(satisfaction(child,types,vars,new LinkedHashSet<>(stack)));
-            } else if(refinement instanceof ParameterRefinement parameter) {
-                IntentionalElement child=model.findElement(parameter.child()).orElse(null);
-                if(child==null) continue;
-                String selected="selected"+(types.size()+1);
-                List<String> childTypes=new ArrayList<>(); childTypes.add(parameter.actorType()); childTypes.addAll(types);
-                List<String> childVars=new ArrayList<>(); childVars.add(selected); childVars.addAll(vars);
-                String candidate=candidate(selected,parameter.actorType(),vars.get(0),types.get(0));
-                String childSat=satisfaction(child,childTypes,childVars,new LinkedHashSet<>(stack));
-                if(childSat==null) continue;
-                if(parameter instanceof ForRefinement)
-                    alternatives.add("((∃"+selected+"·"+candidate+") ∧ (∀"+selected+"·"+candidate+" ⇒ ("+childSat+")))");
-                else alternatives.add("(∃"+selected+"·"+candidate+" ∧ ("+childSat+"))");
             }
         }
         String result=alternatives.isEmpty()?null:String.join(" ∨ ",alternatives);
@@ -368,13 +336,9 @@ final class IStarSatisfactionCompiler {
     }
 
     private String activation(Goal goal,List<String> types,List<String> vars) {
-        String local=constraints(goal.activations(),types,vars);
-        String gate="TRUE = TRUE";
-        if(processCoupled) {
-            String owner=attributes.get("$owner."+types.get(types.size()-1));
-            gate=owner==null?"started ≠ ∅":"started["+owner+"∼[{"+vars.get(vars.size()-1)+"}]] ≠ ∅";
-        }
-        return local==null?gate:"("+gate+") ∧ ("+local+")";
+        if(!processCoupled) return "TRUE = TRUE";
+        String owner=attributes.get("$owner."+types.get(types.size()-1));
+        return owner==null?"started ≠ ∅":"started["+owner+"∼[{"+vars.get(vars.size()-1)+"}]] ≠ ∅";
     }
 
     private String constraints(List<IStarOclConstraint> constraints,List<String> types,List<String> vars) {

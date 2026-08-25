@@ -50,15 +50,19 @@ class Acl2UseCanonicalRulesTest {
         assertTrue(compiled.ok(), () -> String.join("\n", compiled.errors()));
         String use = Acl2UseTranslator.translate(compiled.model());
         assertTrue(use.contains("enum Priority {LOW, HIGH}"));
-        assertTrue(use.contains("class Agent\nend"));
+        assertTrue(use.contains("class Agent\nattributes\n  id : Integer\nend"));
+        assertTrue(use.contains("class Person\nattributes\n  id : Integer\n  name : String"));
         assertTrue(use.contains("class Report < Document"));
         assertTrue(use.contains("class Department < Company"));
         assertFalse(use.contains("class Employee < Person"));
         assertTrue(use.contains("association Person_plays_Employee"));
         assertTrue(use.contains("association Agent_plays_Person"));
+        assertTrue(use.contains("Agent[1] role agent\n  Person[0..*] role play_person"));
+        assertTrue(use.contains("Person[1] role person\n  Employee[0..*] role play_employee"));
         assertTrue(use.contains("association mentors between\n  Person[0..*] role mentors"));
         assertTrue(use.contains("composition reports between\n  Department[1] role department"));
         assertTrue(use.contains("composition Employee_in_Company"));
+        assertTrue(use.contains("Company[1] role company\n  Employee[0..*] role employee"));
         assertTrue(use.contains("composition Owner_Company_Department"));
         assertUseCompiles(use);
     }
@@ -77,9 +81,8 @@ class Acl2UseCanonicalRulesTest {
         assertTrue(compiled.ok(), () -> String.join("\n", compiled.errors()));
         String use = Acl2UseTranslator.translate(compiled.model());
         assertTrue(use.contains("context Manager inv RoleOwnerScope_Employee_Manager:"));
-        assertTrue(use.contains("self.source_Employee_plays_Manager.source_Employee_in_Company"));
-        assertTrue(use.contains("self.source_Manager_in_Department"
-                + ".source_Owner_Division_Department.source_Owner_Company_Division"));
+        assertTrue(use.contains("self.employee.company"));
+        assertTrue(use.contains("self.department.division.company"));
         assertUseCompiles(use);
     }
 

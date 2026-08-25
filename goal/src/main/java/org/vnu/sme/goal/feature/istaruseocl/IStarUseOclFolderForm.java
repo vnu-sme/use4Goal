@@ -30,7 +30,7 @@ import org.tzi.use.gui.main.MainWindow;
 import org.vnu.sme.goal.translate.aclistar2use.IStarUseOclFolderService;
 
 /**
- * GUI form for the "iStar + ACL → USE/OCL (Folder)" translation action.
+ * GUI form for the file-based "iStar + ACL → USE/OCL" translation action.
  *
  * <p>Same pipeline as {@link IStarUseOclForm} ({@link
  * org.vnu.sme.goal.translate.aclistar2use.AclIStar2UseTranslator}, unchanged), but the
@@ -63,7 +63,7 @@ public final class IStarUseOclFolderForm extends JDialog {
     // ── Constructor ───────────────────────────────────────────────────────────
 
     public IStarUseOclFolderForm(MainWindow owner) {
-        super(owner, "iStar + ACL → USE/OCL (Folder)", false);
+        super(owner, "ACL + iStar → USE/OCL", false);
         buildUi();
         restorePrefs();
         setSize(1000, 700);
@@ -118,10 +118,13 @@ public final class IStarUseOclFolderForm extends JDialog {
                 "OUTPUT (into the chosen folder)\n\n" +
                 "  <model>.use — plain OCL, compiles standalone in USE:\n" +
                 "    • USE class diagram (from ACL)\n" +
-                "    • derived operations (activation/condition/pre/post per goal/task)\n" +
-                "    • refinement structural invariants (AND/OR)\n\n" +
+                "    • one condition() query per Goal\n" +
+                "    • Task queries: preHolds() and postHolds()\n" +
+                "    • AND/OR propagation embedded directly in parent condition()\n\n" +
                 "  <model>.tocl — only written when the model has temporal properties\n" +
-                "  (always/sometime/alwaysPast); load it via the TOCL plugin.");
+                "  (Achieve=sometime, Maintain=always, Sustain=sometime always).\n\n" +
+                "NOTE: quantified iStar refinements (forall/pick) are rejected by\n" +
+                "this class-attached translation; attach each goal to its actor class.");
     }
 
     // ── File-picker row ───────────────────────────────────────────────────────

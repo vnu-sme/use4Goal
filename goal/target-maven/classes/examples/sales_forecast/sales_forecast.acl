@@ -1,0 +1,222 @@
+// Focused reconstruction of the industrial Sales Forecast case reported by
+// Outmazgin, Soffer and Hadar (CAiSE 2020; extended online appendix, 2026).
+// One SalesCase is one concrete price-proposal process instance. Response
+// timing is a Boolean scenario abstraction, not an empirical duration claim.
+acl v2.0 SalesForecastState {
+  enum ApprovalStatus {
+    draft,
+    requested,
+    reviewed,
+    approved,
+    rejected
+  }
+
+  // A bounded revision domain is sufficient for the motivating acceptance /
+  // one-revision scenario and is directly translatable to Event-B.
+  enum ProposalRevision {
+    none,
+    r1,
+    r2
+  }
+
+  role Management {
+  }
+
+  role CustomerManager {
+  }
+
+  role Approver {
+    authorised : Boolean default true;
+  }
+
+  role Customer {
+  }
+
+  // Optional roles appearing in the complete SR model published with the
+  // case study.  They are not required by the focused executable scenarios,
+  // but declaring them here keeps sales_forecast_full.istar grounded in the
+  // same organizational model instead of introducing diagram-only actors.
+  role Approvers {
+  }
+
+  role Economy extends Approvers {
+  }
+
+  role CreditControl extends Approvers {
+  }
+
+  role SalesDepartmentManager extends Approvers {
+  }
+
+  role DirectorOfSalesSector extends Approvers {
+  }
+
+  role VPBusinessDivision extends Approvers {
+  }
+
+  role ServiceAgreementsDepartment {
+  }
+
+  role PresaleDepartment {
+  }
+
+  role ServiceProvider {
+  }
+
+  role InventoryManager {
+  }
+
+  role ProjectDepartment {
+  }
+
+  role Vendor {
+  }
+
+  role BISystem {
+  }
+
+  role BSaleSystem {
+  }
+
+  // Operational lanes of the complete Appendix-2 BPMN.
+  role FinancialControl {
+  }
+
+  role BusinessVP {
+  }
+
+  role SectorManager {
+  }
+
+  role DepartmentManager {
+  }
+
+  role ServiceAgreements {
+  }
+
+  role PresaleEngineer {
+  }
+
+  group SalesCase {
+    // Identity/version state of the proposal currently negotiated.
+    currentRevision : ProposalRevision default r1;
+    approvedRevision : ProposalRevision default none;
+    sentRevision : ProposalRevision default none;
+
+    // Observable process state.
+    proposalPrepared : Boolean default false;
+
+    // Milestones observed by the state-based goals in the complete readable
+    // model.  They are separate from the gateway inputs below: an input such
+    // as vendorBoMAvailable does not by itself mean that a technical package
+    // has actually been prepared.
+    customerDealRecorded : Boolean default false;
+    technicalPackagePrepared : Boolean default false;
+    serviceTermsValidated : Boolean default false;
+    profitabilityAssessmentCompleted : Boolean default false;
+    expectedSalesInformationRecorded : Boolean default false;
+    approvalRequested : Boolean default false;
+    reviewCompleted : Boolean default false;
+    approvalAccepted : Boolean default true;
+    approvalStatus : ApprovalStatus default draft;
+    proposalSent : Boolean default false;
+    processCompleted : Boolean default false;
+
+    // Scenario input for the prescribed process.  It selects whether the
+    // approval review completes inside or outside the customer's response
+    // window; the workaround is modelled separately, never as an official
+    // control-flow branch.
+    approvalDelayed : Boolean default false;
+
+    // For the motivating scenario the customer's response window expires
+    // while the mandatory review is being performed.  These two booleans are
+    // deliberately used instead of clock arithmetic because the current
+    // OCL-to-Event-B exporter does not support Integer comparison/arithmetic.
+    responseWindowOpen : Boolean default true;
+    sentWithinWindow : Boolean default false;
+
+    // Inputs and decisions visible in the complete published BPMN. Numeric
+    // thresholds are represented by named Boolean classifications because
+    // the source figure gives the cut-offs, but not a data schema or formula
+    // from which their values could be recomputed.
+    newCustomer : Boolean default false;
+    requiresPresaleEngineer : Boolean default false;
+    vendorBoMAvailable : Boolean default false;
+    missingPartNumbers : Boolean default false;
+    serviceFeeAtLeast7Percent : Boolean default true;
+    profitabilityAtLeast12Percent : Boolean default true;
+    profitabilityAtLeast10Percent : Boolean default true;
+    profitabilityAtLeast5Percent : Boolean default true;
+    dealAmountOver250000NIS : Boolean default false;
+    creditReviewRequired : Boolean default true;
+
+    serviceAgreementApproved : Boolean default true;
+    departmentManagerApproved : Boolean default true;
+    sectorManagerApproved : Boolean default true;
+    businessVPApproved : Boolean default true;
+    financialControlApproved : Boolean default true;
+    creditControlApproved : Boolean default true;
+
+    Management [1];
+    CustomerManager [1];
+    Approver [1..*];
+    Customer [1];
+
+    // Complete-SR actors are optional in a concrete price-proposal case.
+    // The four roles above remain the required executable core.
+    Approvers [0..*];
+    Economy [0..*];
+    CreditControl [0..*];
+    SalesDepartmentManager [0..*];
+    DirectorOfSalesSector [0..*];
+    VPBusinessDivision [0..*];
+    ServiceAgreementsDepartment [0..*];
+    PresaleDepartment [0..*];
+    ServiceProvider [0..*];
+    InventoryManager [0..*];
+    ProjectDepartment [0..*];
+    Vendor [0..*];
+    BISystem [0..*];
+    BSaleSystem [0..*];
+    FinancialControl [0..*];
+    BusinessVP [0..*];
+    SectorManager [0..*];
+    DepartmentManager [0..*];
+    ServiceAgreements [0..*];
+    PresaleEngineer [0..*];
+  }
+
+  // OCL is part of the ACL specification and is evaluated directly on an
+  // ACL/AOL state (see docs/semantics/dsl/acl.md sec. 16). These seven
+  // invariants formalize the lifecycle ordering enforced by
+  // sales_forecast.bpmn2's pre/postconditions: preparation before request,
+  // request before review, review before approval-gated sending, and a sent
+  // or approved revision must equal the revision that was actually reviewed.
+  // `sales_forecast_workaround.bpmn2` deliberately reaches
+  // proposalSent = true without approval or review, so
+  // SentRequiresApproval and SentRequiresReview are the two invariants that
+  // detect the workaround; the others stay vacuously true for that trace.
+  context SalesCase inv RequestRequiresPreparation:
+    self.approvalRequested = true implies self.proposalPrepared = true;
+
+  context SalesCase inv ReviewRequiresRequest:
+    self.reviewCompleted = true implies self.approvalRequested = true;
+
+  context SalesCase inv SentRequiresReview:
+    self.proposalSent = true implies self.reviewCompleted = true;
+
+  context SalesCase inv SentRequiresApproval:
+    self.proposalSent = true implies
+      self.approvalStatus = ApprovalStatus::approved;
+
+  context SalesCase inv ApprovedRevisionMatchesCurrent:
+    self.approvedRevision <> ProposalRevision::none implies
+      self.approvedRevision = self.currentRevision;
+
+  context SalesCase inv SentRevisionMatchesCurrent:
+    self.sentRevision <> ProposalRevision::none implies
+      self.sentRevision = self.currentRevision;
+
+  context SalesCase inv CompletionRequiresSending:
+    self.processCompleted = true implies self.proposalSent = true;
+}

@@ -38,7 +38,6 @@ import org.vnu.sme.goal.verify.conformance.semantics.IStarMarking;
 import org.vnu.sme.goal.verify.conformance.semantics.QualityStatus;
 import org.vnu.sme.goal.dsl.istar.mm.Goal;
 import org.vnu.sme.goal.dsl.istar.mm.IntentionalElement;
-import org.vnu.sme.goal.dsl.istar.mm.Obstacle;
 import org.vnu.sme.goal.dsl.istar.mm.Quality;
 import org.vnu.sme.goal.dsl.istar.mm.Resource;
 import org.vnu.sme.goal.dsl.istar.mm.Task;
@@ -293,7 +292,6 @@ public final class StepConformanceForm extends JDialog {
                 case Task task -> addGoalTask(result, task.id(), marking.goalTaskStatus(task.id()));
                 case Quality quality -> addQuality(result, quality.id(), marking.qualityStatus(quality.id()));
                 case Resource ignored -> { }
-                case Obstacle ignored -> { }
             }
         }
         return result;

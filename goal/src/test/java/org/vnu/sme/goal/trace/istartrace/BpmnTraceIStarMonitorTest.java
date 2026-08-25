@@ -25,7 +25,9 @@ class BpmnTraceIStarMonitorTest {
                 .anyMatch(status -> status == GoalTaskStatus.FULFILLED));
         var process=result.processes().get(0);
         assertRow(process,"MeetingOrganized [", P,P,P,P,P,P,P,F);
-        assertRow(process,"MeetingScheduled [", U,U,U,U,P,F,F,F);
+        // The dependency owns a distinct Task dependum; requester status follows the
+        // provider endpoint SchedulingCompleted, never an actor element with the same label.
+        assertRow(process,"MeetingScheduled [", P,P,P,P,P,P,F,F);
         assertRow(process,"ParticipantsAttended [", P,P,P,P,P,P,P,F);
         assertRow(process,"ChosenTimeHasDetails [", U,U,U,U,U,F,F,F);
         assertRow(process,"TimetablesCollected [", P,P,P,P,F,F,F,F);

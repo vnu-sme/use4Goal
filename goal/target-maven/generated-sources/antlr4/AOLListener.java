@@ -1,5 +1,5 @@
 // Generated from AOL.g4 by ANTLR 4.9.3
- package org.vnu.sme.goal.aol.parser; 
+ package org.vnu.sme.goal.dsl.aol.parser; 
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -67,6 +67,26 @@ public interface AOLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitPlayDecl(AOLParser.PlayDeclContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link AOLParser#roleInstanceDecl}.
+	 * @param ctx the parse tree
+	 */
+	void enterRoleInstanceDecl(AOLParser.RoleInstanceDeclContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link AOLParser#roleInstanceDecl}.
+	 * @param ctx the parse tree
+	 */
+	void exitRoleInstanceDecl(AOLParser.RoleInstanceDeclContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link AOLParser#playLinkDecl}.
+	 * @param ctx the parse tree
+	 */
+	void enterPlayLinkDecl(AOLParser.PlayLinkDeclContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link AOLParser#playLinkDecl}.
+	 * @param ctx the parse tree
+	 */
+	void exitPlayLinkDecl(AOLParser.PlayLinkDeclContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link AOLParser#entityInstanceDecl}.
 	 * @param ctx the parse tree

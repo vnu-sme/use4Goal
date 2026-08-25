@@ -1,42 +1,43 @@
-acl v2.0 MeetingSchedulerShadow {
-  enum TimetableChannel { none, calendar, phone }
+acl v2.0 ClassicIStarMeetingSchedulerState {
+  // Agent profile used by the three organizational actors in Yu's example.
+  role Person;
 
-  // Persistent Agent profile. These values belong to the Agent object at runtime,
-  // not to any Initiator/Organizer/Secretary/Participant occurrence.
-  abstract role MeetingParty {
-    name : String;
-    phone : String;
-    hasCalendar : Boolean;
+  role MeetingInitiator extends Person {
+    dateRangeEntered : Boolean;
+    schedulingDelegated : Boolean;
   }
 
-  // Concrete roles contain only state acquired in one MeetingUnit.
-  role Initiator extends MeetingParty;
-  role Organizer extends MeetingParty;
-  role Secretary extends MeetingParty;
-  role Participant extends MeetingParty {
-    timetableCollected : Boolean;
-    timetableChannel : TimetableChannel;
-    notified : Boolean;
-    attended : Boolean;
+  role MeetingScheduler extends Person {
+    availabilityRequested : Boolean;
+    availabilityMerged : Boolean;
+    suitableSlotFound : Boolean;
+    proposedDatePublished : Boolean;
   }
 
-  // A profile-to-profile association is realized as an Agent-to-Agent link.
-  association knowsPhoneOf {
-    MeetingParty [*] role knower;
-    MeetingParty [*] role knownContact;
+  role MeetingParticipant extends Person {
+    exclusionDatesEntered : Boolean;
+    preferredDatesEntered : Boolean;
+    agreementProvided : Boolean;
+    attending : Boolean;
   }
 
-  group MeetingUnit {
-    detailsDecided : Boolean;
-    timeChosen : Boolean;
-
-    role Initiator [1];
-    role Organizer [1];
-    role Secretary [0..1];
-    role Participant [2..*];
-
-    Initiator compatible Participant;
-    Organizer compatible Secretary;
+  // This specialization represents the ISA edge in the original SD model.
+  role ImportantParticipant extends MeetingParticipant {
+    agreementProvided : Boolean;
+    attendanceAssured : Boolean;
+    attending : Boolean;
   }
 
+  group Meeting {
+    meetingRequested : Boolean;
+    meetingScheduled : Boolean;
+    scheduleAnnounced : Boolean;
+
+    MeetingInitiator [1];
+    MeetingScheduler [1];
+    MeetingParticipant [1..*];
+    ImportantParticipant [0..*];
+
+    MeetingInitiator compatible MeetingParticipant;
+  }
 }

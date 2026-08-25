@@ -2,9 +2,6 @@ istar IncidentResponse {
 
   role Coordinator {
     goal IncidentHandled : Achieve
-    activation {[
-      true
-    ]}
     condition {[
       self.triaged
       and EvidencePacket.allInstances()->forAll(e | e.complete)

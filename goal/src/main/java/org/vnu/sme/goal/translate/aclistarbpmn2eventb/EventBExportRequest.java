@@ -5,7 +5,10 @@ import java.util.Objects;
 
 /** Files and target project selected by the user. */
 public record EventBExportRequest(Path acl, Path istar, Path bpmn, Path outputDirectory,
-                                  String projectName) {
+                                  String projectName, Path previousMapping) {
+    public EventBExportRequest(Path acl, Path istar, Path bpmn, Path outputDirectory, String projectName) {
+        this(acl, istar, bpmn, outputDirectory, projectName, null);
+    }
     public EventBExportRequest {
         Objects.requireNonNull(acl, "acl");
         Objects.requireNonNull(istar, "istar");

@@ -1,9 +1,14 @@
 # Context tổng quan dự án `use-goal-BPMN`
 
-Ngày lập: 2026-07-16. Tài liệu này tổng hợp lại toàn bộ project sau khi đọc mã
+Ngày lập: 2026-07-16. Cập nhật gần nhất: 2026-08-16. Tài liệu này tổng hợp lại toàn bộ project sau khi đọc mã
 nguồn, tài liệu `doc/`, ví dụ `goal/src/main/resources/examples/`, và lịch sử
 thảo luận thiết kế gần nhất (mở rộng Moise → ACL). Mục đích: một điểm khởi đầu
 duy nhất để không phải dò lại từ đầu ở phiên làm việc sau.
+
+> **Cách đọc:** mục 1–8 là ảnh chụp lịch sử của project vào ngày 2026-07-16.
+> Mục 9 trở đi ghi lại toàn bộ chuỗi quyết định sau đó và là nguồn ưu tiên khi
+> có mâu thuẫn với phần cũ. Candidate 3.0 trong các mục mới vẫn là thiết kế thử
+> nghiệm, chưa tự động thay thế grammar/compiler 2.0.
 
 ## 1. Dự án này là gì
 
@@ -54,7 +59,7 @@ pháp gốc) → `parser/` (XCompiler + XBuildingVisitor + XModelFactory, build
 
 | Ngôn ngữ | File nguồn | Grammar | Package | Vai trò |
 |---|---|---|---|---|
-| iStar 2.0 | `.istar` | `IStar.g4` | `istar` | Goal model type-level: actor(role/agent), goal/task/resource/quality/obstacle, AND/OR/order/guard refinement, contribution, dependency (SD) |
+| iStar 2.0 | `.istar` | `IStar.g4` | `istar` | Goal model type-level: actor(role/agent), goal/task/resource/quality, AND/OR/forall/pick refinement, contribution, dependency (SD) |
 | i* Scenario | `.iscn` | `IStarScenario.g4` | `iscn` (+ `iscn.goalmodelinstance`) | Instance-level snapshot trên 1 `.istar`: `instance`, `fire`, `assign`, `aggregate all/any` |
 | BPMN2 | `.bpmn2` | `Bpmn2.g4` | `bpmn2` | Process model type-level: pool/lane, task, event, gateway (xor/and/or/event-based), flow, message |
 | BPMN Scenario | `.bscn` | `Bpmn2Scenario.g4` | `bpmn2scenario` | Instance-level trên 1 `.bpmn2`: `bind`, `fire/completed/active`, `token`, `assert` |
@@ -251,3 +256,338 @@ association ngược role→group và role→identity-dùng-chung vào `ACL.g4`/
 để cardinality và compatibility constraint viết được OCL. Chưa có compiler
 ACL→`.use` chính thức — đây là việc người dùng dự định tự làm ("tôi cũng sẽ có
 phương pháp để dịch từ acl sang use").
+
+## 9. Diễn biến thiết kế sau mốc 2026-07-16
+
+Chuỗi thảo luận sau mốc ban đầu đi qua bốn giai đoạn. Các giai đoạn trước vẫn
+có giá trị như bằng chứng nghiên cứu, nhưng không phải tất cả đều là kiến trúc
+cuối cùng.
+
+### 9.1 Chuẩn hoá ngữ nghĩa ACL và luật ACL → USE
+
+Các tài liệu ngữ nghĩa ACL và bảng luật chuyển được rà soát để thống nhất các
+điểm sau:
+
+- enumeration, entity, group và role ở ACL được biểu diễn bằng các cấu trúc
+  class tương ứng trong USE; enum ACL phải trở thành USE enum;
+- association, aggregation và composition phải giữ đúng loại quan hệ, không
+  được gom thành một luật mơ hồ;
+- `owner` cũ chỉ có scope group→role hoặc group→group và khi dịch được xem như
+  composition; không tồn tại quan hệ đặc biệt “group owner entity”, trường hợp
+  cấu trúc group→entity dùng composition thông thường;
+- multiplicity quyết định kiểu quan hệ/thuộc tính toàn phần hay bộ phận. Không
+  được mặc định mọi attribute đều có thể `undefined`; multiplicity bắt buộc
+  phải sinh total function, còn optional mới sinh partial function;
+- generalization của entity/group giữ ngữ nghĩa kế thừa kiểu; generalization
+  role mang ngữ nghĩa enactment: muốn đóng role con thì subject phải đóng role
+  cha. Khi dịch Event-B/USE cần biểu diễn nghĩa này bằng relation/invariant,
+  không được đơn giản coi role con là tập con của role cha nếu occurrence role
+  có identity độc lập;
+- quan hệ role cha–con chỉ hợp lệ khi scope tổ chức của chúng tương thích qua
+  chuỗi group ancestor; group graph và role inheritance graph phải vô chu trình;
+- `compatible` là policy cho phép cùng agent đảm nhiệm một cặp role trong đúng
+  scope tổ chức. Mặc định cặp role không khai báo compatible là không được đồng
+  thời đảm nhiệm trong scope đó.
+
+Điểm quan trọng rút ra: tài liệu transformation phải có thứ tự luật rõ ràng,
+mỗi luật có ví dụ tích luỹ, và ví dụ cuối phải tạo thành một bản dịch hoàn chỉnh
+của Meeting Scheduler thay vì các mảnh rời không phối hợp được.
+
+### 9.2 Thử nghiệm USE và nhận ra giới hạn biểu diễn thời gian
+
+Hướng ACL+iStar+BPMN→USE đã được khảo sát trước. USE phù hợp để biểu diễn class,
+object state, association và invariant OCL; SOIL có thể phát lại một kịch bản.
+Nhưng một `.use` thuần không tự nó là đặc tả đầy đủ của:
+
+- toàn bộ không gian trạng thái và trạng thái mục tiêu của iStar;
+- control-flow, token và thứ tự bắt buộc của BPMN;
+- các thuộc tính temporal như dependency/liveness trên mọi execution.
+
+Vì vậy USE vẫn hữu ích cho kiểm tra một concrete checkpoint trace, nhưng không
+được tuyên bố là bản dịch hành vi đầy đủ cho mọi execution. Nhận định này dẫn
+đến hướng Event-B để mô tả state machine và proof obligations rõ hơn.
+
+### 9.3 Thử nghiệm Event-B theo UML-B, BPMN→Event-B và KAOS→Event-B
+
+Ba nguồn nghiên cứu địa phương được dùng làm nền:
+
+- `latex/paperssssss/core/` và `latex/paperssssss/eventB/` chứa các bản tham
+  khảo UML-B, formal BPMN→Event-B và KAOS/iStar-like goal→Event-B;
+- class-like declaration được đưa vào context như carrier set/type structure;
+- object population, attribute value, link occurrence, control marking và
+  transition nằm trong machine;
+- BPMN Activity trở thành Event-B event với guard/action;
+- goal/task/quality declaration là cấu trúc intentional, còn marking của từng
+  instance là runtime state.
+
+Các action dịch được định hướng thành bốn cấu hình độc lập:
+
+1. ACL → Event-B;
+2. ACL + BPMN → Event-B;
+3. ACL + iStar → Event-B;
+4. ACL + BPMN + iStar → Event-B.
+
+Trong thiết kế hợp nhất, ACL phải được dịch trước về mặt phụ thuộc kiểu vì cả
+BPMN và iStar dùng Actor/Entity của ACL. Tuy nhiên BPMN và iStar không bắt buộc
+dịch tuần tự cho nhau: chúng có thể được biên dịch độc lập vào cùng context và
+machine, rồi một bước composition thêm giao thức đồng bộ.
+
+### 9.4 Quyết định đồng bộ BPMN–iStar
+
+Không dùng mapping thủ công kiểu “Activity X cập nhật Goal Y”. Cách đó dễ bỏ
+sót goal của quy trình khác hoặc goal cá nhân bị ảnh hưởng gián tiếp.
+
+Quy tắc hiện hành là:
+
+```text
+BPMN event thực thi và tạo state Sigma(i+1)
+    -> hệ thống chuyển sang trạng thái cần đánh giá
+    -> iStar đánh giá lại toàn bộ intentional model trên Sigma(i+1)
+    -> tạo một goal snapshot hoàn chỉnh
+    -> chỉ khi snapshot hoàn chỉnh mới cho phép BPMN event kế tiếp
+```
+
+Có thể hiện thực bằng một event chung `EvaluateGoals` và biến pha, hoặc ghép
+atomic phần đánh giá vào từng BPMN event. Phương án event chung dễ chứng minh
+và tránh nhân bản action; invariant/guard pha phải bảo đảm không có hai BPMN
+transition liên tiếp mà thiếu bước đánh giá.
+
+## 10. Phân tầng M2–M1–M0 là nguyên tắc thiết kế bắt buộc
+
+Các tranh luận về `Actor`, `Group`, `Role`, `Agent` không thể giải quyết chỉ từ
+sơ đồ metamodel. Quy trình đã thống nhất là đi bottom-up:
+
+1. **M0 — instance/runtime:** liệt kê identity thật, giá trị và link ở từng
+   checkpoint; xác định điều gì tồn tại bền vững và điều gì thay đổi;
+2. **M1 — model/domain declaration:** tìm các type, property, relationship,
+   intention và process cần để sinh đúng các instance M0 đó;
+3. **M2 — metamodel/Ecore:** chỉ giữ những metaclass và invariant cần thiết để
+   mô tả nhất quán các model M1 đã được kiểm nghiệm.
+
+Ví dụ M0 cốt lõi của Meeting Scheduler:
+
+| Identity | Ý nghĩa | Có chủ đích | State thay đổi |
+|---|---|---:|---:|
+| `alice` | cá nhân/software agent cụ thể | có | có |
+| `unit1` | occurrence của tổ chức/tập thể | có | có |
+| `organizer1` | role slot/trách nhiệm trong `unit1` | có | có |
+| `meeting1` | đối tượng miền thụ động | không | có |
+
+`organizer1` phải tồn tại độc lập với Alice. Khi Carol thay Alice đảm nhiệm
+Organizer, identity của role slot và goal gắn với slot không đổi; chỉ enactment
+link thay đổi. Đây là lý do không thể đồng nhất agent occurrence với role.
+
+## 11. Candidate ACL state-aware 3.0
+
+Candidate hiện nằm riêng trong
+`goal/model/development/acl-state.ecore`, namespace
+`https://vnu.edu.vn/sme/goal/acl/state/3.0`. Nó chưa thay thế
+`goal/model/acl.ecore` hay Java compiler hiện hành.
+
+### 11.1 Khái niệm M2/M1
+
+```text
+Classifier
+├── DataType
+│   ├── PrimitiveType
+│   └── Enumeration
+└── Class
+    ├── Actor
+    └── Entity
+```
+
+- `Actor` là type cho mọi occurrence có thể làm chủ thể intentional;
+- `ActorKind = INDIVIDUAL | COLLECTIVE | ROLE` giữ ba cách dùng khác nhau mà
+  không tạo ba cây metaclass trùng lặp;
+- `Entity` là type cho object có identity/state nhưng không có ý định;
+- `Attribute` khai báo state slot tại M1, còn giá trị nằm trong snapshot M0;
+- `Association`, `Aggregation`, `Composition` vẫn tách riêng vì lifecycle của
+  link khác nhau;
+- `Owner` bị bỏ. Composition diễn tả structure/lifecycle, ví dụ
+  collective→role, collective→collective và actor→entity;
+- `Compatibility` vẫn riêng vì đây là policy cấp type có scope collective,
+  không phải một runtime structural link.
+
+Composition không tự động truyền goal. Collective con chỉ đóng góp cho goal
+collective cha khi iStar khai báo refinement hoặc dependency tương ứng.
+
+### 11.2 Khái niệm runtime M0
+
+- `SystemHistory`: model state history của một ACL schema;
+- `RuntimeInstance`: identity ổn định qua nhiều checkpoint;
+- `ActorOccurrence`: runtime instance typed bởi Actor;
+- `EntityObject`: runtime instance typed bởi Entity;
+- `SystemState`: immutable checkpoint `Sigma_i = (O_i, V_i, L_i)`;
+- `AttributeValue`: giá trị của một attribute trên một identity tại một state;
+- `LinkOccurrence`: instance của relationship M1 tại một state.
+
+Tách identity khỏi snapshot là điều kiện để so sánh goal marking theo thời gian
+mà không sửa ngược state cũ.
+
+### 11.3 Invariant chính
+
+- tên classifier và relationship duy nhất trong model;
+- Actor generalization chỉ nối Actor cùng kind; Entity chỉ generalize Entity;
+- composition có Actor ở phía part phải bắt đầu từ collective Actor;
+- Entity không được composition-contain Actor;
+- composition graph vô chu trình;
+- occurrence phải được typed đúng loại và thuộc đúng ACL model;
+- mọi value/link trong state chỉ dùng instance đang active;
+- mỗi cặp `(instance, attribute)` có tối đa một value trong một state.
+
+## 12. Candidate iStar state-aware 3.0
+
+Candidate nằm trong `goal/model/development/istar-state.ecore`, namespace
+`https://vnu.edu.vn/sme/goal/istar/state/3.0`. Obstacle đã bị loại khỏi iStar
+hiện hành theo quyết định thiết kế.
+
+### 12.1 Không sao chép Actor của ACL
+
+`ActorView` tham chiếu trực tiếp `ACL::Actor`. Vì vậy:
+
+- Actor kind `INDIVIDUAL` sở hữu goal nội tại của cá nhân/software agent;
+- Actor kind `ROLE` sở hữu trách nhiệm của role occurrence;
+- Actor kind `COLLECTIVE` sở hữu goal chung của tổ chức/group occurrence.
+
+BPMN performer/lane về sau cũng phải tham chiếu Actor này. Trùng tên không được
+coi là một phép mapping hợp lệ.
+
+### 12.2 Intentional specification
+
+- `Goal`: desired state với `activation`, `condition` và `GoalType`;
+- `Task`: intended action contract với `precondition`, `postcondition`;
+- `Quality`: intentional quality có thể có state predicate và contribution;
+- `Resource`: thứ actor cần, khác ACL EntityObject là object miền thực tế;
+- `StatePredicate`: OCL được đánh giá với `self`, `outer`, `state`;
+- AND/OR/FORALL/PICK refinement tạo cấu trúc và phép tổng hợp marking;
+- Dependency composition-own một `IntentionalElement` cụ thể làm dependum.
+
+Dependency không có `DependumKind`: subtype của dependum đã cho biết nó là
+Goal, Task, Quality hay Resource. Dependum là một element riêng được chứa bởi
+Dependency, không phải tham chiếu lỏng đến một declaration đã có ở actor khác.
+
+### 12.3 Goal runtime
+
+- `GoalTrace` nối một GoalModel với đúng một ACL SystemHistory;
+- `GoalSnapshot` tham chiếu một SystemState và chứa kết quả đánh giá tại state;
+- `IntentionalMarking` có khóa `(element, subject, outer?)`;
+- status gồm `INACTIVE`, `PENDING`, `SATISFIED`, `VIOLATED`;
+- `complete = true` chỉ khi mọi intention/subject applicable đã được đánh giá.
+
+Ba ví dụ marking khác nhau dù có thể liên quan cùng một người:
+
+```text
+AvoidOvertime(alice)                  -- goal nội tại cá nhân
+HaveMeetingScheduled(organizer1)      -- trách nhiệm role slot
+HaveMeetingOrganized(unit1)           -- goal tập thể
+```
+
+## 13. Ví dụ phát triển Meeting Scheduler
+
+Bộ ví dụ state-aware tích luỹ hiện có:
+
+- `goal/model/development/mtg-development.acl.xmi`: model ACL M1;
+- `goal/model/development/mtg-development.istar.xmi`: model iStar M1 tham chiếu
+  Actor từ ACL thay vì khai báo actor mới;
+- `goal/model/development/mtg-development.state.xmi`: identity M0 và hai state
+  `s0`, `s1`;
+- `goal/model/development/mtg-development.goaltrace.xmi`: full re-evaluation
+  trên hai state;
+- các biến thể text lớn hơn ở
+  `goal/src/main/resources/examples/mtg/mtg_gstar.{acl,istar,bpmn2}` dùng để
+  khảo sát case study gần gStar.
+
+Ví dụ phải chứa đủ ít nhất ba lớp ý định: goal cá nhân, goal role và goal
+collective. Một tình huống kiểm tra quan trọng là Alice hoàn thành activity tổ
+chức cuộc họp nhưng số giờ làm tăng quá ngưỡng: BPMN goal của meeting có thể
+đạt trong khi `AvoidOvertime(alice)` chuyển sang violated. Full re-evaluation
+phải phát hiện điều này dù không có Activity→AvoidOvertime mapping.
+
+## 14. Ecore/Eclipse và validation
+
+Ecore được dùng để kiểm nghiệm M2 và XMI để kiểm nghiệm M1/M0 trước khi sửa
+grammar Java. Các invariant ngữ nghĩa phải nằm trong Ecore/OCL delegate để
+Eclipse EMF Validation có thể báo lỗi, không chỉ tồn tại trong
+`GoalModelValidator.java`.
+
+Trạng thái kỹ thuật đã đạt ở candidate development:
+
+- các file Ecore/XMI well-formed;
+- EMF có thể load model;
+- OCL delegates được khai báo;
+- sample XMI không có unresolved proxy hoặc diagnostic error trong lần kiểm
+  tra gần nhất.
+
+Sirius `.aird` chỉ là representation/session, không phải model dữ liệu. Ecore
+diagram dùng để chỉnh M2. Muốn có sơ đồ kéo-thả riêng cho instance XMI M1/M0
+cần tạo Sirius viewpoint/representation cho metamodel đó; Sample Ecore Model
+Editor mặc định chủ yếu là tree editor.
+
+## 15. Vai trò hiện hành của ACL, iStar và BPMN
+
+| Ngôn ngữ | Trách nhiệm duy nhất | Không được làm |
+|---|---|---|
+| ACL | định nghĩa Actor/Entity, structure, runtime identity và system state | tự suy ra goal hoặc process order |
+| iStar | khai báo intention và đánh giá toàn bộ goal tree trên mỗi ACL state | tự sửa domain state, sao chép Actor ACL |
+| BPMN | định nghĩa control-flow và transition làm thay đổi ACL state | tự quyết định goal nào cần cập nhật |
+
+Kiến trúc đồng bộ mục tiêu:
+
+```text
+ACL schema + initial identities/state
+              |
+              v
+BPMN event  -> new immutable ACL state
+              |
+              v
+       full iStar evaluation
+              |
+              v
+ complete GoalSnapshot -> BPMN event tiếp theo
+```
+
+Mô hình này cho phép một process ảnh hưởng goal của process khác, goal cá nhân
+hoặc goal tập thể một cách khách quan vì tất cả đều đọc cùng ACL state.
+
+## 16. Những quyết định chưa đóng băng
+
+1. `ActorKind` trên một EClass Actor hay ba subclass riêng vẫn cần được đánh
+   giá thêm bằng nhiều case M0; candidate hiện dùng một EClass + enum.
+2. Cú pháp `.acl` và `.istar` 3.0 chưa được chốt; không migration compiler chỉ
+   vì Ecore load được.
+3. BPMN state-aware metamodel cần được điều chỉnh để performer tham chiếu Actor
+   ACL và transition tạo SystemState mới đúng semantics.
+4. Cần xác định đầy đủ temporal semantics cho `ACHIEVE`, `MAINTAIN`, `SUSTAIN`,
+   `RECUR`, đặc biệt khi activation bật/tắt qua nhiều checkpoint.
+5. Propagation chi tiết của contribution và dependency cần invariant/rule có
+   thể kiểm chứng, không chỉ mô tả bằng prose.
+6. Event-B translator và Rodin proof chỉ nên được coi là ổn định sau khi M0/M1/
+   M2 state-aware được chấp nhận và các proof obligation phân biệt được lỗi bộ
+   dịch với lỗi ngữ nghĩa model.
+
+## 17. Tài liệu nguồn ưu tiên cho công việc tiếp theo
+
+### Candidate 3.0
+
+- `goal/model/development/README.md`
+- `goal/model/development/acl-state.ecore`
+- `goal/model/development/istar-state.ecore`
+- `goal/docs/semantics/development/acl-state-model.md`
+- `goal/docs/semantics/development/istar-state-model.md`
+- `goal/docs/semantics/development/mtg-stateful-example.md`
+
+### Ngữ nghĩa và transformation hiện hành
+
+- `goal/docs/formal/acl.md`, `goal/docs/semantics/dsl/acl.md`
+- `goal/docs/formal/istar.md`, `goal/docs/semantics/dsl/istar.md`
+- `goal/docs/semantics/transformations/acl2eventb.md`
+- `goal/docs/semantics/transformations/istar2eventb.md`
+- `goal/docs/semantics/transformations/bpmn2eventb.md`
+
+### Nguyên tắc tiếp tục
+
+Không sửa canonical Ecore, grammar, compiler và transformation đồng loạt cho
+đến khi một candidate vượt qua đủ ví dụ M0. Khi bắt đầu migration phải làm theo
+thứ tự: chốt M0 → chốt M1 → chốt M2/OCL invariant → cập nhật tài liệu → grammar
+và Java model → parser/validator/view → transformation → test và Rodin/USE
+verification.

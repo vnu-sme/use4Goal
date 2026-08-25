@@ -1,0 +1,402 @@
+model ClassroomGoals_ClassroomProcess_Verification
+
+enum AttendanceMethod {
+  none, manual, electronic
+ };
+
+association SnapshotClassroom between
+  Classroom[*]
+  Snapshot[1] role snapshotClassroom redefines snapshot
+end
+
+association SnapshotPerson between
+  Person[*]
+  Snapshot[1] role snapshotPerson redefines snapshot
+end
+
+aggregation PredSucc between
+  SnapshotItem[0..1] role pred
+  SnapshotItem[0..1] role succ
+end
+
+class beginLesson_TeacherOpC < TeacherOpC
+end
+
+aggregation PredSuccPerson between
+  Person[0..1] role predPerson redefines pred
+  Person[0..1] role succPerson redefines succ
+end
+
+association Filmstrip between
+  Snapshot[0..1] role pred
+  Snapshot[0..1] role succ
+  OperationCall[0..1]
+end
+
+class recordAttendanceElectronically_TeacherOpC < TeacherOpC
+end
+
+abstract class TeacherOpC < OperationCall
+attributes
+  aSelf : Teacher
+end
+
+abstract class OperationCall
+operations
+  pred() : Snapshot = 
+    if (self.pred->size() = 1) then self.pred->any( $elem0:Snapshot | true ) else null endif
+  succ() : Snapshot = 
+    if (self.succ->size() = 1) then self.succ->any( $elem0:Snapshot | true ) else null endif
+end
+
+abstract class SnapshotItem
+end
+
+class classroomReady_TeacherOpC < TeacherOpC
+end
+
+association SnapshotAgent between
+  Agent[*]
+  Snapshot[1] role snapshotAgent redefines snapshot
+end
+
+class classFinished_TeacherOpC < TeacherOpC
+end
+
+aggregation PredSuccClassroom between
+  Classroom[0..1] role predClassroom redefines pred
+  Classroom[0..1] role succClassroom redefines succ
+end
+
+class deliverLesson_TeacherOpC < TeacherOpC
+end
+
+association SnapshotTeacher between
+  Teacher[*]
+  Snapshot[1] role snapshotTeacher redefines snapshot
+end
+
+class attendLesson_StudentOpC < StudentOpC
+end
+
+aggregation PredSuccTeacher between
+  Teacher[0..1] role predTeacher redefines pred
+  Teacher[0..1] role succTeacher redefines succ
+end
+
+aggregation PredSuccAgent between
+  Agent[0..1] role predAgent redefines pred
+  Agent[0..1] role succAgent redefines succ
+end
+
+abstract class StudentOpC < OperationCall
+attributes
+  aSelf : Student
+end
+
+class Snapshot
+operations
+  pred() : Snapshot = 
+    if (self.pred->size() = 1) then self.pred->any( $elem0:Snapshot | true ) else null endif
+  succ() : Snapshot = 
+    if (self.succ->size() = 1) then self.succ->any( $elem0:Snapshot | true ) else null endif
+end
+
+association SnapElement between
+  SnapshotItem[*]
+  Snapshot[1]
+end
+
+aggregation PredSuccStudent between
+  Student[0..1] role predStudent redefines pred
+  Student[0..1] role succStudent redefines succ
+end
+
+association SnapshotStudent between
+  Student[*]
+  Snapshot[1] role snapshotStudent redefines snapshot
+end
+
+class Agent < SnapshotItem
+attributes
+  id : Integer
+end
+
+class Person < SnapshotItem
+attributes
+  id : Integer
+end
+
+class Teacher < SnapshotItem
+attributes
+  id : Integer
+  attendanceStarted : Boolean
+operations
+  ClassCompleted_condition() : Boolean = 
+    (self.LessonDelivered_condition() and self.AttendanceSummaryRecorded_condition())
+  LessonDelivered_condition() : Boolean = 
+    self.classroom.lessonDelivered
+  AttendanceSummaryRecorded_condition() : Boolean = 
+    (self.RecordAttendanceManually_postHolds() or self.RecordAttendanceElectronically_postHolds())
+  RecordAttendanceManually_preHolds() : Boolean = 
+    (self.classroom.lessonStarted and self.attendanceStarted)
+  RecordAttendanceManually_postHolds() : Boolean = 
+    (self.classroom.attendanceRecorded and (self.classroom.attendanceMethod = AttendanceMethod::manual))
+  RecordAttendanceElectronically_preHolds() : Boolean = 
+    (self.classroom.lessonStarted and self.attendanceStarted)
+  RecordAttendanceElectronically_postHolds() : Boolean = 
+    (self.classroom.attendanceRecorded and (self.classroom.attendanceMethod = AttendanceMethod::electronic))
+  classroomReady()
+  beginLesson()
+  recordAttendanceElectronically()
+  deliverLesson()
+  classFinished()
+end
+
+class Student < SnapshotItem
+attributes
+  id : Integer
+  present : Boolean
+  attendanceMarked : Boolean
+operations
+  ParticipatesInClass_condition() : Boolean = 
+    (self.AttendanceMarked_condition() and self.PresentForLesson_condition())
+  AttendanceMarked_condition() : Boolean = 
+    self.attendanceMarked
+  PresentForLesson_condition() : Boolean = 
+    (self.present and self.classroom.lessonDelivered)
+  attendLesson()
+end
+
+class Classroom < SnapshotItem
+attributes
+  id : Integer
+  lessonStarted : Boolean
+  attendanceRecorded : Boolean
+  attendanceMethod : AttendanceMethod
+  lessonDelivered : Boolean
+end
+
+association Agent_plays_Person between
+  Agent[1]
+  Person[*] role play_person
+end
+
+association Person_plays_Teacher between
+  Person[1]
+  Teacher[*] role play_teacher
+end
+
+association Person_plays_Student between
+  Person[1]
+  Student[*] role play_student
+end
+
+composition Teacher_in_Classroom between
+  Classroom[1]
+  Teacher[1]
+end
+
+composition Student_in_Classroom between
+  Classroom[1]
+  Student[1..*]
+end
+
+constraints
+context Agent inv validLinkingAgent_plays_Person:
+  self.play_person->forAll( c:Person | (c.snapshot = self.snapshot) )
+
+context Agent inv validSnapshotLinking:
+  (self.succ.isDefined() implies (self.succ.snapshot = self.snapshot.succ()))
+
+context Classroom inv validLinkingStudent_in_Classroom:
+  self.student->forAll( c:Student | (c.snapshot = self.snapshot) )
+
+context Classroom inv validLinkingTeacher_in_Classroom:
+  (self.teacher.isDefined() implies (self.snapshot = self.teacher.snapshot))
+
+context Classroom inv validSnapshotLinking:
+  (self.succ.isDefined() implies (self.succ.snapshot = self.snapshot.succ()))
+
+context OperationCall inv assocClassBehavior:
+  (((self.pred->size() = 1) and (self.succ->size() = 1)) and OperationCall.allInstances()->forAll( op:OperationCall | (((self.pred = op.pred) and (self.succ = op.succ)) implies (self = op)) ))
+
+context Person inv validLinkingPerson_plays_Student:
+  self.play_student->forAll( c:Student | (c.snapshot = self.snapshot) )
+
+context Person inv validLinkingPerson_plays_Teacher:
+  self.play_teacher->forAll( c:Teacher | (c.snapshot = self.snapshot) )
+
+context Person inv validSnapshotLinking:
+  (self.succ.isDefined() implies (self.succ.snapshot = self.snapshot.succ()))
+
+context Snapshot inv cycleFree:
+  Set{self.succ()}->closure( s:Snapshot | s.succ() )->excludes(self)
+
+context Snapshot inv oneFilmstrip:
+  ((Snapshot.allInstances()->select( s:Snapshot | s.pred().isUndefined() )->size() = 1) and (Snapshot.allInstances()->select( s:Snapshot | s.succ().isUndefined() )->size() = 1))
+
+context Student inv validSnapshotLinking:
+  (self.succ.isDefined() implies (self.succ.snapshot = self.snapshot.succ()))
+
+context StudentOpC inv aSelfDefined:
+  self.aSelf.isDefined()
+
+context StudentOpC inv aSelfInPred:
+  (self.aSelf.snapshot = self.pred())
+
+context Teacher inv validSnapshotLinking:
+  (self.succ.isDefined() implies (self.succ.snapshot = self.snapshot.succ()))
+
+context TeacherOpC inv aSelfDefined:
+  self.aSelf.isDefined()
+
+context TeacherOpC inv aSelfInPred:
+  (self.aSelf.snapshot = self.pred())
+
+context attendLesson_StudentOpC inv post_BPMN_TeachingSession_attendLesson_DomainPost:
+  aSelf.succ.classroom.student->forAll( student:Student | student.present )
+
+context attendLesson_StudentOpC inv pre_BPMN_TeachingSession_attendLesson_DomainPre:
+  aSelf.classroom.lessonDelivered
+
+context beginLesson_TeacherOpC inv post_BPMN_TeachingSession_beginLesson_DomainPost:
+  (aSelf.succ.classroom.lessonStarted and aSelf.succ.classroom.teacher.attendanceStarted)
+
+context classFinished_TeacherOpC inv pre_BPMN_TeachingSession_classFinished_Enabled:
+  true
+
+context classroomReady_TeacherOpC inv pre_BPMN_TeachingSession_classroomReady_DomainPre:
+  ((not aSelf.classroom.lessonStarted and not aSelf.classroom.attendanceRecorded) and not aSelf.classroom.lessonDelivered)
+
+context deliverLesson_TeacherOpC inv post_BPMN_TeachingSession_deliverLesson_DomainPost:
+  aSelf.succ.classroom.lessonDelivered
+
+context deliverLesson_TeacherOpC inv pre_BPMN_TeachingSession_deliverLesson_DomainPre:
+  aSelf.classroom.attendanceRecorded
+
+context recordAttendanceElectronically_TeacherOpC inv post_BPMN_TeachingSession_recordAttendanceElectronically_DomainPost:
+  ((aSelf.succ.classroom.attendanceRecorded and (aSelf.succ.classroom.attendanceMethod = AttendanceMethod::electronic)) and aSelf.succ.classroom.student->forAll( student:Student | student.attendanceMarked ))
+
+context recordAttendanceElectronically_TeacherOpC inv pre_BPMN_TeachingSession_recordAttendanceElectronically_DomainPre:
+  (aSelf.classroom.lessonStarted and aSelf.classroom.teacher.attendanceStarted)
+
+context self : Person inv NoSelfConflict_Teacher:
+  self.play_teacher->forAll( r1:Teacher, r2:Teacher | ((r1 <> r2) implies (r1.classroom <> r2.classroom)) )
+
+context self : Person inv NoSelfConflict_Student:
+  self.play_student->forAll( r1:Student, r2:Student | ((r1 <> r2) implies (r1.classroom <> r2.classroom)) )
+
+context self : Person inv NoConflict_Teacher_Student:
+  self.play_teacher->forAll( r1:Teacher | self.play_student->forAll( r2:Student | not (r1.classroom = r2.classroom) ) )
+
+context Agent
+inv AgentSameId: self.succAgent.isDefined() implies self.id = self.succAgent.id
+context Classroom
+inv ClassroomSameId: self.succClassroom.isDefined() implies self.id = self.succClassroom.id
+context Person
+inv PersonSameId: self.succPerson.isDefined() implies self.id = self.succPerson.id
+context Student
+inv StudentSameId: self.succStudent.isDefined() implies self.id = self.succStudent.id
+context Teacher
+inv TeacherSameId: self.succTeacher.isDefined() implies self.id = self.succTeacher.id
+
+context Agent
+inv AgentDiffId: self.snapshotAgent.agent->forAll(o | o <> self implies o.id <> self.id)
+context Classroom
+inv ClassroomDiffId: self.snapshotClassroom.classroom->forAll(o | o <> self implies o.id <> self.id)
+context Person
+inv PersonDiffId: self.snapshotPerson.person->forAll(o | o <> self implies o.id <> self.id)
+context Student
+inv StudentDiffId: self.snapshotStudent.student->forAll(o | o <> self implies o.id <> self.id)
+context Teacher
+inv TeacherDiffId: self.snapshotTeacher.teacher->forAll(o | o <> self implies o.id <> self.id)
+
+context Teacher
+inv ACHIEVE_ClassCompleted:
+  Snapshot.allInstances()->exists(s | s.teacher->any(o | self.id = o.id).ClassCompleted_condition())
+
+-- Teacher::LessonDelivered [ACHIEVE]
+context Teacher
+inv ACHIEVE_LessonDelivered:
+  Snapshot.allInstances()->exists(s | s.teacher->any(o | self.id = o.id).LessonDelivered_condition())
+
+-- Teacher::AttendanceSummaryRecorded [ACHIEVE]
+context Teacher
+inv ACHIEVE_AttendanceSummaryRecorded:
+  Snapshot.allInstances()->exists(s | s.teacher->any(o | self.id = o.id).AttendanceSummaryRecorded_condition())
+
+-- Tasks of Teacher — pre/post OCL is in the .use file as class operations:
+--   self.RecordAttendanceManually_preHolds() : Boolean
+--   self.RecordAttendanceManually_postHolds() : Boolean
+--   self.RecordAttendanceElectronically_preHolds() : Boolean
+--   self.RecordAttendanceElectronically_postHolds() : Boolean
+
+-- Student::ParticipatesInClass [ACHIEVE]
+context Student
+inv ACHIEVE_ParticipatesInClass:
+  Snapshot.allInstances()->exists(s | s.student->any(o | self.id = o.id).ParticipatesInClass_condition())
+
+-- Student::AttendanceMarked [ACHIEVE]
+context Student
+inv ACHIEVE_AttendanceMarked:
+  Snapshot.allInstances()->exists(s | s.student->any(o | self.id = o.id).AttendanceMarked_condition())
+
+-- Student::PresentForLesson [ACHIEVE]
+context Student
+inv ACHIEVE_PresentForLesson:
+  Snapshot.allInstances()->exists(s | s.student->any(o | self.id = o.id).PresentForLesson_condition())
+
+-- ===== BPMN temporal sequence-flow properties =====
+-- BPMN sequence-flow constraints generated from ClassroomProcess.bpmn2
+-- TOCL-compatible profile: each invariant is hosted by the target lane Role.
+
+-- Required occurrence of process Start event classroomReady
+context Teacher
+inv BPMN_TeachingSession_start_classroomReady_occurs:
+  Snapshot.allInstances()->exists(s |
+    classroomReady_TeacherOpC.allInstances()->exists(op | op.pred() = s))
+
+-- Incoming sequence flow(s) of beginLesson
+context Teacher
+inv BPMN_TeachingSession_before_beginLesson:
+  (let CS:Snapshot = self.snapshotTeacher in Set{CS}->closure(s | s.succ())->excluding(null)->forAll(s | (
+    beginLesson_TeacherOpC.allInstances()->exists(op | op.succ() = s)
+    implies
+    (
+      (let CS:Snapshot = s in Set{CS.pred()}->closure(s | s.pred())->exists(s | (classroomReady_TeacherOpC.allInstances()->exists(op | op.succ() = s))))
+    )
+  )))
+
+-- Incoming sequence flow(s) of recordAttendanceElectronically
+context Teacher
+inv BPMN_TeachingSession_before_recordAttendanceElectronically:
+  (let CS:Snapshot = self.snapshotTeacher in Set{CS}->closure(s | s.succ())->excluding(null)->forAll(s | (
+    recordAttendanceElectronically_TeacherOpC.allInstances()->exists(op | op.succ() = s)
+    implies
+    (
+      (let CS:Snapshot = s in Set{CS.pred()}->closure(s | s.pred())->exists(s | (beginLesson_TeacherOpC.allInstances()->exists(op | op.succ() = s))))
+    )
+  )))
+
+-- Incoming sequence flow(s) of deliverLesson
+context Teacher
+inv BPMN_TeachingSession_before_deliverLesson:
+  (let CS:Snapshot = self.snapshotTeacher in Set{CS}->closure(s | s.succ())->excluding(null)->forAll(s | (
+    deliverLesson_TeacherOpC.allInstances()->exists(op | op.succ() = s)
+    implies
+    (
+      (let CS:Snapshot = s in Set{CS.pred()}->closure(s | s.pred())->exists(s | (recordAttendanceElectronically_TeacherOpC.allInstances()->exists(op | op.succ() = s))))
+    )
+  )))
+
+-- Incoming sequence flow(s) of attendLesson
+context Student
+inv BPMN_TeachingSession_before_attendLesson:
+  (let CS:Snapshot = self.snapshotStudent in Set{CS}->closure(s | s.succ())->excluding(null)->forAll(s | (
+    attendLesson_StudentOpC.allInstances()->exists(op | op.succ() = s)
+    implies
+    (
+      (let CS:Snapshot = s in Set{CS.pred()}->closure(s | s.pred())->exists(s | (deliverLesson_TeacherOpC.allInstances()->exists(op | op.succ() = s and op.aSelf.id = Teacher.allInstances()->select(teacherCandidate:Teacher|teacherCandidate.classroom.id=self.classroom.id)->select(teacherCandidate:Teacher|teacherCandidate=teacherCandidate)->any(true).id))))
+    )
+  )))

@@ -1,0 +1,116 @@
+// Intentional view of ProposalReview.  Parent goals have no condition: their
+// marking is propagated solely from their AND/OR refinement children.
+istar ProposalReviewGoals {
+  role ProposalManager {
+    goal ProposalSuccessfullyCompleted : Achieve
+
+    goal ReadyForFinalization : Achieve
+      > ProposalSuccessfullyCompleted
+
+    goal ProposalPrepared : Achieve
+      > ReadyForFinalization
+    condition {[
+      self.group.prepared
+      and self.group.currentRevision <> #none
+    ]}
+
+    // Sustain is essential here: after the goal first becomes true, changing
+    // to r2 without validating r2 makes the final marking violated.
+    goal CurrentRevisionValidated : Sustain
+      > ReadyForFinalization
+    condition {[
+      self.group.validationRevision <> #none
+      and self.group.validationRevision = self.group.currentRevision
+    ]}
+
+    goal CustomerReviewReceived : Achieve
+      > ReadyForFinalization
+    condition {[
+      self.group.reviewCompleted
+    ]}
+
+    goal CustomerFeedbackResolved : Achieve
+      > ProposalSuccessfullyCompleted
+
+    goal AcceptedWithoutChanges : Achieve
+      > or CustomerFeedbackResolved
+    condition {[
+      self.group.reviewCompleted
+      and not self.group.changesRequested
+    ]}
+
+    goal RequestedChangesIncorporated : Achieve
+      > or CustomerFeedbackResolved
+    condition {[
+      self.group.reviewCompleted
+      and self.group.changesRequested
+      and self.group.changesIncorporated
+    ]}
+
+    goal ProposalFinalizedAndSent : Achieve
+      > ProposalSuccessfullyCompleted
+
+    goal ProposalFinalized : Achieve
+      > ProposalFinalizedAndSent
+    condition {[
+      self.group.finalized
+    ]}
+
+    goal ProposalSent : Achieve
+      > ProposalFinalizedAndSent
+    condition {[
+      self.group.sent
+      and self.group.sentRevision = self.group.currentRevision
+    ]}
+
+    // Operational leaves are available for the explanatory activity mapping.
+    // Root Tasks do not participate directly in the consistency verdict.
+    task PrepareProposal
+    post {[
+      self.group.prepared and self.group.currentRevision = #r1
+    ]}
+
+    task ValidateProposal
+    pre {[
+      self.group.prepared
+    ]}
+    post {[
+      self.group.validationRevision = self.group.currentRevision
+    ]}
+
+    task UpdateProposal
+    pre {[
+      self.group.changesRequested
+    ]}
+    post {[
+      self.group.changesIncorporated
+      and self.group.currentRevision = #r2
+    ]}
+
+    task FinalizeProposal
+    post {[
+      self.group.finalized
+    ]}
+
+    task SendProposal
+    post {[
+      self.group.sent
+      and self.group.sentRevision = self.group.currentRevision
+    ]}
+  }
+
+  role Customer {
+    goal ProposalReceived : Achieve
+    condition {[
+      self.group.sent
+    ]}
+
+    task ReviewProposal
+    pre {[
+      self.group.validationRevision = self.group.currentRevision
+    ]}
+    post {[
+      self.group.reviewCompleted
+    ]}
+  }
+}

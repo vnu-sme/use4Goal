@@ -11,10 +11,8 @@ import java.util.Set;
 import org.vnu.sme.goal.dsl.bpmn.mm.BpmnModel;
 import org.vnu.sme.goal.dsl.istar.mm.Actor;
 import org.vnu.sme.goal.dsl.istar.mm.AndRefinement;
-import org.vnu.sme.goal.dsl.istar.mm.ForRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.GoalModel;
 import org.vnu.sme.goal.dsl.istar.mm.OrRefinement;
-import org.vnu.sme.goal.dsl.istar.mm.PickRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Refinement;
 
 /**
@@ -95,8 +93,6 @@ public final class ConformanceMapping {
                 String parent = switch (r) {
                     case AndRefinement and -> and.parent();
                     case OrRefinement or -> or.parent();
-                    case ForRefinement forRef -> forRef.parent();
-                    case PickRefinement pick -> pick.parent();
                 };
                 if (parent.equals(elementId)) return true;
             }

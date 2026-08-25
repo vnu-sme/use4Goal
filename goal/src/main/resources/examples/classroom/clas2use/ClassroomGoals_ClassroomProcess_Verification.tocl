@@ -1,0 +1,93 @@
+-- ===== iStar temporal goal properties =====
+-- TOCL constraints generated from ClassroomGoals.istar
+-- Each 'context C inv Name:' block encodes one iStar GoalType property.
+-- Mapping: Achieve=eventually, Maintain=always, Sustain=eventually-always.
+
+-- Teacher::ClassCompleted [ACHIEVE]
+context Teacher
+inv ACHIEVE_ClassCompleted:
+  sometime self.ClassCompleted_condition()
+
+-- Teacher::LessonDelivered [ACHIEVE]
+context Teacher
+inv ACHIEVE_LessonDelivered:
+  sometime self.LessonDelivered_condition()
+
+-- Teacher::AttendanceSummaryRecorded [ACHIEVE]
+context Teacher
+inv ACHIEVE_AttendanceSummaryRecorded:
+  sometime self.AttendanceSummaryRecorded_condition()
+
+-- Tasks of Teacher — pre/post OCL is in the .use file as class operations:
+--   self.RecordAttendanceManually_preHolds() : Boolean
+--   self.RecordAttendanceManually_postHolds() : Boolean
+--   self.RecordAttendanceElectronically_preHolds() : Boolean
+--   self.RecordAttendanceElectronically_postHolds() : Boolean
+
+-- Student::ParticipatesInClass [ACHIEVE]
+context Student
+inv ACHIEVE_ParticipatesInClass:
+  sometime self.ParticipatesInClass_condition()
+
+-- Student::AttendanceMarked [ACHIEVE]
+context Student
+inv ACHIEVE_AttendanceMarked:
+  sometime self.AttendanceMarked_condition()
+
+-- Student::PresentForLesson [ACHIEVE]
+context Student
+inv ACHIEVE_PresentForLesson:
+  sometime self.PresentForLesson_condition()
+
+-- ===== BPMN temporal sequence-flow properties =====
+-- BPMN sequence-flow constraints generated from ClassroomProcess.bpmn2
+-- TOCL-compatible profile: each invariant is hosted by the target lane Role.
+
+-- Required occurrence of process Start event classroomReady
+context Teacher
+inv BPMN_TeachingSession_start_classroomReady_occurs:
+  sometime isCalled(classroomReady())
+
+-- Incoming sequence flow(s) of beginLesson
+context Teacher
+inv BPMN_TeachingSession_before_beginLesson:
+  always (
+    isCalled(beginLesson())
+    implies
+    (
+      sometimePast (isCalled(classroomReady()))
+    )
+  )
+
+-- Incoming sequence flow(s) of recordAttendanceElectronically
+context Teacher
+inv BPMN_TeachingSession_before_recordAttendanceElectronically:
+  always (
+    isCalled(recordAttendanceElectronically())
+    implies
+    (
+      sometimePast (isCalled(beginLesson()))
+    )
+  )
+
+-- Incoming sequence flow(s) of deliverLesson
+context Teacher
+inv BPMN_TeachingSession_before_deliverLesson:
+  always (
+    isCalled(deliverLesson())
+    implies
+    (
+      sometimePast (isCalled(recordAttendanceElectronically()))
+    )
+  )
+
+-- Incoming sequence flow(s) of attendLesson
+context Student
+inv BPMN_TeachingSession_before_attendLesson:
+  always (
+    isCalled(attendLesson())
+    implies
+    (
+      sometimePast (isCalled(Teacher.allInstances()->select(teacherCandidate : Teacher | teacherCandidate.classroom.id = self.classroom.id)->select(teacherCandidate : Teacher | teacherCandidate = teacherCandidate)->any(true).deliverLesson()))
+    )
+  )
