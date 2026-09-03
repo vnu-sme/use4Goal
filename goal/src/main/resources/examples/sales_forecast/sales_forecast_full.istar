@@ -1,0 +1,326 @@
+// Complete structural reconstruction of the Sales Forecast SR diagram in
+// Appendix 3 of Outmazgin, Soffer and Hadar's extended case-study material.
+//
+// This file serves a different purpose from sales_forecast.istar:
+//   * this file preserves the source actors, rationales, dependencies and
+//     qualitative contribution links for visual/source comparison;
+//   * sales_forecast.istar is the executable conflict slice whose verdict is
+//     calculated from ACL state without copying the source Hurt/Break answer.
+//
+// The source publishes the SR graph, but not executable predicates for all of
+// its nodes.  Elements without OCL are therefore intentionally structural;
+// no unreported business rule is invented here.
+
+istar SalesForecastFullSR {
+
+  // -----------------------------------------------------------------------
+  // Approval hierarchy and rationale
+  // -----------------------------------------------------------------------
+
+  role Economy {
+    Economy is-a Approvers
+  }
+
+  role CreditControl {
+    CreditControl is-a Approvers
+  }
+
+  role SalesDepartmentManager {
+    SalesDepartmentManager is-a Approvers
+  }
+
+  role DirectorOfSalesSector {
+    DirectorOfSalesSector is-a Approvers
+  }
+
+  role Approvers {
+    goal ApproveAndProgressPriceProposals : Achieve
+      > help MaintainProfitability
+
+    task ControlAndCheckProfitability
+      > ApproveAndProgressPriceProposals
+
+    task ApprovePriceProposal
+      > ApproveAndProgressPriceProposals
+
+    quality MaintainProfitability
+
+    quality MeasuringSalesPerformance
+      > help MaintainProfitability
+  }
+
+  role VPBusinessDivision {
+    VPBusinessDivision is-a Approvers
+
+    goal PromoteSalesAndProfitabilityStrategicView : Achieve
+
+    task ControlAndCheckProfitabilityAtOrganizationLevel
+      > PromoteSalesAndProfitabilityStrategicView
+
+    goal CalculateOrganizationalConsiderationsAndConstraints : Achieve
+      > PromoteSalesAndProfitabilityStrategicView
+  }
+
+  // -----------------------------------------------------------------------
+  // Management rationale
+  // -----------------------------------------------------------------------
+
+  role Management {
+    goal IncreasingSalesAndRevenues : Achieve
+      > make EnsureProfitabilityRate
+      > make IncreaseCustomerBaseO4A
+      > make EnsureReliability
+
+    goal SalesPerformanceMeasurement : Achieve
+      > IncreasingSalesAndRevenues
+
+    goal StrategicSalesDevelopment : Achieve
+      > IncreasingSalesAndRevenues
+      > help MaintainExistingCustomersBaseO4B
+
+    quality EnsureProfitabilityRate
+    quality IncreaseCustomerBaseO4A
+    quality EnsureReliability
+    quality MaintainExistingCustomersBaseO4B
+  }
+
+  // -----------------------------------------------------------------------
+  // Central Customer Manager rationale
+  // -----------------------------------------------------------------------
+
+  role CustomerManager {
+    goal PromoteSalesAccordingToTargets : Achieve
+
+    // Both obtaining approval and constructing/progressing the proposal are
+    // required parts of pursuing the root sales goal in the source SR model.
+    goal GetApprovalForPriceProposalToProgress : Achieve
+      > PromoteSalesAccordingToTargets
+      > break AchieveHighSalesTargetsPerformance
+      > break RespondQuicklyAndFlexibly
+
+    task CreateAndInsertPriceProposalIntoSystem
+      > PromoteSalesAccordingToTargets
+      > make AchieveHighSalesTargetsPerformance
+
+    task RequestApproval
+      > or GetApprovalForPriceProposalToProgress
+      > hurt AchieveHighSalesTargetsPerformance
+
+    // Mandatory proposal construction and progression steps.
+    task CompleteMandatoryPriceProposalElements
+      > CreateAndInsertPriceProposalIntoSystem
+
+    task BuildPartNumbers
+      > CreateAndInsertPriceProposalIntoSystem
+      > break RespondQuicklyAndFlexibly
+      > make ShortDeliveryTime
+
+    task CompleteKitComponents
+      > CreateAndInsertPriceProposalIntoSystem
+      > break RespondQuicklyAndFlexibly
+      > help ShortDeliveryTime
+
+    task InvitePresaleEngineerThroughIS
+      > CreateAndInsertPriceProposalIntoSystem
+      > break RespondQuicklyAndFlexibly
+
+    task InsertingBoMPriceList
+      > CreateAndInsertPriceProposalIntoSystem
+      > hurt RespondQuicklyAndFlexibly
+      > help ShortDeliveryTime
+
+    task TransferPriceProposalToOperation
+      > CreateAndInsertPriceProposalIntoSystem
+      > make RespondQuicklyAndFlexibly
+
+    task GeneratingProposalsBasedOnUniformTemplate
+      > CreateAndInsertPriceProposalIntoSystem
+      > hurt AchieveHighSalesTargetsPerformance
+      > break RespondQuicklyAndFlexibly
+
+    task SendApprovedPriceProposalToCustomer
+      > CreateAndInsertPriceProposalIntoSystem
+      > hurt AchieveHighSalesTargetsPerformance
+      > break RespondQuicklyAndFlexibly
+      > hurt SatisfyCustomer
+
+    task OfferSolutions
+      > CreateAndInsertPriceProposalIntoSystem
+      > make AchieveHighSalesTargetsPerformance
+      > hurt ObtainGoodTermsForCustomers
+
+    task RequestSpecialBid
+      > help RespondQuicklyAndFlexibly
+      > help ShortDeliveryTime
+      > help SatisfyCustomer
+      > make ObtainGoodTermsForCustomers
+
+    resource PriceProposal
+      > needed-by SendApprovedPriceProposalToCustomer
+
+    quality AchieveHighSalesTargetsPerformance
+
+    quality RespondQuicklyAndFlexibly
+      > help SatisfyCustomer
+
+    quality ShortDeliveryTime
+      > make SatisfyCustomer
+
+    quality SatisfyCustomer
+    quality ObtainGoodTermsForCustomers
+  }
+
+  // -----------------------------------------------------------------------
+  // Supporting departments and systems
+  // -----------------------------------------------------------------------
+
+  role ServiceAgreementsDepartment {
+    goal EnsureThatPriceProposalIncludesServiceAgreement : Achieve
+  }
+
+  role PresaleDepartment {
+    goal DevelopSolutionsForCustomers : Achieve
+
+    task AssignEngineerThroughIS
+      > or DevelopSolutionsForCustomers
+      > make EffectiveManagementAndPlanning
+
+    task CreatingBoMIncludesPNs
+      > AssignEngineerThroughIS
+
+    task CreationOfHLDDocument
+      > AssignEngineerThroughIS
+
+    quality EffectiveManagementAndPlanning
+  }
+
+  role ProjectDepartment {
+    goal PrepareForPostSaleActivities : Achieve
+
+    task InstallationScheduling
+      > PrepareForPostSaleActivities
+      > help BeInformed
+
+    task InstallationPlanning
+      > PrepareForPostSaleActivities
+      > help BeInformed
+
+    quality BeInformed
+  }
+
+  role ServiceProvider {
+  }
+
+  role InventoryManager {
+  }
+
+  role Customer {
+  }
+
+  role Vendor {
+  }
+
+  role BISystem {
+    BISystem participates-in Management
+  }
+
+  role BSaleSystem {
+    BSaleSystem participates-in Management
+  }
+
+  // -----------------------------------------------------------------------
+  // Strategic dependencies visible in the complete SR diagram
+  // -----------------------------------------------------------------------
+
+  // Customer Manager -> approval hierarchy.
+  depend CustomerManager.RequestApproval
+    -> goal CompleteApprovalsRound
+    -> Approvers
+
+  // Approvers require the sales activity measurements maintained by the
+  // Customer Manager side of the process.
+  depend Approvers.MeasuringSalesPerformance
+    -> goal MeasuringAndTrackingSalesTargets
+    -> CustomerManager
+
+  // Management -> Customer Manager.  These dependencies are the source of
+  // the two misalignment examples discussed in the paper.
+  depend Management.SalesPerformanceMeasurement
+    -> goal ObtainRealPictureOfExpectedSalesForPlanning
+    -> CustomerManager
+
+  depend Management
+    -> goal QuotesMustBeSentInUniformTemplateOnly
+    -> CustomerManager.GeneratingProposalsBasedOnUniformTemplate
+
+  depend Management.EnsureProfitabilityRate
+    -> goal ApproveAccordingToProfitabilityRate
+    -> CustomerManager
+
+  depend Management
+    -> goal AvoidSendingUnapprovedProposals
+    -> CustomerManager.SendApprovedPriceProposalToCustomer
+
+  depend Management
+    -> goal OfferSolutionsFromAmongApprovedOnesOnly
+    -> CustomerManager.OfferSolutions
+
+  depend Management.IncreaseCustomerBaseO4A
+    -> goal IncreaseAndMaintainCustomerBase
+    -> CustomerManager
+
+  // Customer Manager -> supporting actors.
+  depend CustomerManager
+    -> goal AddServiceAgreement
+    -> ServiceAgreementsDepartment.EnsureThatPriceProposalIncludesServiceAgreement
+
+  depend CustomerManager.InvitePresaleEngineerThroughIS
+    -> goal GetSolutionCharacterization
+    -> PresaleDepartment
+
+  depend CustomerManager.CompleteMandatoryPriceProposalElements
+    -> goal GettingBoMAndHLD
+    -> PresaleDepartment
+
+  // Presale depends on requests being entered through the official IS.
+  depend PresaleDepartment
+    -> goal OrderlyManagementOfRequests
+    -> CustomerManager.InvitePresaleEngineerThroughIS
+
+  depend CustomerManager.CompleteKitComponents
+    -> goal GetAllKitComponentsToProgress
+    -> ServiceProvider
+
+  depend CustomerManager.BuildPartNumbers
+    -> goal GetApprovalForPNsToProgress
+    -> InventoryManager
+
+  depend CustomerManager
+    -> task RequestInstallation
+    -> ProjectDepartment
+
+  depend ProjectDepartment.InstallationPlanning
+    -> task GetAnHLDDocument
+    -> PresaleDepartment.CreationOfHLDDocument
+
+  depend CustomerManager.RequestSpecialBid
+    -> goal ObtainSpecialBid
+    -> Vendor
+
+  depend CustomerManager.SendApprovedPriceProposalToCustomer
+    -> goal GetPriceProposal
+    -> Customer
+
+  // Information-system and planning dependencies at the bottom of the SR.
+  depend Management.StrategicSalesDevelopment
+    -> goal StrategicPlan
+    -> BISystem
+
+  depend BISystem
+    -> task ImportSalesPerformance
+    -> BSaleSystem
+
+  depend CustomerManager
+    -> task InsertPriceProposal
+    -> BSaleSystem
+}

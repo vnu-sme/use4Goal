@@ -1,0 +1,244 @@
+// Enterprise Organization: a deliberately dense ACL showcase.
+//
+// - deep Role play specialization (5 levels: Person -> Employee -> Manager ->
+//   SeniorManager -> Executive);
+// - concrete-to-concrete Role inheritance (TeamLead extends TeamMember,
+//   SeniorAuditor extends Auditor) -- valid because each pair is owned by the
+//   SAME Group, satisfying the "child's Group must be same-or-nested" rule;
+// - three levels of Group nesting (Corporation -> Department -> Team), plus a
+//   sibling branch (Corporation -> AuditCommittee);
+// - Entity inheritance (Budget extends Document);
+// - Group-Entity containment via explicit composition declarations;
+// - role-to-role association at both the abstract (Agent-realized) and
+//   concrete (Play-realized) level;
+// - aggregation/composition, each with at least one Entity endpoint, covering
+//   Group-Entity, Role-Entity and Entity-Entity pairs.
+
+acl v2.0 EnterpriseOrganization {
+
+  enum DocClass { Public, Internal, Confidential }
+  enum DeliverableStatus { Planned, InProgress, Done, Cancelled }
+
+  // ---- Root play chain: attributes remain on their declaring Role occurrences. ----
+  role Person {
+    name  : String;
+    email : String;
+  }
+
+  role Employee extends Person {
+    employeeId : String;
+    hireDate   : String;
+  }
+
+  role Manager extends Employee {
+    managementLevel : Integer;
+  }
+
+  role SeniorManager extends Manager {
+    budgetAuthority : Real;
+  }
+
+  role Executive extends SeniorManager {
+    title : String;
+  }
+
+  role Reviewer extends Person {
+    reviewLevel : Integer;
+  }
+
+  // ---- Concrete roles: each is the first concrete link below an abstract
+  // ancestor, except TeamLead/SeniorAuditor which extend a CONCRETE sibling
+  // owned by the same Group. ----
+  role Contractor extends Person {
+    contractEndDate : String;
+    dailyRate       : Real;
+  }
+
+  role TeamMember extends Employee {
+    taskCount : Integer;
+  }
+
+  role TeamLead extends TeamMember {
+    teamBudget : Real;
+  }
+
+  role DepartmentHead extends SeniorManager {
+    departmentGoals : String;
+  }
+
+  role BoardMember extends Executive {
+    votingRights : Boolean;
+  }
+
+  role Auditor extends Reviewer {
+    certificationId : String;
+  }
+
+  role SeniorAuditor extends Auditor {
+    leadAudits : Integer;
+  }
+
+  role ComplianceOfficer extends Reviewer {
+    specialization : String;
+  }
+
+  // ---- Entities ----
+  entity Document {
+    title          : String;
+    version        : Integer;
+    classification : DocClass;
+  }
+
+  entity Budget extends Document {
+    amount   : Real;
+    currency : String;
+  }
+
+  entity Contract {
+    value      : Real;
+    signedDate : String;
+  }
+
+  entity Deliverable {
+    dueDate : String;
+    status  : DeliverableStatus;
+  }
+
+  entity Milestone {
+    name    : String;
+    dueDate : String;
+  }
+
+  // ---- Groups: Corporation -> Department -> Team (3 levels), plus
+  // Corporation -> AuditCommittee (sibling branch). ----
+  group Corporation {
+    name        : String;
+    foundedYear : Integer;
+
+    Department     [1..*];
+    AuditCommittee [1];
+    BoardMember    [3..9];
+
+    // Compatibility must be declared inside the nearest Group that shares
+    // scope with both Role types -- Corporation is the nearest common
+    // ancestor of BoardMember (here) and DepartmentHead (Department).
+    BoardMember compatible DepartmentHead;
+  }
+
+  group Department {
+    budgetCode : String;
+
+    Team           [0..*];
+    DepartmentHead [1];
+    Contractor     [0..*];
+
+    // Nearest common ancestor of TeamLead (Team) and DepartmentHead (here).
+    TeamLead compatible DepartmentHead;
+    // Nearest common ancestor of Contractor (here) and TeamMember (Team).
+    Contractor compatible TeamMember;
+  }
+
+  group Team {
+    teamName     : String;
+    sprintLength : Integer;
+
+    TeamMember [2..*];
+    TeamLead   [1];
+
+    // TeamLead extends TeamMember: an agent playing TeamLead needs a linked
+    // TeamMember occurrence. The declaration below is retained to document
+    // intended co-occupancy with other TeamMember occurrences in the Team.
+    TeamMember compatible TeamLead;
+  }
+
+  group AuditCommittee {
+    Auditor           [2..5];
+    SeniorAuditor      [0..2];
+    ComplianceOfficer [1];
+
+    // NOT `Document [*];` here: Budget extends Document, and Budget is
+    // independently a Department member (`Budget [1];` above). Both forms
+    // auto-generate a "member_<Group>_<Entity>" composition; since Budget
+    // inherits Document's association ends, declaring both on the same
+    // inheritance pair would give Budget two conflicting role-named ends
+    // (see docs/ACL_OCL_SEMANTICS.md and AclUseViewModel's model-adaptation
+    // error). Using an explicit relation (`auditDocuments` below) for one
+    // side avoids it.
+    Auditor compatible ComplianceOfficer;
+    // Same reasoning as TeamMember/TeamLead above.
+    Auditor compatible SeniorAuditor;
+  }
+
+  // ---- Associations: role-to-role, both abstract (Agent-realized) and
+  // concrete (Play-realized), plus one Entity-Role association. ----
+  association mentors {
+    Manager  [0..*] role mentor;
+    Employee [0..*] role mentee;
+  }
+
+  association reportsTo {
+    TeamMember [*] role subordinate;
+    TeamLead   [1] role supervisor;
+  }
+
+  association reviewsWork {
+    Auditor    [*] role auditor;
+    TeamMember [*] role audited;
+  }
+
+  association collaboratesWith {
+    TeamMember [*] role colleague1;
+    Contractor [*] role colleague2;
+  }
+
+  association escalatesTo {
+    DepartmentHead [*] role escalator;
+    BoardMember    [*] role escalatee;
+  }
+
+  association assignedTo {
+    Deliverable [*] role task;
+    TeamMember  [*] role assignee;
+  }
+
+  // ---- Aggregation / composition: every one has at least one Entity
+  // endpoint, per the rule that Role<->Role part-whole containment is
+  // rejected (see docs/ACL_OCL_SEMANTICS.md §2.7). ----
+  aggregation contractFunding {
+    Department [*] role funder;
+    Contract   [*] role funded;
+  }
+
+  aggregation reviewedBy {
+    Document [*] role reviewedDoc;
+    Auditor  [*] role reviewer;
+  }
+
+  composition auditDocuments {
+    AuditCommittee [1] role committee;
+    Document       [*] role committeeDocument;
+  }
+
+  composition corporationContracts {
+    Corporation [1] role corporation;
+    Contract [0..*] role contracts;
+  }
+
+  composition departmentBudget {
+    Department [1] role department;
+    Budget [1] role budget;
+  }
+
+  composition teamDeliverables {
+    Team [1] role team;
+    Deliverable [0..*] role deliverables;
+  }
+
+  // Milestone has no Group ownership of its own -- Deliverable is its only
+  // composite owner, so this is the one Entity that is exclusively reached
+  // through this composition instead of through a Group member list.
+  composition deliverableMilestones {
+    Deliverable [1] role parent;
+    Milestone   [*] role milestone;
+  }
+}

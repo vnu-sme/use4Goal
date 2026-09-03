@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Dynamic Ecore instance corresponding to
+     goal/src/main/resources/examples/mtg/mtg.acl. -->
+<acl:AclModel xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:acl="https://vnu.edu.vn/sme/goal/acl/2.0"
+    xsi:schemaLocation="https://vnu.edu.vn/sme/goal/acl/2.0 acl.ecore"
+    version="v2.0" name="MeetingSchedulerShadow">
+
+  <classifiers xsi:type="acl:PrimitiveType" name="String" kind="String"/>
+  <classifiers xsi:type="acl:PrimitiveType" name="Integer" kind="Integer"/>
+  <classifiers xsi:type="acl:PrimitiveType" name="Real" kind="Real"/>
+  <classifiers xsi:type="acl:PrimitiveType" name="Boolean" kind="Boolean"/>
+  <classifiers xsi:type="acl:Enumeration" name="TimetableChannel"
+      literals="none calendar phone"/>
+
+  <classifiers xsi:type="acl:Role" name="MeetingParty">
+    <attributes name="name" type="//@classifiers.0"/>
+    <attributes name="phone" type="//@classifiers.0"/>
+    <attributes name="hasCalendar" type="//@classifiers.3"/>
+  </classifiers>
+  <classifiers xsi:type="acl:Role" name="Initiator"/>
+  <classifiers xsi:type="acl:Role" name="Organizer"/>
+  <classifiers xsi:type="acl:Role" name="Secretary"/>
+  <classifiers xsi:type="acl:Role" name="Participant">
+    <attributes name="timetableCollected" type="//@classifiers.3"/>
+    <attributes name="timetableChannel" type="//@classifiers.4"/>
+    <attributes name="notified" type="//@classifiers.3"/>
+    <attributes name="attended" type="//@classifiers.3"/>
+  </classifiers>
+  <classifiers xsi:type="acl:Group" name="MeetingUnit">
+    <attributes name="detailsDecided" type="//@classifiers.3"/>
+    <attributes name="timeChosen" type="//@classifiers.3"/>
+  </classifiers>
+
+  <relationships xsi:type="acl:Association" name="knowsPhoneOf">
+    <memberEnds roleName="knower" lower="0" upper="-1" target="//@classifiers.5"/>
+    <memberEnds roleName="knownContact" lower="0" upper="-1" target="//@classifiers.5"/>
+  </relationships>
+
+  <roleSpecializations child="//@classifiers.6" parent="//@classifiers.5"/>
+  <roleSpecializations child="//@classifiers.7" parent="//@classifiers.5"/>
+  <roleSpecializations child="//@classifiers.8" parent="//@classifiers.5"/>
+  <roleSpecializations child="//@classifiers.9" parent="//@classifiers.5"/>
+
+  <owners source="//@classifiers.10" target="//@classifiers.6" lower="1" upper="1"/>
+  <owners source="//@classifiers.10" target="//@classifiers.7" lower="1" upper="1"/>
+  <owners source="//@classifiers.10" target="//@classifiers.8" lower="0" upper="1"/>
+  <owners source="//@classifiers.10" target="//@classifiers.9" lower="2" upper="-1"/>
+
+  <compatibilities group="//@classifiers.10" fromRole="//@classifiers.6" toRole="//@classifiers.9"/>
+  <compatibilities group="//@classifiers.10" fromRole="//@classifiers.7" toRole="//@classifiers.8"/>
+</acl:AclModel>

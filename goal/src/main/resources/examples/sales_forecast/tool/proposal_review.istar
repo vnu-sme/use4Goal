@@ -1,0 +1,132 @@
+// DSL reconstruction of the intentional structure recoverable from
+// goalModel.txt.  The source JSON contains the actors and links but omits the
+// serialized node objects; node names below follow its diagram Description
+// and the source/target topology of those links.
+istar ProposalReviewGoals {
+
+  role ProposalManager {
+    // Structural root: its five branches are an AND-refinement.  A parent
+    // goal needs no duplicated condition; its marking is propagated from its
+    // children according to the refinement operator.
+    goal ProposalSuccessfullyCompleted : Achieve
+
+    // Branch 1 — the revision to be finalized must be both prepared and
+    // validated.  The Sustain leaf remembers a later loss of validity.
+    goal CurrentProposalPreparedAndValidated : Achieve
+      > ProposalSuccessfullyCompleted
+
+    goal ProposalPrepared : Achieve
+      > CurrentProposalPreparedAndValidated
+    condition {[
+      (self.group.proposal.currentRevision = #r1
+       and self.group.proposal.initialVersion.created
+       and self.group.proposal.initialVersion.prepared)
+      or
+      (self.group.proposal.currentRevision = #r2
+       and self.group.proposal.revisedVersion.created
+       and self.group.proposal.revisedVersion.prepared)
+    ]}
+
+    goal CurrentRevisionVerified : Sustain
+      > CurrentProposalPreparedAndValidated
+    condition {[
+      (self.group.proposal.currentRevision = #r1
+       and self.group.proposal.initialVersion.verified)
+      or
+      (self.group.proposal.currentRevision = #r2
+       and self.group.proposal.revisedVersion.verified)
+    ]}
+
+    // Branch 2 — the process has finalized and sent the current revision.
+    goal ProposalFinalizedAndSent : Achieve
+      > ProposalSuccessfullyCompleted
+
+    goal ProposalFinalized : Achieve
+      > ProposalFinalizedAndSent
+    condition {[
+      (self.group.proposal.currentRevision = #r1
+       and self.group.proposal.initialVersion.finalized)
+      or
+      (self.group.proposal.currentRevision = #r2
+       and self.group.proposal.revisedVersion.finalized)
+    ]}
+
+    goal ProposalSent : Achieve
+      > ProposalFinalizedAndSent
+    condition {[
+      (self.group.proposal.currentRevision = #r1
+       and self.group.proposal.initialVersion.sent)
+      or
+      (self.group.proposal.currentRevision = #r2
+       and self.group.proposal.revisedVersion.sent)
+    ]}
+
+    // Branch 3 — the Customer's feedback is resolved by either an unchanged
+    // acceptance or incorporation of the requested changes.
+    goal CustomerFeedbackResolved : Achieve
+      > ProposalSuccessfullyCompleted
+
+    goal ProposalAcceptedWithoutChanges : Achieve
+      > or CustomerFeedbackResolved
+    condition {[
+      self.group.customerReviewer.reviewCompleted
+      and not self.group.customerReviewer.changesRequested
+      and self.group.proposal.currentRevision = #r1
+      and self.group.proposal.initialVersion.readerApproved
+    ]}
+
+    goal RequestedChangesIncorporated : Achieve
+      > or CustomerFeedbackResolved
+
+    task UpdateProposal
+      > or RequestedChangesIncorporated
+    pre {[
+      self.group.customerReviewer.reviewCompleted
+      and self.group.customerReviewer.changesRequested
+      and self.group.proposal.currentRevision = #r1
+    ]}
+    post {[
+      self.changesIncorporated
+      and self.group.proposal.currentRevision = #r2
+      and self.group.proposal.revisedVersion.created
+      and self.group.proposal.revisedVersion.prepared
+    ]}
+
+    // Branch 4 — approval must concern the current document version, not an
+    // earlier version that happened to be reviewed before an update.
+    goal CurrentVersionApprovedByCustomer : Achieve
+      > ProposalSuccessfullyCompleted
+    condition {[
+      (self.group.proposal.currentRevision = #r1
+       and self.group.proposal.initialVersion.readerApproved)
+      or
+      (self.group.proposal.currentRevision = #r2
+       and self.group.proposal.revisedVersion.readerApproved)
+    ]}
+
+    // Branch 5 — closure is an explicit state of the proposing role.
+    goal ProposalProjectClosed : Achieve
+      > ProposalSuccessfullyCompleted
+    condition {[
+      self.projectClosed
+    ]}
+  }
+
+  role CustomerReviewer {
+    task ReviewProposal
+    pre {[
+      self.group.proposal.currentRevision = #r1
+      and self.group.proposal.initialVersion.prepared
+      and self.group.proposal.initialVersion.verified
+    ]}
+    post {[
+      self.reviewCompleted
+      and self.changesRequested = self.reviewRequestsChanges
+      and self.group.proposal.initialVersion.readerApproved = not self.reviewRequestsChanges
+    ]}
+  }
+
+  depend ProposalManager.CurrentVersionApprovedByCustomer
+    -> goal ProposalReviewedByCustomer
+    -> CustomerReviewer.ReviewProposal
+}

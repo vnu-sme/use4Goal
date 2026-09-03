@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="ASCII"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/goal/target/generated-sources/bpmn-ecore" modelPluginID="org.vnu.sme.goal"
+    modelName="BPMN" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    importerID="org.eclipse.emf.importer.ecore" complianceLevel="21.0" copyrightFields="false"
+    operationReflection="true">
+  <foreignModel>bpmn.ecore</foreignModel>
+  <genPackages prefix="Bpmn" basePackage="org.vnu.sme.goal.dsl.bpmn.ecore" disposableProviderFactory="true"
+      ecorePackage="bpmn.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="bpmn.ecore#//GatewayKind">
+      <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//GatewayKind/XOR"/>
+      <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//GatewayKind/AND"/>
+      <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//GatewayKind/OR"/>
+    </genEnums>
+    <genClasses ecoreClass="bpmn.ecore#//BpmnModel">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//BpmnModel/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference bpmn.ecore#//BpmnModel/processes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference bpmn.ecore#//BpmnModel/messages"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference bpmn.ecore#//BpmnModel/messageFlows"/>
+    </genClasses>
+    <genClasses ecoreClass="bpmn.ecore#//Process">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//Process/id"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//Process/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//Process/groupClass"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference bpmn.ecore#//Process/model"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference bpmn.ecore#//Process/lanes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference bpmn.ecore#//Process/flowElements"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference bpmn.ecore#//Process/sequenceFlows"/>
+    </genClasses>
+    <genClasses ecoreClass="bpmn.ecore#//Lane">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//Lane/id"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//Lane/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//Lane/roleName"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference bpmn.ecore#//Lane/process"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference bpmn.ecore#//Lane/flowElements"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="bpmn.ecore#//FlowElement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//FlowElement/id"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//FlowElement/name"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference bpmn.ecore#//FlowElement/process"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference bpmn.ecore#//FlowElement/lane"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference bpmn.ecore#//FlowElement/postcondition"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference bpmn.ecore#//FlowElement/precondition"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="bpmn.ecore#//Activity"/>
+    <genClasses ecoreClass="bpmn.ecore#//Task"/>
+    <genClasses ecoreClass="bpmn.ecore#//CallActivity"/>
+    <genClasses ecoreClass="bpmn.ecore#//SubProcess"/>
+    <genClasses ecoreClass="bpmn.ecore#//Gateway">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//Gateway/kind"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="bpmn.ecore#//Event"/>
+    <genClasses ecoreClass="bpmn.ecore#//StartEvent"/>
+    <genClasses ecoreClass="bpmn.ecore#//EndEvent"/>
+    <genClasses ecoreClass="bpmn.ecore#//IntermediateEvent">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//IntermediateEvent/direction"/>
+    </genClasses>
+    <genClasses ecoreClass="bpmn.ecore#//SequenceFlow">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//SequenceFlow/label"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//SequenceFlow/isDefault"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference bpmn.ecore#//SequenceFlow/process"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference bpmn.ecore#//SequenceFlow/source"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference bpmn.ecore#//SequenceFlow/target"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference bpmn.ecore#//SequenceFlow/guard"/>
+    </genClasses>
+    <genClasses ecoreClass="bpmn.ecore#//Condtion">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//Condtion/condExpr"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//Condtion/condLang"/>
+    </genClasses>
+    <genClasses ecoreClass="bpmn.ecore#//Message">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//Message/id"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//Message/name"/>
+    </genClasses>
+    <genClasses ecoreClass="bpmn.ecore#//MessageFlow">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference bpmn.ecore#//MessageFlow/source"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference bpmn.ecore#//MessageFlow/target"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference bpmn.ecore#//MessageFlow/message"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

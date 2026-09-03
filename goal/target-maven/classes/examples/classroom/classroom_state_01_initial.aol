@@ -1,0 +1,16 @@
+// Initial classroom state. Every attribute uses its ACL default value.
+// Expected OCL result: 4 true, 0 false.
+aol v2.0 ClassroomInitial for "classroom.acl" {
+  group Classroom as classroom1;
+
+  role Person as teacherPerson;
+  role Teacher as teacher1;
+  play teacherPerson -> teacher1;
+
+  role Person as studentPerson;
+  role Student as student1;
+  play studentPerson -> student1;
+
+  link Classroom_contains_Teacher : classroom1 -> teacher1;
+  link Classroom_contains_Student : classroom1 -> student1;
+}

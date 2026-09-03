@@ -1,0 +1,28 @@
+// End state of the prescribed process (sales_forecast.bpmn2) via
+// reviewProposalOnTime -> approveProposal -> sendApprovedProposal, matching
+// official_on_time.soil: reviewed inside the response window, approved, and
+// the approved revision is sent. This is the "conformant" row of README.md.
+// Expected OCL result: 7 true, 0 false.
+aol v2.0 SalesForecastApprovedOnTime for "sales_forecast.acl" {
+  group SalesCase as salescase1 {
+    proposalPrepared = true;
+    approvalRequested = true;
+    reviewCompleted = true;
+    approvalStatus = approved;
+    approvedRevision = r1;
+    proposalSent = true;
+    sentRevision = r1;
+    sentWithinWindow = true;
+    processCompleted = true;
+  }
+
+  role Management as management1;
+  role CustomerManager as manager1;
+  role Approver as approver1;
+  role Customer as customer1;
+
+  link SalesCase_contains_Management : salescase1 -> management1;
+  link SalesCase_contains_CustomerManager : salescase1 -> manager1;
+  link SalesCase_contains_Approver : salescase1 -> approver1;
+  link SalesCase_contains_Customer : salescase1 -> customer1;
+}

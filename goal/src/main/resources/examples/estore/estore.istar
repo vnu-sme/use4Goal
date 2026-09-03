@@ -1,0 +1,162 @@
+istar EStore {
+  // Transcribed from: Groner, G., Asadi, M., Mohabbati, B., Gasevic, D.,
+  // Boskovic, M., Silva Parreiras, F. (2014). "Validation of user intentions
+  // in process orchestration and choreography." Information Systems, 43,
+  // 83-99. Running example (Fig. 1a, the E-Store goal model), Sect. 2.1/4/6.
+  //
+  // BackStore's SR tree below is taken from the paper as-is (the paper
+  // elaborates only this actor -- "only the intentional elements within the
+  // scope of the internal actor Back Store are depicted"). FrontStore,
+  // Customer, Supplier and Shipment are elaborated HERE beyond the paper:
+  // in Fig. 1a they are left as bare dependency stubs (single, unconnected
+  // tasks/qualities with no root goal), which is fine for the paper's own
+  // illustrative purpose but is not a well-formed SR tree on its own. Every
+  // actor below now has a single root goal with >=2 children per AND/OR
+  // decomposition, so the whole model is a proper rooted DAG per actor, with
+  // no dangling single-node "roots". Everything under FrontStore/Customer/
+  // Supplier/Shipment beyond the bare stub names the paper already names
+  // (ProcessOrders, BrowseCatalogue, SearchKeyword, PlaceOrder, BuyItem,
+  // HandlePayment, SelectPaymentMethod, Items, ContinuingSupply,
+  // ContinuingBusiness, and the Shipment dependum "Ship Order") is my own
+  // addition, not sourced from the paper -- flagged with "(added)".
+  //
+  // Two remaining dialect gaps (documented in the previous revision, kept
+  // here): no separate IOR/XOR (only one OR-refinement), and refinement is
+  // goal/task-only while contribution is quality-only.
+
+  agent BackStore {
+    goal ProcessOrder
+
+    goal ApplyProcessToCustomer      > ProcessOrder
+    goal BillBuildThenShip           > ProcessOrder
+    goal Payment                     > ProcessOrder
+
+    goal ApplyProcessToTrustedCustomer
+      > or ApplyProcessToCustomer
+      > help MinimizeRisk
+    goal ApplyProcessToAnyCustomer
+      > or ApplyProcessToCustomer
+      > hurt MinimizeRisk
+
+    // Axiom 1 (Eq. 1): AND-relation between siblings ApproveOrder and
+    // CustomerProfileRetrieve.
+    task CustomerProfileRetrieve     > ApplyProcessToTrustedCustomer
+    task ApproveOrder
+      > ApplyProcessToTrustedCustomer
+      > ApplyProcessToAnyCustomer
+
+    // XOR in the paper; written as OR here (dialect gap, see header).
+    goal DetermineTrustworthinessOfCustomer > ApplyProcessToAnyCustomer
+    task CheckCreditRate             > or DetermineTrustworthinessOfCustomer
+    task CheckIfReturnCustomer       > or DetermineTrustworthinessOfCustomer
+
+    goal ShipAndBill                 > BillBuildThenShip
+    task BuildAndPackageOrder        > BillBuildThenShip
+
+    // Axiom 6 (Eq. 6): AND-relation between ShipOrder and BillPreparation.
+    task ShipOrder                   > ShipAndBill
+    task BillPreparation             > ShipAndBill
+
+    task CollectPayment              > Payment
+      > help CustomerSatisfaction
+    task ApplyDiscount               > Payment
+
+    // Axiom 2 (Eq. 2): IOR in the paper; written as OR here (dialect gap).
+    task ElectronicPayment           > or CollectPayment
+    task InPersonPayment             > or CollectPayment
+
+    quality MinimizeRisk
+    quality CustomerSatisfaction
+    quality ContinuingBusiness
+  }
+
+  agent FrontStore {
+    goal SupportOnlineShopping   // (added)
+
+    goal EnableProductDiscovery  > SupportOnlineShopping   // (added)
+    goal EnableOrderCapture      > SupportOnlineShopping   // (added)
+
+    // Fig. 1a names these two tasks; grouping them under an OR (discover by
+    // browsing or by searching, either suffices) is my addition.
+    task BrowseCatalogue > or EnableProductDiscovery
+    task SearchKeyword   > or EnableProductDiscovery
+
+    // Fig. 1a names both; AND here because capturing an order needs the
+    // customer's placement AND getting it forwarded for back-office
+    // processing (which in turn depends on BackStore, see below).
+    task PlaceOrder    > EnableOrderCapture
+    task ProcessOrders > EnableOrderCapture
+  }
+
+  agent Customer {
+    goal ShopAndPay   // (added)
+
+    task BuyItem         > ShopAndPay
+    goal HandlePayment   > ShopAndPay
+    goal ReceivePurchase > ShopAndPay   // (added)
+
+    // Fig. 1a names Select Payment Method; Confirm Payment is my addition
+    // (a payment method chosen still needs to be confirmed/authorized).
+    task SelectPaymentMethod > HandlePayment
+    task ConfirmPayment      > HandlePayment   // (added)
+
+    // Mirrors the BPMN model's Customer pool (Receive Items / Receive
+    // Receipt, joined by an AND-gateway there) -- added here so the goal
+    // model and process model name the same leaves.
+    task ReceiveItems   > ReceivePurchase   // (added)
+    task ReceiveReceipt > ReceivePurchase   // (added)
+  }
+
+  agent Supplier {
+    goal SupplyGoodsToStore   // (added)
+
+    task RestockInventory > SupplyGoodsToStore                // (added)
+    task DeliverItems      > SupplyGoodsToStore
+      > help ContinuingSupply                                  // (added)
+
+    quality ContinuingSupply
+    resource Items > needed-by DeliverItems
+  }
+
+  agent Shipment {
+    goal FulfillShipment   // (added)
+
+    task PackageForDelivery  > FulfillShipment   // (added)
+    task TransportToCustomer > FulfillShipment   // (added)
+  }
+
+  // Sect. 2.1: "Front Store actor depends on Back Store actor for achieving
+  // Process Order objective."
+  depend FrontStore.ProcessOrders -> goal ProcessOrder -> BackStore
+
+  // Fig. 1a: Customer's task Buy Item depends on Front Store providing the
+  // three front-end tasks.
+  depend Customer.BuyItem -> task BrowseCatalogue -> FrontStore
+  depend Customer.BuyItem -> task SearchKeyword   -> FrontStore
+  depend Customer.BuyItem -> task PlaceOrder      -> FrontStore
+
+  // Fig. 1a: mutual dependency between Back Store and Supplier.
+  depend BackStore -> resource Items             -> Supplier
+  depend BackStore -> quality ContinuingSupply    -> Supplier
+  // Sect. 2.1 (explicit quote): "the Supplier actor depends on Back Store
+  // actor for the soft goal Continuing Business."
+  depend Supplier  -> quality ContinuingBusiness  -> BackStore
+
+  // Fig. 1a: Customer's goal Handle Payment depends on Back Store's Payment.
+  depend Customer.HandlePayment -> goal Payment -> BackStore
+
+  // Sect. 4.2 (explicit quote, the paper's choreography-inconsistency
+  // example): "The intentional element Collect Payment (CP) (scope of actor
+  // Back Store) depends on Select Payment Method (scope of actor Customer)."
+  depend BackStore.CollectPayment -> task SelectPaymentMethod -> Customer
+
+  // Fig. 1a names the dependum "Ship Order" between Back Store and Shipment;
+  // now that Shipment has its own root, the dependency targets that root
+  // instead of a bare unelaborated actor. (added: goal-level target)
+  depend BackStore.ShipOrder -> goal FulfillShipment -> Shipment
+
+  // (added) Customer's Receive Items depends on Shipment actually
+  // transporting the order -- completes the delivery leg the paper's own
+  // BPMN model (Fig. 1b) already shows but the goal model did not cover.
+  depend Customer.ReceiveItems -> task TransportToCustomer -> Shipment
+}

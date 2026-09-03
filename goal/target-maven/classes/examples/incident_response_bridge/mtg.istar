@@ -1,0 +1,41 @@
+istar IncidentResponseBridge {
+
+  agent Coordinator {
+    goal IncidentHandled
+    task TriageIncident > IncidentHandled ocl {[
+      self.triaged and self.agentIncident.reported
+    ]}
+    goal EvidenceCollected > IncidentHandled
+    goal EvidenceReviewed > forall Analyst EvidenceCollected
+    goal RemediationDone > IncidentHandled
+    goal ServiceRestored > pick Technician RemediationDone
+    goal ClosureDone > IncidentHandled
+    goal ClosureApproved > pick Auditor ClosureDone
+  }
+
+  role Analyst {
+    task AnalyzeEvidence ocl {[
+      self.reportReady
+      and self.actorIncident.evidence.complete
+    ]}
+  }
+
+  role Technician {
+    task RepairService ocl {[
+      self.fixApplied
+      and self.actorIncident.service.restored
+      and self.actorIncident.changeRequest.deployed
+    ]}
+  }
+
+  agent Auditor {
+    task AuditClosure ocl {[
+      self.auditApproved
+      and self.agentIncident.auditTrail.signed
+    ]}
+  }
+
+  depend Coordinator.EvidenceReviewed -> task AnalyzeEvidence -> Analyst.AnalyzeEvidence
+  depend Coordinator.ServiceRestored -> task RepairService -> Technician.RepairService
+  depend Coordinator.ClosureApproved -> task AuditClosure -> Auditor.AuditClosure
+}

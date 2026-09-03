@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:BpmnModel xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:bpmn="https://vnu.edu.vn/sme/goal/bpmn/2.0"
+    xsi:schemaLocation="https://vnu.edu.vn/sme/goal/bpmn/2.0 bpmn.ecore"
+    name="ValidBpmnExample">
+  <processes id="SimpleProcess" name="Simple process" groupClass="Team">
+    <lanes id="Member" name="Member" roleName="Member"
+        flowElements="//@processes.0/@flowElements.0 //@processes.0/@flowElements.1 //@processes.0/@flowElements.2"/>
+    <flowElements xsi:type="bpmn:StartEvent" id="start" lane="//@processes.0/@lanes.0" trigger="none"/>
+    <flowElements xsi:type="bpmn:Task" id="work" name="Work" lane="//@processes.0/@lanes.0">
+      <postcondition oclBody="self.finished"/>
+    </flowElements>
+    <flowElements xsi:type="bpmn:EndEvent" id="end" lane="//@processes.0/@lanes.0" trigger="none"/>
+    <sequenceFlows source="//@processes.0/@flowElements.0" target="//@processes.0/@flowElements.1"/>
+    <sequenceFlows source="//@processes.0/@flowElements.1" target="//@processes.0/@flowElements.2"/>
+  </processes>
+</bpmn:BpmnModel>

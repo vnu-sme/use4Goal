@@ -1,0 +1,18 @@
+model OJSReviewProcess {
+  pool SubmissionProcess {
+    lane Review;
+    lane SectionEditor;
+  }
+  start submitted { lane Review trigger none flow reviewSubmission }
+  activity reviewSubmission {
+    type task lane Review
+    post {[ Review.allInstances()->forAll(r | r.recommendation = Recommendation::accept) ]}
+    flow decideSubmission
+  }
+  activity decideSubmission {
+    type task lane SectionEditor
+    post {[ ReviewRound.allInstances()->forAll(r | r.editorDecision = EditorDecision::accept) ]}
+    flow decided
+  }
+  end decided { lane SectionEditor trigger none }
+}

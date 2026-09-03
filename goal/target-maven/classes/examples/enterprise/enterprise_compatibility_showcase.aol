@@ -1,0 +1,69 @@
+// Compatibility-dense instance: as many agents as possible hold two (or,
+// for ivan, all three) compatible Role occurrences at once --
+// TeamMember+TeamLead (x2, one per Team), and Auditor+SeniorAuditor+
+// ComplianceOfficer stacked on a single agent in AuditCommittee. This only
+// works because enterprise.acl declares Auditor<->SeniorAuditor and
+// Auditor<->ComplianceOfficer compatible; the SeniorAuditor<->
+// ComplianceOfficer pair needs no separate declaration since compatibility
+// matching considers subtype Roles (SeniorAuditor extends Auditor).
+
+aol v1.0 EnterpriseCompatibilityShowcase for "enterprise.acl" {
+
+  agent Executive     as alice { name = "Alice Nguyen"; email = "alice@acme.example"; employeeId = "E001"; hireDate = "2010-03-01"; managementLevel = 5; budgetAuthority = 500000.0; title = "Chair"; }
+  agent Executive     as bob   { name = "Bob Tran";     email = "bob@acme.example";   employeeId = "E002"; hireDate = "2011-06-15"; managementLevel = 5; budgetAuthority = 450000.0; title = "CFO"; }
+  agent Executive     as carol { name = "Carol Le";     email = "carol@acme.example"; employeeId = "E003"; hireDate = "2012-09-20"; managementLevel = 5; budgetAuthority = 400000.0; title = "CTO"; }
+  agent SeniorManager as dave  { name = "Dave Pham";    email = "dave@acme.example";  employeeId = "E004"; hireDate = "2013-01-10"; managementLevel = 4; budgetAuthority = 150000.0; }
+
+  // TeamMember+TeamLead pair #1
+  agent Employee as erin   { name = "Erin Vo";    email = "erin@acme.example";   employeeId = "E005"; hireDate = "2019-04-01"; }
+  agent Employee as grace  { name = "Grace Bui";  email = "grace@acme.example";  employeeId = "E011"; hireDate = "2019-04-02"; }
+  // TeamMember+TeamLead pair #2
+  agent Employee as frank  { name = "Frank Do";   email = "frank@acme.example";  employeeId = "E006"; hireDate = "2020-02-11"; }
+  agent Employee as henry  { name = "Henry Ta";   email = "henry@acme.example";  employeeId = "E012"; hireDate = "2020-02-12"; }
+
+  // Auditor + SeniorAuditor + ComplianceOfficer, all three, on one agent.
+  agent Reviewer as ivan  { name = "Ivan Dang"; email = "ivan@acme.example"; reviewLevel = 5; }
+  agent Reviewer as judy  { name = "Judy Mai";  email = "judy@acme.example"; reviewLevel = 2; }
+
+  group Corporation as corp1 {
+    name = "Compat Labs"; foundedYear = 2016;
+
+    play BoardMember as board_alice by alice { votingRights = true; }
+    play BoardMember as board_bob   by bob   { votingRights = true; }
+    play BoardMember as board_carol by carol { votingRights = true; }
+
+    group Department as dept1 {
+      budgetCode = "R&D-01";
+      play DepartmentHead as head_dept1 by dave { departmentGoals = "Prove the compatibility model"; }
+      entity Budget as budget_dept1 { amount = 200000.0; currency = "USD"; }
+
+      group Team as team1 {
+        teamName = "Alpha"; sprintLength = 14;
+        play TeamMember as member_erin_t1  by erin  { taskCount = 4; }
+        play TeamLead   as lead_erin_t1    by erin  { teamBudget = 50000.0; }
+        play TeamMember as member_grace_t1 by grace { taskCount = 3; }
+      }
+
+      group Team as team2 {
+        teamName = "Beta"; sprintLength = 14;
+        play TeamMember as member_frank_t2 by frank { taskCount = 5; }
+        play TeamLead   as lead_frank_t2   by frank { teamBudget = 45000.0; }
+        play TeamMember as member_henry_t2 by henry { taskCount = 2; }
+      }
+    }
+
+    group AuditCommittee as audit1 {
+      play Auditor           as auditor_ivan       by ivan { certificationId = "CIA-9001"; }
+      play SeniorAuditor      as senior_auditor_ivan by ivan { leadAudits = 20; }
+      play ComplianceOfficer as compliance_ivan     by ivan { specialization = "Cross-domain compatibility"; }
+      play Auditor as auditor_judy by judy { certificationId = "CIA-9002"; }
+    }
+  }
+
+  link mentors: alice -> dave;
+  link reportsTo: member_grace_t1 -> lead_erin_t1;
+  link reportsTo: member_henry_t2 -> lead_frank_t2;
+  link reviewsWork: auditor_ivan -> member_erin_t1, member_frank_t2;
+  link reviewsWork: auditor_judy -> member_grace_t1, member_henry_t2;
+  link escalatesTo: head_dept1 -> board_alice, board_bob, board_carol;
+}

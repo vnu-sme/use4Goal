@@ -1,0 +1,16 @@
+acl-bpmn-boundary v1.0 ClassroomBound {
+  // Maximum number of object diagrams in one generated execution.
+  snapshots 24;
+  loop-bound 3;
+  integer -8..8;
+
+  // Per-snapshot classifier scopes. Kodkod creates these objects; no AOL
+  // scenario is used by Whole BPMN validation.
+  objects Classroom 1;
+  objects Person 2;
+  objects Teacher 1;
+  objects Student 1;
+
+  links Classroom_contains_Teacher 1;
+  links Classroom_contains_Student 1;
+}

@@ -1,0 +1,62 @@
+// Shared organizational and domain state for ProposalReview.
+acl v3.0 ProposalReviewState {
+
+  // The OrgContext is structural and therefore has no attributes of its own.
+  orgContext ProposalReviewCase {
+    role ProposalManager {
+      // Organizational authority required by Validate and Finalize proposal.
+      authorityLevel : Integer default 1;
+    }
+
+    role Customer {
+      // Observable result produced when the Customer performs the review.
+      reviewCompleted : Boolean mutable default false;
+      requestedChangeCount : Integer mutable default 0;
+    }
+
+    entity Proposal {
+      requiredAuthorityLevel : Integer default 1;
+
+      prepared : Boolean mutable default false;
+      currentRevision : Integer mutable default 0;
+      validationRevision : Integer mutable default 0;
+
+      incorporatedChangeCount : Integer mutable default 0;
+      finalized : Boolean mutable default false;
+      sent : Boolean mutable default false;
+      sentRevision : Integer mutable default 0;
+    }
+  }
+
+  // ACL states only structural and lifecycle facts. Equality between the
+  // current and validated revisions remains an i* requirement, so BPMN can
+  // still produce the conflicting state currentRevision=2 and
+  // validationRevision=1.
+  context ProposalManager inv NonNegativeAuthority:
+    self.authorityLevel >= 0;
+
+  context Customer inv NonNegativeRequestedChanges:
+    self.requestedChangeCount >= 0;
+
+  context Customer inv NoRequestBeforeReview:
+    not self.reviewCompleted implies self.requestedChangeCount = 0;
+
+  context Proposal inv NonNegativeProposalState:
+    self.requiredAuthorityLevel >= 0 and
+    self.currentRevision >= 0 and
+    self.validationRevision >= 0 and
+    self.incorporatedChangeCount >= 0 and
+    self.sentRevision >= 0;
+
+  context Proposal inv PreparationMatchesRevision:
+    self.prepared = (self.currentRevision > 0);
+
+  context Proposal inv ValidationReferencesExistingRevision:
+    self.validationRevision <= self.currentRevision;
+
+  context Proposal inv SendingRequiresFinalization:
+    self.sent implies self.finalized;
+
+  context Proposal inv SentRevisionIsCurrent:
+    self.sent implies self.sentRevision = self.currentRevision;
+}

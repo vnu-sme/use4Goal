@@ -1,0 +1,24 @@
+// iStar 2.0 Example — Generic/abstract conformance-checking test model
+// Transcribed from example/Data/bpmn/goal_model.txt (piStar 2.1.0 JSON export).
+// Node names (G1..G3, T1..T8, Q1) are kept exactly as in the source — this is an abstract
+// synthetic example (not a real business domain), useful as a minimal structural test case.
+
+istar GenericExample {
+
+  agent MainActor {
+    quality Q1
+
+    goal G1 > make Q1
+    goal G2 > break Q1
+    goal G3
+
+    task T1 > or G1 > G3
+    task T2 > or G1
+    task T3 > G2
+    task T4 > G2
+    task T5 > G2
+    task T6 > T1
+    task T7 > T1
+    task T8 > G3
+  }
+}

@@ -1,0 +1,141 @@
+// Executable DSL reconstruction of processModel.bpmn.
+// The missing Update -> Validate loop is preserved intentionally: this is the
+// AS-IS process whose completed changed-proposal trace must be diagnosed.
+model ProposalReviewProcess {
+
+  pool ProposalReview for ProposalReviewCase {
+    name "Proposal Review — AS-IS missing re-validation loop"
+    lane ProposalManager;
+    lane Customer;
+  }
+
+  start startReview {
+    lane ProposalManager
+    trigger none
+    pre {[
+      not self.proposal.prepared
+      and self.proposal.currentRevision = #none
+      and self.proposal.validationRevision = #none
+      and not self.proposal.sent
+      and not self.processCompleted
+    ]}
+    flow prepareProposal
+  }
+
+  activity prepareProposal {
+    name "Prepare proposal"
+    type task
+    lane ProposalManager
+    pre {[
+      not self.proposal.prepared
+    ]}
+    post {[
+      self.proposal.prepared
+      and self.proposal.currentRevision = #r1
+    ]}
+    flow validateProposal
+  }
+
+  activity validateProposal {
+    name "Validate proposal"
+    type task
+    lane ProposalManager
+    pre {[
+      self.proposal.prepared
+      and self.proposal.currentRevision <> #none
+    ]}
+    post {[
+      self.proposal.validationRevision = self.proposal.currentRevision
+    ]}
+    flow reviewProposal
+  }
+
+  activity reviewProposal {
+    name "Review proposal"
+    type task
+    lane Customer
+    pre {[
+      self.proposal.prepared
+      and self.proposal.validationRevision = self.proposal.currentRevision
+    ]}
+    post {[
+      self.customer.reviewCompleted
+      and self.customer.changesRequested = self.customer.reviewRequestsChanges
+    ]}
+    flow changesRequestedDecision
+  }
+
+  gateway changesRequestedDecision {
+    lane Customer
+    type xor
+    pre {[
+      self.customer.reviewCompleted
+    ]}
+    flow updateProposal when {[
+      self.customer.changesRequested
+    ]}
+    flow feedbackMerge default
+  }
+
+  activity updateProposal {
+    name "Update proposal"
+    type task
+    lane ProposalManager
+    pre {[
+      self.customer.reviewCompleted
+      and self.customer.changesRequested
+      and self.proposal.currentRevision = #r1
+    ]}
+    post {[
+      self.proposalManager.changesIncorporated
+      and self.proposal.currentRevision = #r2
+    ]}
+    // Intentional AS-IS defect: validationRevision remains r1.  The correct
+    // process would flow back to validateProposal instead of feedbackMerge.
+    flow feedbackMerge
+  }
+
+  gateway feedbackMerge {
+    lane ProposalManager
+    type xor
+    pre {[
+      self.customer.reviewCompleted
+      and (not self.customer.changesRequested or self.proposalManager.changesIncorporated)
+    ]}
+    flow finalizeProposal
+  }
+
+  activity finalizeProposal {
+    name "Finalize proposal"
+    type task
+    lane ProposalManager
+    pre {[
+      self.customer.reviewCompleted
+      and (not self.customer.changesRequested or self.proposalManager.changesIncorporated)
+    ]}
+    post {[
+      self.proposal.finalized
+    ]}
+    flow sendProposal
+  }
+
+  activity sendProposal {
+    name "Send proposal"
+    type task
+    lane ProposalManager
+    pre {[
+      self.proposal.finalized
+    ]}
+    post {[
+      self.proposal.sent
+      and self.proposal.sentRevision = self.proposal.currentRevision
+      and self.processCompleted
+    ]}
+    flow proposalSent
+  }
+
+  end proposalSent {
+    lane ProposalManager
+    trigger none
+  }
+}

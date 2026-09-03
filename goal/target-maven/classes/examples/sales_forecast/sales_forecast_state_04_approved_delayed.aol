@@ -1,0 +1,35 @@
+// End state of the prescribed process via reviewProposalLate ->
+// approveProposal -> sendApprovedProposal, matching official_delayed.soil:
+// review finishes after the response window closes, yet the process still
+// only sends the approved current revision. This is README.md's
+// "non-conformant" delayed row at the goal level (RespondQuicklyAndFlexibly /
+// CustomerSatisfied stay unfulfilled) -- but every ACL invariant here still
+// holds, because "approved-only sending" was respected. That gap is the
+// point: these seven structural invariants cannot by themselves distinguish
+// this state from state 03; only the iStar goal model can.
+// Expected OCL result: 7 true, 0 false.
+aol v2.0 SalesForecastApprovedDelayed for "sales_forecast.acl" {
+  group SalesCase as salescase1 {
+    proposalPrepared = true;
+    approvalRequested = true;
+    reviewCompleted = true;
+    approvalStatus = approved;
+    approvedRevision = r1;
+    proposalSent = true;
+    sentRevision = r1;
+    responseWindowOpen = false;
+    sentWithinWindow = false;
+    processCompleted = true;
+    approvalDelayed = true;
+  }
+
+  role Management as management1;
+  role CustomerManager as manager1;
+  role Approver as approver1;
+  role Customer as customer1;
+
+  link SalesCase_contains_Management : salescase1 -> management1;
+  link SalesCase_contains_CustomerManager : salescase1 -> manager1;
+  link SalesCase_contains_Approver : salescase1 -> approver1;
+  link SalesCase_contains_Customer : salescase1 -> customer1;
+}

@@ -1,294 +1,196 @@
-# GOAL Plugin Architecture
+# Kiến trúc GOAL plugin
+
+Tài liệu này quy định tổ chức mã nguồn và chiều phụ thuộc của GOAL plugin. Ngữ
+nghĩa DSL, luật dịch và đặc tả hình thức được điều hướng từ [main.md](main.md).
+
+## 1. Nguyên tắc chính
+
+GOAL được tổ chức theo **module tính năng tái sử dụng** và **feature đầu vào**.
+Module cung cấp năng lực; feature là điểm vào để người dùng gọi một hoặc nhiều
+module.
+
+```text
+USE menu/toolbar
+       |
+       v
+feature.<use-case>                 action + form + orchestration
+       |
+       +----------+---------------+----------------+
+       v          v               v                v
+   dsl.<name>  translate.*      trace.*          verify.*
+                  |               |                |
+                  +---------------+----------------+
+                                  |
+                              dsl.<name>
+```
+
+Action tương đương một endpoint trong backend: nhận sự kiện từ USE, tạo feature
+và chuyển quyền điều khiển. Action không parse, validate, translate hay chứa
+luật miền. Form là delivery adapter của cùng endpoint nên đi cùng feature, không
+nằm trong module DSL.
+
+## 2. Cấu trúc package
+
+```text
+org.vnu.sme.goal
+├── dsl.<name>                    module định nghĩa một ngôn ngữ
+│   ├── parser
+│   ├── ast
+│   ├── mm
+│   ├── ocl                       nếu DSL có tích hợp OCL
+│   └── view                      mô hình/adapter hiển thị tái sử dụng
+├── translate.<source2target>    module dịch tĩnh
+├── trace.<name>                 module thực thi theo trạng thái
+├── verify.<name>                module kiểm chứng và phối hợp mô hình
+├── feature.<use-case>           endpoint của plugin
+│   ├── Action...
+│   ├── ...Form
+│   └── ...Service               orchestration riêng của use case, nếu cần
+├── usegen                       hạ tầng sinh USE dùng chung
+└── gui                          widget/hạ tầng giao diện dùng chung
+```
+
+`feature` được chia theo use case, không chia theo loại kỹ thuật `action`, `gui`
+hay `application`. Vì vậy action mới có thể gọi lại các module gốc mà không kéo
+theo action/form cũ.
+
+Ví dụ đích cho chức năng mở ACL:
+
+```text
+org.vnu.sme.goal.dsl.acl
+├── parser
+├── ast
+├── mm
+├── ocl
+└── view
+
+org.vnu.sme.goal.feature.openacl
+├── ActionOpenAcl.java
+├── AclForm.java
+└── AclOpenService.java
+```
+
+`AclDemoMain` là một adapter CLI, không phải lõi ACL. Khi còn cần, nó đặt tại
+`feature.openacl` hoặc một package adapter CLI riêng; không đặt trực tiếp trong
+`dsl.acl`.
+
+## 3. Trách nhiệm từng nhóm
+
+### `dsl`
+
+Một DSL chỉ định nghĩa pipeline ngôn ngữ:
+
+```text
+source -> parser -> AST -> semantic model -> validator
+                                      |
+                                      +-> reusable view model/adapter
+```
+
+- Parser chỉ nhận cú pháp và tạo AST/MM qua factory.
+- `ast` giữ cấu trúc gần mã nguồn.
+- `mm` giữ mô hình ngữ nghĩa và validator tĩnh.
+- `ocl` tích hợp OCL ở mức module, không biết tới form hay action.
+- `view` chỉ giữ biểu diễn có thể được nhiều feature dùng lại. Dialog, file
+  chooser, preferences và thông báo lỗi thuộc `feature`.
+
+### `translate`
+
+Translator nhận semantic model qua API công khai, không đọc parse tree và không
+phụ thuộc GUI. Translator phải báo lỗi với construct chưa hỗ trợ; không được bỏ
+qua hoặc xấp xỉ ngầm.
+
+### `trace`
 
-## 1. Scope
+Trace làm việc với object state và checkpoint cụ thể. Nó cung cấp API thực thi,
+step và đánh giá; cửa sổ điều khiển trace thuộc feature tương ứng.
 
-This document defines the architecture of the `goal` plugin as a multi-language pipeline integrated into USE.
+### `verify`
 
-The plugin now treats every supported language through the same conceptual stages:
+Verifier phối hợp API công khai của DSL, translator và trace. Nó không sao chép
+parser hoặc luật ngữ nghĩa. Workspace/form kiểm chứng thuộc feature.
 
-`source file -> parser -> AST -> metamodel (MM) -> semantic processing -> view / analysis`
+### `feature`
 
-This rule applies to:
+Mỗi package là một use case hoàn chỉnh ở biên hệ thống, ví dụ `openacl`,
+`exportacltouse`, `verifyconformance`.
 
-- GOAL
-- OCL embedded in GOAL
-- BPMN (simplified process language for operational verification)
-- USE models remain provided by USE itself and are consumed as external semantic context
+- `Action...` là entry point được khai báo trong `useplugin.xml` và phải mỏng.
+- `...Form` quản lý input, trạng thái UI và thông báo cho người dùng.
+- `...Service` phối hợp module khi use case đủ phức tạp; đây không phải domain
+  service và không được các module lõi gọi ngược lại.
+- Hai feature có thể dùng cùng module, nhưng không gọi action của nhau. Phần
+  logic dùng chung phải được đưa xuống API module hoặc một application component
+  không phụ thuộc UI.
 
-The structure is intentionally aligned with the style used by USE core under:
+## 4. Chiều phụ thuộc bắt buộc
 
-- `org.tzi.use.parser.use`
-- `org.tzi.use.parser.ocl`
-- `org.tzi.use.parser.soil`
+```text
+feature -> verify/trace/translate -> dsl
+feature -------------------------> dsl
+```
 
-## 2. Architectural Principles
+- `dsl` không import `feature`, USE plugin action hay Swing form.
+- `translate`, `trace`, `verify` không import `feature` hay form.
+- Feature được phép phụ thuộc nhiều module để hoàn thành một use case.
+- `useplugin.xml` chỉ trỏ tới class trong `feature.*`.
+- Không đặt package `action`, `gui` hoặc `application` bên trong `dsl.*`,
+  `translate.*`, `trace.*` hay `verify.*`.
+- `org.vnu.sme.goal.gui` chỉ chứa thành phần UI thật sự dùng chung; không chứa
+  workflow riêng của một action.
 
-### 2.1 One language, one pipeline
+## 5. Luồng chuẩn của một endpoint
 
-Each language must expose:
+```text
+Action -> Form -> feature service -> module API -> Result
+                  ^                              |
+                  +---------- render ------------+
+```
 
-1. a parser/compiler entry point
-2. an AST package
-3. an MM package
-4. a semantic step
-5. a view/reporting step
+Với Open ACL:
 
-### 2.2 AST is syntax-oriented
+1. `ActionOpenAcl` nhận `MainWindow` và mở `AclForm` trên EDT.
+2. `AclForm` lấy đường dẫn và lựa chọn hiển thị.
+3. `AclOpenService` gọi `AclCompiler` và API view của module ACL.
+4. Service trả `Result`; form chỉ hiển thị kết quả.
 
-AST nodes represent language structure after parsing and before runtime semantics.
+Một endpoint CLI, test fixture hoặc action mới có thể gọi thẳng `AclCompiler`,
+validator và view API mà không phụ thuộc `ActionOpenAcl` hay `AclForm`.
 
-AST nodes:
+## 6. Quy tắc mở rộng
 
-- keep source-oriented structure
-- preserve names, clause structure, and declaration shape
-- are allowed to keep tokens or source text for diagnostics
-- must not be the final runtime semantic model
+Khi thêm một action mới:
 
-### 2.3 MM is runtime-oriented
+1. xác định module/API hiện có mà use case cần;
+2. bổ sung API module nếu năng lực dùng chung còn thiếu;
+3. tạo `feature.<use-case>` chứa action và form của endpoint;
+4. chỉ đăng ký action trong `useplugin.xml`;
+5. kiểm tra không có phụ thuộc ngược từ module về feature.
 
-MM nodes are semantic runtime objects used by:
+Một construct DSL chỉ được coi là hỗ trợ khi đã có, nếu phù hợp:
 
-- validators
-- analyzers
-- views
-- operational verification
+1. grammar và AST;
+2. semantic model và static validator;
+3. operational/formal semantics;
+4. translator hoặc trace evaluator;
+5. reusable view;
+6. ví dụ và kiểm thử;
+7. tài liệu trong cây ở `main.md`.
 
-### 2.4 Semantic processing happens after MM construction
+Parser chấp nhận một keyword không đồng nghĩa plugin đã hỗ trợ ngữ nghĩa của
+keyword đó.
 
-Parsing success alone is not enough.
+## 7. Lộ trình chuyển đổi
 
-A language is only considered successfully loaded when:
+Để giữ các thay đổi dễ kiểm tra, chuyển từng feature theo lát dọc:
 
-1. AST was built
-2. MM was built from AST
-3. semantic checks finished
-4. resulting semantics can be shown in the UI
+1. dùng `openacl` làm mẫu: chuyển `ActionOpenAcl`, `AclForm`, `AclOpenService`
+   và cập nhật `useplugin.xml`;
+2. chuyển lần lượt các viewer DSL khác;
+3. chuyển các action của translator, trace và verifier;
+4. thêm architecture test cấm module import `feature`, Swing form và
+   `IPluginActionDelegate`;
+5. xóa các package `*/action`, `*/gui`, `*/application` cũ sau khi mọi tham
+   chiếu đã được chuyển.
 
-## 3. Language Pipelines
-
-### 3.1 GOAL pipeline
-
-`*.goal`
-
-1. `GOALCompiler`
-2. ANTLR parse tree
-3. `org.vnu.sme.goal.ast`
-4. `org.vnu.sme.goal.mm`
-5. `GoalSemanticPipelineSkeleton`, `GoalSemanticAnalyzer`, `OclSemanticAnalyzer`, `GoalOclCompilationValidator`
-6. `GoalDiagramView`, status/design/BPMN verification reports
-
-### 3.2 OCL-in-GOAL pipeline
-
-Embedded OCL expssiorens inside GOAL clauses now follow an explicit internal pipeline:
-
-1. grammar expression subtree from `GOAL.g4`
-2. `OclExpressionBuilder`
-3. `org.vnu.sme.goal.ast.ocl`
-4. `OclModelBuilder`
-5. `org.vnu.sme.goal.mm.ocl`
-6. semantic checks in `OclSemanticAnalyzer`
-7. external compilation/evaluation through USE `OCLCompiler`
-8. exposure in validation views and status tables
-
-This means OCL is no longer hidden only inside `mm.ocl`. It now has a visible AST stage with dedicated syntax nodes such as binary, unary, iterator, aggregate, feature-call, and literal expressions.
-
-### 3.3 BPMN pipeline
-
-`*.bpmn`
-
-1. `BpmnCompiler`
-2. ANTLR parse from `BPMN.g4`
-3. `org.vnu.sme.goal.ast.bpmn`
-4. `BpmnModelFactory`
-5. `org.vnu.sme.goal.mm.bpmn`
-6. semantic / proof validation in `GoalBpmnValidator` and `GoalBpmnProofEngine`
-7. verification report through `GoalDiagramView` and plugin actions
-
-## 4. Package Layout
-
-### 4.1 Parser layer
-
-- `org.vnu.sme.goal.parser`
-- `org.vnu.sme.goal.bpmn` for BPMN parsing utilities
-
-Responsibilities:
-
-- compile input files
-- build AST
-- build MM from AST
-- coordinate language loading
-
-### 4.2 AST layer
-
-- `org.vnu.sme.goal.ast`
-- `org.vnu.sme.goal.ast.ocl`
-- `org.vnu.sme.goal.ast.bpmn`
-
-Responsibilities:
-
-- represent parsed declarations and expression structure
-- keep language-local structure visible
-- feed semantic table building and MM factories
-
-### 4.3 MM layer
-
-- `org.vnu.sme.goal.mm`
-- `org.vnu.sme.goal.mm.ocl`
-- `org.vnu.sme.goal.mm.bpmn`
-
-Responsibilities:
-
-- runtime semantic objects
-- bidirectional model links
-- objects consumed by analyzers and views
-
-### 4.4 Semantic / validation layer
-
-- `org.vnu.sme.goal.parser.semantic`
-- `org.vnu.sme.goal.parser.semantic.symbols`
-- `GoalOclCompilationValidator`
-- `org.vnu.sme.goal.validator`
-
-Responsibilities:
-
-- symbol construction
-- semantic constraints
-- language cross-checks
-- proof / validation logic
-
-### 4.5 View layer
-
-- `org.vnu.sme.goal.view`
-- `org.vnu.sme.goal.view.nodes`
-- `org.vnu.sme.goal.view.edges`
-
-Responsibilities:
-
-- show semantic results
-- show validation state
-- show design analysis
-- show BPMN-based operational support report
-
-## 5. Loading and Verification Flow
-
-### 5.1 GOAL loading
-
-1. `ActionOpenGOAL`
-2. `GoalModelForm`
-3. `GoalLoader`
-4. `GOALCompiler`
-5. AST build
-6. MM build
-7. semantic validation
-8. `GoalDiagramView`
-
-### 5.2 BPMN loading
-
-1. `ActionOpenBPMN`
-2. `BpmnModelForm`
-3. `BpmnLoader`
-4. `BpmnCompiler`
-5. BPMN AST build
-6. BPMN MM build
-7. registry update in `GoalViewRegistry`
-8. later use by verification action
-
-### 5.3 GOAL + BPMN verification
-
-1. open USE model
-2. load GOAL model
-3. load BPMN model
-4. run `Verify GOAL With BPMN`
-5. validator matches BPMN pools to GOAL agents by exact name
-6. validator matches BPMN tasks to GOAL tasks inside the same agent
-7. proof engine enumerates complete BPMN traces
-8. proof engine generates proof obligations such as:
-   `post(T1) => pre(T2)`
-   `post(Tn) => goalOcl`
-   `post(Ti) => not(goalOcl)` for avoid-goals
-9. obligations are checked by a symbolic entailment checker over `mm.ocl`
-10. report is shown from the active GOAL view
-
-## 6. Current Position of OCL AST
-
-The plugin now exposes OCL AST explicitly in:
-
-- `org.vnu.sme.goal.ast.ocl.OclExpressionCS`
-- `org.vnu.sme.goal.ast.ocl.OclVariableDeclarationCS`
-
-The current implementation uses a real syntax AST under `ast.ocl`, and conversion to runtime OCL MM happens only in `OclModelBuilder`.
-
-## 7. Reference Style from USE Core
-
-The plugin should continue to follow USE core conventions:
-
-- AST classes live in parser-side packages
-- runtime semantic classes live outside parser-side AST
-- semantic checking is explicit and separate from parsing
-- views consume semantic models, not raw parse trees
-
-The main reference packages are:
-
-- `org.tzi.use.parser.use`
-- `org.tzi.use.parser.ocl`
-- `org.tzi.use.parser.soil`
-
-## 8. Concrete Runtime Pipelines
-
-### 8.1 GOAL runtime status table
-
-This pipeline answers:
-
-`Is the current goal expression true or false on the current USE system state?`
-
-Pipeline:
-
-1. `GoalDiagramView.showGoalStatusTable`
-2. read goal OCL text from `Goal`
-3. `GoalOclService.validateExpression`
-4. `GoalOclService.evaluateBooleanExpression`
-5. derive goal status from goal type:
-   - `achieve`, `maintain`: expression `TRUE` means satisfied
-   - `avoid`: expression `FALSE` means satisfied
-6. show result in the status table
-
-This is a runtime state evaluation pipeline.
-
-### 8.2 GOAL + BPMN proof validation
-
-This pipeline answers:
-
-`Does the BPMN process operationalize the goal model, and do generated obligations hold?`
-
-Pipeline:
-
-1. `GoalDiagramView.showBpmnVerificationReport`
-2. `GoalBpmnValidator.analyze`
-3. `GoalBpmnProofEngine.analyze`
-4. build BPMN trace set per agent/pool
-5. match refinements, sub-goals, and tasks
-6. generate proof obligations:
-   - task coverage
-   - `post(Ti) => pre(Ti+1)`
-   - `post(Tn) => goalOcl`
-   - `post(Ti) => goalOcl` for maintain-goals
-   - `post(Ti) => not(goalOcl)` for avoid-goals
-7. check each obligation with the symbolic proof layer in `org.vnu.sme.goal.validator.proof`
-8. collect:
-   - goal-level `TRUE/FALSE`
-   - obligation-level `TRUE/FALSE`
-   - trace explanations
-9. render result in the GOAL diagram view
-
-This is a proof / validation pipeline, not the same as runtime status evaluation.
-It must not depend on a concrete USE runtime state to decide whether a proof obligation is discharged.
-
-## 9. Status
-
-As of the current implementation:
-
-- GOAL has AST, MM, semantic processing, and view
-- OCL embedded in GOAL has AST, MM, semantic processing, and validation/evaluation view
-- BPMN has AST, MM, loading pipeline, and proof/reporting view
-
-This is the baseline architecture all future language extensions must follow.
+Không thực hiện một lần đổi package toàn bộ repository: mỗi lát dọc phải compile
+và test độc lập để tránh trộn thay đổi kiến trúc với thay đổi ngữ nghĩa.

@@ -1,0 +1,426 @@
+// Complete control-flow reconstruction of Process 1: Sales Forecast from
+// Appendix 2 of the extended case-study material.
+//
+// This is the source-comparison model.  sales_forecast.bpmn2 remains the
+// focused executable approval/delay slice used by the motivating tests.
+// The appendix publishes gateway labels and thresholds, but not activity
+// state effects; consequently this file preserves control flow and guards and
+// does not invent postconditions for undocumented business data.
+
+model SalesForecastFullProcess {
+  pool SalesForecast for SalesCase {
+    name "Complete Sales Forecast process"
+    lane CreditControl;
+    lane FinancialControl;
+    lane BusinessVP;
+    lane SectorManager;
+    lane DepartmentManager;
+    lane ServiceAgreements;
+    lane PresaleEngineer;
+    lane CustomerManager;
+  }
+
+  // ======================================================================
+  // Preparation
+  // ======================================================================
+
+  start salesForecastStarted {
+    lane CustomerManager
+    trigger none
+    flow newCustomerDecision
+  }
+
+  gateway newCustomerDecision {
+    lane CustomerManager
+    type xor
+    flow createCustomerTicket when {[
+      self.newCustomer
+    ]}
+    flow updateCustomerDetails default
+  }
+
+  activity createCustomerTicket {
+    name "Creating Customer Ticket"
+    type subprocess
+    lane CustomerManager
+    flow customerPreparedMerge
+  }
+
+  activity updateCustomerDetails {
+    name "Updating customer details"
+    type task
+    lane CustomerManager
+    flow customerPreparedMerge
+  }
+
+  gateway customerPreparedMerge {
+    lane CustomerManager
+    type xor
+    flow updateDealDetails
+  }
+
+  activity updateDealDetails {
+    name "Inserting and updating deal details"
+    type task
+    lane CustomerManager
+    flow presaleEngineerDecision
+  }
+
+  // The source draws an inclusive-gateway marker here, but labels its two
+  // alternatives Yes/No.  Version 1 of the executable dialect has no OR
+  // gateway semantics, so the mutually exclusive decision is represented as
+  // XOR.  The presale work remains the source's separate message-ending
+  // branch; the No branch continues the main proposal-preparation route.
+  gateway presaleEngineerDecision {
+    lane CustomerManager
+    type xor
+    flow createPresaleBoM when {[
+      self.requiresPresaleEngineer
+    ]}
+    flow vendorBoMDecision default
+  }
+
+  activity createPresaleBoM {
+    name "Creating BOM"
+    type task
+    lane PresaleEngineer
+    flow writeHLDDocument
+  }
+
+  activity writeHLDDocument {
+    name "Writing HLD Document"
+    type task
+    lane PresaleEngineer
+    flow sendHLDToCustomerManager
+  }
+
+  activity sendHLDToCustomerManager {
+    name "Sending HLD to Customer Manager"
+    type task
+    lane PresaleEngineer
+    flow presaleHldSent
+  }
+
+  end presaleHldSent {
+    lane PresaleEngineer
+    trigger message
+  }
+
+  gateway vendorBoMDecision {
+    lane CustomerManager
+    type xor
+    flow updateBoMAndHLD when {[
+      self.vendorBoMAvailable
+    ]}
+    flow createBoMManually default
+  }
+
+  activity createBoMManually {
+    name "Creating a BOM manually"
+    type task
+    lane CustomerManager
+    flow boMPreparedMerge
+  }
+
+  activity updateBoMAndHLD {
+    name "Updating BOM and HLD"
+    type task
+    lane CustomerManager
+    flow boMPreparedMerge
+  }
+
+  gateway boMPreparedMerge {
+    lane CustomerManager
+    type xor
+    flow missingPartNumberDecision
+  }
+
+  gateway missingPartNumberDecision {
+    lane CustomerManager
+    type xor
+    flow createPartNumbers when {[
+      self.missingPartNumbers
+    ]}
+    flow partNumbersPreparedMerge default
+  }
+
+  activity createPartNumbers {
+    name "Creating PNs"
+    type subprocess
+    lane CustomerManager
+    flow partNumbersPreparedMerge
+  }
+
+  gateway partNumbersPreparedMerge {
+    lane CustomerManager
+    type xor
+    flow updatePartNumberPrice
+  }
+
+  activity updatePartNumberPrice {
+    name "Updating PNs Price"
+    type task
+    lane CustomerManager
+    flow updateServiceContractPercentages
+  }
+
+  activity updateServiceContractPercentages {
+    name "Updating percentages for service contract"
+    type task
+    lane CustomerManager
+    flow serviceFeeDecision
+  }
+
+  gateway serviceFeeDecision {
+    lane CustomerManager
+    type xor
+    flow serviceApprovalMerge when {[
+      self.serviceFeeAtLeast7Percent
+    ]}
+    flow pendingServiceAgreementApproval default
+  }
+
+  activity pendingServiceAgreementApproval {
+    name "Pending approval"
+    type task
+    lane ServiceAgreements
+    flow reviewServiceAgreement
+  }
+
+  activity reviewServiceAgreement {
+    name "Contract review and approval"
+    type task
+    lane ServiceAgreements
+    flow serviceAgreementDecision
+  }
+
+  gateway serviceAgreementDecision {
+    lane ServiceAgreements
+    type xor
+    flow serviceApprovalMerge when {[
+      self.serviceAgreementApproved
+    ]}
+    flow updateServiceContractPercentages default
+  }
+
+  gateway serviceApprovalMerge {
+    lane CustomerManager
+    type xor
+    flow updateDealProfitability
+  }
+
+  activity updateDealProfitability {
+    name "Updating deal profitability and closure percentages"
+    type task
+    lane CustomerManager
+    flow profitability12Decision
+  }
+
+  // ======================================================================
+  // Approvals: profitability hierarchy
+  // ======================================================================
+
+  gateway profitability12Decision {
+    lane CustomerManager
+    type xor
+    flow amountThresholdDecision when {[
+      self.profitabilityAtLeast12Percent
+    ]}
+    flow pendingDepartmentManagerApproval default
+  }
+
+  activity pendingDepartmentManagerApproval {
+    name "Pending approval"
+    type task
+    lane DepartmentManager
+    flow departmentProfitabilityExamination
+  }
+
+  activity departmentProfitabilityExamination {
+    name "Profitability examination"
+    type task
+    lane DepartmentManager
+    flow departmentApprovalDecision
+  }
+
+  gateway departmentApprovalDecision {
+    lane DepartmentManager
+    type xor
+    flow amountThresholdDecision when {[
+      self.departmentManagerApproved
+      and self.profitabilityAtLeast10Percent
+    ]}
+    flow pendingSectorManagerApproval when {[
+      self.departmentManagerApproved
+      and not self.profitabilityAtLeast10Percent
+    ]}
+    flow updateDealProfitability default
+  }
+
+  activity pendingSectorManagerApproval {
+    name "Pending approval"
+    type task
+    lane SectorManager
+    flow sectorProfitabilityExamination
+  }
+
+  activity sectorProfitabilityExamination {
+    name "Profitability examination"
+    type task
+    lane SectorManager
+    flow sectorApprovalDecision
+  }
+
+  gateway sectorApprovalDecision {
+    lane SectorManager
+    type xor
+    flow amountThresholdDecision when {[
+      self.sectorManagerApproved
+      and self.profitabilityAtLeast5Percent
+    ]}
+    flow pendingBusinessVPApproval when {[
+      self.sectorManagerApproved
+      and not self.profitabilityAtLeast5Percent
+    ]}
+    flow updateDealProfitability default
+  }
+
+  activity pendingBusinessVPApproval {
+    name "Pending approval"
+    type task
+    lane BusinessVP
+    flow businessVPProfitabilityExamination
+  }
+
+  activity businessVPProfitabilityExamination {
+    name "Profitability examination"
+    type task
+    lane BusinessVP
+    flow businessVPApprovalDecision
+  }
+
+  gateway businessVPApprovalDecision {
+    lane BusinessVP
+    type xor
+    flow amountThresholdDecision when {[
+      self.businessVPApproved
+    ]}
+    flow updateDealProfitability default
+  }
+
+  // ======================================================================
+  // Approvals: deal amount, financial control, and credit control
+  // ======================================================================
+
+  gateway amountThresholdDecision {
+    lane CustomerManager
+    type xor
+    flow pendingFinancialControlApproval when {[
+      self.dealAmountOver250000NIS
+    ]}
+    flow financialApprovalMerge default
+  }
+
+  activity pendingFinancialControlApproval {
+    name "Pending approval"
+    type task
+    lane FinancialControl
+    flow dealFinancialExamination
+  }
+
+  activity dealFinancialExamination {
+    name "Deal financial examination"
+    type task
+    lane FinancialControl
+    flow financialControlDecision
+  }
+
+  gateway financialControlDecision {
+    lane FinancialControl
+    type xor
+    flow financialApprovalMerge when {[
+      self.financialControlApproved
+    ]}
+    flow updateDealProfitability default
+  }
+
+  gateway financialApprovalMerge {
+    lane CustomerManager
+    type xor
+    flow creditReviewDecision
+  }
+
+  gateway creditReviewDecision {
+    lane CustomerManager
+    type xor
+    flow pendingCreditControlApproval when {[
+      self.creditReviewRequired
+    ]}
+    flow dealApproved default
+  }
+
+  activity pendingCreditControlApproval {
+    name "Pending approval"
+    type task
+    lane CreditControl
+    flow dealCreditExamination
+  }
+
+  activity dealCreditExamination {
+    name "Deal credit examination"
+    type task
+    lane CreditControl
+    flow creditControlDecision
+  }
+
+  gateway creditControlDecision {
+    lane CreditControl
+    type xor
+    flow dealApproved when {[
+      self.creditControlApproved
+    ]}
+    flow dealRejected default
+  }
+
+  end dealRejected {
+    lane CreditControl
+    trigger terminate
+  }
+
+  // ======================================================================
+  // Approved deal completion
+  // ======================================================================
+
+  activity dealApproved {
+    name "Deal approved"
+    type task
+    lane CustomerManager
+    flow completeKitComponents
+  }
+
+  activity completeKitComponents {
+    name "Completion of kit components"
+    type task
+    lane CustomerManager
+    flow transferToOrderOperator
+  }
+
+  activity transferToOrderOperator {
+    name "Transferring to order operator"
+    type task
+    lane CustomerManager
+    flow createPurchaseOrderInCRM
+  }
+
+  activity createPurchaseOrderInCRM {
+    name "Creating PO in CRM System"
+    type call-activity
+    lane CustomerManager
+    flow salesForecastCompleted
+  }
+
+  end salesForecastCompleted {
+    lane CustomerManager
+    trigger message
+  }
+}

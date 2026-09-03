@@ -1,0 +1,16 @@
+acl-bpmn-boundary v1.0 ProposalReviewBound {
+  // The longer branch executes Update proposal and therefore needs one more
+  // state than the accepted-without-changes branch.
+  snapshots 14;
+  loop-bound 1;
+  integer -1..2;
+
+  objects ProposalReviewCase 1;
+  objects ProposalManager 1;
+  objects Customer 1;
+  objects Proposal 1;
+
+  links ProposalReviewCase_contains_ProposalManager 1;
+  links ProposalReviewCase_contains_Customer 1;
+  links ProposalReviewCase_contains_Proposal 1;
+}

@@ -1,0 +1,52 @@
+-- BPMN sequence-flow constraints generated from ClassroomProcess.bpmn2
+-- TOCL-compatible profile: each invariant is hosted by the target lane Role.
+
+-- Required occurrence of process Start event classroomReady
+context Teacher
+inv BPMN_TeachingSession_start_classroomReady_occurs:
+  sometime isCalled(classroomReady())
+
+-- Incoming sequence flow(s) of beginLesson
+context Teacher
+inv BPMN_TeachingSession_before_beginLesson:
+  always (
+    isCalled(beginLesson())
+    implies
+    (
+      sometimePast (isCalled(classroomReady()))
+    )
+  )
+
+-- Incoming sequence flow(s) of recordAttendanceElectronically
+context Teacher
+inv BPMN_TeachingSession_before_recordAttendanceElectronically:
+  always (
+    isCalled(recordAttendanceElectronically())
+    implies
+    (
+      sometimePast (isCalled(beginLesson()))
+    )
+  )
+
+-- Incoming sequence flow(s) of deliverLesson
+context Teacher
+inv BPMN_TeachingSession_before_deliverLesson:
+  always (
+    isCalled(deliverLesson())
+    implies
+    (
+      sometimePast (isCalled(recordAttendanceElectronically()))
+    )
+  )
+
+-- Incoming sequence flow(s) of attendLesson
+context Student
+inv BPMN_TeachingSession_before_attendLesson:
+  always (
+    isCalled(attendLesson())
+    implies
+    (
+      sometimePast (isCalled(Teacher.allInstances()->select(teacherCandidate : Teacher | teacherCandidate.classroom.id = self.classroom.id)->select(teacherCandidate : Teacher | teacherCandidate = teacherCandidate)->any(true).deliverLesson()))
+    )
+  )
+

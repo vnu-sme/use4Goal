@@ -1,0 +1,24 @@
+# Conformance mapping file — security_compliance
+# Format implemented by org.vnu.sme.goal.conformance.mapping.ConformanceMappingParser
+# (see doc/paper/conformance-istar-bpmn2.md, §4.1). Transcribed from
+# example/Data/security/map_bpmn.csv (columns: Task, IE) — maps each BPMN task label to the
+# i* task with the same or near-same wording.
+#   actor <istarActorName> -> pool <poolId> [lane <laneId>]
+#   map   <istarElementId (leaf Goal|Task)> -> node <bpmnNodeId>
+
+actor SecurityTeam -> pool SecurityComplianceProcess
+
+map UpdateEncryptionStandards -> node updateEncryptionStandards
+map ReviseAccessControls      -> node reviseAccessControls
+map DeployOneTrust             -> node deployOneTrust
+map DeployDataGrail            -> node deployDataGrail
+map PerformPenetrationTests    -> node performPenetrationTest
+map FlagSuspiciousActivity     -> node flagSuspiciousActivity
+# Wording differs on purpose between the two models (source dataset artifact, not a typo):
+# i* calls it "Apply Vulnerability Patch", BPMN calls the same step "Apply Vulnerability Test".
+map ApplyVulnerabilityPatch    -> node applyVulnerabilityTest
+
+# Not mapped (silent BPMN routing steps, map(n) = epsilon):
+#   start1, gw_split, gw_join, gw_choice, gw_merge, end1
+# Not mapped (i* elements satisfied only via AND/OR propagation, never directly):
+#   ImplementPasswordPolicy, DeployMonitoringTools, DataProtected, DataBreachDetected

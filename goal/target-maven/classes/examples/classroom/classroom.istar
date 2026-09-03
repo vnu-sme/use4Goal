@@ -1,0 +1,100 @@
+// iStar model for ClassroomGoals, exercising goal, task, AND-refinement,
+// OR-refinement, dependency, quality (softgoal contribution), and resource
+// (needed-by) in one compact model.
+//
+// Intended structural mapping:
+//   goal condition       -> one Boolean condition() query
+//   task contracts       -> Boolean preHolds()/postHolds() queries
+//   AND refinement      -> conjunction
+//   OR refinement       -> disjunction
+// Quantification is deliberately not part of the iStar refinement language in
+// this example. A goal belongs to the class corresponding to its actor; the
+// generated `context Student` constraint consequently applies to every Student
+// object without a quantified iStar refinement.
+
+istar ClassroomGoals {
+
+  role Teacher {
+    // Root goal. Its two children form an AND-refinement:
+    // a class is completed only when its attendance summary has been recorded
+    // and the lesson has been delivered.
+    goal ClassCompleted : Achieve
+
+    goal LessonDelivered : Achieve
+      > ClassCompleted
+    condition {[
+      self.group.lessonDelivered
+    ]}
+
+    // Student requirements are not quantified from the Teacher tree. They are
+    // declared on Student below; a generated `context Student` constraint is
+    // evaluated for every Student object automatically.
+    goal AttendanceSummaryRecorded : Achieve
+      > ClassCompleted
+
+    // Softgoal: which attendance-recording task actually ran affects
+    // record-keeping accuracy, in opposite directions.
+    quality RecordKeepingAccuracy
+
+    // Both attendance-recording tasks consume the same paper/electronic
+    // attendance record.
+    resource AttendanceRecord
+      > needed-by RecordAttendanceManually
+      > needed-by RecordAttendanceElectronically
+
+    // Two alternative tasks provide an OR-refinement for recording the
+    // attendance summary, and contribute to the quality above in opposite
+    // directions -- manual bookkeeping is more error-prone than the
+    // electronic path.
+    task RecordAttendanceManually
+      > or AttendanceSummaryRecorded
+      > hurt RecordKeepingAccuracy
+    pre {[
+      self.group.lessonStarted
+      and self.attendanceStarted
+    ]}
+    post {[
+      self.group.attendanceRecorded
+      and self.group.attendanceMethod = #manual
+    ]}
+
+    task RecordAttendanceElectronically
+      > or AttendanceSummaryRecorded
+      > make RecordKeepingAccuracy
+    pre {[
+      self.group.lessonStarted
+      and self.attendanceStarted
+    ]}
+    post {[
+      self.group.attendanceRecorded
+      and self.group.attendanceMethod = #electronic
+    ]}
+  }
+
+  role Student {
+    // A separate per-student tree shows that the generated attributes belong
+    // to each Student object rather than to the Student classifier globally.
+    goal ParticipatesInClass : Achieve
+
+    goal AttendanceMarked : Achieve
+      > ParticipatesInClass
+    condition {[
+      self.attendanceMarked
+    ]}
+
+    goal PresentForLesson : Achieve
+      > ParticipatesInClass
+    condition {[
+      self.present
+      and self.group.lessonDelivered
+    ]}
+  }
+
+  // Cross-actor dependency: leaf-to-leaf, both ends unrefined goals, neither
+  // a refinement parent. Student's PresentForLesson depends on the Teacher's
+  // LessonDelivered -- a student cannot be present for a lesson the teacher
+  // has not delivered yet.
+  depend Student.PresentForLesson
+    -> goal LessonProvided
+    -> Teacher.LessonDelivered
+}

@@ -1,0 +1,14 @@
+// Expected result: NON_CONFORMANT when the two incoming flows at prepJoin are
+// passed: neither source Post_B explains an early-delivery state without
+// slidesReady or rosterChecked.
+acl-state-scenario v1.0 ClassroomOutOfOrder {
+  acl "classroom.acl";
+  bpmn "classroom.bpmn2";
+  state "classroom_state_01_initial.aol";
+  state "classroom_state_01_initial.aol";
+  state "classroom_state_01_initial.aol";
+  state "classroom_trace_state_01_started.aol";
+  state "classroom_error_state_early_delivery.aol";
+  state "classroom_error_state_early_delivery.aol";
+  state "classroom_error_state_early_delivery.aol";
+}

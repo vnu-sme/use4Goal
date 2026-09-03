@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="maven-antrun-" default="main">
+  <target name="main">
+    <delete file="../use/use-assembly/target/use-7.1.1/lib/plugins/goal-7.1.1.jar" quiet="true" />
+    <copy file="/run/media/qbert/1C8099B8809998BA/code/Lab/USE_spaces/use-goal-BPMN/goal/target-maven/goal-7.1.1-complete.jar" tofile="../use/use-assembly/target/use-7.1.1/lib/plugins/goal-7.1.1-complete.jar" overwrite="true" />
+  </target>
+</project>

@@ -1,0 +1,93 @@
+// Full OJS snapshot. Alice is the same persistent Agent and plays Author in
+// both Submission instances: submissionA and submissionB.
+
+aol v1.0 OJSTwoSubmissions for "ojs.acl" {
+  agent alice, adminLan, editorMai, editHoa, reviewerAn, reviewerBinh, memberNam;
+
+  group OJS as systemOjs {
+    group GroupUser as registeredUsers {
+      play Main as mainMember by memberNam;
+      play Member as aliceMembership by alice;
+    }
+
+    group Journal as journalAcl {
+      play Admin as journalAdmin by adminLan;
+
+      entity Issue as issue2026 {
+        volume = 12;
+      }
+
+      group Section as softwareModeling {
+        play SectionEditor as sectionEditor by editorMai {
+          sectionEditorID = 501;
+        }
+
+        group Submission as submissionA {
+          play Author as authorA by alice;
+          play Edit as editA by editHoa {
+            editorID = 501;
+            dateNotified = "2026-07-01";
+          }
+          play Review as reviewA by reviewerAn {
+            reviewID = 1001;
+            dateAssigned = "2026-07-02";
+            dateDue = "2026-07-20";
+            recommendation = minorRevision;
+          }
+
+          entity SubmissionRecord as paperA {
+            submissionID = 101;
+            title = "Constraint-aware ACL Modeling";
+            summary = "A metamodel-driven organizational language";
+          }
+          entity ReviewRound as paperARound1 {
+            roundNumber = 1;
+            editorDecision = revisionsRequired;
+          }
+          entity ArticleFile as paperAFile {
+            fileID = 10001;
+            fileName = "acl-modeling.pdf";
+            filePath = "/ojs/101/acl-modeling.pdf";
+            fileType = "application/pdf";
+          }
+        }
+
+        group Submission as submissionB {
+          // The same Agent `alice` is the author of the second submission.
+          play Author as authorB by alice;
+          play Edit as editB by editHoa {
+            editorID = 501;
+            dateNotified = "2026-07-10";
+          }
+          play Review as reviewB by reviewerBinh {
+            reviewID = 1002;
+            dateAssigned = "2026-07-11";
+            dateDue = "2026-07-28";
+            recommendation = accept;
+          }
+
+          entity SubmissionRecord as paperB {
+            submissionID = 102;
+            title = "Visualizing Runtime ACL States";
+            summary = "AOL snapshots for ACL systems";
+          }
+          entity ReviewRound as paperBRound1 {
+            roundNumber = 1;
+            editorDecision = accept;
+          }
+          entity ArticleFile as paperBFile {
+            fileID = 10002;
+            fileName = "aol-snapshots.pdf";
+            filePath = "/ojs/102/aol-snapshots.pdf";
+            fileType = "application/pdf";
+          }
+          entity PublishedArticle as publishedPaperB {
+            publishedID = 9001;
+            DOI = "10.0000/ojs.acl.102";
+            pageNumbers = "1-18";
+          }
+        }
+      }
+    }
+  }
+}

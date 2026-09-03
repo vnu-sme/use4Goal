@@ -1,0 +1,91 @@
+acl v2.0 IncidentResponseShadow {
+  enum Severity {low, medium, high, critical}
+
+  entity Service {
+    restored : Boolean;
+  }
+
+  entity EvidencePacket {
+    complete : Boolean;
+  }
+
+  entity ChangeRequest {
+    deployed : Boolean;
+  }
+
+  entity AuditTrail {
+    signed : Boolean;
+  }
+
+  role ResponseParty {
+    name : String;
+  }
+
+  role Analyst specializes ResponseParty {
+    reportReady : Boolean;
+  }
+
+  role Technician specializes ResponseParty {
+    fixApplied : Boolean;
+  }
+
+  role Auditor specializes ResponseParty {
+    auditApproved : Boolean;
+  }
+
+  role Coordinator specializes ResponseParty {
+    triaged : Boolean;
+  }
+
+  association AnalystProducesEvidence {
+    Analyst        [*] analysts;
+    EvidencePacket [*] evidence;
+  }
+
+  association TechnicianDeploysChange {
+    Technician    [*] technicians;
+    ChangeRequest [*] changes;
+  }
+
+  association AuditorSignsTrail {
+    Auditor    [*] auditors;
+    AuditTrail [*] auditTrails;
+  }
+
+  association ChangeRestoresService {
+    ChangeRequest [*] changeRequests;
+    Service       [1] affectedService;
+  }
+
+  group IncidentCase {
+    reported : Boolean;
+    severity : Severity;
+    closed   : Boolean;
+
+    Coordinator    [1..1];
+    Analyst        [1..*];
+    Technician     [1..*];
+    Auditor        [0..1];
+    Analyst compatible Auditor;
+  }
+
+  composition incidentServices {
+    IncidentCase [1] role incident;
+    Service [1..*] role services;
+  }
+
+  composition incidentEvidence {
+    IncidentCase [1] role incident;
+    EvidencePacket [0..*] role evidence;
+  }
+
+  composition incidentChanges {
+    IncidentCase [1] role incident;
+    ChangeRequest [0..*] role changes;
+  }
+
+  composition incidentAuditTrails {
+    IncidentCase [1] role incident;
+    AuditTrail [0..*] role auditTrails;
+  }
+}

@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_SalesForecastReadable" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:collaboration id="Collaboration_SalesForecast">
+    <bpmn:participant id="Participant_Official" name="PRESCRIBED PROCESS" processRef="Process_Official"/>
+    <bpmn:participant id="Participant_Workaround" name="OBSERVED WORKAROUND (not an official branch)" processRef="Process_Workaround"/>
+    <bpmn:participant id="Participant_Customer" name="Customer"/>
+    <bpmn:messageFlow id="Message_OfficialToCustomer" name="Approved proposal" sourceRef="SendApprovedProposal" targetRef="Participant_Customer"/>
+    <bpmn:messageFlow id="Message_WorkaroundToCustomer" name="Unapproved proposal" sourceRef="SendUnapprovedProposal" targetRef="Participant_Customer"/>
+  </bpmn:collaboration>
+  <bpmn:process id="Process_Official" name="Prescribed Sales Forecast process" isExecutable="false">
+    <bpmn:documentation>The official process prepares technical and service information, obtains commercial, financial and credit approval when required, sends the approved proposal, and creates an order.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_Official">
+      <bpmn:lane id="Lane_CustomerManager" name="Customer Manager">
+        <bpmn:flowNodeRef>OfficialStart</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>RecordCustomerDeal</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SubmitApproval</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>AllApprovalsGranted</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>RejectedEnd</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SendApprovedProposal</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_PresaleEngineer" name="Presale Engineer">
+        <bpmn:flowNodeRef>PrepareTechnicalPackage</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_ServiceAgreements" name="Service Agreements">
+        <bpmn:flowNodeRef>ValidateServiceTerms</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_CommercialApprover" name="Commercial Approver">
+        <bpmn:flowNodeRef>ObtainCommercialApproval</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_FinancialControl" name="Financial Control">
+        <bpmn:flowNodeRef>ObtainFinancialClearance</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_CreditControl" name="Credit Control">
+        <bpmn:flowNodeRef>ObtainCreditClearance</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_OrderOperations" name="Order Operations">
+        <bpmn:flowNodeRef>CompleteKit</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CreateOrder</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>OfficialEnd</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="OfficialStart" name="Price proposal requested">
+      <bpmn:outgoing>F01</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="RecordCustomerDeal" name="Record customer and deal">
+      <bpmn:documentation>Resulting state: self.customerDealRecorded and self.expectedSalesInformationRecorded.</bpmn:documentation>
+      <bpmn:incoming>F01</bpmn:incoming>
+      <bpmn:outgoing>F02</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:subProcess id="PrepareTechnicalPackage" name="Prepare required technical package">
+      <bpmn:documentation>Presale determines whether BoM and HLD are required and prepares the applicable documents. When required, the resulting state satisfies self.technicalPackagePrepared.</bpmn:documentation>
+      <bpmn:incoming>F02</bpmn:incoming>
+      <bpmn:outgoing>F03</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:subProcess id="ValidateServiceTerms" name="Validate service terms">
+      <bpmn:documentation>Service Agreements checks the service fee and coordinates corrections. When a review is required, the resulting state satisfies self.serviceTermsValidated.</bpmn:documentation>
+      <bpmn:incoming>F03</bpmn:incoming>
+      <bpmn:outgoing>F04</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:sendTask id="SubmitApproval" name="Submit proposal for approval">
+      <bpmn:documentation>Resulting state: self.proposalPrepared and self.approvalRequested and self.approvalStatus = #requested.</bpmn:documentation>
+      <bpmn:incoming>F04</bpmn:incoming>
+      <bpmn:outgoing>F05</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:subProcess id="ObtainCommercialApproval" name="Obtain commercial approval">
+      <bpmn:documentation>The approver assesses profitability and may approve, reject, or request revision. The returned state records self.profitabilityAssessmentCompleted and the final approvalStatus.</bpmn:documentation>
+      <bpmn:incoming>F05</bpmn:incoming>
+      <bpmn:outgoing>F06</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:subProcess id="ObtainFinancialClearance" name="Obtain financial clearance if required">
+      <bpmn:documentation>Financial Control determines whether the deal-value threshold applies and performs the corresponding review when necessary.</bpmn:documentation>
+      <bpmn:incoming>F06</bpmn:incoming>
+      <bpmn:outgoing>F07</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:subProcess id="ObtainCreditClearance" name="Obtain credit clearance if required">
+      <bpmn:documentation>Credit Control determines whether a credit review is required and returns the applicable clearance result.</bpmn:documentation>
+      <bpmn:incoming>F07</bpmn:incoming>
+      <bpmn:outgoing>F08</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:exclusiveGateway id="AllApprovalsGranted" name="All required approvals granted?" default="F10">
+      <bpmn:incoming>F08</bpmn:incoming>
+      <bpmn:outgoing>F09</bpmn:outgoing>
+      <bpmn:outgoing>F10</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="RejectedEnd" name="Proposal rejected">
+      <bpmn:incoming>F10</bpmn:incoming>
+      <bpmn:terminateEventDefinition id="Terminate_RejectedEnd"/>
+    </bpmn:endEvent>
+    <bpmn:sendTask id="SendApprovedProposal" name="Send approved price proposal">
+      <bpmn:documentation>Pre-state requires the current revision to be approved. Resulting state: self.proposalSent and self.sentRevision = self.currentRevision.</bpmn:documentation>
+      <bpmn:incoming>F09</bpmn:incoming>
+      <bpmn:outgoing>F11</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:task id="CompleteKit" name="Complete kit components">
+      <bpmn:incoming>F11</bpmn:incoming>
+      <bpmn:outgoing>F12</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="CreateOrder" name="Create purchase order">
+      <bpmn:documentation>Resulting state: self.processCompleted.</bpmn:documentation>
+      <bpmn:incoming>F12</bpmn:incoming>
+      <bpmn:outgoing>F13</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="OfficialEnd" name="Order created">
+      <bpmn:incoming>F13</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="F01" sourceRef="OfficialStart" targetRef="RecordCustomerDeal"/>
+    <bpmn:sequenceFlow id="F02" sourceRef="RecordCustomerDeal" targetRef="PrepareTechnicalPackage"/>
+    <bpmn:sequenceFlow id="F03" sourceRef="PrepareTechnicalPackage" targetRef="ValidateServiceTerms"/>
+    <bpmn:sequenceFlow id="F04" sourceRef="ValidateServiceTerms" targetRef="SubmitApproval"/>
+    <bpmn:sequenceFlow id="F05" sourceRef="SubmitApproval" targetRef="ObtainCommercialApproval"/>
+    <bpmn:sequenceFlow id="F06" sourceRef="ObtainCommercialApproval" targetRef="ObtainFinancialClearance"/>
+    <bpmn:sequenceFlow id="F07" sourceRef="ObtainFinancialClearance" targetRef="ObtainCreditClearance"/>
+    <bpmn:sequenceFlow id="F08" sourceRef="ObtainCreditClearance" targetRef="AllApprovalsGranted"/>
+    <bpmn:sequenceFlow id="F09" sourceRef="AllApprovalsGranted" targetRef="SendApprovedProposal" name="Yes">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression"><![CDATA[${self.approvalStatus = #approved and self.approvedRevision = self.currentRevision and (not self.dealAmountOver250000NIS or self.financialControlApproved) and (not self.creditReviewRequired or self.creditControlApproved)}]]></bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="F10" sourceRef="AllApprovalsGranted" targetRef="RejectedEnd" name="No"/>
+    <bpmn:sequenceFlow id="F11" sourceRef="SendApprovedProposal" targetRef="CompleteKit"/>
+    <bpmn:sequenceFlow id="F12" sourceRef="CompleteKit" targetRef="CreateOrder"/>
+    <bpmn:sequenceFlow id="F13" sourceRef="CreateOrder" targetRef="OfficialEnd"/>
+    <bpmn:textAnnotation id="Note_CustomerManager">
+      <bpmn:text>Customer Manager activities:
+• Record customer and deal
+• Submit proposal for approval
+• Check the final approval outcome
+• Send the approved price proposal</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="Note_PresaleEngineer">
+      <bpmn:text>Presale Engineer activity:
+• Prepare the required technical package (BoM/HLD)</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="Note_ServiceAgreements">
+      <bpmn:text>Service Agreements activity:
+• Validate service terms and coordinate corrections</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="Note_CommercialApprover">
+      <bpmn:text>Commercial Approver activity:
+• Assess profitability and return a commercial decision</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="Note_FinancialControl">
+      <bpmn:text>Financial Control activity:
+• Provide financial clearance when the deal requires it</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="Note_CreditControl">
+      <bpmn:text>Credit Control activity:
+• Provide credit clearance when the customer requires it</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="Note_OrderOperations">
+      <bpmn:text>Order Operations activities:
+• Complete kit components
+• Create the purchase order</bpmn:text>
+    </bpmn:textAnnotation>
+  </bpmn:process>
+  <bpmn:process id="Process_Workaround" name="Observed direct-send workaround" isExecutable="false">
+    <bpmn:documentation>This is an observed deviation, not an allowed branch of the prescribed process. The Customer Manager prepares a proposal outside the information system and sends it before approval.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_Workaround">
+      <bpmn:lane id="Lane_WorkaroundCustomerManager" name="Customer Manager">
+        <bpmn:flowNodeRef>WorkaroundStart</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>PrepareOutsideIS</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SendUnapprovedProposal</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>WorkaroundEnd</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="WorkaroundStart" name="Urgent customer request">
+      <bpmn:outgoing>W01</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="PrepareOutsideIS" name="Prepare proposal outside IS">
+      <bpmn:incoming>W01</bpmn:incoming>
+      <bpmn:outgoing>W02</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sendTask id="SendUnapprovedProposal" name="Send proposal before approval">
+      <bpmn:incoming>W02</bpmn:incoming>
+      <bpmn:outgoing>W03</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:endEvent id="WorkaroundEnd" name="Proposal sent">
+      <bpmn:incoming>W03</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="W01" sourceRef="WorkaroundStart" targetRef="PrepareOutsideIS"/>
+    <bpmn:sequenceFlow id="W02" sourceRef="PrepareOutsideIS" targetRef="SendUnapprovedProposal"/>
+    <bpmn:sequenceFlow id="W03" sourceRef="SendUnapprovedProposal" targetRef="WorkaroundEnd"/>
+    <bpmn:textAnnotation id="Note_WorkaroundCustomerManager">
+      <bpmn:text>Customer Manager activities:
+• Prepare a proposal outside the official IS
+• Send it directly to the customer</bpmn:text>
+    </bpmn:textAnnotation>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_SalesForecastReadable">
+    <bpmndi:BPMNPlane id="BPMNPlane_SalesForecastReadable" bpmnElement="Collaboration_SalesForecast">
+      <bpmndi:BPMNShape id="Participant_Official_di" bpmnElement="Participant_Official" isHorizontal="true"><dc:Bounds x="40" y="60" width="2850" height="980"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_CustomerManager_di" bpmnElement="Lane_CustomerManager" isHorizontal="true"><dc:Bounds x="70" y="60" width="2820" height="140"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_PresaleEngineer_di" bpmnElement="Lane_PresaleEngineer" isHorizontal="true"><dc:Bounds x="70" y="200" width="2820" height="140"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_ServiceAgreements_di" bpmnElement="Lane_ServiceAgreements" isHorizontal="true"><dc:Bounds x="70" y="340" width="2820" height="140"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_CommercialApprover_di" bpmnElement="Lane_CommercialApprover" isHorizontal="true"><dc:Bounds x="70" y="480" width="2820" height="140"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_FinancialControl_di" bpmnElement="Lane_FinancialControl" isHorizontal="true"><dc:Bounds x="70" y="620" width="2820" height="140"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_CreditControl_di" bpmnElement="Lane_CreditControl" isHorizontal="true"><dc:Bounds x="70" y="760" width="2820" height="140"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_OrderOperations_di" bpmnElement="Lane_OrderOperations" isHorizontal="true"><dc:Bounds x="70" y="900" width="2820" height="140"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_CustomerManager_di" bpmnElement="Note_CustomerManager"><dc:Bounds x="100" y="72" width="335" height="108"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_PresaleEngineer_di" bpmnElement="Note_PresaleEngineer"><dc:Bounds x="100" y="212" width="335" height="108"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_ServiceAgreements_di" bpmnElement="Note_ServiceAgreements"><dc:Bounds x="100" y="352" width="335" height="108"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_CommercialApprover_di" bpmnElement="Note_CommercialApprover"><dc:Bounds x="100" y="492" width="335" height="108"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_FinancialControl_di" bpmnElement="Note_FinancialControl"><dc:Bounds x="100" y="632" width="335" height="108"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_CreditControl_di" bpmnElement="Note_CreditControl"><dc:Bounds x="100" y="772" width="335" height="108"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_OrderOperations_di" bpmnElement="Note_OrderOperations"><dc:Bounds x="100" y="912" width="335" height="108"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OfficialStart_di" bpmnElement="OfficialStart"><dc:Bounds x="500" y="112" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="RecordCustomerDeal_di" bpmnElement="RecordCustomerDeal"><dc:Bounds x="575" y="95" width="125" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PrepareTechnicalPackage_di" bpmnElement="PrepareTechnicalPackage" isExpanded="false"><dc:Bounds x="775" y="235" width="125" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ValidateServiceTerms_di" bpmnElement="ValidateServiceTerms" isExpanded="false"><dc:Bounds x="975" y="375" width="125" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SubmitApproval_di" bpmnElement="SubmitApproval"><dc:Bounds x="1175" y="95" width="125" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ObtainCommercialApproval_di" bpmnElement="ObtainCommercialApproval" isExpanded="false"><dc:Bounds x="1375" y="515" width="125" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ObtainFinancialClearance_di" bpmnElement="ObtainFinancialClearance" isExpanded="false"><dc:Bounds x="1575" y="655" width="125" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ObtainCreditClearance_di" bpmnElement="ObtainCreditClearance" isExpanded="false"><dc:Bounds x="1775" y="795" width="125" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="AllApprovalsGranted_di" bpmnElement="AllApprovalsGranted"><dc:Bounds x="1980" y="105" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="RejectedEnd_di" bpmnElement="RejectedEnd"><dc:Bounds x="2085" y="68" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SendApprovedProposal_di" bpmnElement="SendApprovedProposal"><dc:Bounds x="2180" y="95" width="125" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="CompleteKit_di" bpmnElement="CompleteKit"><dc:Bounds x="2380" y="935" width="125" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="CreateOrder_di" bpmnElement="CreateOrder"><dc:Bounds x="2560" y="935" width="125" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="OfficialEnd_di" bpmnElement="OfficialEnd"><dc:Bounds x="2740" y="952" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Participant_Workaround_di" bpmnElement="Participant_Workaround" isHorizontal="true"><dc:Bounds x="40" y="1100" width="1100" height="180"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_WorkaroundCustomerManager_di" bpmnElement="Lane_WorkaroundCustomerManager" isHorizontal="true"><dc:Bounds x="70" y="1100" width="1070" height="180"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_WorkaroundCustomerManager_di" bpmnElement="Note_WorkaroundCustomerManager"><dc:Bounds x="100" y="1128" width="335" height="105"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="WorkaroundStart_di" bpmnElement="WorkaroundStart"><dc:Bounds x="500" y="1170" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PrepareOutsideIS_di" bpmnElement="PrepareOutsideIS"><dc:Bounds x="590" y="1153" width="125" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SendUnapprovedProposal_di" bpmnElement="SendUnapprovedProposal"><dc:Bounds x="790" y="1153" width="125" height="70"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="WorkaroundEnd_di" bpmnElement="WorkaroundEnd"><dc:Bounds x="990" y="1170" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Participant_Customer_di" bpmnElement="Participant_Customer" isHorizontal="true"><dc:Bounds x="1200" y="1100" width="650" height="180"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="F01_di" bpmnElement="F01">
+        <di:waypoint x="536" y="130"/>
+        <di:waypoint x="575" y="130"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F02_di" bpmnElement="F02">
+        <di:waypoint x="637.5" y="165"/>
+        <di:waypoint x="637.5" y="200"/>
+        <di:waypoint x="837.5" y="200"/>
+        <di:waypoint x="837.5" y="235"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F03_di" bpmnElement="F03">
+        <di:waypoint x="837.5" y="305"/>
+        <di:waypoint x="837.5" y="340"/>
+        <di:waypoint x="1037.5" y="340"/>
+        <di:waypoint x="1037.5" y="375"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F04_di" bpmnElement="F04">
+        <di:waypoint x="1037.5" y="445"/>
+        <di:waypoint x="1037.5" y="270"/>
+        <di:waypoint x="1237.5" y="270"/>
+        <di:waypoint x="1237.5" y="95"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F05_di" bpmnElement="F05">
+        <di:waypoint x="1237.5" y="165"/>
+        <di:waypoint x="1237.5" y="340"/>
+        <di:waypoint x="1437.5" y="340"/>
+        <di:waypoint x="1437.5" y="515"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F06_di" bpmnElement="F06">
+        <di:waypoint x="1437.5" y="585"/>
+        <di:waypoint x="1437.5" y="620"/>
+        <di:waypoint x="1637.5" y="620"/>
+        <di:waypoint x="1637.5" y="655"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F07_di" bpmnElement="F07">
+        <di:waypoint x="1637.5" y="725"/>
+        <di:waypoint x="1637.5" y="760"/>
+        <di:waypoint x="1837.5" y="760"/>
+        <di:waypoint x="1837.5" y="795"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F08_di" bpmnElement="F08">
+        <di:waypoint x="1837.5" y="865"/>
+        <di:waypoint x="1837.5" y="480"/>
+        <di:waypoint x="2005" y="480"/>
+        <di:waypoint x="2005" y="105"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F09_di" bpmnElement="F09">
+        <di:waypoint x="2030" y="130"/>
+        <di:waypoint x="2180" y="130"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F10_di" bpmnElement="F10">
+        <di:waypoint x="2005" y="155"/>
+        <di:waypoint x="2005" y="108"/>
+        <di:waypoint x="2103" y="108"/>
+        <di:waypoint x="2103" y="68"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F11_di" bpmnElement="F11">
+        <di:waypoint x="2242.5" y="165"/>
+        <di:waypoint x="2242.5" y="550"/>
+        <di:waypoint x="2442.5" y="550"/>
+        <di:waypoint x="2442.5" y="935"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F12_di" bpmnElement="F12">
+        <di:waypoint x="2505" y="970"/>
+        <di:waypoint x="2560" y="970"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F13_di" bpmnElement="F13">
+        <di:waypoint x="2685" y="970"/>
+        <di:waypoint x="2740" y="970"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="W01_di" bpmnElement="W01">
+        <di:waypoint x="536" y="1188"/>
+        <di:waypoint x="590" y="1188"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="W02_di" bpmnElement="W02">
+        <di:waypoint x="715" y="1188"/>
+        <di:waypoint x="790" y="1188"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="W03_di" bpmnElement="W03">
+        <di:waypoint x="915" y="1188"/>
+        <di:waypoint x="990" y="1188"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Message_OfficialToCustomer_di" bpmnElement="Message_OfficialToCustomer"><di:waypoint x="2243" y="165"/><di:waypoint x="2243" y="1070"/><di:waypoint x="1525" y="1070"/><di:waypoint x="1525" y="1100"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Message_WorkaroundToCustomer_di" bpmnElement="Message_WorkaroundToCustomer"><di:waypoint x="915" y="1188"/><di:waypoint x="1200" y="1188"/></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

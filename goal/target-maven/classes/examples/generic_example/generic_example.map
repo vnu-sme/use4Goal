@@ -1,0 +1,28 @@
+# Conformance mapping file — generic_example
+# Format implemented by org.vnu.sme.goal.conformance.mapping.ConformanceMappingParser
+# (see doc/paper/conformance-istar-bpmn2.md, §4.1). Transcribed directly from the source
+# example/Data/bpmn/map.csv (columns: Event, Intentional Element), which maps every eN task
+# 1:1 to a TN goal-model element.
+#   actor <istarActorName> -> pool <poolId> [lane <laneId>]
+#   map   <istarElementId (leaf Goal|Task)> -> node <bpmnNodeId>
+
+actor MainActor -> pool GenericProcess
+
+map T2 -> node e2
+map T3 -> node e3
+map T4 -> node e4
+map T5 -> node e5
+map T6 -> node e6
+map T7 -> node e7
+map T8 -> node e8
+map T1 -> node e1
+
+# NOTE — deliberately kept as-is from the source dataset, do not "fix":
+#   T1 is NOT a leaf in the i* model (and-refine T1 : T6, T7), yet the source map.csv still
+#   maps it directly to e1. Per doc/paper/conformance-istar-bpmn2.md §3.2, mapping a non-leaf
+#   element is syntactically allowed but semantically meaningless (the propagation rules never
+#   assign it a value via P_leaf) — this is intended to exercise
+#   ConformanceMapping.validate()'s "non-leaf mapped" warning once that method is implemented.
+#
+# Not mapped (silent BPMN routing steps, map(n) = epsilon):
+#   start1, gw_split, gw_join, gw_choice, end1, end2

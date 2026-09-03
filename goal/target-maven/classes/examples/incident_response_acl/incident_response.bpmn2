@@ -1,0 +1,40 @@
+model IncidentResponseProcess {
+  pool IncidentCaseProcess {
+    lane Coordinator;
+    lane Analyst;
+    lane Technician;
+    lane Auditor;
+  }
+  start reported { lane Coordinator trigger none flow triage }
+  activity triage {
+    type task lane Coordinator
+    post {[ Coordinator.allInstances()->forAll(r | r.triaged) ]}
+    flow analyze
+  }
+  activity analyze {
+    type task lane Analyst
+    post {[
+      Analyst.allInstances()->forAll(r | r.reportReady)
+      and EvidencePacket.allInstances()->forAll(e | e.complete)
+    ]}
+    flow repair
+  }
+  activity repair {
+    type task lane Technician
+    post {[
+      Technician.allInstances()->forAll(r | r.fixApplied)
+      and ChangeRequest.allInstances()->forAll(c | c.deployed)
+      and Service.allInstances()->forAll(s | s.restored)
+    ]}
+    flow audit
+  }
+  activity audit {
+    type task lane Auditor
+    post {[
+      Auditor.allInstances()->forAll(r | r.auditApproved)
+      and AuditTrail.allInstances()->forAll(a | a.signed)
+    ]}
+    flow closed
+  }
+  end closed { lane Auditor trigger none }
+}

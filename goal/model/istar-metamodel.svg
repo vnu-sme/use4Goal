@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1420" viewBox="0 0 2200 1420">
+  <defs>
+    <style>
+      .bg { fill:#ffffff; }
+      .box { fill:#f8fafc; stroke:#1f2937; stroke-width:2; }
+      .abstract { fill:#eef2ff; }
+      .relation { fill:#f0fdf4; }
+      .enum { fill:#fff7ed; }
+      .head { fill:#e5e7eb; stroke:#1f2937; stroke-width:2; }
+      .head-abstract { fill:#c7d2fe; }
+      .head-relation { fill:#bbf7d0; }
+      .head-enum { fill:#fed7aa; }
+      .title { font:700 24px sans-serif; fill:#111827; text-anchor:middle; }
+      .stereo { font:italic 17px sans-serif; fill:#374151; text-anchor:middle; }
+      .field { font:18px monospace; fill:#111827; }
+      .edge { fill:none; stroke:#374151; stroke-width:2.2; }
+      .contain { fill:none; stroke:#111827; stroke-width:2.5; }
+      .label { font:17px sans-serif; fill:#111827; paint-order:stroke; stroke:#fff; stroke-width:5; stroke-linejoin:round; }
+      .note { font:18px sans-serif; fill:#374151; }
+    </style>
+    <marker id="triangle" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto" markerUnits="strokeWidth">
+      <path d="M 12 1 L 1 7 L 12 13 z" fill="#fff" stroke="#374151" stroke-width="1.5"/>
+    </marker>
+    <marker id="diamond" markerWidth="16" markerHeight="16" refX="2" refY="8" orient="auto" markerUnits="strokeWidth">
+      <path d="M 1 8 L 8 2 L 15 8 L 8 14 z" fill="#111827"/>
+    </marker>
+  </defs>
+  <rect class="bg" width="2200" height="1420"/>
+
+  <!-- containment and reference edges -->
+  <path class="contain" marker-start="url(#diamond)" d="M350 140 L350 185 L225 185 L225 230"/>
+  <text class="label" x="230" y="178">actors 1..*</text>
+  <path class="contain" marker-start="url(#diamond)" d="M430 140 L430 180 L1835 180 L1835 230"/>
+  <text class="label" x="1610" y="171">dependencies 0..*</text>
+  <path class="contain" marker-start="url(#diamond)" d="M510 140 L510 160 L1510 160 L1510 230"/>
+  <text class="label" x="1280" y="151">actorAssociations 0..*</text>
+  <path class="contain" marker-start="url(#diamond)" d="M225 360 L225 410 L650 410 L650 455"/>
+  <text class="label" x="400" y="402">elements 0..*</text>
+  <path class="contain" marker-start="url(#diamond)" d="M285 360 L285 390 L1180 390 L1180 455"/>
+  <text class="label" x="935" y="382">relations 0..*</text>
+  <path class="contain" marker-start="url(#diamond)" d="M470 1030 L470 990 L300 990 L300 970"/>
+  <text class="label" x="305" y="982">activation 0..1</text>
+  <path class="contain" marker-start="url(#diamond)" d="M550 1030 L550 1010 L340 1010 L340 970"/>
+  <text class="label" x="350" y="1003">condition 0..1</text>
+  <path class="contain" marker-start="url(#diamond)" d="M630 1030 L630 985 L390 985 L390 970"/>
+  <text class="label" x="510" y="978">precondition 0..1</text>
+  <path class="contain" marker-start="url(#diamond)" d="M700 1030 L700 965 L430 965"/>
+  <text class="label" x="535" y="958">postcondition 0..1</text>
+
+  <!-- generalizations -->
+  <path class="edge" marker-end="url(#triangle)" d="M100 455 L100 395 L165 395 L165 360"/>
+  <path class="edge" marker-end="url(#triangle)" d="M290 455 L290 395 L225 395 L225 360"/>
+  <path class="edge" marker-end="url(#triangle)" d="M525 650 L525 615 L650 615 L650 575"/>
+  <path class="edge" marker-end="url(#triangle)" d="M740 650 L740 615 L650 615 L650 575"/>
+  <path class="edge" marker-end="url(#triangle)" d="M650 850 L650 815 L740 815 L740 780"/>
+  <path class="edge" marker-end="url(#triangle)" d="M510 1030 L510 995 L650 995 L650 970"/>
+  <path class="edge" marker-end="url(#triangle)" d="M670 1030 L670 970"/>
+  <path class="edge" marker-end="url(#triangle)" d="M830 1030 L830 995 L710 995 L710 970"/>
+  <path class="edge" marker-end="url(#triangle)" d="M1010 650 L1010 615 L1150 615 L1150 555"/>
+  <path class="edge" marker-end="url(#triangle)" d="M1290 650 L1290 615 L1180 615 L1180 555"/>
+  <path class="edge" marker-end="url(#triangle)" d="M1585 650 L1585 600 L1210 600 L1210 555"/>
+  <path class="edge" marker-end="url(#triangle)" d="M1850 650 L1850 585 L1240 585 L1240 555"/>
+  <path class="edge" marker-end="url(#triangle)" d="M1005 850 L1005 815 L1010 815 L1010 760"/>
+  <path class="edge" marker-end="url(#triangle)" d="M1285 850 L1285 800 L1010 800 L1010 760"/>
+  <path class="edge" marker-end="url(#triangle)" d="M1600 850 L1600 785 L1040 785 L1040 760"/>
+  <path class="edge" marker-end="url(#triangle)" d="M1545 1030 L1545 995 L1580 995 L1580 970"/>
+  <path class="edge" marker-end="url(#triangle)" d="M1755 1030 L1755 995 L1620 995 L1620 970"/>
+
+  <!-- GoalModel -->
+  <g transform="translate(250 30)">
+    <rect class="box" width="330" height="110"/><rect class="head" width="330" height="45"/>
+    <text class="title" x="165" y="31">GoalModel</text>
+    <text class="field" x="15" y="78">name : EString [1]</text>
+  </g>
+
+  <!-- Actor hierarchy -->
+  <g transform="translate(60 230)">
+    <rect class="box abstract" width="330" height="130"/><rect class="head head-abstract" width="330" height="65"/>
+    <text class="stereo" x="165" y="23">«abstract»</text><text class="title" x="165" y="52">Actor</text>
+    <text class="field" x="15" y="92">name : EString [1] {id}</text>
+  </g>
+  <g transform="translate(25 455)"><rect class="box" width="150" height="70"/><rect class="head" width="150" height="70"/><text class="title" x="75" y="43">Agent</text></g>
+  <g transform="translate(215 455)"><rect class="box" width="150" height="70"/><rect class="head" width="150" height="70"/><text class="title" x="75" y="43">Role</text></g>
+
+  <!-- Intentional elements -->
+  <g transform="translate(470 455)">
+    <rect class="box abstract" width="360" height="120"/><rect class="head head-abstract" width="360" height="65"/>
+    <text class="stereo" x="180" y="23">«abstract»</text><text class="title" x="180" y="52">IntentionalElement</text>
+    <text class="field" x="15" y="91">id : EString [1] {id}</text><text class="field" x="15" y="113">description : EString [0..1]</text>
+  </g>
+  <g transform="translate(455 650)"><rect class="box" width="140" height="70"/><rect class="head" width="140" height="70"/><text class="title" x="70" y="43">Quality</text></g>
+  <g transform="translate(620 650)">
+    <rect class="box abstract" width="260" height="130"/><rect class="head head-abstract" width="260" height="65"/>
+    <text class="stereo" x="130" y="23">«abstract»</text><text class="title" x="130" y="52">ConcreteIntentional</text>
+    <text class="title" x="130" y="83">Element</text>
+  </g>
+  <g transform="translate(530 850)">
+    <rect class="box abstract" width="240" height="120"/><rect class="head head-abstract" width="240" height="65"/>
+    <text class="stereo" x="120" y="23">«abstract»</text><text class="title" x="120" y="52">GoalTaskElement</text>
+  </g>
+  <g transform="translate(430 1030)"><rect class="box" width="180" height="140"/><rect class="head" width="180" height="45"/><text class="title" x="90" y="31">Goal</text><text class="field" x="10" y="72">goalType : GoalType</text><text class="field" x="10" y="99">activation [0..1]</text><text class="field" x="10" y="126">condition [0..1]</text></g>
+  <g transform="translate(630 1030)"><rect class="box" width="180" height="115"/><rect class="head" width="180" height="45"/><text class="title" x="90" y="31">Task</text><text class="field" x="10" y="75">precondition [0..1]</text><text class="field" x="10" y="102">postcondition [0..1]</text></g>
+  <g transform="translate(760 1030)"><rect class="box" width="140" height="70"/><rect class="head" width="140" height="70"/><text class="title" x="70" y="43">Resource</text></g>
+  <g transform="translate(150 850)">
+    <rect class="box" width="300" height="90"/><rect class="head" width="300" height="45"/><text class="title" x="150" y="31">IStarOclConstraint</text>
+    <text class="field" x="15" y="75">oclBody : EString [1]</text>
+  </g>
+
+  <!-- relations -->
+  <g transform="translate(1000 455)">
+    <rect class="box abstract relation" width="360" height="100"/><rect class="head head-relation" width="360" height="65"/>
+    <text class="stereo" x="180" y="23">«abstract»</text><text class="title" x="180" y="52">IntentionalRelation</text>
+    <text class="field" x="15" y="91">owner : Actor [1]</text>
+  </g>
+  <g transform="translate(900 650)">
+    <rect class="box abstract relation" width="220" height="110"/><rect class="head head-relation" width="220" height="65"/>
+    <text class="stereo" x="110" y="23">«abstract»</text><text class="title" x="110" y="52">Refinement</text>
+    <text class="field" x="10" y="96">parent : GoalTask [1]</text>
+  </g>
+  <g transform="translate(1140 650)">
+    <rect class="box relation" width="300" height="110"/><rect class="head head-relation" width="300" height="45"/><text class="title" x="150" y="31">Contribution</text>
+    <text class="field" x="10" y="73">type : ContributionType</text><text class="field" x="10" y="99">source → quality</text>
+  </g>
+  <g transform="translate(1460 650)">
+    <rect class="box relation" width="250" height="110"/><rect class="head head-relation" width="250" height="45"/><text class="title" x="125" y="31">Qualification</text>
+    <text class="field" x="10" y="73">quality → element</text>
+  </g>
+  <g transform="translate(1740 650)">
+    <rect class="box relation" width="220" height="110"/><rect class="head head-relation" width="220" height="45"/><text class="title" x="110" y="31">NeededBy</text>
+    <text class="field" x="10" y="73">resource → task</text>
+  </g>
+  <g transform="translate(880 850)"><rect class="box relation" width="250" height="120"/><rect class="head head-relation" width="250" height="45"/><text class="title" x="125" y="31">AndRefinement</text><text class="field" x="10" y="76">children : GoalTask</text><text class="field" x="10" y="101">[2..*] {unique}</text></g>
+  <g transform="translate(1160 850)"><rect class="box relation" width="250" height="120"/><rect class="head head-relation" width="250" height="45"/><text class="title" x="125" y="31">OrRefinement</text><text class="field" x="10" y="76">children : GoalTask</text><text class="field" x="10" y="101">[1..*] {unique}</text></g>
+  <g transform="translate(1450 850)"><rect class="box abstract relation" width="300" height="120"/><rect class="head head-relation" width="300" height="65"/><text class="stereo" x="150" y="23">«abstract»</text><text class="title" x="150" y="52">ParameterRefinement</text><text class="field" x="10" y="91">child : GoalTask [1]</text><text class="field" x="10" y="114">actorType : Actor [1]</text></g>
+  <g transform="translate(1450 1030)"><rect class="box relation" width="190" height="70"/><rect class="head head-relation" width="190" height="70"/><text class="title" x="95" y="43">ForRefinement</text></g>
+  <g transform="translate(1660 1030)"><rect class="box relation" width="190" height="70"/><rect class="head head-relation" width="190" height="70"/><text class="title" x="95" y="43">PickRefinement</text></g>
+
+  <!-- cross-actor structures -->
+  <g transform="translate(1370 230)">
+    <rect class="box" width="280" height="140"/><rect class="head" width="280" height="45"/><text class="title" x="140" y="31">ActorAssociation</text>
+    <text class="field" x="12" y="76">kind : AssociationKind [1]</text><text class="field" x="12" y="103">source : Actor [1]</text><text class="field" x="12" y="130">target : Actor [1]</text>
+  </g>
+  <g transform="translate(1680 230)">
+    <rect class="box" width="430" height="190"/><rect class="head" width="430" height="45"/><text class="title" x="215" y="31">Dependency</text>
+    <text class="field" x="15" y="76">depender : Actor [1]</text>
+    <text class="field" x="15" y="103">dependerElement : IntentionalElement [0..1]</text><text class="field" x="15" y="130">◆ dependum : IntentionalElement [1]</text>
+    <text class="field" x="15" y="157">dependee : Actor [1]</text><text class="field" x="15" y="184">dependeeElement : IntentionalElement [0..1]</text>
+  </g>
+
+  <!-- enums -->
+  <g transform="translate(30 1190)"><rect class="box enum" width="300" height="165"/><rect class="head head-enum" width="300" height="65"/><text class="stereo" x="150" y="23">«EEnum»</text><text class="title" x="150" y="52">GoalType</text><text class="field" x="15" y="92">Achieve</text><text class="field" x="15" y="119">Maintain</text><text class="field" x="15" y="146">Sustain</text></g>
+  <g transform="translate(360 1190)"><rect class="box enum" width="300" height="190"/><rect class="head head-enum" width="300" height="65"/><text class="stereo" x="150" y="23">«EEnum»</text><text class="title" x="150" y="52">ContributionType</text><text class="field" x="15" y="92">Make</text><text class="field" x="15" y="119">Help</text><text class="field" x="15" y="146">Hurt</text><text class="field" x="15" y="173">Break</text></g>
+  <g transform="translate(720 1190)"><rect class="box enum" width="340" height="130"/><rect class="head head-enum" width="340" height="65"/><text class="stereo" x="170" y="23">«EEnum»</text><text class="title" x="170" y="52">AssociationKind</text><text class="field" x="15" y="92">is-a</text><text class="field" x="15" y="119">participates-in</text></g>
+
+  <text class="note" x="1770" y="1240">Canonical source: goal/model/istar.ecore</text>
+</svg>

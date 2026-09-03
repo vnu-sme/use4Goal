@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/goal/target/generated-sources/acl-ecore" modelPluginID="org.vnu.sme.goal"
+    modelName="ACL" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    importerID="org.eclipse.emf.importer.ecore" complianceLevel="21.0" copyrightFields="false"
+    operationReflection="true">
+  <foreignModel>acl.ecore</foreignModel>
+  <genPackages prefix="Acl" basePackage="org.vnu.sme.goal.dsl.acl.ecore" disposableProviderFactory="true"
+      ecorePackage="acl.ecore#/">
+    <genClasses ecoreClass="acl.ecore#//AclModel">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//AclModel/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//AclModel/objects"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//AclModel/dataTypes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//AclModel/orgctx"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="acl.ecore#//Object">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//Object/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//Object/attributes"/>
+    </genClasses>
+    <genClasses ecoreClass="acl.ecore#//Entity">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference acl.ecore#//Entity/generalization"/>
+    </genClasses>
+    <genClasses ecoreClass="acl.ecore#//OrgCtx">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//OrgCtx/entities"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//OrgCtx/roles"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//OrgCtx/orgctx"/>
+    </genClasses>
+    <genClasses ecoreClass="acl.ecore#//Role">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference acl.ecore#//Role/roleGeneralization"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference acl.ecore#//Role/compatibility"/>
+    </genClasses>
+    <genClasses ecoreClass="acl.ecore#//Association">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//Association/ends"/>
+    </genClasses>
+    <genClasses ecoreClass="acl.ecore#//AssociationEnd">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//AssociationEnd/role"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//AssociationEnd/lower"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//AssociationEnd/upper"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference acl.ecore#//AssociationEnd/type"/>
+    </genClasses>
+    <genClasses ecoreClass="acl.ecore#//Attribute">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//Attribute/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//Attribute/optional"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//Attribute/mutable"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//Attribute/defaultValue"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference acl.ecore#//Attribute/type"/>
+    </genClasses>
+    <genClasses ecoreClass="acl.ecore#//DataType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//DataType/name"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

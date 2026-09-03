@@ -1,0 +1,10 @@
+// i* Scenario — one satisfaction snapshot ("object diagram") of generic_example.istar.
+//
+// T2 fires -> OR-refines G1 -> G1 fulfilled -> "make" contributes Q1 -> Q1 becomes true.
+// T8 fires alone -> G3 needs BOTH T1 and T8 (AND-refinement) -> stays unfulfilled.
+// G2's branch (T3/T4/T5) is left untouched, so it never conflicts with Q1.
+
+scenario GenericExampleScenario for "generic_example.istar" {
+    fire T2;
+    fire T8;
+}

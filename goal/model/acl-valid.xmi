@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<acl:AclModel xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:acl="https://vnu.edu.vn/sme/goal/acl/2.0"
+    xsi:schemaLocation="https://vnu.edu.vn/sme/goal/acl/2.0 acl.ecore"
+    version="v2.0" name="ValidAclExample">
+  <classifiers xsi:type="acl:Role" name="Member"/>
+  <classifiers xsi:type="acl:Group" name="Team"/>
+  <owners source="//@classifiers.1" target="//@classifiers.0" lower="1" upper="-1"/>
+</acl:AclModel>

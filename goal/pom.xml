@@ -42,10 +42,67 @@
             <artifactId>antlr4-runtime</artifactId>
             <version>${antlr4.version}</version>
         </dependency>
+
+        <!--
+            Relational bounded verification. These are the same Kodkod and
+            SAT4J binaries used by pluginClone/validator. The initialize
+            executions below make the repository build self-contained.
+        -->
+        <dependency>
+            <groupId>kodkod</groupId>
+            <artifactId>kodkod</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.sat4j</groupId>
+            <artifactId>core</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.11.4</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <id>install-validator-kodkod</id>
+                        <phase>initialize</phase>
+                        <goals><goal>install-file</goal></goals>
+                        <configuration>
+                            <file>${project.basedir}/../pluginClone/validator/lib/kodkod.jar</file>
+                            <groupId>kodkod</groupId>
+                            <artifactId>kodkod</artifactId>
+                            <version>1.0</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-validator-sat4j</id>
+                        <phase>initialize</phase>
+                        <goals><goal>install-file</goal></goals>
+                        <configuration>
+                            <file>${project.basedir}/../pluginClone/validator/lib/org.sat4j.core.jar</file>
+                            <groupId>org.sat4j</groupId>
+                            <artifactId>core</artifactId>
+                            <version>1.0</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
@@ -126,6 +183,12 @@
                         </goals>
                         <configuration>
                             <target>
+                                <!-- The shaded jar is the deployable plugin because each USE
+                                     plugin has an isolated classloader and therefore needs its
+                                     own ANTLR4 runtime. Remove the unshaded duplicate so plugin
+                                     discovery cannot load the wrong copy first. -->
+                                <delete file="../use/use-assembly/target/use-7.1.1/lib/plugins/${project.build.finalName}.jar"
+                                        quiet="true"/>
                                 <copy file="${project.build.directory}/${project.build.finalName}-complete.jar"
                                       tofile="../use/use-assembly/target/use-7.1.1/lib/plugins/${project.build.finalName}-complete.jar"
                                       overwrite="true"/>
@@ -136,4 +199,22 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!-- VS Code's Eclipse JDT builder writes error-tolerant class stubs into
+             goal/target while Maven is generating ANTLR sources. Activate this
+             profile for a release/deployment build so Maven compiles and packages
+             from an output directory that the IDE does not own. -->
+        <profile>
+            <id>isolated-plugin-build</id>
+            <activation>
+                <property>
+                    <name>isolatedPluginBuild</name>
+                </property>
+            </activation>
+            <build>
+                <directory>${project.basedir}/target-maven</directory>
+            </build>
+        </profile>
+    </profiles>
 </project>

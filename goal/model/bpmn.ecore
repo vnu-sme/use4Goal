@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="bpmn" nsURI="https://vnu.edu.vn/sme/goal/bpmn/2.0" nsPrefix="bpmn">
+  <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+    <details key="documentation" value="Canonical Ecore metamodel for the project's state-oriented BPMN subset. It extends process control flow with ACL-scoped OCL preconditions, postconditions and gateway guards."/>
+  </eAnnotations>
+  <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+    <details key="validationDelegates" value="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG"/>
+  </eAnnotations>
+  <eClassifiers xsi:type="ecore:EClass" name="BpmnModel">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="Root BPMN model. A collaboration is represented directly by its processes and message flows; version 1 execution currently rejects message flows."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="UniqueProcessIds UniqueMessageIds GlobalFlowElementIds ProcessesStayInModel MessageFlowsStayInModel NoMessageFlowsInVersion1"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="UniqueProcessIds" value="processes->isUnique(id)"/>
+      <details key="UniqueMessageIds" value="messages->isUnique(id)"/>
+      <details key="GlobalFlowElementIds" value="processes->collect(flowElements)->flatten()->isUnique(id)"/>
+      <details key="ProcessesStayInModel" value="processes->forAll(p | p.model = self)"/>
+      <details key="MessageFlowsStayInModel" value="messageFlows->forAll(m | m.source.process.model = self and m.target.process.model = self and (m.message.oclIsUndefined() or messages->includes(m.message)))"/>
+      <details key="NoMessageFlowsInVersion1" value="messageFlows->isEmpty()"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="processes" lowerBound="1"
+        upperBound="-1" eType="#//Process" containment="true" eOpposite="#//Process/model"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="messages" upperBound="-1"
+        eType="#//Message" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="messageFlows" upperBound="-1"
+        eType="#//MessageFlow" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Process">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="One pool/process schema. groupClass is the ACL Group type whose runtime occurrence is bound to self."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="NonEmptyId UniqueLaneIds UniqueElementIds ExactlyOneStart AtLeastOneEnd SequenceFlowsStayInProcess EveryElementHasExactlyOneLane AllElementsReachable"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="NonEmptyId" value="id.size() > 0"/>
+      <details key="UniqueLaneIds" value="lanes->isUnique(id)"/>
+      <details key="UniqueElementIds" value="flowElements->isUnique(id)"/>
+      <details key="ExactlyOneStart" value="flowElements->select(e | e.oclIsTypeOf(StartEvent))->size() = 1"/>
+      <details key="AtLeastOneEnd" value="flowElements->exists(e | e.oclIsTypeOf(EndEvent))"/>
+      <details key="SequenceFlowsStayInProcess" value="sequenceFlows->forAll(f | flowElements->includes(f.source) and flowElements->includes(f.target))"/>
+      <details key="EveryElementHasExactlyOneLane" value="flowElements->forAll(e | not e.lane.oclIsUndefined() and lanes->includes(e.lane))"/>
+      <details key="AllElementsReachable" value="let s : FlowElement = flowElements->select(e | e.oclIsTypeOf(StartEvent))->any(true) in flowElements->forAll(e | e = s or Set{s}->closure(n | sequenceFlows->select(f | f.source = n)->collect(target))->includes(e))"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="groupClass" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="model" lowerBound="1" eType="#//BpmnModel"
+        eOpposite="#//BpmnModel/processes"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="lanes" lowerBound="1" upperBound="-1"
+        eType="#//Lane" containment="true" eOpposite="#//Lane/process"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="flowElements" lowerBound="1"
+        upperBound="-1" eType="#//FlowElement" containment="true" eOpposite="#//FlowElement/process"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sequenceFlows" lowerBound="1"
+        upperBound="-1" eType="#//SequenceFlow" containment="true" eOpposite="#//SequenceFlow/process"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Lane">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="A visual partition that references, but does not own, the FlowElements performed by one ACL Role."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="NonEmptyId NonEmptyRoleName"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="NonEmptyId" value="id.size() > 0"/>
+      <details key="NonEmptyRoleName" value="roleName.size() > 0"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="roleName" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="process" lowerBound="1"
+        eType="#//Process" eOpposite="#//Process/lanes"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="flowElements" upperBound="-1"
+        eType="#//FlowElement" eOpposite="#//FlowElement/lane"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="FlowElement" abstract="true">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="NonEmptyId"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="NonEmptyId" value="id.size() > 0"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="process" lowerBound="1"
+        eType="#//Process" eOpposite="#//Process/flowElements"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="lane" lowerBound="1" eType="#//Lane"
+        eOpposite="#//Lane/flowElements"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="postcondition" eType="#//Condtion"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="precondition" eType="#//Condtion"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Activity" abstract="true" eSuperTypes="#//FlowElement"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Task" eSuperTypes="#//Activity"/>
+  <eClassifiers xsi:type="ecore:EClass" name="CallActivity" eSuperTypes="#//Activity"/>
+  <eClassifiers xsi:type="ecore:EClass" name="SubProcess" eSuperTypes="#//Activity">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="A flat subprocess activity in the current textual DSL. Nested content is reserved for a later language version."/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Gateway" eSuperTypes="#//FlowElement">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="SupportedGatewayKind HasOutgoingFlow XorHasAtMostOneDefault AndHasNoGuards"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="SupportedGatewayKind" value="kind = GatewayKind::XOR or kind = GatewayKind::AND"/>
+      <details key="HasOutgoingFlow" value="SequenceFlow.allInstances()->exists(f | f.source = self)"/>
+      <details key="XorHasAtMostOneDefault" value="kind &lt;> GatewayKind::XOR or SequenceFlow.allInstances()->select(f | f.source = self and f.isDefault)->size() &lt;= 1"/>
+      <details key="AndHasNoGuards" value="kind &lt;> GatewayKind::AND or SequenceFlow.allInstances()->select(f | f.source = self)->forAll(f | not f.isDefault and f.guard.oclIsUndefined())"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1" eType="#//GatewayKind"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Event" abstract="true" eSuperTypes="#//FlowElement"/>
+  <eClassifiers xsi:type="ecore:EClass" name="StartEvent" eSuperTypes="#//Event">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="NoIncomingFlow HasOutgoingFlow"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="NoIncomingFlow" value="SequenceFlow.allInstances()->forAll(f | f.target &lt;> self)"/>
+      <details key="HasOutgoingFlow" value="SequenceFlow.allInstances()->exists(f | f.source = self)"/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="EndEvent" eSuperTypes="#//Event">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="NoOutgoingFlow NoPrecondition"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="NoOutgoingFlow" value="SequenceFlow.allInstances()->forAll(f | f.source &lt;> self)"/>
+      <details key="NoPrecondition" value="precondition.oclIsUndefined()"/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IntermediateEvent" eSuperTypes="#//Event">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="NoPrecondition"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="NoPrecondition" value="precondition.oclIsUndefined()"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="direction" lowerBound="1"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SequenceFlow">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="EndpointsInOwningProcess GuardOnlyFromGateway DefaultOnlyFromGateway DefaultHasNoGuard"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="EndpointsInOwningProcess" value="source.process = process and target.process = process"/>
+      <details key="GuardOnlyFromGateway" value="guard.oclIsUndefined() or source.oclIsTypeOf(Gateway)"/>
+      <details key="DefaultOnlyFromGateway" value="not isDefault or source.oclIsTypeOf(Gateway)"/>
+      <details key="DefaultHasNoGuard" value="not isDefault or guard.oclIsUndefined()"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="label" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isDefault" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="process" lowerBound="1"
+        eType="#//Process" eOpposite="#//Process/sequenceFlows"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="source" lowerBound="1"
+        eType="#//FlowElement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="target" lowerBound="1"
+        eType="#//FlowElement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="guard" eType="#//Condtion"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Condtion">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="NonEmptyOclBody"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="NonEmptyOclBody" value="oclBody.size() > 0"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="condExpr" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="condLang" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Message">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="NonEmptyId"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="NonEmptyId" value="id.size() > 0"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="MessageFlow">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="DifferentProcesses"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="DifferentProcesses" value="source.process &lt;> target.process"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="source" lowerBound="1"
+        eType="#//FlowElement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="target" lowerBound="1"
+        eType="#//FlowElement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="message" eType="#//Message"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="GatewayKind">
+    <eLiterals name="XOR"/>
+    <eLiterals name="AND" value="1"/>
+    <eLiterals name="OR" value="2"/>
+  </eClassifiers>
+</ecore:EPackage>

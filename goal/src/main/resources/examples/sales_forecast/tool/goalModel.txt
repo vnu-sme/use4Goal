@@ -1,0 +1,145 @@
+{
+  "datastructures": [],
+  "concepts": [],
+  "reinforcements": [],
+  "actors": [],
+  "orphans": [
+    {
+      "id": "357c2487-bbfe-41e3-8b40-613eba4dad53",
+      "text": "Customer",
+      "type": "istar.Role",
+      "x": 1212,
+      "y": 102,
+      "customProperties": {}
+    },
+    {
+      "id": "b9754732-5779-4dba-8238-38860919fb16",
+      "text": "Proposal Manager",
+      "type": "istar.Role",
+      "x": 27,
+      "y": 40,
+      "customProperties": {}
+    }
+  ],
+  "dependencies": [
+    {
+      "id": "c3b396cf-e2e0-4c91-a22e-2f5700260463",
+      "text": "Proposal reviewed by customer",
+      "type": "istar.Goal",
+      "x": 1125,
+      "y": 470,
+      "customProperties": {
+        "condition": "self.group.reviewCompleted"
+      },
+      "reinforcedBy": [],
+      "directionFlow": "inbound",
+      "source": "41b2e60b-3a44-46da-b3ec-7a71dd92f958",
+      "target": "cb0f03d0-6f29-4031-a57a-1f0a682553ad"
+    }
+  ],
+  "links": [
+    {
+      "id": "85642d1d-1269-4496-af80-d10f6211dd40",
+      "type": "istar.DependencyLink",
+      "source": "c3b396cf-e2e0-4c91-a22e-2f5700260463",
+      "target": "cb0f03d0-6f29-4031-a57a-1f0a682553ad"
+    },
+    {
+      "id": "48a43036-32b2-431f-bd1d-b402d9298998",
+      "type": "istar.DependencyLink",
+      "source": "41b2e60b-3a44-46da-b3ec-7a71dd92f958",
+      "target": "c3b396cf-e2e0-4c91-a22e-2f5700260463"
+    },
+    {
+      "id": "55e552f1-fcdb-43f7-8893-ae621e1533a4",
+      "type": "istar.AndRefinementLink",
+      "source": "cf4de384-d83a-4862-bc97-21f3b2d2fccd",
+      "target": "30088727-0a8a-41f3-8aac-5788beb65379"
+    },
+    {
+      "id": "36fc07fd-a6d4-49ea-b0fa-92cedcb8275c",
+      "type": "istar.AndRefinementLink",
+      "source": "681cc8c5-639e-401c-a7aa-51e73bc404a2",
+      "target": "d7a078e2-8eb0-41a2-8ba2-765f27ed2ab5"
+    },
+    {
+      "id": "80ae179b-6009-495b-afbd-6b3f722c285e",
+      "type": "istar.AndRefinementLink",
+      "source": "723eb9b1-c228-48f8-a32d-ff137f0b6ea8",
+      "target": "d7a078e2-8eb0-41a2-8ba2-765f27ed2ab5"
+    },
+    {
+      "id": "fd76ada0-3fdd-4edf-8271-7c801174812a",
+      "type": "istar.OrRefinementLink",
+      "source": "ebd4b37c-f807-44d2-8093-d58fc8bc37f3",
+      "target": "b3d7d7e3-060d-4ca4-a271-55b213a0897a"
+    },
+    {
+      "id": "b645642c-4ff4-4570-8917-3edd27edae93",
+      "type": "istar.OrRefinementLink",
+      "source": "524a55c1-f31a-41b5-abda-bd66e1fc25cc",
+      "target": "b3d7d7e3-060d-4ca4-a271-55b213a0897a"
+    },
+    {
+      "id": "1ff6cd19-f26d-4d01-be25-6e9d8a809970",
+      "type": "istar.OrRefinementLink",
+      "source": "96ab7c83-d0b6-43dc-a44e-8b246cb3f6c3",
+      "target": "524a55c1-f31a-41b5-abda-bd66e1fc25cc"
+    },
+    {
+      "id": "da1d60ba-4b42-4c3c-b272-becf3dab4770",
+      "type": "istar.AndRefinementLink",
+      "source": "a6bd48ac-93b1-4c24-a03f-9da875e571dc",
+      "target": "cf4de384-d83a-4862-bc97-21f3b2d2fccd"
+    },
+    {
+      "id": "35fe2526-a722-4b92-aadc-90d386191476",
+      "type": "istar.AndRefinementLink",
+      "source": "84e47511-f522-47d3-895e-7f94619ccd4a",
+      "target": "cf4de384-d83a-4862-bc97-21f3b2d2fccd"
+    },
+    {
+      "id": "d75b7f2c-6644-4b32-835f-b80301f5273e",
+      "type": "istar.AndRefinementLink",
+      "source": "d7a078e2-8eb0-41a2-8ba2-765f27ed2ab5",
+      "target": "30088727-0a8a-41f3-8aac-5788beb65379"
+    },
+    {
+      "id": "a28b100a-409a-4d80-a94b-1039a49abe51",
+      "type": "istar.AndRefinementLink",
+      "source": "b3d7d7e3-060d-4ca4-a271-55b213a0897a",
+      "target": "30088727-0a8a-41f3-8aac-5788beb65379"
+    },
+    {
+      "id": "fd175ac4-3c87-48d1-bd37-146cb3b6d14f",
+      "type": "istar.AndRefinementLink",
+      "source": "41b2e60b-3a44-46da-b3ec-7a71dd92f958",
+      "target": "30088727-0a8a-41f3-8aac-5788beb65379"
+    }
+  ],
+  "display": {
+    "357c2487-bbfe-41e3-8b40-613eba4dad53": {
+      "width": 345,
+      "height": 193
+    },
+    "b9754732-5779-4dba-8238-38860919fb16": {
+      "width": 1136,
+      "height": 588
+    },
+    "c3b396cf-e2e0-4c91-a22e-2f5700260463": {
+      "width": 245,
+      "height": 58
+    }
+  },
+  "tool": "pistar.2.1.0",
+  "istar": "2.0",
+  "saveDate": "Tue, 18 Aug 2026 08:39:02 GMT",
+  "diagram": {
+    "width": 1700,
+    "height": 930,
+    "name": "Proposal Review — missing re-validation loop",
+    "customProperties": {
+      "Description": "Focused iStar 2.0 motivating model aligned with the proposal-review BPMN. Proposal completion requires a proposal that is ready for finalization and then finalized and sent. Readiness requires the current proposal to remain prepared and validated, the customer review to be received, and the customer feedback to be resolved. Feedback is resolved either when the proposal is accepted without changes or when requested changes are incorporated. The Update proposal task realizes the latter goal. Its negative impact on the previously satisfied validation goal is intentionally not encoded as a static contribution; it is derived from the shared ACL state."
+    }
+  }
+}

@@ -1,0 +1,186 @@
+// Intentional view corresponding to Customer Complaint Management Process 2.
+istar CustomerComplaintGoals {
+  role FieldPerson {
+    goal CustomerComplaintSuccessfullyHandled : Achieve
+
+    goal ComplaintRegistered : Achieve
+      > CustomerComplaintSuccessfullyHandled
+    condition {[
+      self.orgContext.complaint.created
+    ]}
+
+    goal ComplaintEvidenceAvailable : Achieve
+      > CustomerComplaintSuccessfullyHandled
+    condition {[
+      self.orgContext.complaint.artifactsUpdated
+    ]}
+
+    goal RequiredExaminationCompleted : Achieve
+      > CustomerComplaintSuccessfullyHandled
+    condition {[
+      not self.orgContext.complaint.additionalExaminationRequired
+      or self.orgContext.complaint.examined
+    ]}
+
+    goal QualityOpportunityAddressed : Achieve
+      > CustomerComplaintSuccessfullyHandled
+    condition {[
+      not self.orgContext.complaint.improvementOpportunity
+      or self.orgContext.complaint.improvementSuggested
+    ]}
+
+    goal CompensationCompleted : Achieve
+      > CustomerComplaintSuccessfullyHandled
+    condition {[
+      self.orgContext.complaint.compensationSuggested
+      and (not self.orgContext.complaint.refundRequested
+        or (self.orgContext.complaint.financialApproved
+          and self.orgContext.complaint.refundRecorded))
+    ]}
+
+    goal ComplaintResolvedAndUpdated : Achieve
+      > CustomerComplaintSuccessfullyHandled
+    condition {[
+      self.orgContext.complaint.resolved
+      and self.orgContext.complaint.updated
+      and self.orgContext.complaint.closed
+    ]}
+
+    // This safety intention is true while the case is open and becomes
+    // violated if a pending unresolved complaint is closed.
+    goal ResolutionIntegrity : Maintain
+      > CustomerComplaintSuccessfullyHandled
+    condition {[
+      not self.orgContext.complaint.closed
+      or self.orgContext.complaint.resolved
+    ]}
+
+    task CreateComplaint
+    post {[
+      self.orgContext.complaint.created
+    ]}
+
+    task UpdateArtifacts
+    post {[
+      self.orgContext.complaint.artifactsUpdated
+    ]}
+
+    task MakeCompensationSuggestion
+    post {[
+      self.orgContext.complaint.compensationSuggested
+    ]}
+
+    task ResolveComplaint
+    post {[
+      self.orgContext.complaint.resolved
+    ]}
+
+    task UpdateComplaint
+    post {[
+      self.orgContext.complaint.updated
+      and self.orgContext.complaint.closed
+    ]}
+  }
+
+  role Customer {
+    goal ComplaintHandled : Achieve
+    condition {[
+      self.responseReceived
+      and self.orgContext.complaint.resolved
+      and self.orgContext.complaint.closed
+    ]}
+  }
+
+  role Nutritionist {
+    task ExamineComplaint
+    pre {[
+      self.orgContext.complaint.additionalExaminationRequired
+    ]}
+    post {[
+      self.orgContext.complaint.examined
+    ]}
+  }
+
+  role LabManager {
+    goal QualityAssessmentCompleted : Achieve
+    condition {[
+      self.orgContext.complaint.compensationSuggested
+      and (not self.orgContext.complaint.additionalExaminationRequired
+        or (self.orgContext.complaint.examined
+          and self.orgContext.complaint.proactiveTestChecked
+          and (not self.orgContext.complaint.improvementOpportunity
+            or self.orgContext.complaint.improvementSuggested)))
+    ]}
+
+    task CheckProactiveTests
+    post {[
+      self.orgContext.complaint.proactiveTestChecked
+    ]}
+
+    task UpdateImprovementSuggestion
+    post {[
+      self.orgContext.complaint.improvementSuggested
+    ]}
+
+    task ClosePendingComplaint
+    post {[
+      self.orgContext.complaint.closed
+    ]}
+  }
+
+  role CustomerManager {
+    task ApproveLowValueRefund
+    pre {[
+      self.orgContext.complaint.refundAmount <= self.approvalLimit
+    ]}
+    post {[
+      self.orgContext.complaint.financialApproved
+    ]}
+  }
+
+  role CFO {
+    task ReviewHighValueRefund
+    pre {[
+      self.orgContext.complaint.refundAmount >
+        self.orgContext.customerManager.approvalLimit
+    ]}
+  }
+
+  role CEO {
+    task ApproveHighValueRefund
+    pre {[
+      self.orgContext.complaint.refundAmount <= self.approvalLimit
+    ]}
+    post {[
+      self.orgContext.complaint.financialApproved
+    ]}
+  }
+
+  role Accountant {
+    goal RequiredRefundRecorded : Achieve
+    condition {[
+      self.orgContext.complaint.compensationSuggested
+      and (self.orgContext.complaint.refundRecorded
+        or not self.orgContext.complaint.refundRequested)
+    ]}
+
+    task RecordRefund
+    pre {[
+      self.orgContext.complaint.financialApproved
+    ]}
+    post {[
+      self.orgContext.complaint.refundRecorded
+    ]}
+  }
+
+  // This intentional actor is deliberately absent from the BPMN lanes, as in
+  // the source material; its goal is evaluated from the shared complaint state.
+  role QualityCommittee {
+    goal FeedQualityOpportunityAddressed : Achieve
+    condition {[
+      self.orgContext.complaint.compensationSuggested
+      and (not self.orgContext.complaint.improvementOpportunity
+        or self.orgContext.complaint.improvementSuggested)
+    ]}
+  }
+}

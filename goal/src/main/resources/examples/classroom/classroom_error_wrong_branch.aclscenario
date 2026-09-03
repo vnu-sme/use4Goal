@@ -1,0 +1,17 @@
+// Expected result: NON_CONFORMANT. Post_B of the manual outgoing flow is false
+// because electronicSystemAvailable=true; the remaining electronic path then
+// cannot explain attendanceMethod=manual.
+acl-state-scenario v1.0 ClassroomWrongBranch {
+  acl "classroom.acl";
+  bpmn "classroom.bpmn2";
+  state "classroom_state_01_initial.aol";
+  state "classroom_state_01_initial.aol";
+  state "classroom_state_01_initial.aol";
+  state "classroom_trace_state_01_started.aol";
+  state "classroom_trace_state_01_started.aol";
+  state "classroom_trace_state_01_started.aol";
+  state "classroom_trace_state_02_slides.aol";
+  state "classroom_trace_state_02_slides.aol";
+  state "classroom_trace_state_02_slides.aol";
+  state "classroom_error_state_wrong_branch.aol";
+}

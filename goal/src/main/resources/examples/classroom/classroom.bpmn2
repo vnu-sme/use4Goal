@@ -1,0 +1,184 @@
+// An operational scenario for ClassroomGoals, exercising activity, an AND
+// split/join (parallel lesson prep), an XOR split/merge (electronic vs.
+// manual attendance recording, mirroring the iStar OR-refinement), and a
+// loop (repeat the clarification step while needsClarification holds), all
+// within one pool with two lanes.
+//
+// The iStar model contains only ordinary AND/OR refinements. The `forAll`
+// expressions below are OCL collection updates over the Student instances;
+// they are not iStar `forall`/`pick` refinements.
+model ClassroomProcess {
+  pool TeachingSession for Classroom {
+    name "Teaching session"
+    lane Teacher;
+    lane Student;
+  }
+
+  start classroomReady {
+    lane Teacher
+    trigger none
+    pre {[
+      not self.lessonStarted
+      and not self.attendanceRecorded
+      and not self.lessonDelivered
+    ]}
+    flow beginLesson
+  }
+
+  activity beginLesson {
+    name "Begin lesson"
+    type task
+    lane Teacher
+    post {[
+      self.lessonStarted
+      and self.target_Teacher_in_Classroom.attendanceStarted
+    ]}
+    flow prepSplit
+  }
+
+  // AND split: slide setup and roster checking proceed in parallel: both
+  // must finish before attendance recording can be chosen.
+  gateway prepSplit {
+    lane Teacher
+    type and
+    flow setupSlides
+    flow checkAttendanceRoster
+  }
+
+  activity setupSlides {
+    name "Set up slides"
+    type task
+    lane Teacher
+    post {[
+      self.slidesReady
+    ]}
+    flow prepJoin
+  }
+
+  activity checkAttendanceRoster {
+    name "Check attendance roster"
+    type task
+    lane Teacher
+    post {[
+      self.rosterChecked
+    ]}
+    flow prepJoin
+  }
+
+  gateway prepJoin {
+    lane Teacher
+    type and
+    flow attendanceChoice
+  }
+
+  // Each outgoing flow carries its branch-specific formal Post_B. There is
+  // no separate guard in the formal evaluator.
+  gateway attendanceChoice {
+    lane Teacher
+    type xor
+    flow recordAttendanceElectronically post {[ self.electronicSystemAvailable ]}
+    flow recordAttendanceManually post {[ not self.electronicSystemAvailable ]}
+  }
+
+  activity recordAttendanceElectronically {
+    name "Record attendance electronically"
+    type task
+    lane Teacher
+    pre {[
+      self.lessonStarted
+      and self.target_Teacher_in_Classroom.attendanceStarted
+    ]}
+    post {[
+      self.attendanceRecorded
+      and self.attendanceMethod = #electronic
+      and self.target_Student_in_Classroom->forAll(student |
+        student.present and student.attendanceMarked)
+    ]}
+    flow attendanceMerge
+  }
+
+  activity recordAttendanceManually {
+    name "Record attendance manually"
+    type task
+    lane Teacher
+    pre {[
+      self.lessonStarted
+      and self.target_Teacher_in_Classroom.attendanceStarted
+    ]}
+    post {[
+      self.attendanceRecorded
+      and self.attendanceMethod = #manual
+      and self.target_Student_in_Classroom->forAll(student |
+        student.present and student.attendanceMarked)
+    ]}
+    flow attendanceMerge
+  }
+
+  gateway attendanceMerge {
+    lane Teacher
+    type xor
+    flow deliverLesson
+  }
+
+  activity deliverLesson {
+    name "Deliver lesson"
+    type task
+    lane Teacher
+    pre {[
+      self.attendanceRecorded
+    ]}
+    post {[
+      self.lessonDelivered
+    ]}
+    flow loopMerge
+  }
+
+  // Loop: loopMerge (join: deliverLesson or answerQuestions coming back in)
+  // feeds loopCheck (split: repeat via answerQuestions, or exit by default).
+  // Two separate gateways, each either a pure split or a pure join, so
+  // neither one is both at once.
+  gateway loopMerge {
+    lane Teacher
+    type xor
+    flow loopCheck
+  }
+
+  gateway loopCheck {
+    lane Teacher
+    type xor
+    flow answerQuestions post {[ self.needsClarification ]}
+    flow attendLesson post {[ not self.needsClarification ]}
+  }
+
+  activity answerQuestions {
+    name "Answer questions"
+    type task
+    lane Teacher
+    pre {[
+      self.lessonDelivered
+    ]}
+    post {[
+      not self.needsClarification
+    ]}
+    flow loopMerge
+  }
+
+  activity attendLesson {
+    name "Attend lesson"
+    type task
+    lane Student
+    pre {[
+      self.lessonDelivered
+    ]}
+    post {[
+      self.target_Student_in_Classroom->forAll(student |
+        student.present and student.lessonAttended)
+    ]}
+    flow classFinished
+  }
+
+  end classFinished {
+    lane Teacher
+    trigger none
+  }
+}
