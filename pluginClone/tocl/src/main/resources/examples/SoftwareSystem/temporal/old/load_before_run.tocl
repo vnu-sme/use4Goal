@@ -1,3 +1,0 @@
-context System
-inv loadBeforeRun: self.runningApps->forAll(app |
-    (isCalled(run(app:Application)) implies sometimePast isCalled(load(app:Application))))

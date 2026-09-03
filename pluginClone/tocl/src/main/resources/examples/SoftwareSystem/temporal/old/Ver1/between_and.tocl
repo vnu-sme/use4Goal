@@ -1,3 +1,0 @@
-context System
-inv betweenAnd: isCalled(load(app : Application))
-                implies (sometime isCalled(install(app : Application) before isCalled(run(app : Application)))

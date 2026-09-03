@@ -1,2 +1,0 @@
-context Elevator
-inv sometimeDoorOpenSinceMove: sometime self.doorState = #Open since isCalled(move())

@@ -1,3 +1,0 @@
-context System
-inv installBetweenLoadRun: isCalled(load(app:Application)) implies
-    ( sometime isCalled(install()) at least 1 times before isCalled(run(app:Application)))

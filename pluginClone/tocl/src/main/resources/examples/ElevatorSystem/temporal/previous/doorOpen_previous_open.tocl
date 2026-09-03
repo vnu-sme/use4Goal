@@ -1,3 +1,0 @@
--- if the door is open then the openDoor() was called in the previous snapshot
-context Elevator
-inv openPreviousMove: self.doorState = #Open implies previous isCalled(openDoor())

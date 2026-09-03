@@ -1,5 +1,0 @@
-context Elevator
-inv becomesTrueEvent: isCalled(move()) implies sometime becomesTrue(self.doorState = #Open)
-
---context Elevator
---inv becomesTrueEvent: (let CS:Snapshot = self.snapshotElevator in Set{CS}->closure(s | s.succ())->exists(s | (let currentObject = s.elevator->any(o | o.id = self.id) in let nextObject = s.succ().elevator->any(o | o.id = self.id) in not (s.elevator->any(o | o.id = self.id).doorState = #Open) and (s.succ().elevator->any(o | o.id = self.id).doorState = #Open))))

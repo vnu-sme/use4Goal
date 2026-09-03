@@ -1,3 +1,0 @@
--- sometime self.pedLight = #Green
-context TrafficLight
-inv TL_ST: self.requested = true implies sometime self.pedLight = #Green

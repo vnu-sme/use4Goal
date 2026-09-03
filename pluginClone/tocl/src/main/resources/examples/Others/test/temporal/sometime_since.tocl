@@ -1,6 +1,0 @@
--- sometime self.pedLight = #Green since self.requested = true
-context TrafficLight
-inv TL_SS: sometime self.pedLight = #Green since self.requested = true
-
--- context TrafficLight inv TL_SS:
--- (let CS:Snapshot = self.snapshotTrafficLight in let PS:Set(Snapshot) = Set{CS.pred()}->closure(s | s.pred())->excluding(null) in let PSQ:Set(Snapshot) = PS->select(s | s.trafficLight->any(o | self.id = o.id).requested = true ) in let PSP:Set(Snapshot) = PS->including(CS)->select(s | s.trafficLight->any(o | self.id = o.id).pedLight = #Green ) in if (PSQ->size() > 0) then (if (PSP->size() > 0) then (PSP->exists(s1 | PSQ->forAll(s2 | Set{s1.pred()}->closure(o | o.pred())->size() > Set{s2.pred()}->closure(o | o.pred())->size()))) else false endif) else PSP->size() > 0 endif)

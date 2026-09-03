@@ -1,2 +1,0 @@
-context Application
-inv loadOnce: becomesTrue(self.state = #Loaded) implies next ( always (not becomesTrue(self.state = #Loaded)))

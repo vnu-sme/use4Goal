@@ -1,7 +1,0 @@
--- sometime the closeDoor() function is called (globally)
-context Elevator
-inv sometimeClose: sometime isCalled(closeDoor())
-
--- Translated OCL
---context Elevator
---inv sometimeClose: Snapshot.allInstances()->exists(s | OperationCall.allInstances()->exists(op | op.pred() = s and op.oclIsTypeOf(closeDoor_ElevatorOpC)))

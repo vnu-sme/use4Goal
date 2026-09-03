@@ -1,3 +1,0 @@
-context Elevator
-inv betweenAnd1: (isCalled(move()) and sometime isCalled(closeDoor())) implies
-                (isCalled(move()) implies (sometime isCalled(openDoor()) before isCalled(closeDoor())))

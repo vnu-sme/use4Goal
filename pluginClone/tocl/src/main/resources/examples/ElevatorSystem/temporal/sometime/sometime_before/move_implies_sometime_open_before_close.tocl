@@ -1,3 +1,0 @@
-
-context Elevator
-inv moveImpliesSometimeOpenBeforeClose: isCalled(move()) implies (sometime isCalled(openDoor()) before isCalled(closeDoor()))

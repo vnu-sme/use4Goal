@@ -1,7 +1,0 @@
--- if move() is called then closeDoor() is called in the next next snapshot
-context Elevator
-inv moveNextNextClose: isCalled(move()) implies next next isCalled(closeDoor())
-
--- Translated OCL
---context Elevator
---inv moveNextNextClose: OperationCall.allInstances()->select(op | op.pred->any(true) = self.snapshotElevator)->exists(op | op.oclIsTypeOf(move_ElevatorOpC)) implies OperationCall.allInstances()->select(op | op.pred->any(true) = self.snapshotElevator.succ().elevator->any(o | self.id = o.id).snapshotElevator.succ())->exists(op | op.oclIsTypeOf(closeDoor_ElevatorOpC))

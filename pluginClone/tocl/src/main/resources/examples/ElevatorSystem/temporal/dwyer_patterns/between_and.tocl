@@ -1,5 +1,0 @@
--- currently this nested temporal operator is not supported
-context Elevator
-inv betweenAndPattern: (isCalled(move()) and (sometime isCalled(closeDoor())))
-    implies always (isCalled(move()) implies (sometime isCalled(openDoor()) before isCalled(closeDoor())))
-

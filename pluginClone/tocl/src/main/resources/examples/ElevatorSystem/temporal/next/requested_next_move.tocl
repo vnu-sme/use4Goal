@@ -1,3 +1,0 @@
--- if the elevator is requested, then the move() method is called in the next snapshot
-context Elevator
-inv requestedMove: self.isRequested = true implies next isCalled(move())

@@ -1,2 +1,0 @@
-context TrafficLight
-inv isCalled: self.requested = true implies next isCalled(switchPedLight())

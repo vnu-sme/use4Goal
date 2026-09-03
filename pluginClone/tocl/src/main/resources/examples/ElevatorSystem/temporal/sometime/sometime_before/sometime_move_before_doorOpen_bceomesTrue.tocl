@@ -1,2 +1,0 @@
-context Elevator
-inv sometimeBeforeBecomesTrue: sometime isCalled(move()) before becomesTrue(self.doorState = #Open)

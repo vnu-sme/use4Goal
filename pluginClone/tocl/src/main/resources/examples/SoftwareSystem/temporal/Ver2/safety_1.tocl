@@ -1,7 +1,0 @@
--- An application loading must precede its run.
-context System
-inv safety1: self.runningApps->notEmpty() implies
-            self.runningApps->forAll(app |
-                isCalled(run(app : Application)) implies
-                sometimePast isCalled(load(app : Application))
-            )

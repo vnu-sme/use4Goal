@@ -1,2 +1,0 @@
-context System
-inv sometimeInstall: isCalled(load(app : Application)) implies sometime isCalled(installed())

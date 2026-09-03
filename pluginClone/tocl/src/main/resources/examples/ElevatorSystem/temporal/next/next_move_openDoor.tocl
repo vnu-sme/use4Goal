@@ -1,7 +1,0 @@
--- if move() is called then openDoor() is called in the next snapshot
-context Elevator
-inv moveNextOpen: isCalled(move()) implies next isCalled(openDoor())
-
---Translated OCL
---context Elevator
---inv moveNextOpen: OperationCall.allInstances()->exists(op | op.pred() = self.snapshotElevator and op.oclIsTypeOf(move_ElevatorOpC)) implies OperationCall.allInstances()->exists(op | op.pred() = self.snapshotElevator.succ() and op.oclIsTypeOf(openDoor_ElevatorOpC))

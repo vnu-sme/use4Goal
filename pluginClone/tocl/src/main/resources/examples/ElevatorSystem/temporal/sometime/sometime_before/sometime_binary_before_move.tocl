@@ -1,3 +1,0 @@
-context Elevator
-inv sometimeBinaryBeforeIsCalled: sometime self.currentFloor <> self.targetFloor before isCalled(move())
-

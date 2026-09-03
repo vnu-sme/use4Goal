@@ -1,3 +1,0 @@
--- this is a false test case to test the temporal translation
-context Elevator
-inv betweenAndFalse: isCalled(closeDoor()) implies (sometime isCalled(move()) before isCalled(openDoor()))

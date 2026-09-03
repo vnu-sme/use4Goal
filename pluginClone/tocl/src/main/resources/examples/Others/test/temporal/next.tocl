@@ -1,7 +1,0 @@
-context TrafficLight
-inv nextInv: self.requested = true implies next self.pedLight = #Green | event
-
--- Translated
--- context TrafficLight
--- inv nextInv: self.requested = true implies
---              self.snapshotTrafficLight.succ().trafficLight->any(o | self.id = o.id).pedLight = #Green

@@ -1,8 +1,0 @@
--- next
--- when the requested flag is set to true, the pedestrian light will turn green in the next state
-context TrafficLight
-inv nextInv: self.requested = true implies next self.pedLight = #Green
-
--- OCL translation
--- context TrafficLight
--- inv nextInv: self.requested = true implies self.succTrafficLight.pedLight = #Green

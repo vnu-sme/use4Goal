@@ -1,3 +1,0 @@
-context System
-inv sometimePastLoaded: self.installedAppIds->isDefined()
-    implies self.installedAppIds->forAll(appId | (sometimePast self.loadedAppIds->includes(appId)))

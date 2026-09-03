@@ -1,3 +1,0 @@
-context System
-inv loadBeforeRun: self.runningApps->notEmpty() implies self.runningApps->forAll(app |
-    (sometimePast self.loadedApps->exists(app2 | app2.id = app.id)))

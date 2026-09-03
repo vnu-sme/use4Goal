@@ -1,5 +1,0 @@
-context Elevator
-inv sometimeBeforeHalf1: sometime isCalled(move()) before self.currentFloor = self.targetFloor
-
---context Elevator
---inv sometimeBeforeHalf1: (let FS:Snapshot = Snapshot.allInstances()->select(s | OperationCall.allInstances()->select(op | op.pred->any(true) = s)->exists(op | op.oclIsTypeOf(move_ElevatorOpC)))->asSequence()->first() in Set{FS}->closure(s | s.succ())->exists(s | s.elevator->any(o | self.id = o.id).currentFloor = s.elevator->any(o | self.id = o.id).targetFloor))

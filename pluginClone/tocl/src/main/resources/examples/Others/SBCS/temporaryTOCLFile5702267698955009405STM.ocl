@@ -1,2 +1,0 @@
-context ControlProgram
-inv SB1: not(self.failureDetected implies self.getNext().mode = #Degraded)
