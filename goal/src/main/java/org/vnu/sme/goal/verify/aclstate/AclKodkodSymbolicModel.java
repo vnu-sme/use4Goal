@@ -95,7 +95,12 @@ final class AclKodkodSymbolicModel {
     private final Universe universe;
     private final TupleFactory factory;
     private final Bounds bounds;
-    private Formula structuralFormula = Formula.TRUE;
+    /*
+     * Keep structural clauses flat until the query is assembled. Building one
+     * long left-associated BinaryFormula here overflows Kodkod's recursive
+     * FOL2Bool translator for realistic multi-snapshot models.
+     */
+    private final List<Formula> structuralFormulas = new ArrayList<>();
 
     AclKodkodSymbolicModel(AclModel acl, AclBpmnBoundary boundary) {
         this.acl = Objects.requireNonNull(acl, "acl");
@@ -111,12 +116,13 @@ final class AclKodkodSymbolicModel {
         bindAtomRelations();
         indexAttributeSlots();
         for (int index = 0; index < boundary.snapshots(); index++) createFrame(index);
+        addInitialDefaults();
         addInvariantFormulas();
     }
 
     Universe universe() { return universe; }
     Bounds bounds() { return bounds; }
-    Formula structuralFormula() { return structuralFormula; }
+    Formula structuralFormula() { return and(structuralFormulas); }
     Frame frame(int index) { return frames.get(index); }
     int frameCount() { return frames.size(); }
 
@@ -139,6 +145,38 @@ final class AclKodkodSymbolicModel {
         Value value = compile(AclOclFormulaParser.parse(source),
                 new Environment(current, previous, Map.copyOf(variables)));
         return bool(value);
+    }
+
+    /** Frame condition for a BPMN step that declares no state-changing postcondition. */
+    Formula sameState(Frame left, Frame right) {
+        return frameCondition(left, right, Set.of());
+    }
+
+    /**
+     * Preserves structural state and every attribute/association not named by a
+     * postcondition. This gives partial OCL contracts their usual frame semantics.
+     */
+    Formula frameCondition(Frame left, Frame right, Set<String> changedProperties) {
+        List<Formula> clauses = new ArrayList<>();
+        for (String type : left.exists.keySet()) {
+            clauses.add(left.exists(type).eq(right.exists(type)));
+        }
+        for (AttributeSlot slot : left.attributes.keySet()) {
+            if (!changedProperties.contains(slot.attribute().name())) {
+                clauses.add(left.attribute(slot).eq(right.attribute(slot)));
+            }
+        }
+        for (AclRelation definition : acl.relations()) {
+            boolean changed = changedProperties.contains(definition.name())
+                    || definition.source().roleName().stream().anyMatch(changedProperties::contains)
+                    || definition.target().roleName().stream().anyMatch(changedProperties::contains);
+            if (!changed) {
+                clauses.add(left.association(definition.name())
+                        .eq(right.association(definition.name())));
+            }
+        }
+        clauses.add(left.play().eq(right.play()));
+        return and(clauses);
     }
 
     List<String> decodePath(Solution solution, int usedFrames) {
@@ -234,8 +272,8 @@ final class AclKodkodSymbolicModel {
             TupleSet upper = unary(entry.getValue().stream().map(ObjectAtom::atom).toList());
             bounds.bound(relation, upper);
             AclBpmnBoundary.Scope scope = boundary.objectScopes().get(entry.getKey());
-            structuralFormula = structuralFormula.and(relation.count().gte(IntConstant.constant(scope.lower())))
-                    .and(relation.count().lte(IntConstant.constant(scope.upper())));
+            addStructural(relation.count().gte(IntConstant.constant(scope.lower())));
+            addStructural(relation.count().lte(IntConstant.constant(scope.upper())));
         }
 
         for (AttributeSlot slot : allAttributes()) {
@@ -248,8 +286,8 @@ final class AclKodkodSymbolicModel {
             for (ObjectAtom object : domain) {
                 Formula present = exists(frame, object);
                 Expression values = object.singleton().join(relation);
-                structuralFormula = structuralFormula.and(present.implies(values.one()))
-                        .and(present.not().implies(values.no()));
+                addStructural(present.implies(values.one()));
+                addStructural(present.not().implies(values.no()));
             }
         }
 
@@ -274,22 +312,44 @@ final class AclKodkodSymbolicModel {
         addPlayFormula(frame);
     }
 
+    private void addInitialDefaults() {
+        Frame initial = frame(0);
+        for (AttributeSlot slot : allAttributes()) {
+            if (slot.attribute().defaultValue().isEmpty()) continue;
+            String expected = normalizedDefault(slot.attribute().defaultValue().orElseThrow());
+            ScalarAtom scalar = scalarsFor(slot.attribute().type()).stream()
+                    .filter(value -> normalizedDefault(String.valueOf(value.value())).equals(expected))
+                    .findFirst().orElseThrow(() -> new IllegalArgumentException(
+                            "default value outside boundary for " + slot.ownerType() + "."
+                                    + slot.attribute().name() + ": " + expected));
+            Relation relation = initial.attribute(slot);
+            for (ObjectAtom object : attributeDomain(slot)) {
+                Formula hasDefault = object.singleton().join(relation).eq(scalar.singleton());
+                addStructural(exists(initial, object).implies(hasDefault));
+            }
+        }
+    }
+
+    private static String normalizedDefault(String raw) {
+        return unquote(raw).replaceFirst("^#", "").replaceFirst("^.*::", "");
+    }
+
     private void addAssociationFormula(Frame frame, AclRelation definition, Relation relation,
                                        List<ObjectAtom> sources, List<ObjectAtom> targets) {
         for (ObjectAtom source : sources) {
             Expression linked = source.singleton().join(relation);
-            structuralFormula = structuralFormula.and(cardinality(frame, source, linked,
+            addStructural(cardinality(frame, source, linked,
                     definition.target(), exists(frame, source)));
         }
         for (ObjectAtom target : targets) {
             Expression linked = relation.join(target.singleton());
-            structuralFormula = structuralFormula.and(cardinality(frame, target, linked,
+            addStructural(cardinality(frame, target, linked,
                     definition.source(), exists(frame, target)));
         }
         AclBpmnBoundary.Scope scope = boundary.linkScopes().get(definition.name());
         if (scope != null) {
-            structuralFormula = structuralFormula.and(relation.count().gte(IntConstant.constant(scope.lower())))
-                    .and(relation.count().lte(IntConstant.constant(scope.upper())));
+            addStructural(relation.count().gte(IntConstant.constant(scope.lower())));
+            addStructural(relation.count().lte(IntConstant.constant(scope.upper())));
         }
     }
 
@@ -309,7 +369,7 @@ final class AclKodkodSymbolicModel {
                 for (ObjectAtom parent : objectsByConcreteType.getOrDefault(parentType, List.of())) {
                     for (ObjectAtom child : objectsByConcreteType.getOrDefault(childType.name(), List.of())) {
                         Formula linked = parent.singleton().product(child.singleton()).in(frame.play());
-                        structuralFormula = structuralFormula.and(linked.implies(
+                        addStructural(linked.implies(
                                 exists(frame, parent).and(exists(frame, child))));
                     }
                 }
@@ -319,8 +379,8 @@ final class AclKodkodSymbolicModel {
                 for (String parentType : childType.parentRoles()) {
                     Expression parents = frame.play().join(child.singleton())
                             .intersection(typeExpression(frame, parentType));
-                    structuralFormula = structuralFormula.and(childExists.implies(parents.one()))
-                            .and(childExists.not().implies(parents.no()));
+                    addStructural(childExists.implies(parents.one()));
+                    addStructural(childExists.not().implies(parents.no()));
                 }
             }
         }
@@ -331,10 +391,14 @@ final class AclKodkodSymbolicModel {
             for (AclInvariant invariant : acl.invariants()) {
                 for (ObjectAtom self : objectsForType(invariant.contextType())) {
                     Formula body = expression(invariant.expression(), frame, frame, self);
-                    structuralFormula = structuralFormula.and(exists(frame, self).implies(body));
+                    addStructural(exists(frame, self).implies(body));
                 }
             }
         }
+    }
+
+    private void addStructural(Formula formula) {
+        structuralFormulas.add(formula);
     }
 
     private Value compile(Node node, Environment environment) {
@@ -372,6 +436,7 @@ final class AclKodkodSymbolicModel {
             case "=" -> new BoolValue(equal(left, right));
             case "<>" -> new BoolValue(equal(left, right).not());
             case "<", "<=", ">", ">=" -> new BoolValue(compare(left, right, binary.operator()));
+            case "+" -> add(left, right);
             default -> throw unsupported("binary operator " + binary.operator());
         };
     }
@@ -556,6 +621,27 @@ final class AclKodkodSymbolicModel {
             }
         }));
         return or(matches);
+    }
+
+    private Value add(Value left, Value right) {
+        if (!(left instanceof ScalarValue a) || !(right instanceof ScalarValue b)) {
+            throw unsupported("addition on a non-scalar value");
+        }
+        Map<ScalarAtom, List<Formula>> results = new LinkedHashMap<>();
+        a.choices().forEach((leftValue, leftCondition) ->
+                b.choices().forEach((rightValue, rightCondition) -> {
+                    if (!(leftValue.value() instanceof Number leftNumber)
+                            || !(rightValue.value() instanceof Number rightNumber)) return;
+                    double sum = leftNumber.doubleValue() + rightNumber.doubleValue();
+                    for (ScalarAtom candidate : scalars) {
+                        if (candidate.value() instanceof Number number
+                                && Double.compare(number.doubleValue(), sum) == 0) {
+                            results.computeIfAbsent(candidate, ignored -> new ArrayList<>())
+                                    .add(leftCondition.and(rightCondition));
+                        }
+                    }
+                }));
+        return new ScalarValue(combine(results));
     }
 
     private Value literal(Object value) {

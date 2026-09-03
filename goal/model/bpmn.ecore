@@ -92,9 +92,9 @@
         eType="#//Process" eOpposite="#//Process/flowElements"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="lane" lowerBound="1" eType="#//Lane"
         eOpposite="#//Lane/flowElements"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="postcondition" eType="#//BpmnOclConstraint"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="postcondition" eType="#//Condtion"
         containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="precondition" eType="#//BpmnOclConstraint"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="precondition" eType="#//Condtion"
         containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Activity" abstract="true" eSuperTypes="#//FlowElement"/>
@@ -117,10 +117,7 @@
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1" eType="#//GatewayKind"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Event" abstract="true" eSuperTypes="#//FlowElement">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="trigger" lowerBound="1"
-        eType="#//EventTrigger"/>
-  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Event" abstract="true" eSuperTypes="#//FlowElement"/>
   <eClassifiers xsi:type="ecore:EClass" name="StartEvent" eSuperTypes="#//Event">
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
       <details key="constraints" value="NoIncomingFlow HasOutgoingFlow"/>
@@ -146,8 +143,7 @@
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
       <details key="NoPrecondition" value="precondition.oclIsUndefined()"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="direction" lowerBound="1"
-        eType="#//EventDirection"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="direction" lowerBound="1"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="SequenceFlow">
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
@@ -167,18 +163,19 @@
         eType="#//FlowElement"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="target" lowerBound="1"
         eType="#//FlowElement"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="guard" eType="#//BpmnOclConstraint"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="guard" eType="#//Condtion"
         containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="BpmnOclConstraint">
+  <eClassifiers xsi:type="ecore:EClass" name="Condtion">
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
       <details key="constraints" value="NonEmptyOclBody"/>
     </eAnnotations>
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
       <details key="NonEmptyOclBody" value="oclBody.size() > 0"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="oclBody" lowerBound="1"
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="condExpr" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="condLang" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Message">
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
@@ -207,20 +204,5 @@
     <eLiterals name="XOR"/>
     <eLiterals name="AND" value="1"/>
     <eLiterals name="OR" value="2"/>
-    <eLiterals name="EVENT_BASED" value="3" literal="event-based"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EEnum" name="EventTrigger">
-    <eLiterals name="NONE" literal="none"/>
-    <eLiterals name="MESSAGE" value="1" literal="message"/>
-    <eLiterals name="TIMER" value="2" literal="timer"/>
-    <eLiterals name="ERROR" value="3" literal="error"/>
-    <eLiterals name="SIGNAL" value="4" literal="signal"/>
-    <eLiterals name="TERMINATE" value="5" literal="terminate"/>
-    <eLiterals name="COMPENSATION" value="6" literal="compensation"/>
-    <eLiterals name="CONDITIONAL" value="7" literal="conditional"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EEnum" name="EventDirection">
-    <eLiterals name="CATCHING" literal="catching"/>
-    <eLiterals name="THROWING" value="1" literal="throwing"/>
   </eClassifiers>
 </ecore:EPackage>

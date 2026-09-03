@@ -165,7 +165,7 @@ events động, Event = parameters/guards/actions) là **khớp**. Ba điểm IR
 - **`Trace` và `Property` không thuộc Event-B chuẩn** — đây là phần dự án tự
   thêm: `Trace` là cơ chế truy vết (`_translation.md`, bảng `source element →
   Event-B identifier` đã nhắc ở báo cáo trước); `Property` là chỗ giữ công
-  thức LTL (Achieve/Maintain/Sustain/Recur) tách riêng khỏi `invariants` của
+  thức LTL (Achieve/Maintain/Sustain) tách riêng khỏi `invariants` của
   Machine, đúng như phân biệt "PO chứng minh an toàn, LTL/ProB chứng minh
   liveness" đã nói ở Mục 4.
 

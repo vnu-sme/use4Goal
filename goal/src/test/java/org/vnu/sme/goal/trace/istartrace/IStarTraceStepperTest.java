@@ -28,14 +28,14 @@ class IStarTraceStepperTest {
                     signal : Boolean;
                   }
                   group MonitorUnit {
-                    role Controller [1];
+                    Controller [1];
                   }
                 }
                 """);
         Files.writeString(istar, """
                 istar TraceMonitor {
                   role Controller {
-                    goal SignalObserved : Recur
+                    goal SignalObserved : Sustain
                     condition {[ self.enabled and self.signal ]}
                   }
                 }
@@ -61,27 +61,13 @@ class IStarTraceStepperTest {
         assertTrue(fulfilled.condition());
         assertEquals(GoalTaskStatus.FULFILLED, fulfilled.status());
 
-        var pendingAgain = result.steps().get(7).checkpoint().markings().get(key)
+        var violated = result.steps().get(7).checkpoint().markings().get(key)
                 .goalMarking("SignalObserved");
-        assertTrue(pendingAgain.active());
-        assertFalse(pendingAgain.condition());
-        assertEquals(GoalTaskStatus.PENDING, pendingAgain.status());
+        assertTrue(violated.active());
+        assertFalse(violated.condition());
+        assertEquals(GoalTaskStatus.VIOLATED, violated.status());
         assertTrue(result.steps().get(7).goalDelta().stream().anyMatch(delta ->
-                delta.contains("FULFILLED -> PENDING")));
-    }
-
-    @Test
-    void bundledMonitoringTraceIsImmediatelyRunnableFromTheAction() {
-        Path example = Path.of("src/main/resources/examples/monitoring");
-        IStarTraceStepper.Result result = new IStarTraceStepper().load(
-                example.resolve("monitoring.acl"), example.resolve("monitoring.istar"),
-                example.resolve("monitoring.soil"));
-        assertTrue(result.ok(), () -> String.join("\n", result.errors()));
-        assertFalse(result.steps().isEmpty());
-        assertTrue(result.steps().stream().anyMatch(step -> step.goalDelta().stream()
-                .anyMatch(delta -> delta.contains("PENDING -> FULFILLED"))));
-        assertTrue(result.steps().stream().anyMatch(step -> step.goalDelta().stream()
-                .anyMatch(delta -> delta.contains("FULFILLED -> PENDING"))));
+                delta.contains("FULFILLED -> VIOLATED")));
     }
 
     @Test

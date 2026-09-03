@@ -13,7 +13,7 @@ BPMN thực thi activity để tạo trạng thái ACL mới; sau mỗi lần nh
 - Refinement: AND, OR, `forall` và `pick`.
 - Quan hệ: contribution, qualification, needed-by, actor association và
   strategic dependency.
-- Goal type: `Achieve`, `Maintain`, `Sustain`, `Recur`.
+- Goal type: `Achieve`, `Maintain`, `Sustain`.
 
 `Obstacle`, `ObstacleType`, `Obstruction` và `Resolution` không thuộc metamodel
 iStar của dự án. Các từ khóa `obstacle`, `obstructs`, `resolves` trong file
@@ -172,21 +172,6 @@ status:      U -> P  -> F  -> F  -> V  -> V -> U
 
 Khác Maintain, Sustain không vi phạm chỉ vì condition chưa đúng ở đầu episode.
 Khác Achieve, Sustain không cho phép condition mất sau khi đã đạt.
-
-### 4. Recur
-
-Ý nghĩa: condition cần được đạt lặp lại. Status phản ánh checkpoint hiện tại
-và có thể chuyển qua lại giữa `PENDING` và `FULFILLED`.
-
-```text
-condition:   -   false true  false true  -
-status:      U -> P  -> F  -> P  -> F -> U
-```
-
-Một trace hữu hạn chỉ quan sát được các lần condition đã xuất hiện. Muốn chứng
-minh yêu cầu vô hạn “luôn còn một lần đạt tiếp theo” (`GF condition`) phải dùng
-model checking có loop/fairness, không thể kết luận chỉ bằng status cuối của
-một kịch bản hữu hạn.
 
 ## Task, Quality và propagation
 

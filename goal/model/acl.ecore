@@ -1,43 +1,113 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="acl" nsURI="https://vnu.edu.vn/sme/goal/acl/2.0" nsPrefix="acl">
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="acl" nsURI="https://vnu.edu.vn/sme/goal/acl/3.0" nsPrefix="acl">
   <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-    <details key="documentation" value="Canonical Ecore metamodel for ACL v2.0. Entity and Group use ordinary generalization; Role specialization is an explicit play-parent relationship; Group ownership never targets Entity."/>
+    <details key="documentation" value="High-level ACL DSL metamodel. Entity, Role, and Association specialize Object. Group specializes Entity and composes Entity and Role declarations."/>
   </eAnnotations>
   <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
     <details key="validationDelegates" value="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG"/>
   </eAnnotations>
   <eClassifiers xsi:type="ecore:EClass" name="AclModel">
-    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-      <details key="documentation" value="Root ACL schema. It composition-owns every classifier and structural relationship declaration."/>
-    </eAnnotations>
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
-      <details key="constraints" value="UniqueClassifierNames UniqueRelationshipNames UniquePrimitiveKinds ReservedAgentName StructuralReferencesStayInModel"/>
+      <details key="constraints" value="NonEmptyName UniqueObjectNames UniqueDataTypeNames"/>
     </eAnnotations>
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
-      <details key="UniqueClassifierNames" value="classifiers->isUnique(name)"/>
-      <details key="UniqueRelationshipNames" value="relationships->isUnique(name)"/>
-      <details key="UniquePrimitiveKinds" value="classifiers->select(c | c.oclIsTypeOf(PrimitiveType))->collect(c | c.oclAsType(PrimitiveType).kind)->isUnique(k | k)"/>
-      <details key="ReservedAgentName" value="classifiers->forAll(c | c.name &lt;> 'Agent')"/>
-      <details key="StructuralReferencesStayInModel" value="relationships->forAll(r | r.memberEnds->forAll(e | e.target.model = self)) and generalizations->forAll(g | g.specific.model = self and g.general.model = self) and roleSpecializations->forAll(r | r.child.model = self and r.parent.model = self) and owners->forAll(o | o.source.model = self and o.target.model = self) and compatibilities->forAll(c | c.group.model = self and c.fromRole.model = self and c.toRole.model = self)"/>
+      <details key="NonEmptyName" value="name.size() > 0"/>
+      <details key="UniqueObjectNames" value="Object.allInstances()->isUnique(name)"/>
+      <details key="UniqueDataTypeNames" value="dataTypes->isUnique(name)"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="version" lowerBound="1"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral="v2.0"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="classifiers" lowerBound="1"
-        upperBound="-1" eType="#//Classifier" containment="true" eOpposite="#//Classifier/model"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="relationships" upperBound="-1"
-        eType="#//Relationship" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="generalizations" upperBound="-1"
-        eType="#//Generalization" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="roleSpecializations" upperBound="-1"
-        eType="#//RoleSpecialization" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="owners" upperBound="-1"
-        eType="#//Owner" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="compatibilities" upperBound="-1"
-        eType="#//Compatibility" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="objects" upperBound="-1"
+        eType="#//Object" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dataTypes" upperBound="-1"
+        eType="#//DataType" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="orgctx" upperBound="-1"
+        eType="#//OrgCtx" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Classifier" abstract="true">
+  <eClassifiers xsi:type="ecore:EClass" name="Object" abstract="true">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="NonEmptyName UniqueAttributeNames"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="NonEmptyName" value="name.size() > 0"/>
+      <details key="UniqueAttributeNames" value="attributes->isUnique(name)"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributes" upperBound="-1"
+        eType="#//Attribute" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Entity" eSuperTypes="#//Object">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="NoSelfGeneralization AcyclicGeneralization"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="NoSelfGeneralization" value="not generalization->includes(self)"/>
+      <details key="AcyclicGeneralization" value="generalization->closure(e | e.generalization)->excludes(self)"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="generalization" eType="#//Entity"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="OrgCtx">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="A Group is both an Entity and a contained subsystem. It composes Entity declarations (including child Groups) and Role declarations."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="entities" upperBound="-1"
+        eType="#//Entity" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="roles" upperBound="-1"
+        eType="#//Role" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="orgctx" upperBound="-1"
+        eType="#//OrgCtx" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Role" eSuperTypes="#//Object">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="A Role may point to parent Roles through roleGeneralization and to co-playable Roles through the symmetric compatibility relation. Ordinary Associations between Roles are also permitted; the two dedicated links retain their organizational semantics."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="NoSelfRoleGeneralization AcyclicRoleGeneralization NoSelfCompatibility SymmetricCompatibility"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="NoSelfRoleGeneralization" value="not roleGeneralization->includes(self)"/>
+      <details key="AcyclicRoleGeneralization" value="roleGeneralization->closure(r | r.roleGeneralization)->excludes(self)"/>
+      <details key="NoSelfCompatibility" value="not compatibility->includes(self)"/>
+      <details key="SymmetricCompatibility" value="compatibility->forAll(r | r.compatibility->includes(self))"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="roleGeneralization" eType="#//Role"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="compatibility" upperBound="-1"
+        eType="#//Role"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Association" eSuperTypes="#//Object">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="An ACL association owns at least two AssociationEnds. Each end identifies its participating Object, optional role name, and lower/upper multiplicity bounds."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="UniqueEndRoles"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="UniqueEndRoles" value="ends->select(e | not e.role.oclIsUndefined())->isUnique(role)"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="ends" lowerBound="2"
+        upperBound="-1" eType="#//AssociationEnd" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AssociationEnd">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="One navigable end of an Association. Its lower and upper attributes define the end multiplicity; upper = -1 denotes an unbounded limit."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="NonEmptyRole ValidMultiplicity"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="NonEmptyRole" value="role.oclIsUndefined() or role.size() > 0"/>
+      <details key="ValidMultiplicity" value="lower >= 0 and (upper = -1 or upper >= lower) and not (lower = 0 and upper = 0)"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="role"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="lower" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt" defaultValueLiteral="1"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="upper" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt" defaultValueLiteral="1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" lowerBound="1"
+        eType="#//Object"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Attribute">
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
       <details key="constraints" value="NonEmptyName"/>
     </eAnnotations>
@@ -45,179 +115,20 @@
       <details key="NonEmptyName" value="name.size() > 0"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="model" lowerBound="1" eType="#//AclModel"
-        eOpposite="#//AclModel/classifiers"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="DataType" abstract="true" eSuperTypes="#//Classifier"/>
-  <eClassifiers xsi:type="ecore:EClass" name="PrimitiveType" eSuperTypes="#//DataType">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1" eType="#//PrimitiveKind"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Enumeration" eSuperTypes="#//DataType">
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
-      <details key="constraints" value="UniqueLiterals NonEmptyLiterals"/>
-    </eAnnotations>
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
-      <details key="UniqueLiterals" value="literals->isUnique(l | l)"/>
-      <details key="NonEmptyLiterals" value="literals->forAll(l | l.size() > 0)"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="literals" lowerBound="1"
-        upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Class" abstract="true" eSuperTypes="#//Classifier">
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
-      <details key="constraints" value="UniqueAttributeNames"/>
-    </eAnnotations>
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
-      <details key="UniqueAttributeNames" value="attributes->isUnique(name)"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="attributes" upperBound="-1"
-        eType="#//Attribute" containment="true" eOpposite="#//Attribute/owner"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Entity" eSuperTypes="#//Class"/>
-  <eClassifiers xsi:type="ecore:EClass" name="Group" eSuperTypes="#//Class"/>
-  <eClassifiers xsi:type="ecore:EClass" name="Role" eSuperTypes="#//Class"/>
-  <eClassifiers xsi:type="ecore:EClass" name="Attribute">
-    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-      <details key="documentation" value="An ACL property typed by any Classifier. Required is the default; optional changes multiplicity to 0..1. A Class-typed property denotes a unidirectional object-valued property; explicit Relationship remains available when both member ends and their multiplicities must be modeled."/>
-    </eAnnotations>
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
-      <details key="constraints" value="NonEmptyName EnumDefaultIsLiteral ClassTypedAttributeHasNoLiteralDefault"/>
-    </eAnnotations>
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
-      <details key="NonEmptyName" value="name.size() > 0"/>
-      <details key="EnumDefaultIsLiteral" value="defaultValue.oclIsUndefined() or not type.oclIsTypeOf(Enumeration) or type.oclAsType(Enumeration).literals->includes(defaultValue)"/>
-      <details key="ClassTypedAttributeHasNoLiteralDefault" value="not type.oclIsKindOf(Class) or defaultValue.oclIsUndefined()"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="optional" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="mutable" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="optional" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="mutable" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="defaultValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="type" lowerBound="1" eType="#//Classifier"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="owner" lowerBound="1" eType="#//Class"
-        eOpposite="#//Class/attributes"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" lowerBound="1" eType="#//DataType"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Relationship" abstract="true">
+  <eClassifiers xsi:type="ecore:EClass" name="DataType">
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
-      <details key="constraints" value="NonEmptyName DistinctEnds"/>
+      <details key="constraints" value="NonEmptyName"/>
     </eAnnotations>
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
       <details key="NonEmptyName" value="name.size() > 0"/>
-      <details key="DistinctEnds" value="memberEnds->at(1) &lt;> memberEnds->at(2)"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="memberEnds" lowerBound="2"
-        upperBound="2" eType="#//MemberEnd" containment="true"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Association" eSuperTypes="#//Relationship"/>
-  <eClassifiers xsi:type="ecore:EClass" name="Aggregation" eSuperTypes="#//Relationship">
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
-      <details key="constraints" value="HasEntityEndpoint"/>
-    </eAnnotations>
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
-      <details key="HasEntityEndpoint" value="memberEnds->exists(e | e.target.oclIsTypeOf(Entity))"/>
-    </eAnnotations>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Composition" eSuperTypes="#//Relationship">
-    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-      <details key="documentation" value="Ordered ends: memberEnds[1] is the whole/source and memberEnds[2] is the composite part/target."/>
-    </eAnnotations>
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
-      <details key="constraints" value="HasEntityEndpoint EntityCannotOwnRoleOrGroup UniqueCompositePart CompositionIsAcyclic"/>
-    </eAnnotations>
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
-      <details key="HasEntityEndpoint" value="memberEnds->exists(e | e.target.oclIsTypeOf(Entity))"/>
-      <details key="EntityCannotOwnRoleOrGroup" value="not memberEnds->at(1).target.oclIsTypeOf(Entity) or memberEnds->at(2).target.oclIsTypeOf(Entity)"/>
-      <details key="UniqueCompositePart" value="Composition.allInstances()->select(c | c.memberEnds->at(2).target = self.memberEnds->at(2).target)->size() = 1"/>
-      <details key="CompositionIsAcyclic" value="Set{memberEnds->at(2).target}->closure(c | Composition.allInstances()->select(r | r.memberEnds->at(1).target = c)->collect(r | r.memberEnds->at(2).target))->excludes(memberEnds->at(1).target)"/>
-    </eAnnotations>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="MemberEnd">
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
-      <details key="constraints" value="ValidMultiplicity"/>
-    </eAnnotations>
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
-      <details key="ValidMultiplicity" value="lower >= 0 and (upper = -1 or upper >= lower) and not (lower = 0 and upper = 0)"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="roleName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="lower" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="upper" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"
-        defaultValueLiteral="-1"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="target" lowerBound="1"
-        eType="#//Classifier"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Generalization">
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
-      <details key="constraints" value="DistinctClasses SameGeneralizationKind SingleDirectGeneral GeneralizationIsAcyclic NoInheritedAttributeRedefinition"/>
-    </eAnnotations>
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
-      <details key="DistinctClasses" value="specific &lt;> general"/>
-      <details key="SameGeneralizationKind" value="(specific.oclIsTypeOf(Entity) and general.oclIsTypeOf(Entity)) or (specific.oclIsTypeOf(Group) and general.oclIsTypeOf(Group))"/>
-      <details key="SingleDirectGeneral" value="Generalization.allInstances()->select(g | g.specific = self.specific)->size() = 1"/>
-      <details key="GeneralizationIsAcyclic" value="Set{general}->closure(c | Generalization.allInstances()->select(g | g.specific = c)->collect(general))->excludes(specific)"/>
-      <details key="NoInheritedAttributeRedefinition" value="specific.attributes->forAll(a | Set{general}->closure(c | Generalization.allInstances()->select(g | g.specific = c)->collect(general))->forAll(p | p.attributes->forAll(pa | pa.name &lt;> a.name)))"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="specific" lowerBound="1"
-        eType="#//Class"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="general" lowerBound="1"
-        eType="#//Class"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="RoleSpecialization">
-    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-      <details key="documentation" value="Play specialization, not OO inheritance. A child Role occurrence requires one parent Role occurrence and inherits no attributes."/>
-    </eAnnotations>
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
-      <details key="constraints" value="DistinctRoles SingleRoleParent RoleSpecializationIsAcyclic OwnerScopeNarrows"/>
-    </eAnnotations>
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
-      <details key="DistinctRoles" value="child &lt;> parent"/>
-      <details key="SingleRoleParent" value="RoleSpecialization.allInstances()->select(r | r.child = self.child)->size() = 1"/>
-      <details key="RoleSpecializationIsAcyclic" value="Set{parent}->closure(r | RoleSpecialization.allInstances()->select(s | s.child = r)->collect(parent))->excludes(child)"/>
-      <details key="OwnerScopeNarrows" value="Owner.allInstances()->select(o | o.target = self.parent)->isEmpty() or Owner.allInstances()->select(o | o.target = self.child)->exists(co | co.source = Owner.allInstances()->select(o | o.target = self.parent)->any(true).source or Set{co.source}->closure(g | Owner.allInstances()->select(x | x.target = g)->collect(source))->includes(Owner.allInstances()->select(o | o.target = self.parent)->any(true).source))"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="child" lowerBound="1" eType="#//Role"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="parent" lowerBound="1"
-        eType="#//Role"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Owner">
-    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-      <details key="documentation" value="Group containment of Role or child Group. Entity is deliberately excluded."/>
-    </eAnnotations>
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
-      <details key="constraints" value="ValidTarget ValidMultiplicity UniqueOwner GroupOwnershipIsAcyclic"/>
-    </eAnnotations>
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
-      <details key="ValidTarget" value="target.oclIsTypeOf(Role) or target.oclIsTypeOf(Group)"/>
-      <details key="ValidMultiplicity" value="lower >= 0 and (upper = -1 or upper >= lower) and not (lower = 0 and upper = 0)"/>
-      <details key="UniqueOwner" value="Owner.allInstances()->select(o | o.target = self.target)->size() = 1"/>
-      <details key="GroupOwnershipIsAcyclic" value="not target.oclIsTypeOf(Group) or Set{target.oclAsType(Group)}->closure(g | Owner.allInstances()->select(o | o.source = g and o.target.oclIsTypeOf(Group))->collect(o | o.target.oclAsType(Group)))->excludes(source)"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="lower" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="upper" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"
-        defaultValueLiteral="-1"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="source" lowerBound="1"
-        eType="#//Group"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="target" lowerBound="1"
-        eType="#//Class"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Compatibility">
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
-      <details key="constraints" value="DistinctRoles UniquePair RolesBelongToGroupScope"/>
-    </eAnnotations>
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
-      <details key="DistinctRoles" value="fromRole &lt;> toRole"/>
-      <details key="UniquePair" value="Compatibility.allInstances()->select(c | c &lt;> self and c.group = group)->forAll(c | not ((c.fromRole = fromRole and c.toRole = toRole) or (c.fromRole = toRole and c.toRole = fromRole)))"/>
-      <details key="RolesBelongToGroupScope" value="Set{fromRole,toRole}->forAll(r | Owner.allInstances()->select(o | o.target = r)->exists(ro | ro.source = group or Set{ro.source}->closure(g | Owner.allInstances()->select(x | x.target = g)->collect(source))->includes(group)))"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="group" lowerBound="1" eType="#//Group"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="fromRole" lowerBound="1"
-        eType="#//Role"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="toRole" lowerBound="1"
-        eType="#//Role"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EEnum" name="PrimitiveKind">
-    <eLiterals name="STRING" literal="String"/>
-    <eLiterals name="INTEGER" value="1" literal="Integer"/>
-    <eLiterals name="REAL" value="2" literal="Real"/>
-    <eLiterals name="BOOLEAN" value="3" literal="Boolean"/>
   </eClassifiers>
 </ecore:EPackage>

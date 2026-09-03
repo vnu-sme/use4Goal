@@ -94,19 +94,17 @@
       <details key="InheritedActivationIsNotRedeclared" value="activation.oclIsUndefined() or (not AndRefinement.allInstances()->exists(r | r.children->includes(self)) and not ForRefinement.allInstances()->exists(r | r.child = self) and not Dependency.allInstances()->exists(d | not d.dependerElement.oclIsUndefined() and d.dependerElement.oclIsKindOf(Goal) and d.dependeeElement = self))"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="goalType" eType="#//GoalType"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="activation" eType="#//IStarOclConstraint"
-        containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="condition" eType="#//IStarOclConstraint"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="condition" eType="#//Condition"
         containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Task" eSuperTypes="#//GoalTaskElement">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="precondition" eType="#//IStarOclConstraint"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="precondition" eType="#//Condition"
         containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="postcondition" eType="#//IStarOclConstraint"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="postcondition" eType="#//Condition"
         containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Resource" eSuperTypes="#//ConcreteIntentionalElement"/>
-  <eClassifiers xsi:type="ecore:EClass" name="IStarOclConstraint">
+  <eClassifiers xsi:type="ecore:EClass" name="Condition" instanceTypeName="EString">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
       <details key="documentation" value="An OCL state contract attached to a Goal or Task."/>
     </eAnnotations>
@@ -116,8 +114,9 @@
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
       <details key="NonEmptyOclBody" value="oclBody.size() > 0"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="oclBody" lowerBound="1"
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="condExpr" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="condLang" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IntentionalRelation" abstract="true">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -152,7 +151,7 @@
       <details key="NoDuplicateChildren" value="children->isUnique(id)"/>
       <details key="SingleRefinementParent" value="children->forAll(c | AndRefinement.allInstances()->select(r | r.children->includes(c))->forAll(r | r.parent = self.parent) and OrRefinement.allInstances()->select(r | r.children->includes(c))->forAll(r | r.parent = self.parent) and ParameterRefinement.allInstances()->select(r | r.child = c)->forAll(r | r.parent = self.parent))"/>
       <details key="OneRefinementKindPerParent" value="Refinement.allInstances()->select(r | r.parent = self.parent)->forAll(r | r.oclIsTypeOf(AndRefinement))"/>
-      <details key="GoalTypesAreCompatible" value="not parent.oclIsKindOf(Goal) or children->select(c | c.oclIsKindOf(Goal))->forAll(c | parent.oclAsType(Goal).goalType = GoalType::ACHIEVE or (parent.oclAsType(Goal).goalType = GoalType::MAINTAIN and c.oclAsType(Goal).goalType = GoalType::MAINTAIN) or (parent.oclAsType(Goal).goalType = GoalType::SUSTAIN and (c.oclAsType(Goal).goalType = GoalType::MAINTAIN or c.oclAsType(Goal).goalType = GoalType::SUSTAIN)) or (parent.oclAsType(Goal).goalType = GoalType::RECUR and c.oclAsType(Goal).goalType &lt;> GoalType::ACHIEVE))"/>
+      <details key="GoalTypesAreCompatible" value="not parent.oclIsKindOf(Goal) or children->select(c | c.oclIsKindOf(Goal))->forAll(c | parent.oclAsType(Goal).goalType = GoalType::ACHIEVE or (parent.oclAsType(Goal).goalType = GoalType::MAINTAIN and c.oclAsType(Goal).goalType = GoalType::MAINTAIN) or (parent.oclAsType(Goal).goalType = GoalType::SUSTAIN and (c.oclAsType(Goal).goalType = GoalType::MAINTAIN or c.oclAsType(Goal).goalType = GoalType::SUSTAIN)))"/>
       <details key="RefinementIsAcyclic" value="children->closure(c | AndRefinement.allInstances()->select(r | r.parent = c)->collect(children)->flatten()->union(OrRefinement.allInstances()->select(r | r.parent = c)->collect(children)->flatten())->union(ParameterRefinement.allInstances()->select(r | r.parent = c)->collect(child)))->excludes(parent)"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="children" lowerBound="2"
@@ -171,53 +170,11 @@
       <details key="NoDuplicateChildren" value="children->isUnique(id)"/>
       <details key="SingleRefinementParent" value="children->forAll(c | AndRefinement.allInstances()->select(r | r.children->includes(c))->forAll(r | r.parent = self.parent) and OrRefinement.allInstances()->select(r | r.children->includes(c))->forAll(r | r.parent = self.parent) and ParameterRefinement.allInstances()->select(r | r.child = c)->forAll(r | r.parent = self.parent))"/>
       <details key="OneRefinementKindPerParent" value="Refinement.allInstances()->select(r | r.parent = self.parent)->forAll(r | r.oclIsTypeOf(OrRefinement))"/>
-      <details key="GoalTypesAreCompatible" value="not parent.oclIsKindOf(Goal) or children->select(c | c.oclIsKindOf(Goal))->forAll(c | parent.oclAsType(Goal).goalType = GoalType::ACHIEVE or (parent.oclAsType(Goal).goalType = GoalType::MAINTAIN and c.oclAsType(Goal).goalType = GoalType::MAINTAIN) or (parent.oclAsType(Goal).goalType = GoalType::SUSTAIN and (c.oclAsType(Goal).goalType = GoalType::MAINTAIN or c.oclAsType(Goal).goalType = GoalType::SUSTAIN)) or (parent.oclAsType(Goal).goalType = GoalType::RECUR and c.oclAsType(Goal).goalType &lt;> GoalType::ACHIEVE))"/>
+      <details key="GoalTypesAreCompatible" value="not parent.oclIsKindOf(Goal) or children->select(c | c.oclIsKindOf(Goal))->forAll(c | parent.oclAsType(Goal).goalType = GoalType::ACHIEVE or (parent.oclAsType(Goal).goalType = GoalType::MAINTAIN and c.oclAsType(Goal).goalType = GoalType::MAINTAIN) or (parent.oclAsType(Goal).goalType = GoalType::SUSTAIN and (c.oclAsType(Goal).goalType = GoalType::MAINTAIN or c.oclAsType(Goal).goalType = GoalType::SUSTAIN)))"/>
       <details key="RefinementIsAcyclic" value="children->closure(c | AndRefinement.allInstances()->select(r | r.parent = c)->collect(children)->flatten()->union(OrRefinement.allInstances()->select(r | r.parent = c)->collect(children)->flatten())->union(ParameterRefinement.allInstances()->select(r | r.parent = c)->collect(child)))->excludes(parent)"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="children" lowerBound="1"
         upperBound="-1" eType="#//GoalTaskElement"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ParameterRefinement" abstract="true"
-      eSuperTypes="#//Refinement">
-    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-      <details key="documentation" value="A refinement whose child is instantiated over an ACL actor type."/>
-    </eAnnotations>
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
-      <details key="constraints" value="ChildOwnedByRelationActor ParentIsNotChild ActorTypeInSameModel SingleRefinementParent GoalTypesAreCompatible RefinementIsAcyclic"/>
-    </eAnnotations>
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
-      <details key="ChildOwnedByRelationActor" value="child.owner = owner"/>
-      <details key="ParentIsNotChild" value="child &lt;> parent"/>
-      <details key="ActorTypeInSameModel" value="actorType.model = owner.model"/>
-      <details key="SingleRefinementParent" value="AndRefinement.allInstances()->select(r | r.children->includes(self.child))->forAll(r | r.parent = self.parent) and OrRefinement.allInstances()->select(r | r.children->includes(self.child))->forAll(r | r.parent = self.parent) and ParameterRefinement.allInstances()->select(r | r.child = self.child)->forAll(r | r.parent = self.parent)"/>
-      <details key="GoalTypesAreCompatible" value="not parent.oclIsKindOf(Goal) or not child.oclIsKindOf(Goal) or parent.oclAsType(Goal).goalType = GoalType::ACHIEVE or (parent.oclAsType(Goal).goalType = GoalType::MAINTAIN and child.oclAsType(Goal).goalType = GoalType::MAINTAIN) or (parent.oclAsType(Goal).goalType = GoalType::SUSTAIN and (child.oclAsType(Goal).goalType = GoalType::MAINTAIN or child.oclAsType(Goal).goalType = GoalType::SUSTAIN)) or (parent.oclAsType(Goal).goalType = GoalType::RECUR and child.oclAsType(Goal).goalType &lt;> GoalType::ACHIEVE)"/>
-      <details key="RefinementIsAcyclic" value="Set{child}->closure(c | AndRefinement.allInstances()->select(r | r.parent = c)->collect(children)->flatten()->union(OrRefinement.allInstances()->select(r | r.parent = c)->collect(children)->flatten())->union(ParameterRefinement.allInstances()->select(r | r.parent = c)->collect(child)))->excludes(parent)"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="child" lowerBound="1" eType="#//GoalTaskElement"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="actorType" lowerBound="1"
-        eType="#//Actor"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ForRefinement" eSuperTypes="#//ParameterRefinement">
-    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-      <details key="documentation" value="Quantified AND refinement: instantiate the child for every matching actor occurrence."/>
-    </eAnnotations>
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
-      <details key="constraints" value="OneRefinementKindPerParent"/>
-    </eAnnotations>
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
-      <details key="OneRefinementKindPerParent" value="Refinement.allInstances()->select(r | r.parent = self.parent)->forAll(r | r.oclIsTypeOf(ForRefinement))"/>
-    </eAnnotations>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="PickRefinement" eSuperTypes="#//ParameterRefinement">
-    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-      <details key="documentation" value="Quantified choice: one matching actor occurrence is sufficient."/>
-    </eAnnotations>
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
-      <details key="constraints" value="OneRefinementKindPerParent"/>
-    </eAnnotations>
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
-      <details key="OneRefinementKindPerParent" value="Refinement.allInstances()->select(r | r.parent = self.parent)->forAll(r | r.oclIsTypeOf(PickRefinement))"/>
-    </eAnnotations>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Contribution" eSuperTypes="#//IntentionalRelation">
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
@@ -300,7 +257,6 @@
     <eLiterals name="ACHIEVE" literal="Achieve"/>
     <eLiterals name="MAINTAIN" value="1" literal="Maintain"/>
     <eLiterals name="SUSTAIN" value="2" literal="Sustain"/>
-    <eLiterals name="RECUR" value="3" literal="Recur"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="ContributionType">
     <eLiterals name="MAKE" literal="Make"/>

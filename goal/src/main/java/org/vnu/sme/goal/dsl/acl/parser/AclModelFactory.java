@@ -50,22 +50,31 @@ public final class AclModelFactory {
             Map<String,AclEntity> entityMap=indexEntity(entities); Map<String,AclRole> roleMap=indexRole(roles);
             List<AclGroup> groups=ast.groups().stream().map(x->group(x,entityMap,roleMap)).toList();
             List<AclCompatibility> compatibility=ast.compatibilities().stream().map(this::compatibility).toList();
-            groups=groups.stream().map(g->new AclGroup(g.name(),g.specializes(),g.attributes(),g.members(),g.roles(),g.subgroups(),compatibility.stream().filter(c->c.groupName().equals(g.name())).toList())).toList();
+            Map<String,AclGroup> declaredGroups=indexGroup(groups);
+            groups=groups.stream().map(g->new AclGroup(g.name(),g.specializes(),g.attributes(),
+                    g.members(),g.roles(),g.entities(),
+                    g.members().stream().filter(m->declaredGroups.containsKey(m.type()))
+                            .map(m->new AclSubgroupMembership(declaredGroups.get(m.type()),m.multiplicity())).toList(),
+                    compatibility.stream().filter(c->c.groupName().equals(g.name())).toList(),
+                    g.roleEntityRelations(),g.cardinalityConstraints(),g.isOrganizationalContext())).toList();
             Map<String,AclGroup> groupMap=indexGroup(groups);
             List<AclRelation> relations=new ArrayList<>();
             for(var source:ast.groups()) for(var member:source.members()) {
-                if (roleMap.containsKey(member.type()) || groupMap.containsKey(member.type())) {
+                if (roleMap.containsKey(member.type()) || groupMap.containsKey(member.type())
+                        || (source.organizationalContext() && entityMap.containsKey(member.type()))) {
                     relations.add(new AclRelation(RelationKind.COMPOSITION,
                             AclContainment.relationName(source.name(), member.type()),
                             new AclEndpoint(source.name(), AclCardinality.bounded(1, 1),
-                                    Optional.of(AclContainment.wholeRoleName())),
+                                    Optional.of(source.organizationalContext()
+                                            ? "orgContext" : AclContainment.wholeRoleName())),
                             new AclEndpoint(member.type(), cardinality(member.multiplicity()),
-                                    Optional.of(AclContainment.partRoleName(member.type())))));
+                                    Optional.of(source.organizationalContext()
+                                            ? lowerFirst(member.type()) : AclContainment.partRoleName(member.type())))));
                 }
             }
             for(var x:ast.relations())relations.add(relation(x));
             for(var source:ast.groups()) for(var member:source.members()) {
-                if(entityMap.containsKey(member.type())) {
+                if(!source.organizationalContext() && entityMap.containsKey(member.type())) {
                     error(member.location(), "Entity '"+member.type()+"' cannot be a member of Group '"
                             +source.name()+"'; declare an explicit association, aggregation, or composition instead");
                 }
@@ -88,7 +97,9 @@ public final class AclModelFactory {
         private AclGroup group(AclGroupCS x,Map<String,AclEntity> entities,Map<String,AclRole> roles){
             List<AclGroupMember> members=x.members().stream().map(m->new AclGroupMember(m.type(),cardinality(m.multiplicity()))).toList();
             List<AclRoleMembership> rp=members.stream().filter(m->roles.containsKey(m.type())).map(m->new AclRoleMembership(m.type(),m.multiplicity())).toList();
-            return new AclGroup(x.name(),x.specializes(),attributes(x.name(),x.attributes()),members,rp,List.of(),List.of());
+            List<AclEntityMembership> ep=members.stream().filter(m->entities.containsKey(m.type())).map(m->new AclEntityMembership(m.type(),m.multiplicity())).toList();
+            return new AclGroup(x.name(),x.specializes(),attributes(x.name(),x.attributes()),
+                    members,rp,ep,List.of(),List.of(),List.of(),List.of(),x.organizationalContext());
         }
         private AclRelation relation(AclRelationCS x){ List<AclEndpoint> e=x.endpoints().stream().map(v->new AclEndpoint(v.type(),cardinality(v.multiplicity()),v.roleName())).toList(); return new AclRelation(RelationKind.fromSource(x.kind()),x.name(),e.get(0),e.get(1)); }
         private AclCompatibility compatibility(AclCompatibilityCS x){
@@ -143,6 +154,11 @@ public final class AclModelFactory {
         private static Map<String,AclRole> indexRole(List<AclRole>x){Map<String,AclRole>m=new HashMap<>();x.forEach(v->m.put(v.name(),v));return m;}
         private static Map<String,AclGroup> indexGroup(List<AclGroup>x){Map<String,AclGroup>m=new HashMap<>();x.forEach(v->m.put(v.name(),v));return m;}
         void error(AclSourceLocationCS l,String m){errors.add(new SemanticError(l,m));}
+
+        private static String lowerFirst(String value) {
+            if (value == null || value.isEmpty()) return value;
+            return Character.toLowerCase(value.charAt(0)) + value.substring(1);
+        }
 
         private static boolean validPrimitiveDefault(String type, String value) {
             return switch (type) {

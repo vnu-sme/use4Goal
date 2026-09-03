@@ -71,7 +71,9 @@ public final class DiagramModelBrowser extends JPanel {
 
     public static DiagramModelBrowser forAcl(AclModel model) {
         DefaultMutableTreeNode root = node("ACL: " + model.name(), "ACL structural specification",
-                "Version", model.version(), "Root group", model.rootGroup().name());
+                "Version", model.version(),
+                model.rootGroup().isOrganizationalContext() ? "Root organizational context" : "Root group",
+                model.rootGroup().name());
         DefaultMutableTreeNode enums = group(root, "Enums", model.enums().size());
         model.enums().forEach(value -> enums.add(node("Enum: " + value.name(), "Enumeration",
                 "Literals", String.join(", ", value.literals()))));
@@ -146,8 +148,12 @@ public final class DiagramModelBrowser extends JPanel {
     }
 
     private static DefaultMutableTreeNode aclGroup(AclGroup value, boolean rootGroup) {
-        DefaultMutableTreeNode result = node((rootGroup ? "Root group: " : "Subgroup: ") + value.name(),
-                "ACL group specification");
+        String prefix = value.isOrganizationalContext()
+                ? (rootGroup ? "Root orgContext: " : "Nested orgContext: ")
+                : (rootGroup ? "Root group: " : "Subgroup: ");
+        DefaultMutableTreeNode result = node(prefix + value.name(),
+                value.isOrganizationalContext()
+                        ? "ACL organizational context" : "ACL group specification");
         DefaultMutableTreeNode roles = group(result, "Role memberships", value.roles().size());
         value.roles().forEach(v -> roles.add(node(v.roleName() + " " + cardinality(v.cardinality()), "Role membership")));
         DefaultMutableTreeNode entities = group(result, "Entity memberships", value.entities().size());

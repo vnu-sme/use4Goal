@@ -65,6 +65,18 @@ public interface ACLVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSpecializesClause(ACLParser.SpecializesClauseContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link ACLParser#orgContextDecl}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOrgContextDecl(ACLParser.OrgContextDeclContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ACLParser#orgContextItem}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOrgContextItem(ACLParser.OrgContextItemContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link ACLParser#attributeBlock}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

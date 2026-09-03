@@ -124,7 +124,6 @@ Goal type được dịch vào tệp TOCL:
 Achieve  G -> sometime G_condition()
 Maintain G -> always G_condition()
 Sustain  G -> sometime (always G_condition())
-Recur    G -> tạm thời không sinh công thức
 ```
 
 Ví dụ:

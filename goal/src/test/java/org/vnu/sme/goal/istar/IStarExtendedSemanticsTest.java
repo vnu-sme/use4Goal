@@ -170,19 +170,7 @@ class IStarExtendedSemanticsTest {
     }
 
     @Test
-    void monitoringExampleProvidesARealAclContextForRecur() throws Exception {
-        Path base = Path.of("src/main/resources/examples/monitoring");
-        var acl = AclCompiler.compile(base.resolve("monitoring.acl"));
-        var istar = IStarCompiler.compile(base.resolve("monitoring.istar"));
-        assertTrue(acl.ok(), () -> String.join("\n", acl.errors()));
-        assertTrue(istar.ok(), () -> String.join("\n", istar.errors()));
-        assertEquals(org.vnu.sme.goal.dsl.istar.mm.GoalType.RECUR,
-                ((org.vnu.sme.goal.dsl.istar.mm.Goal) istar.model()
-                        .findElement("ServiceChecked").orElseThrow()).goalType());
-    }
-
-    @Test
-    void supportsTheFourTemporalGoalTypes() throws Exception {
+    void supportsTheThreeTemporalGoalTypes() throws Exception {
         var model = compile("""
                 istar TemporalTypes {
                   role Controller {
@@ -192,8 +180,6 @@ class IStarExtendedSemanticsTest {
                       condition {[ true ]}
                     goal EventuallySustained : Sustain
                       condition {[ true ]}
-                    goal PeriodicallyChecked : Recur
-                      condition {[ true ]}
                   }
                 }
                 """);
@@ -201,12 +187,22 @@ class IStarExtendedSemanticsTest {
                 ((org.vnu.sme.goal.dsl.istar.mm.Goal) model.findElement("EventuallyReady").orElseThrow()).goalType());
         assertEquals(org.vnu.sme.goal.dsl.istar.mm.GoalType.SUSTAIN,
                 ((org.vnu.sme.goal.dsl.istar.mm.Goal) model.findElement("EventuallySustained").orElseThrow()).goalType());
-        assertEquals(org.vnu.sme.goal.dsl.istar.mm.GoalType.RECUR,
-                ((org.vnu.sme.goal.dsl.istar.mm.Goal) model.findElement("PeriodicallyChecked").orElseThrow()).goalType());
     }
 
     @Test
-    void traceRuntimeDistinguishesTheFourTemporalStatuses() throws Exception {
+    void rejectsRemovedRecurGoalType() {
+        IStarCompiler.Result result = IStarCompiler.compile("""
+                istar RemovedGoalType {
+                  role Controller {
+                    goal PeriodicallyChecked : Recur
+                  }
+                }
+                """);
+        assertFalse(result.ok());
+    }
+
+    @Test
+    void traceRuntimeDistinguishesTheThreeTemporalStatuses() throws Exception {
         Path istarFile = temporaryDirectory.resolve("temporal-runtime.istar");
         Path useFile = temporaryDirectory.resolve("temporal-runtime.use");
         Path soilFile = temporaryDirectory.resolve("temporal-runtime.soil");
@@ -216,7 +212,6 @@ class IStarExtendedSemanticsTest {
                     goal Achieved : Achieve condition {[ self.p ]}
                     goal Maintained : Maintain condition {[ self.p ]}
                     goal Sustained : Sustain condition {[ self.p ]}
-                    goal Recurrent : Recur condition {[ self.p ]}
                   }
                 }
                 """);
@@ -245,7 +240,6 @@ class IStarExtendedSemanticsTest {
         // cannot recover from a violation, so it stays VIOLATED even after p becomes true here.
         assertEquals(GoalTaskStatus.VIOLATED, pTrue.goalTaskStatus("Maintained"));
         assertEquals(GoalTaskStatus.FULFILLED, pTrue.goalTaskStatus("Sustained"));
-        assertEquals(GoalTaskStatus.FULFILLED, pTrue.goalTaskStatus("Recurrent"));
 
         var pFalseAgain = result.checkpoints().get(2).markings().get(key);
         assertEquals(GoalTaskStatus.FULFILLED, pFalseAgain.goalTaskStatus("Achieved"),
@@ -254,8 +248,6 @@ class IStarExtendedSemanticsTest {
                 "Maintain must hold continuously once active");
         assertEquals(GoalTaskStatus.VIOLATED, pFalseAgain.goalTaskStatus("Sustained"),
                 "Sustain must not regress once first satisfied");
-        assertEquals(GoalTaskStatus.PENDING, pFalseAgain.goalTaskStatus("Recurrent"),
-                "Recur may fall back to pending between occurrences");
     }
 
     @Test

@@ -1,0 +1,28 @@
+acl-bpmn-boundary v1.0 CustomerComplaintBound {
+  snapshots 24;
+  loop-bound 1;
+  integer 0..8;
+
+  objects CustomerComplaintCase 1;
+  objects Customer 1;
+  objects FieldPerson 1;
+  objects Nutritionist 1;
+  objects CustomerManager 1;
+  objects LabManager 1;
+  objects CFO 1;
+  objects CEO 1;
+  objects Accountant 1;
+  objects QualityCommittee 1;
+  objects Complaint 1;
+
+  links CustomerComplaintCase_contains_Customer 1;
+  links CustomerComplaintCase_contains_FieldPerson 1;
+  links CustomerComplaintCase_contains_Nutritionist 1;
+  links CustomerComplaintCase_contains_CustomerManager 1;
+  links CustomerComplaintCase_contains_LabManager 1;
+  links CustomerComplaintCase_contains_CFO 1;
+  links CustomerComplaintCase_contains_CEO 1;
+  links CustomerComplaintCase_contains_Accountant 1;
+  links CustomerComplaintCase_contains_QualityCommittee 1;
+  links CustomerComplaintCase_contains_Complaint 1;
+}

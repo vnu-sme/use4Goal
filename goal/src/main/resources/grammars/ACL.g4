@@ -8,6 +8,7 @@ topLevelDecl
     : enumDecl
     | entityDecl
     | roleDecl
+    | orgContextDecl
     | groupDecl
     | entityRelationDecl
     | invariantDecl
@@ -21,6 +22,7 @@ oclExpression : oclToken+ ;
 oclToken
     : IDENT
     | 'group'
+    | 'orgContext'
     | STRING_LITERAL
     | SIGNED_NUMBER
     | BOOLEAN
@@ -36,6 +38,17 @@ enumDecl : 'enum' IDENT '{' IDENT (',' IDENT)* ','? '}' ;
 entityDecl : 'entity' IDENT specializesClause? (';' | attributeBlock) ;
 roleDecl : 'role' IDENT specializesClause? (';' | attributeBlock) ;
 specializesClause : ('specializes' | 'extends') IDENT ;
+
+// An organizational context is a structural container.  Unlike the legacy
+// Group declaration it owns declarations directly and cannot carry state
+// attributes of its own.
+orgContextDecl : 'orgContext' IDENT '{' orgContextItem* '}' ;
+orgContextItem
+    : entityDecl
+    | roleDecl
+    | orgContextDecl
+    | compatibilityDecl
+    ;
 
 attributeBlock : '{' attributeDecl* '}' ;
 attributeDecl : 'attribute'? IDENT ':' IDENT attributeModifier* defaultClause? ';' ;

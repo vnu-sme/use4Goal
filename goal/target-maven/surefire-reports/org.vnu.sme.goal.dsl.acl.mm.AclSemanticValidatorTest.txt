@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: org.vnu.sme.goal.dsl.acl.mm.AclSemanticValidatorTest
 -------------------------------------------------------------------------------
-Tests run: 11, Failures: 5, Errors: 0, Skipped: 0, Time elapsed: 0.032 s <<< FAILURE! -- in org.vnu.sme.goal.dsl.acl.mm.AclSemanticValidatorTest
-org.vnu.sme.goal.dsl.acl.mm.AclSemanticValidatorTest.rejectsCompositionWithEntityAsWholeOverNonEntity -- Time elapsed: 0.003 s <<< FAILURE!
+Tests run: 11, Failures: 5, Errors: 0, Skipped: 0, Time elapsed: 0.172 s <<< FAILURE! -- in org.vnu.sme.goal.dsl.acl.mm.AclSemanticValidatorTest
+org.vnu.sme.goal.dsl.acl.mm.AclSemanticValidatorTest.rejectsCompositionWithEntityAsWholeOverNonEntity -- Time elapsed: 0.069 s <<< FAILURE!
 org.opentest4j.AssertionFailedError: expected: <false> but was: <true>
 	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
 	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
@@ -15,7 +15,7 @@ org.opentest4j.AssertionFailedError: expected: <false> but was: <true>
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
 
-org.vnu.sme.goal.dsl.acl.mm.AclSemanticValidatorTest.rejectsCompatibilityDeclaredOutsideEitherRolesOwnershipScope -- Time elapsed: 0.002 s <<< FAILURE!
+org.vnu.sme.goal.dsl.acl.mm.AclSemanticValidatorTest.rejectsCompatibilityDeclaredOutsideEitherRolesOwnershipScope -- Time elapsed: 0.006 s <<< FAILURE!
 org.opentest4j.AssertionFailedError: expected: <false> but was: <true>
 	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
 	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
@@ -28,7 +28,7 @@ org.opentest4j.AssertionFailedError: expected: <false> but was: <true>
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
 
-org.vnu.sme.goal.dsl.acl.mm.AclSemanticValidatorTest.rejectsRoleParentAcrossUnrelatedGroupTrees -- Time elapsed: 0.001 s <<< FAILURE!
+org.vnu.sme.goal.dsl.acl.mm.AclSemanticValidatorTest.rejectsRoleParentAcrossUnrelatedGroupTrees -- Time elapsed: 0.002 s <<< FAILURE!
 org.opentest4j.AssertionFailedError: expected: <false> but was: <true>
 	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
 	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
@@ -41,7 +41,7 @@ org.opentest4j.AssertionFailedError: expected: <false> but was: <true>
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
 
-org.vnu.sme.goal.dsl.acl.mm.AclSemanticValidatorTest.allBundledAclExamplesAreCanonicalAndSemanticallyValid -- Time elapsed: 0.008 s <<< FAILURE!
+org.vnu.sme.goal.dsl.acl.mm.AclSemanticValidatorTest.allBundledAclExamplesAreCanonicalAndSemanticallyValid -- Time elapsed: 0.028 s <<< FAILURE!
 org.opentest4j.AssertionFailedError: 
 src/main/resources/examples/enterprise/enterprise.acl
 src/main/resources/examples/enterprise/enterprise.acl:17:0: semantic: relationship 'mentors' between Role/Group classifiers must be a binary composition from a Group to a different Role or Group
@@ -59,7 +59,7 @@ src/main/resources/examples/enterprise/enterprise.acl:17:0: semantic: relationsh
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
 
-org.vnu.sme.goal.dsl.acl.mm.AclSemanticValidatorTest.rejectsUnownedChildBelowOwnedRoleAncestorEvenThroughUnownedIntermediate -- Time elapsed: 0.001 s <<< FAILURE!
+org.vnu.sme.goal.dsl.acl.mm.AclSemanticValidatorTest.rejectsUnownedChildBelowOwnedRoleAncestorEvenThroughUnownedIntermediate -- Time elapsed: 0.002 s <<< FAILURE!
 org.opentest4j.AssertionFailedError: expected: <false> but was: <true>
 	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
 	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)

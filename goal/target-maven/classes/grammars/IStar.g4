@@ -22,7 +22,7 @@ grammar IStar;
 //
 //  istar ModelName {
 //    role|agent ActorName {
-//      goal     GoalId [: Achieve|Maintain|Sustain|Recur] rel* [ocl {[ raw-OCL ]}]
+//      goal     GoalId [: Achieve|Maintain|Sustain] rel* [ocl {[ raw-OCL ]}]
 //      task     TaskId                            rel* [ocl {[ raw-OCL ]}]
 //      resource ResourceId                        rel*
 //      quality  QualityId                         rel*
@@ -71,7 +71,7 @@ actorBody
     ;
 
 goalType : ':' goalTypeName ;
-goalTypeName : 'Achieve' | 'Maintain' | 'Sustain' | 'Recur' ;
+goalTypeName : 'Achieve' | 'Maintain' | 'Sustain' ;
 
 rel
     : '>' target=IDENT                                                                    # relAnd

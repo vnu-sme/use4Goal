@@ -94,10 +94,10 @@ istar MeetingScheduler {
 ```event-b
 SETS GOAL_DECL GOAL_KIND
 CONSTANTS
-  g_MeetingOrganized ACHIEVE MAINTAIN SUSTAIN RECUR goalKind
+  g_MeetingOrganized ACHIEVE MAINTAIN SUSTAIN goalKind
 AXIOMS
   partition(GOAL_DECL,{g_MeetingOrganized})
-  partition(GOAL_KIND,{ACHIEVE},{MAINTAIN},{SUSTAIN},{RECUR})
+  partition(GOAL_KIND,{ACHIEVE},{MAINTAIN},{SUSTAIN})
   goalKind ∈ GOAL_DECL → GOAL_KIND
   goalKind(g_MeetingOrganized)=ACHIEVE
 ```
@@ -559,11 +559,10 @@ after-expression vào Goal predicates.
 Achieve:  G({READY ∧ Act(gi)} => F {READY ∧ Eval(gi)})
 Maintain: G({READY ∧ Act(gi)} => {Eval(gi)})
 Sustain:  G({READY ∧ Act(gi)} => (!{Eval(gi)} U G {Eval(gi)}))
-Recur:    G({READY ∧ Act(gi)} => G F {READY ∧ Eval(gi)})
 ```
 
 Maintain có thể trở thành Machine invariant được guard bởi `READY`. Achieve,
-Sustain, Recur là temporal properties; Rodin invariant proofs không chứng minh
+Sustain là temporal property; Rodin invariant proofs không chứng minh
 eventuality. ProB/temporal backend phải kiểm chúng cùng dependency LTL.
 
 ## R14 — Quality declaration, occurrence và Contribution → instance marking
@@ -658,7 +657,7 @@ Definitions:
 Event:
   EvaluateAllGoals (DIRTY→READY, full-tree evaluation)
 Temporal properties:
-  Achieve/Maintain/Sustain/Recur and dependency LTL,
+  Achieve/Maintain/Sustain and dependency LTL,
   observed only at READY checkpoints
 ```
 

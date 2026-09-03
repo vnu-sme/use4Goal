@@ -33,7 +33,6 @@ public record GoalMarking(GoalType type, boolean active, boolean condition, bool
                     ? GoalTaskStatus.FULFILLED : GoalTaskStatus.VIOLATED;
             case SUSTAIN -> !stable ? GoalTaskStatus.VIOLATED
                     : condition ? GoalTaskStatus.FULFILLED : GoalTaskStatus.PENDING;
-            case RECUR -> condition ? GoalTaskStatus.FULFILLED : GoalTaskStatus.PENDING;
         };
     }
 

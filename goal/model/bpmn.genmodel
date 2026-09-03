@@ -11,21 +11,6 @@
       <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//GatewayKind/XOR"/>
       <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//GatewayKind/AND"/>
       <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//GatewayKind/OR"/>
-      <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//GatewayKind/EVENT_BASED"/>
-    </genEnums>
-    <genEnums typeSafeEnumCompatible="false" ecoreEnum="bpmn.ecore#//EventTrigger">
-      <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//EventTrigger/NONE"/>
-      <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//EventTrigger/MESSAGE"/>
-      <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//EventTrigger/TIMER"/>
-      <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//EventTrigger/ERROR"/>
-      <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//EventTrigger/SIGNAL"/>
-      <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//EventTrigger/TERMINATE"/>
-      <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//EventTrigger/COMPENSATION"/>
-      <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//EventTrigger/CONDITIONAL"/>
-    </genEnums>
-    <genEnums typeSafeEnumCompatible="false" ecoreEnum="bpmn.ecore#//EventDirection">
-      <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//EventDirection/CATCHING"/>
-      <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//EventDirection/THROWING"/>
     </genEnums>
     <genClasses ecoreClass="bpmn.ecore#//BpmnModel">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//BpmnModel/name"/>
@@ -64,9 +49,7 @@
     <genClasses ecoreClass="bpmn.ecore#//Gateway">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//Gateway/kind"/>
     </genClasses>
-    <genClasses image="false" ecoreClass="bpmn.ecore#//Event">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//Event/trigger"/>
-    </genClasses>
+    <genClasses image="false" ecoreClass="bpmn.ecore#//Event"/>
     <genClasses ecoreClass="bpmn.ecore#//StartEvent"/>
     <genClasses ecoreClass="bpmn.ecore#//EndEvent"/>
     <genClasses ecoreClass="bpmn.ecore#//IntermediateEvent">
@@ -80,8 +63,9 @@
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference bpmn.ecore#//SequenceFlow/target"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference bpmn.ecore#//SequenceFlow/guard"/>
     </genClasses>
-    <genClasses ecoreClass="bpmn.ecore#//BpmnOclConstraint">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//BpmnOclConstraint/oclBody"/>
+    <genClasses ecoreClass="bpmn.ecore#//Condtion">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//Condtion/condExpr"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//Condtion/condLang"/>
     </genClasses>
     <genClasses ecoreClass="bpmn.ecore#//Message">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//Message/id"/>

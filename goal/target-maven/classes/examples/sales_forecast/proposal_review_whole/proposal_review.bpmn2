@@ -1,5 +1,5 @@
-// AS-IS ProposalReview process.  Both control-flow branches reach End, but
-// the changes-requested branch omits the required re-validation of revision r2.
+// AS-IS ProposalReview process. Both branches reach End, but the
+// changes-requested branch does not revalidate the updated revision.
 model ProposalReviewProcess {
   pool ProposalReview for ProposalReviewCase {
     name "Proposal review — AS-IS missing re-validation"
@@ -11,10 +11,15 @@ model ProposalReviewProcess {
     lane ProposalManager
     trigger none
     pre {[
-      not self.prepared
-      and self.currentRevision = #none
-      and self.validationRevision = #none
-      and not self.sent
+      not self.proposal.prepared
+      and self.proposal.currentRevision = 0
+      and self.proposal.validationRevision = 0
+      and self.proposal.incorporatedChangeCount = 0
+      and not self.proposal.finalized
+      and not self.proposal.sent
+      and self.proposal.sentRevision = 0
+      and not self.customer.reviewCompleted
+      and self.customer.requestedChangeCount = 0
     ]}
     flow prepareProposal
   }
@@ -24,12 +29,15 @@ model ProposalReviewProcess {
     type task
     lane ProposalManager
     post {[
-      self.prepared
-      and self.currentRevision = #r1
-      and self.validationRevision = #none
-      and not self.reviewCompleted
-      and not self.finalized
-      and not self.sent
+      self.proposal.prepared
+      and self.proposal.currentRevision = 1
+      and self.proposal.validationRevision = 0
+      and self.proposal.incorporatedChangeCount = 0
+      and not self.proposal.finalized
+      and not self.proposal.sent
+      and self.proposal.sentRevision = 0
+      and not self.customer.reviewCompleted
+      and self.customer.requestedChangeCount = 0
     ]}
     flow validateProposal
   }
@@ -38,11 +46,26 @@ model ProposalReviewProcess {
     name "Validate proposal"
     type task
     lane ProposalManager
+    pre {[
+      self.proposal.prepared
+      and self.proposalManager.authorityLevel >=
+        self.proposal.requiredAuthorityLevel
+    ]}
     post {[
-      self.prepared
-      and self.currentRevision = self.currentRevision@pre
-      and self.validationRevision = self.currentRevision@pre
-      and not self.reviewCompleted
+      self.proposal.prepared
+      and self.proposal.currentRevision =
+        self.proposal.currentRevision@pre
+      and self.proposal.validationRevision =
+        self.proposal.currentRevision@pre
+      and self.proposal.incorporatedChangeCount =
+        self.proposal.incorporatedChangeCount@pre
+      and self.proposal.finalized = self.proposal.finalized@pre
+      and self.proposal.sent = self.proposal.sent@pre
+      and self.proposal.sentRevision = self.proposal.sentRevision@pre
+      and self.customer.reviewCompleted =
+        self.customer.reviewCompleted@pre
+      and self.customer.requestedChangeCount =
+        self.customer.requestedChangeCount@pre
     ]}
     flow reviewProposal
   }
@@ -51,29 +74,64 @@ model ProposalReviewProcess {
     name "Review proposal"
     type task
     lane Customer
+    pre {[
+      self.proposal.validationRevision = self.proposal.currentRevision
+    ]}
     post {[
-      self.reviewCompleted
-      and self.changesRequested = self.reviewRequestsChanges
-      and self.currentRevision = self.currentRevision@pre
-      and self.validationRevision = self.validationRevision@pre
+      self.customer.reviewCompleted
+      and self.customer.requestedChangeCount >= 0
+      and self.proposal.prepared = self.proposal.prepared@pre
+      and self.proposal.currentRevision =
+        self.proposal.currentRevision@pre
+      and self.proposal.validationRevision =
+        self.proposal.validationRevision@pre
+      and self.proposal.incorporatedChangeCount =
+        self.proposal.incorporatedChangeCount@pre
+      and self.proposal.finalized = self.proposal.finalized@pre
+      and self.proposal.sent = self.proposal.sent@pre
+      and self.proposal.sentRevision = self.proposal.sentRevision@pre
     ]}
     flow changesRequested
   }
 
-  // Both branches are legal BPMN routes.  The branch predicate is represented
-  // by its flow-specific Post_B, not by a separate guard.
   gateway changesRequested {
     lane Customer
     type xor
     flow updateProposal post {[
-      self.changesRequested
-      and self.currentRevision = self.currentRevision@pre
-      and self.validationRevision = self.validationRevision@pre
+      self.customer.reviewCompleted =
+        self.customer.reviewCompleted@pre
+      and self.customer.reviewCompleted
+      and self.customer.requestedChangeCount =
+        self.customer.requestedChangeCount@pre
+      and self.customer.requestedChangeCount > 0
+      and self.proposal.prepared = self.proposal.prepared@pre
+      and self.proposal.currentRevision =
+        self.proposal.currentRevision@pre
+      and self.proposal.validationRevision =
+        self.proposal.validationRevision@pre
+      and self.proposal.incorporatedChangeCount =
+        self.proposal.incorporatedChangeCount@pre
+      and self.proposal.finalized = self.proposal.finalized@pre
+      and self.proposal.sent = self.proposal.sent@pre
+      and self.proposal.sentRevision = self.proposal.sentRevision@pre
     ]}
     flow feedbackMerge post {[
-      not self.changesRequested
-      and self.currentRevision = self.currentRevision@pre
-      and self.validationRevision = self.validationRevision@pre
+      self.customer.reviewCompleted =
+        self.customer.reviewCompleted@pre
+      and self.customer.reviewCompleted
+      and self.customer.requestedChangeCount =
+        self.customer.requestedChangeCount@pre
+      and self.customer.requestedChangeCount = 0
+      and self.proposal.prepared = self.proposal.prepared@pre
+      and self.proposal.currentRevision =
+        self.proposal.currentRevision@pre
+      and self.proposal.validationRevision =
+        self.proposal.validationRevision@pre
+      and self.proposal.incorporatedChangeCount =
+        self.proposal.incorporatedChangeCount@pre
+      and self.proposal.finalized = self.proposal.finalized@pre
+      and self.proposal.sent = self.proposal.sent@pre
+      and self.proposal.sentRevision = self.proposal.sentRevision@pre
     ]}
   }
 
@@ -82,16 +140,26 @@ model ProposalReviewProcess {
     type task
     lane ProposalManager
     pre {[
-      self.reviewCompleted and self.changesRequested
+      self.customer.reviewCompleted
+      and self.customer.requestedChangeCount > 0
     ]}
-    // The defect is the @pre equality below: validationRevision remains r1.
-    // A corrected process would return to validateProposal and establish r2.
+    // The current revision advances, but validation deliberately remains on
+    // the previous revision. This is the defect detected by the i* model.
     post {[
-      self.changesIncorporated
-      and self.currentRevision = #r2
-      and self.validationRevision = self.validationRevision@pre
-      and self.reviewCompleted
-      and self.changesRequested
+      self.proposal.prepared
+      and self.proposal.currentRevision =
+        self.proposal.currentRevision@pre + 1
+      and self.proposal.validationRevision =
+        self.proposal.validationRevision@pre
+      and self.proposal.incorporatedChangeCount =
+        self.customer.requestedChangeCount
+      and not self.proposal.finalized
+      and not self.proposal.sent
+      and self.proposal.sentRevision = self.proposal.sentRevision@pre
+      and self.customer.reviewCompleted =
+        self.customer.reviewCompleted@pre
+      and self.customer.requestedChangeCount =
+        self.customer.requestedChangeCount@pre
     ]}
     flow feedbackMerge
   }
@@ -100,11 +168,20 @@ model ProposalReviewProcess {
     lane ProposalManager
     type xor
     flow finalizeProposal post {[
-      self.currentRevision = self.currentRevision@pre
-      and self.validationRevision = self.validationRevision@pre
-      and self.reviewCompleted
-      and self.changesRequested = self.changesRequested@pre
-      and self.changesIncorporated = self.changesIncorporated@pre
+      self.proposal.prepared = self.proposal.prepared@pre
+      and self.proposal.currentRevision =
+        self.proposal.currentRevision@pre
+      and self.proposal.validationRevision =
+        self.proposal.validationRevision@pre
+      and self.proposal.incorporatedChangeCount =
+        self.proposal.incorporatedChangeCount@pre
+      and self.proposal.finalized = self.proposal.finalized@pre
+      and self.proposal.sent = self.proposal.sent@pre
+      and self.proposal.sentRevision = self.proposal.sentRevision@pre
+      and self.customer.reviewCompleted =
+        self.customer.reviewCompleted@pre
+      and self.customer.requestedChangeCount =
+        self.customer.requestedChangeCount@pre
     ]}
   }
 
@@ -113,15 +190,28 @@ model ProposalReviewProcess {
     type task
     lane ProposalManager
     pre {[
-      self.reviewCompleted
-      and (not self.changesRequested or self.changesIncorporated)
+      self.customer.reviewCompleted
+      and self.proposalManager.authorityLevel >=
+        self.proposal.requiredAuthorityLevel
+      and (self.customer.requestedChangeCount = 0 or
+        self.proposal.incorporatedChangeCount =
+          self.customer.requestedChangeCount)
     ]}
     post {[
-      self.finalized
-      and self.currentRevision = self.currentRevision@pre
-      and self.validationRevision = self.validationRevision@pre
-      and self.changesRequested = self.changesRequested@pre
-      and self.changesIncorporated = self.changesIncorporated@pre
+      self.proposal.finalized
+      and not self.proposal.sent
+      and self.proposal.prepared = self.proposal.prepared@pre
+      and self.proposal.currentRevision =
+        self.proposal.currentRevision@pre
+      and self.proposal.validationRevision =
+        self.proposal.validationRevision@pre
+      and self.proposal.incorporatedChangeCount =
+        self.proposal.incorporatedChangeCount@pre
+      and self.proposal.sentRevision = self.proposal.sentRevision@pre
+      and self.customer.reviewCompleted =
+        self.customer.reviewCompleted@pre
+      and self.customer.requestedChangeCount =
+        self.customer.requestedChangeCount@pre
     ]}
     flow sendProposal
   }
@@ -130,15 +220,24 @@ model ProposalReviewProcess {
     name "Send proposal"
     type task
     lane ProposalManager
+    pre {[
+      self.proposal.finalized
+    ]}
     post {[
-      self.sent
-      and self.sentRevision = self.currentRevision
-      and self.processCompleted
-      and self.finalized
-      and self.currentRevision = self.currentRevision@pre
-      and self.validationRevision = self.validationRevision@pre
-      and self.changesRequested = self.changesRequested@pre
-      and self.changesIncorporated = self.changesIncorporated@pre
+      self.proposal.sent
+      and self.proposal.finalized
+      and self.proposal.sentRevision = self.proposal.currentRevision
+      and self.proposal.prepared = self.proposal.prepared@pre
+      and self.proposal.currentRevision =
+        self.proposal.currentRevision@pre
+      and self.proposal.validationRevision =
+        self.proposal.validationRevision@pre
+      and self.proposal.incorporatedChangeCount =
+        self.proposal.incorporatedChangeCount@pre
+      and self.customer.reviewCompleted =
+        self.customer.reviewCompleted@pre
+      and self.customer.requestedChangeCount =
+        self.customer.requestedChangeCount@pre
     ]}
     flow proposalCompleted
   }

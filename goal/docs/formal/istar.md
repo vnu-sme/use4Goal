@@ -130,7 +130,7 @@ checkpoint đầu của episode là:
 \[
 B_t=\begin{cases}
 true & t=Maintain,\\
-false & t\in\{Achieve,Sustain,Recur\}.
+false & t\in\{Achieve,Sustain\}.
 \end{cases}
 \]
 
@@ -198,24 +198,6 @@ Ví dụ với predicate `-,0,1,1,0,1,-`:
 \[
 U\rightarrow P\rightarrow F\rightarrow F\rightarrow V\rightarrow V
 \rightarrow U.
-\]
-
-### 3.4. Recur — điều kiện phải được đạt lặp lại
-
-Recur phản ánh predicate tại checkpoint hiện tại:
-
-\[
-P_i=p_i,
-\qquad
-status_i=\begin{cases}F&P_i=true,\\P&P_i=false.\end{cases}
-\]
-
-Nó có thể chuyển qua lại `P` và `F`; \(S_i\) không làm Recur thành `V`.
-
-Ví dụ với predicate `-,0,1,0,1,-`:
-
-\[
-U\rightarrow P\rightarrow F\rightarrow P\rightarrow F\rightarrow U.
 \]
 
 Trên trace hữu hạn, marking này chỉ cho biết lần đạt hiện tại và các lần đạt

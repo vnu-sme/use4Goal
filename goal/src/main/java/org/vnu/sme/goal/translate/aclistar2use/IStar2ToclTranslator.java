@@ -25,7 +25,6 @@ import static org.vnu.sme.goal.translate.aclistar2use.AclIStar2UseTranslator.san
  *   <tr><td>ACHIEVE</td><td>{@code sometime holds}</td></tr>
  *   <tr><td>MAINTAIN</td><td>{@code always holds}</td></tr>
  *   <tr><td>SUSTAIN</td><td>{@code sometime (always holds)}</td></tr>
- *   <tr><td>RECUR</td><td>not generated yet</td></tr>
  * </table>
  *
  * <p>The generated TOCL references the structural {@code condition()} query
@@ -80,14 +79,6 @@ public final class IStar2ToclTranslator {
                             + "' is a leaf without condition OCL — condition() is false.");
                 }
 
-                if (goalType == GoalType.RECUR) {
-                    diagnostics.add("Info: Recur goal '" + goal.id()
-                            + "' is omitted from TOCL generation in the current translation.");
-                    out.append("-- OMITTED Recur goal ").append(actorName).append("::")
-                       .append(goal.id()).append("\n\n");
-                    continue;
-                }
-
                 String invName = goalType.name() + "_" + gId;
                 String toclBody = toToclBody(goalType, conditionRef);
 
@@ -127,7 +118,6 @@ public final class IStar2ToclTranslator {
      *   <li>ACHIEVE  → {@code sometime H}</li>
      *   <li>MAINTAIN → {@code always H}</li>
      *   <li>SUSTAIN  → {@code sometime (always H)}</li>
-     *   <li>RECUR    → omitted by {@link #generate(GoalModel)}</li>
      * </ul>
      */
     static String toToclBody(GoalType type, String holds) {
@@ -135,7 +125,6 @@ public final class IStar2ToclTranslator {
             case ACHIEVE -> "sometime " + holds;
             case MAINTAIN -> "always " + holds;
             case SUSTAIN -> "sometime (always " + holds + ")";
-            case RECUR -> throw new IllegalArgumentException("RECUR TOCL mapping is not defined yet");
         };
     }
 

@@ -42,6 +42,9 @@ public final class AclBuildingVisitor extends ACLBaseVisitor<AclModelCS> {/**
             if (d.enumDecl() != null) enums.add(enumValue(d.enumDecl()));
             else if (d.entityDecl() != null) entities.add(entity(d.entityDecl()));
             else if (d.roleDecl() != null) roles.add(role(d.roleDecl()));
+            else if (d.orgContextDecl() != null) {
+                orgContext(d.orgContextDecl(), entities, roles, groups, compatibilities);
+            }
             else if (d.entityRelationDecl() != null) relations.add(relation(d.entityRelationDecl()));
             else if (d.groupDecl() != null) { GroupBuild b = group(d.groupDecl()); groups.add(b.group()); compatibilities.addAll(b.compatibilities()); }
             else if (d.invariantDecl() != null) invariants.add(invariant(d.invariantDecl()));
@@ -98,6 +101,41 @@ public final class AclBuildingVisitor extends ACLBaseVisitor<AclModelCS> {/**
     private static AclCompatibilityCS compatibility(ACLParser.CompatibilityDeclContext c, String groupName) {
         return new AclCompatibilityCS(c.IDENT(0).getText(), c.IDENT(1).getText(), true,
                 groupName, List.of(), location(c));
+    }
+
+    private static void orgContext(ACLParser.OrgContextDeclContext context,
+                                   List<AclEntityCS> entities,
+                                   List<AclRoleCS> roles,
+                                   List<AclGroupCS> groups,
+                                   List<AclCompatibilityCS> compatibilities) {
+        String name = context.IDENT().getText();
+        List<AclGroupMemberCS> members = new ArrayList<>();
+        List<ACLParser.OrgContextDeclContext> nested = new ArrayList<>();
+        for (var item : context.orgContextItem()) {
+            if (item.entityDecl() != null) {
+                entities.add(entity(item.entityDecl()));
+                members.add(requiredMember(item.entityDecl().IDENT().getText(), item.entityDecl()));
+            } else if (item.roleDecl() != null) {
+                roles.add(role(item.roleDecl()));
+                members.add(requiredMember(item.roleDecl().IDENT().getText(), item.roleDecl()));
+            } else if (item.orgContextDecl() != null) {
+                members.add(requiredMember(item.orgContextDecl().IDENT().getText(), item.orgContextDecl()));
+                nested.add(item.orgContextDecl());
+            } else if (item.compatibilityDecl() != null) {
+                compatibilities.add(compatibility(item.compatibilityDecl(), name));
+            }
+        }
+        // Register the parent first: AclModel treats the first structural
+        // context as the root context for an execution.
+        groups.add(new AclGroupCS(name, Optional.empty(), List.of(), members,
+                List.of(), true, location(context)));
+        nested.forEach(child -> orgContext(child, entities, roles, groups, compatibilities));
+    }
+
+    private static AclGroupMemberCS requiredMember(String type, ParserRuleContext context) {
+        AclSourceLocationCS loc = location(context);
+        return new AclGroupMemberCS(type,
+                new AclCardinalityCS("1", Optional.of("1"), loc), loc);
     }
     private static List<AclAttributeCS> attrs(ACLParser.AttributeBlockContext b) { return b==null?List.of():b.attributeDecl().stream().map(AclBuildingVisitor::attribute).toList(); }
     private static AclAttributeCS attribute(ACLParser.AttributeDeclContext c) {

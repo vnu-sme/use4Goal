@@ -118,10 +118,12 @@ org/vnu/sme/goal/analysis/mapping/SemanticMappingAnalyzer$TaskInfo.class
 org/vnu/sme/goal/dsl/iscn/view/IStarScenarioViewModel$1.class
 org/vnu/sme/goal/dsl/acl/parser/ACLParser$GroupDeclContext.class
 org/vnu/sme/goal/dsl/bpmnscenario/parser/BpmnScenarioParser$ExprContext.class
+org/vnu/sme/goal/verify/aclstate/AclBpmnWholeProcessValidator$RiskVerdict.class
 org/vnu/sme/goal/verify/aclstate/AclBpmnStateTraceEvaluator.class
 org/vnu/sme/goal/dsl/dcr/view/DcrView.class
 org/vnu/sme/goal/dsl/acl/ast/AclCardinalityConstraintCS.class
 org/vnu/sme/goal/translate/aclistarbpmn2use/AclBpmnIStar2UseTranslator$Result.class
+org/vnu/sme/goal/verify/aclstate/AclIStarSymbolicSemantics$MarkingFormula.class
 org/vnu/sme/goal/trace/bpmn/BpmnExecutionEngine$PredicateEvaluator.class
 org/vnu/sme/goal/verify/conformance/semantics/ProductLts.class
 org/vnu/sme/goal/dsl/acl/mm/RoleRelation.class
@@ -132,6 +134,7 @@ org/vnu/sme/goal/analysis/mapping/SemanticMappingAnalyzer.class
 org/vnu/sme/goal/dsl/bpmn/view/BpmnView$Placement.class
 org/vnu/sme/goal/verify/aclstate/AclKodkodSymbolicModel$Frame.class
 org/vnu/sme/goal/dsl/bpmn/mm/Gateway.class
+org/vnu/sme/goal/dsl/acl/parser/ACLParser$OrgContextItemContext.class
 org/vnu/sme/goal/dsl/aol/parser/AOLParser$LinkDeclContext.class
 org/vnu/sme/goal/dsl/aol/parser/AOLLexer.class
 org/vnu/sme/goal/dsl/aol/view/AolDiagram$2.class
@@ -214,6 +217,7 @@ org/vnu/sme/goal/dsl/aol/view/AolEdgeKind.class
 org/vnu/sme/goal/dsl/bpmnscenario/parser/BpmnScenarioParser$FireStmtContext.class
 org/vnu/sme/goal/dsl/iscn/parser/IStarScenarioListener.class
 org/vnu/sme/goal/verify/aclstate/AclOclFormulaParser$Unary.class
+org/vnu/sme/goal/verify/aclstate/AclIStarSymbolicSemantics$MarkingValue.class
 org/vnu/sme/goal/feature/alluseocl/AclBpmnIStarUseOclForm$1.class
 org/vnu/sme/goal/dsl/acl/ast/AclRelationCS.class
 org/vnu/sme/goal/dsl/bpmn/parser/BpmnParser$StartDeclContext.class
@@ -268,6 +272,7 @@ org/vnu/sme/goal/dsl/bpmn/parser/BpmnCompiler.class
 org/vnu/sme/goal/verify/aclstate/AclOclFormulaParser$Binary.class
 org/vnu/sme/goal/feature/openbpmn/BpmnForm$OpenTarget.class
 org/vnu/sme/goal/dsl/bpmn/parser/BpmnParser$EndDeclContext.class
+org/vnu/sme/goal/feature/aclstate/ConformanceReportBuilder.class
 org/vnu/sme/goal/dsl/istar/parser/IStarParser$BodyGoalContext.class
 org/vnu/sme/goal/dsl/acl/mm/RoleInheritance.class
 org/vnu/sme/goal/dsl/bpmn/mm/ActivityConstraint$Kind.class
@@ -306,6 +311,7 @@ org/vnu/sme/goal/dsl/istar/parser/IStarCompiler.class
 org/vnu/sme/goal/feature/istaruseocl/IStarUseOclFolderForm$1.class
 org/vnu/sme/goal/translate/aclistar2eventb/AclIStar2EventBService.class
 org/vnu/sme/goal/translate/aclistarbpmn2eventb/translate/MappingObligationCompiler$Built.class
+org/vnu/sme/goal/verify/aclstate/AclBpmnWholeProcessValidator$FailureLocation.class
 org/vnu/sme/goal/feature/istaruseocl/IStarUseOclForm.class
 org/vnu/sme/goal/dsl/iscn/ast/IStarScenarioModelCS.class
 org/vnu/sme/goal/dsl/acl/mm/AclRoleEntityRelationType.class
@@ -372,6 +378,7 @@ org/vnu/sme/goal/dsl/dcr/parser/DCRCompiler$Result.class
 org/vnu/sme/goal/dsl/bpmnscenario/ast/ScenarioStmtCS.class
 org/vnu/sme/goal/dsl/acl/ast/AclInvariantCS.class
 org/vnu/sme/goal/dsl/acl/view/AclEdge.class
+org/vnu/sme/goal/dsl/acl/parser/ACLParser$OrgContextDeclContext.class
 org/vnu/sme/goal/dsl/bpmnscenario/mm/Value$Atom.class
 org/vnu/sme/goal/dsl/acl/ocl/AclOclPropertyResolver.class
 org/vnu/sme/goal/dsl/iscn/goalmodelinstance/parser/GoalModelInstanceTranslator$OccurrenceKey.class
@@ -560,6 +567,7 @@ org/vnu/sme/goal/translate/aclistarbpmn2use/AclBpmnIStar2UseTranslator.class
 org/vnu/sme/goal/dsl/bpmnscenario/parser/BpmnScenarioBaseListener.class
 org/vnu/sme/goal/dsl/bpmn/parser/BpmnParser$MessageFlowContext.class
 org/vnu/sme/goal/dsl/dcr/ast/DcrModelCS.class
+org/vnu/sme/goal/verify/aclstate/AclIStarSymbolicSemantics$GoalEvaluation.class
 org/vnu/sme/goal/feature/openaol/ActionOpenAol.class
 org/vnu/sme/goal/dsl/aol/parser/AolCompiler$1.class
 org/vnu/sme/goal/dsl/acl/mm/AclRoleInheritance.class
@@ -612,6 +620,7 @@ org/vnu/sme/goal/feature/exportaclistartoeventb/ActionAclIStar2EventB.class
 org/vnu/sme/goal/feature/istartrace/BpmnTraceIStarMonitorForm$StatusCellRenderer.class
 org/vnu/sme/goal/trace/istartrace/nativeacl/AclSnapshot.class
 org/vnu/sme/goal/feature/istartrace/BpmnTraceMarkingTableModel$Row.class
+org/vnu/sme/goal/verify/aclstate/AclIStarSymbolicSemantics$LabelledFormula.class
 org/vnu/sme/goal/dsl/bpmnscenario/mm/ScenarioStmt$Assert.class
 org/vnu/sme/goal/dsl/istar/view/IStarDiagram$3.class
 org/vnu/sme/goal/dsl/istar/parser/IStarParser$GoalConditionContext.class
@@ -625,6 +634,7 @@ org/vnu/sme/goal/feature/bpmnscenario/BpmnAolScenarioForm.class
 org/vnu/sme/goal/dsl/istar/view/NodeBadge.class
 org/vnu/sme/goal/dsl/bpmn/ast/FlowElementCS$EndEventCS.class
 org/vnu/sme/goal/translate/aclistar2eventb/AclIStar2EventBRequest.class
+org/vnu/sme/goal/feature/aclstate/ConformanceReportBuilder$Row.class
 org/vnu/sme/goal/dsl/acl/mm/AclCardinalityTargetKind.class
 org/vnu/sme/goal/dsl/bpmnscenario/ast/ValueCS.class
 org/vnu/sme/goal/trace/bpmn/BpmnAolTraceFile$Step.class
@@ -765,6 +775,7 @@ org/vnu/sme/goal/dsl/istar/ast/ElementBodyCS.class
 org/vnu/sme/goal/translate/aclistarbpmn2eventb/translate/IStarSatisfactionCompiler$1.class
 org/vnu/sme/goal/dsl/istar/mm/IStarOclConstraint.class
 org/vnu/sme/goal/translate/acl2eventb/AclToEventBRequest.class
+org/vnu/sme/goal/verify/aclstate/AclBpmnWholeProcessValidator$1.class
 org/vnu/sme/goal/dsl/acl/mm/Cardinality.class
 org/vnu/sme/goal/dsl/istar/mm/Association.class
 org/vnu/sme/goal/dsl/iscn/parser/IStarScenarioBaseVisitor.class
@@ -846,6 +857,7 @@ org/vnu/sme/goal/dsl/acl/mm/AclRoleMembership.class
 org/vnu/sme/goal/dsl/acl/parser/AclModelFactory$SemanticError.class
 org/vnu/sme/goal/dsl/acl/ast/AclLinkOptionCS$BidirectionalCS.class
 org/vnu/sme/goal/dsl/istar/view/IStarDiagramNode$1.class
+org/vnu/sme/goal/verify/aclstate/AclBpmnWholeProcessValidator$GoalEvidence.class
 org/vnu/sme/goal/dsl/bpmn/mm/CallActivity.class
 org/vnu/sme/goal/verify/aclstate/AclOclFormulaParser$Node.class
 org/vnu/sme/goal/dsl/bpmn/parser/BpmnParser$PrePropertyContext.class
@@ -923,6 +935,7 @@ org/vnu/sme/goal/feature/opendcr/ActionOpenDcr.class
 org/vnu/sme/goal/dsl/bpmn/mm/Activity.class
 org/vnu/sme/goal/dsl/aol/view/AolLayout.class
 org/vnu/sme/goal/dsl/iscn/mm/IStarScenarioModel.class
+org/vnu/sme/goal/verify/aclstate/AclBpmnWholeProcessValidator$GoalStatus.class
 org/vnu/sme/goal/dsl/iscn/ast/ScenarioStmtCS$AggregateCS.class
 org/vnu/sme/goal/verify/conformance/ScenarioTraceExplorer$Assessment.class
 org/vnu/sme/goal/dsl/bpmn/parser/BpmnParser$FlowPropertyContext.class

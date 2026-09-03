@@ -37,15 +37,6 @@ class GoalTaskMarkingTest {
     }
 
     @Test
-    void recurTracksTheCurrentPredicateRatherThanLatchingIt() {
-        GoalMarking m = GoalMarking.initial(GoalType.RECUR).update(true, false);
-        assertEquals(GoalTaskStatus.PENDING, m.status());
-        m = m.update(true, true);
-        assertEquals(GoalTaskStatus.FULFILLED, m.status());
-        assertEquals(GoalTaskStatus.PENDING, m.update(true, false).status());
-    }
-
-    @Test
     void deactivationResetsTheGoalEpisode() {
         GoalMarking m = GoalMarking.initial(GoalType.SUSTAIN)
                 .update(true, true).update(true, false);

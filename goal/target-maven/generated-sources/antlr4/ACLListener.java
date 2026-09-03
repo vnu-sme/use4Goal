@@ -98,6 +98,26 @@ public interface ACLListener extends ParseTreeListener {
 	 */
 	void exitSpecializesClause(ACLParser.SpecializesClauseContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link ACLParser#orgContextDecl}.
+	 * @param ctx the parse tree
+	 */
+	void enterOrgContextDecl(ACLParser.OrgContextDeclContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ACLParser#orgContextDecl}.
+	 * @param ctx the parse tree
+	 */
+	void exitOrgContextDecl(ACLParser.OrgContextDeclContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ACLParser#orgContextItem}.
+	 * @param ctx the parse tree
+	 */
+	void enterOrgContextItem(ACLParser.OrgContextItemContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ACLParser#orgContextItem}.
+	 * @param ctx the parse tree
+	 */
+	void exitOrgContextItem(ACLParser.OrgContextItemContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ACLParser#attributeBlock}.
 	 * @param ctx the parse tree
 	 */

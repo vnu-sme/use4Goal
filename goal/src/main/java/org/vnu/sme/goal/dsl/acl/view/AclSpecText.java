@@ -1,6 +1,8 @@
 package org.vnu.sme.goal.dsl.acl.view;
 
+import java.util.LinkedHashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import org.vnu.sme.goal.dsl.acl.mm.*;
 
@@ -14,30 +16,71 @@ public final class AclSpecText {
                 .append(model.name()).append(" {\n");
         model.enums().forEach(value -> out.append('\n').append(INDENT).append("enum ")
                 .append(value.name()).append(" { ").append(String.join(", ", value.literals())).append(" }\n"));
-        model.entities().forEach(value -> renderClassifier(out, "entity", value.name(),
-                value.specializes(), false, value.attributes()));
-        model.roles().forEach(value -> renderClassifier(out, "role", value.name(),
-                value.parentRoles().stream().findFirst(), false, value.attributes()));
-        model.groups().forEach(value -> renderGroup(out, value));
-        model.relations().forEach(value -> renderRelation(out, value));
+
+        Set<String> nested = new LinkedHashSet<>();
+        Set<String> nestedContexts = new LinkedHashSet<>();
+        model.orgContexts().forEach(context -> context.members().forEach(member -> {
+            nested.add(member.type());
+            if (model.findOrgContext(member.type()).isPresent()) nestedContexts.add(member.type());
+        }));
+
+        model.entities().stream().filter(value -> !nested.contains(value.name()))
+                .forEach(value -> renderClassifier(out, "entity", value.name(),
+                        value.specializes(), value.attributes(), 1));
+        model.roles().stream().filter(value -> !nested.contains(value.name()))
+                .forEach(value -> renderClassifier(out, "role", value.name(),
+                        value.parentRoles().stream().findFirst(), value.attributes(), 1));
+        model.orgContexts().stream().filter(value -> !nestedContexts.contains(value.name()))
+                .forEach(value -> renderOrgContext(out, model, value, 1, new LinkedHashSet<>()));
+        model.groups().stream().filter(value -> !value.isOrganizationalContext())
+                .forEach(value -> renderLegacyGroup(out, value));
+
+        Set<String> derivedContainments = new LinkedHashSet<>();
+        model.groups().forEach(context -> context.members().forEach(member ->
+                derivedContainments.add(AclContainment.relationName(context.name(), member.type()))));
+        model.relations().stream().filter(value -> !derivedContainments.contains(value.name()))
+                .forEach(value -> renderRelation(out, value));
+        model.invariants().forEach(value -> out.append('\n').append(INDENT)
+                .append("context ").append(value.contextType()).append(" inv ")
+                .append(value.name()).append(":\n")
+                .append(INDENT.repeat(2)).append(value.expression()).append(";\n"));
         return out.append("}\n").toString();
     }
 
+    private static void renderOrgContext(StringBuilder out, AclModel model, AclGroup context,
+                                         int depth, Set<String> path) {
+        if (!path.add(context.name())) return;
+        out.append('\n').append(INDENT.repeat(depth)).append("orgContext ")
+                .append(context.name()).append(" {\n");
+        for (AclGroupMember member : context.members()) {
+            model.findRole(member.type()).ifPresent(value -> renderClassifier(out, "role", value.name(),
+                    value.parentRoles().stream().findFirst(), value.attributes(), depth + 1));
+            model.findEntity(member.type()).ifPresent(value -> renderClassifier(out, "entity", value.name(),
+                    value.specializes(), value.attributes(), depth + 1));
+            model.findOrgContext(member.type()).ifPresent(value ->
+                    renderOrgContext(out, model, value, depth + 1, path));
+        }
+        context.compatibilities().forEach(value -> out.append(INDENT.repeat(depth + 1))
+                .append(value.fromRole()).append(" compatible ").append(value.toRole()).append(";\n"));
+        out.append(INDENT.repeat(depth)).append("}\n");
+        path.remove(context.name());
+    }
+
     private static void renderClassifier(StringBuilder out, String keyword, String name,
-                                         Optional<String> specializes, boolean isAbstract,
-                                         java.util.List<AclAttribute> attributes) {
-        out.append('\n').append(INDENT);
-        if (isAbstract) out.append("abstract ");
-        out.append(keyword).append(' ').append(name);
+                                         Optional<String> specializes,
+                                         java.util.List<AclAttribute> attributes, int depth) {
+        out.append('\n').append(INDENT.repeat(depth)).append(keyword).append(' ').append(name);
         specializes.ifPresent(parent -> out.append(" specializes ").append(parent));
         if (attributes.isEmpty()) { out.append(";\n"); return; }
         out.append(" {\n");
-        attributes.forEach(value -> renderAttribute(out, value, 2));
-        out.append(INDENT).append("}\n");
+        attributes.forEach(value -> renderAttribute(out, value, depth + 1));
+        out.append(INDENT.repeat(depth)).append("}\n");
     }
 
-    private static void renderGroup(StringBuilder out, AclGroup group) {
-        out.append('\n').append(INDENT).append("group ").append(group.name()).append(" {\n");
+    private static void renderLegacyGroup(StringBuilder out, AclGroup group) {
+        out.append('\n').append(INDENT).append("group ").append(group.name());
+        group.specializes().ifPresent(parent -> out.append(" specializes ").append(parent));
+        out.append(" {\n");
         group.attributes().forEach(value -> renderAttribute(out, value, 2));
         group.members().forEach(value -> out.append(INDENT.repeat(2)).append(value.type()).append(' ')
                 .append(cardinality(value.multiplicity())).append(";\n"));

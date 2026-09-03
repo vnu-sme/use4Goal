@@ -81,7 +81,7 @@ public final class AclDiagramNode extends CompartmentNode implements ToolTipProv
 
         switch (node.kind) {
             case ROLE -> drawRole(g);
-            case GROUP -> drawGroup(g);
+            case GROUP, ORG_CONTEXT -> drawGroup(g);
             case ENTITY -> drawEntity(g);
             case ENUM -> drawEnum(g);
         }
@@ -183,7 +183,7 @@ public final class AclDiagramNode extends CompartmentNode implements ToolTipProv
         int visibleAttributeCount = opt.isShowAttributes() ? node.details.size() : 0;
         int height = switch (node.kind) {
             case ROLE -> ROLE_HEADER + (visibleAttributeCount == 0 ? 0 : visibleAttributeCount * detailMetrics.getHeight() + 10);
-            case GROUP -> GROUP_HEADER
+            case GROUP, ORG_CONTEXT -> GROUP_HEADER
                     + (visibleAttributeCount == 0 ? 10 : visibleAttributeCount * detailMetrics.getHeight() + 10);
             case ENTITY -> ENTITY_HEADER + (visibleAttributeCount == 0 ? 10 : visibleAttributeCount * detailMetrics.getHeight() + 10);
             case ENUM -> ENUM_HEADER + Math.max(1, node.details.size()) * detailMetrics.getHeight() + 10;
@@ -207,7 +207,7 @@ public final class AclDiagramNode extends CompartmentNode implements ToolTipProv
                 double arc = Math.min(56.0, getHeight());
                 yield new RoundRectangle2D.Double(getX(), getY(), getWidth(), getHeight(), arc, arc);
             }
-            case GROUP -> groupShape();
+            case GROUP, ORG_CONTEXT -> groupShape();
             case ENTITY -> new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
             case ENUM -> new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
         };
@@ -229,7 +229,7 @@ public final class AclDiagramNode extends CompartmentNode implements ToolTipProv
         return switch (node.kind) {
             case ENTITY -> opt.getColor(AclDiagramOptions.ENTITY_FILL);
             case ROLE -> opt.getColor(AclDiagramOptions.ROLE_FILL);
-            case GROUP -> opt.getColor(AclDiagramOptions.GROUP_FILL);
+            case GROUP, ORG_CONTEXT -> opt.getColor(AclDiagramOptions.GROUP_FILL);
             case ENUM -> opt.getColor(AclDiagramOptions.ENUM_FILL);
         };
     }

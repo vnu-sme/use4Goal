@@ -21,6 +21,7 @@ import org.vnu.sme.goal.dsl.istar.mm.GoalTaskElement;
 import org.vnu.sme.goal.dsl.istar.mm.OrRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Task;
 import org.vnu.sme.goal.verify.aclstate.AclBpmnFlowRuntime.FlowStep;
+import org.vnu.sme.goal.verify.aclstate.AclIStarSymbolicSemantics.GoalEvaluation;
 import org.vnu.sme.goal.verify.aclstate.AclKodkodSymbolicModel.ObjectAtom;
 
 import kodkod.ast.Formula;
@@ -36,10 +37,21 @@ public final class AclBpmnWholeProcessValidator {
     private static final int MAX_BOUNDED_EXECUTIONS = 20_000;
     private static final String BACKEND = "Kodkod / SAT4J";
     private static final Pattern OCL_IDENTIFIER = Pattern.compile("[A-Za-z_][A-Za-z0-9_]*");
+    private static final Pattern OCL_PROPERTY = Pattern.compile(
+            "(?:self\\.)?(?:[A-Za-z_][A-Za-z0-9_]*\\.)+([A-Za-z_][A-Za-z0-9_]*)");
+    private static final Pattern NEGATED_OCL_PROPERTY = Pattern.compile(
+            "(?i)\\bnot\\s+(?:self\\.)?(?:[A-Za-z_][A-Za-z0-9_]*\\.)*"
+                    + "([A-Za-z_][A-Za-z0-9_]*)");
 
     public enum Verdict { VALID, INVALID, INCONCLUSIVE }
     public enum ConsistencyVerdict {
         BPMN_ONLY, CONSISTENT, WEAKLY_CONSISTENT, INCONSISTENT, INCONCLUSIVE
+    }
+    public enum RiskVerdict { NOT_EVALUATED, RISK_FREE, RISK_PRONE, INCONCLUSIVE }
+    public enum GoalStatus { SATISFIED, UNKNOWN, VIOLATED }
+
+    public record GoalEvidence(String goal, boolean root, GoalStatus status, String condition) {
+        public GoalEvidence { condition = condition == null ? "-" : condition; }
     }
 
     public record MappingEntry(String processId, String activityId, String activityName,
@@ -51,19 +63,29 @@ public final class AclBpmnWholeProcessValidator {
                                 int boundedExecutions, int loopCutoffs, int snapshotCutoffs,
                                 int solverCalls, int realizableExecutions,
                                 int goalAchievingExecutions,
+                                int nonGoalAchievingExecutions, int riskyExecutions,
                                 List<String> counterexample,
+                                List<String> counterexampleStates,
+                                List<GoalEvidence> counterexampleGoals,
+                                List<String> repairHints,
+                                int failureCheckpoint, String invalidatingStep,
                                 List<String> witnessStates, String detail) {
         public ProcessResult {
             selfObject = selfObject == null ? "-" : selfObject;
             counterexample = List.copyOf(counterexample);
+            counterexampleStates = List.copyOf(counterexampleStates);
+            counterexampleGoals = List.copyOf(counterexampleGoals);
+            repairHints = List.copyOf(repairHints);
+            invalidatingStep = invalidatingStep == null ? "-" : invalidatingStep;
             witnessStates = List.copyOf(witnessStates);
         }
     }
 
-    public record ValidationResult(Verdict verdict, ConsistencyVerdict consistency,
+    public record ValidationResult(Verdict verdict, ConsistencyVerdict consistency, RiskVerdict risk,
                                    String boundaryFile, int snapshots,
                                    int loopBound, String backend, int realizableExecutions,
-                                   int goalAchievingExecutions, List<String> rootGoals,
+                                   int goalAchievingExecutions, int nonGoalAchievingExecutions,
+                                   int riskyExecutions, List<String> rootGoals,
                                    List<MappingEntry> mappings,
                                    List<ProcessResult> processes, String summary) {
         public ValidationResult {
@@ -75,7 +97,9 @@ public final class AclBpmnWholeProcessValidator {
 
     private record RouteWork(Set<String> marking, List<FlowStep> route,
                              Map<String, Integer> cyclicExecutions) {}
-    private record SolveResult(Verdict verdict, List<String> witness, String outcome) {}
+    private record SolveResult(Verdict verdict, List<String> witness, String outcome,
+                               Solution solution) {}
+    private record FailureLocation(int checkpoint, String step) {}
 
     public ValidationResult validate(AclBpmnStateTraceEvaluator evaluator, AclModel acl,
                                      AclBpmnBoundary boundary) {
@@ -97,30 +121,41 @@ public final class AclBpmnWholeProcessValidator {
         int realizable = results.stream().mapToInt(ProcessResult::realizableExecutions).sum();
         int achieved = goalModel == null ? 0 : results.stream()
                 .mapToInt(ProcessResult::goalAchievingExecutions).sum();
+        int nonAchieved = goalModel == null ? 0 : results.stream()
+                .mapToInt(ProcessResult::nonGoalAchievingExecutions).sum();
+        int risky = goalModel == null ? 0 : results.stream()
+                .mapToInt(ProcessResult::riskyExecutions).sum();
         ConsistencyVerdict consistency = goalModel == null ? ConsistencyVerdict.BPMN_ONLY
                 : results.stream().anyMatch(value -> value.verdict() == Verdict.INCONCLUSIVE)
                         ? ConsistencyVerdict.INCONCLUSIVE
+                        : realizable == 0 ? ConsistencyVerdict.INCONCLUSIVE
+                        : nonAchieved == 0 ? ConsistencyVerdict.CONSISTENT
                         : achieved == 0 ? ConsistencyVerdict.INCONSISTENT
-                        : achieved == realizable ? ConsistencyVerdict.CONSISTENT
                         : ConsistencyVerdict.WEAKLY_CONSISTENT;
+        RiskVerdict risk = goalModel == null ? RiskVerdict.NOT_EVALUATED
+                : consistency == ConsistencyVerdict.INCONCLUSIVE ? RiskVerdict.INCONCLUSIVE
+                : risky > 0 ? RiskVerdict.RISK_PRONE : RiskVerdict.RISK_FREE;
         List<String> roots = goalModel == null ? List.of() : rootGoalLabels(goalModel);
         List<MappingEntry> mappings = goalModel == null ? List.of()
                 : inferMappings(evaluator, goalModel);
         String summary = goalModel == null ? switch (verdict) {
-            case VALID -> BACKEND + " generated ACL object diagrams and returned SAT for all "
-                    + executions + " maximal bounded BPMN execution(s): loop-bound="
+            case VALID -> BACKEND + " generated ACL object diagrams for " + realizable
+                    + " realizable route(s) among " + executions
+                    + " maximal bounded BPMN route(s): loop-bound="
                     + boundary.loopBound() + ", snapshots=" + boundary.snapshots()
                     + " (" + calls + " solver call(s)).";
-            case INVALID -> BACKEND + " returned UNSAT for at least one bounded BPMN execution,"
-                    + " or found a structural BPMN deadlock.";
+            case INVALID -> BACKEND + " found no realizable complete ACL/BPMN execution"
+                    + " inside the selected boundary, or found a structural BPMN deadlock.";
             case INCONCLUSIVE -> "Whole validation is inconclusive because the symbolic OCL fragment"
                     + " or an exploration safety limit was exceeded.";
         } : switch (consistency) {
-            case CONSISTENT -> "CONSISTENT: every one of " + realizable
-                    + " bounded BPMN execution(s) has a generated ACL state path that fulfills all root iStar goals.";
-            case WEAKLY_CONSISTENT -> "WEAKLY_CONSISTENT: " + achieved + " of " + realizable
-                    + " bounded BPMN execution(s) can fulfill all root iStar goals.";
-            case INCONSISTENT -> "INCONSISTENT: no bounded BPMN execution can fulfill all root iStar goals.";
+            case CONSISTENT -> "CONSISTENT: every bounded ACL state path admitted by " + realizable
+                    + " realizable BPMN execution(s) fulfills all root iStar goals. " + risk + ".";
+            case WEAKLY_CONSISTENT -> "WEAKLY_CONSISTENT: conforming and non-conforming ACL state paths"
+                    + " are both realizable (" + achieved + " route(s) admit conformance; "
+                    + nonAchieved + " admit non-conformance). " + risk + ".";
+            case INCONSISTENT -> "INCONSISTENT: every realizable BPMN execution admits a non-conforming"
+                    + " ACL state path and none admits a conforming one. " + risk + ".";
             case INCONCLUSIVE -> "Integrated ACL + BPMN + iStar validation is inconclusive because a symbolic"
                     + " expression or exploration safety limit could not be decided.";
             case BPMN_ONLY -> throw new IllegalStateException();
@@ -131,8 +166,9 @@ public final class AclBpmnWholeProcessValidator {
             case INCONSISTENT -> Verdict.INVALID;
             case BPMN_ONLY -> verdict;
         };
-        return new ValidationResult(integratedVerdict, consistency, boundary.file().toString(),
+        return new ValidationResult(integratedVerdict, consistency, risk, boundary.file().toString(),
                 boundary.snapshots(), boundary.loopBound(), BACKEND, realizable, achieved,
+                nonAchieved, risky,
                 roots, mappings, results, summary);
     }
 
@@ -185,8 +221,15 @@ public final class AclBpmnWholeProcessValidator {
         int solverCalls = 1;
         int realizableExecutions = 0;
         int goalAchievingExecutions = 0;
+        int nonGoalAchievingExecutions = 0;
+        int riskyExecutions = 0;
         List<String> exampleWitness = List.of();
         List<String> goalCounterexample = List.of();
+        List<String> goalCounterexampleStates = List.of();
+        List<GoalEvidence> goalCounterexampleGoals = List.of();
+        List<String> repairHints = List.of();
+        int failureCheckpoint = -1;
+        String invalidatingStep = "-";
 
         while (!stack.isEmpty()) {
             if (configurations >= MAX_BPMN_CONFIGURATIONS
@@ -209,30 +252,53 @@ public final class AclBpmnWholeProcessValidator {
                 SolveResult solved = solve(symbolic, runtime, current.route(), self);
                 solverCalls++;
                 if (solved.verdict() != Verdict.VALID) {
-                    if (solved.verdict() == Verdict.INCONCLUSIVE || goals == null) {
+                    if (solved.verdict() == Verdict.INCONCLUSIVE) {
                         return failed(runtime, self, solved, configurations, transitions, completed,
                                 executions, loopCutoffs, snapshotCutoffs, solverCalls,
                                 realizableExecutions, goalAchievingExecutions, current.route());
                     }
+                    if (goalCounterexample.isEmpty()) goalCounterexample = routeLabels(current.route());
                     continue;
                 }
                 realizableExecutions++;
                 if (goals == null) {
                     if (exampleWitness.isEmpty()) exampleWitness = solved.witness();
                 } else {
+                    int usedFrames = current.route().size() + 1;
+                    Formula allRootsSatisfied = goals.rootGoalsSatisfied(usedFrames);
                     SolveResult achieved = solve(symbolic, runtime, current.route(), self,
-                            goals.rootGoalsSatisfied(current.route().size() + 1));
-                    solverCalls++;
-                    if (achieved.verdict() == Verdict.INCONCLUSIVE) {
-                        return failed(runtime, self, achieved, configurations, transitions, completed,
+                            allRootsSatisfied);
+                    SolveResult notAchieved = solve(symbolic, runtime, current.route(), self,
+                            allRootsSatisfied.not());
+                    SolveResult risky = solve(symbolic, runtime, current.route(), self,
+                            goals.rootGoalsViolated(usedFrames));
+                    solverCalls += 3;
+                    if (achieved.verdict() == Verdict.INCONCLUSIVE
+                            || notAchieved.verdict() == Verdict.INCONCLUSIVE
+                            || risky.verdict() == Verdict.INCONCLUSIVE) {
+                        SolveResult inconclusive = achieved.verdict() == Verdict.INCONCLUSIVE ? achieved
+                                : notAchieved.verdict() == Verdict.INCONCLUSIVE ? notAchieved : risky;
+                        return failed(runtime, self, inconclusive, configurations, transitions, completed,
                                 executions, loopCutoffs, snapshotCutoffs, solverCalls,
                                 realizableExecutions, goalAchievingExecutions, current.route());
                     }
                     if (achieved.verdict() == Verdict.VALID) {
                         goalAchievingExecutions++;
                         if (exampleWitness.isEmpty()) exampleWitness = achieved.witness();
-                    } else if (goalCounterexample.isEmpty()) {
+                    }
+                    if (notAchieved.verdict() == Verdict.VALID) nonGoalAchievingExecutions++;
+                    if (risky.verdict() == Verdict.VALID) riskyExecutions++;
+                    SolveResult counterexample = risky.verdict() == Verdict.VALID ? risky : notAchieved;
+                    if (counterexample.verdict() == Verdict.VALID && goalCounterexample.isEmpty()) {
                         goalCounterexample = routeLabels(current.route());
+                        goalCounterexampleStates = counterexample.witness();
+                        goalCounterexampleGoals = evidence(goals.evaluateGoals(
+                                counterexample.solution(), usedFrames));
+                        repairHints = repairHints(goalCounterexampleGoals, runtime);
+                        FailureLocation failure = locateFailure(goals, counterexample.solution(),
+                                usedFrames, current.route(), risky.verdict() == Verdict.VALID);
+                        failureCheckpoint = failure.checkpoint();
+                        invalidatingStep = failure.step();
                     }
                 }
                 continue;
@@ -271,30 +337,53 @@ public final class AclBpmnWholeProcessValidator {
                 SolveResult solved = solve(symbolic, runtime, current.route(), self);
                 solverCalls++;
                 if (solved.verdict() != Verdict.VALID) {
-                    if (solved.verdict() == Verdict.INCONCLUSIVE || goals == null) {
+                    if (solved.verdict() == Verdict.INCONCLUSIVE) {
                         return failed(runtime, self, solved, configurations, transitions, completed,
                                 executions, loopCutoffs, snapshotCutoffs, solverCalls,
                                 realizableExecutions, goalAchievingExecutions, current.route());
                     }
+                    if (goalCounterexample.isEmpty()) goalCounterexample = routeLabels(current.route());
                     continue;
                 }
                 realizableExecutions++;
                 if (goals == null) {
                     if (exampleWitness.isEmpty()) exampleWitness = solved.witness();
                 } else {
+                    int usedFrames = current.route().size() + 1;
+                    Formula allRootsSatisfied = goals.rootGoalsSatisfied(usedFrames);
                     SolveResult achieved = solve(symbolic, runtime, current.route(), self,
-                            goals.rootGoalsSatisfied(current.route().size() + 1));
-                    solverCalls++;
-                    if (achieved.verdict() == Verdict.INCONCLUSIVE) {
-                        return failed(runtime, self, achieved, configurations, transitions, completed,
+                            allRootsSatisfied);
+                    SolveResult notAchieved = solve(symbolic, runtime, current.route(), self,
+                            allRootsSatisfied.not());
+                    SolveResult risky = solve(symbolic, runtime, current.route(), self,
+                            goals.rootGoalsViolated(usedFrames));
+                    solverCalls += 3;
+                    if (achieved.verdict() == Verdict.INCONCLUSIVE
+                            || notAchieved.verdict() == Verdict.INCONCLUSIVE
+                            || risky.verdict() == Verdict.INCONCLUSIVE) {
+                        SolveResult inconclusive = achieved.verdict() == Verdict.INCONCLUSIVE ? achieved
+                                : notAchieved.verdict() == Verdict.INCONCLUSIVE ? notAchieved : risky;
+                        return failed(runtime, self, inconclusive, configurations, transitions, completed,
                                 executions, loopCutoffs, snapshotCutoffs, solverCalls,
                                 realizableExecutions, goalAchievingExecutions, current.route());
                     }
                     if (achieved.verdict() == Verdict.VALID) {
                         goalAchievingExecutions++;
                         if (exampleWitness.isEmpty()) exampleWitness = achieved.witness();
-                    } else if (goalCounterexample.isEmpty()) {
+                    }
+                    if (notAchieved.verdict() == Verdict.VALID) nonGoalAchievingExecutions++;
+                    if (risky.verdict() == Verdict.VALID) riskyExecutions++;
+                    SolveResult counterexample = risky.verdict() == Verdict.VALID ? risky : notAchieved;
+                    if (counterexample.verdict() == Verdict.VALID && goalCounterexample.isEmpty()) {
                         goalCounterexample = routeLabels(current.route());
+                        goalCounterexampleStates = counterexample.witness();
+                        goalCounterexampleGoals = evidence(goals.evaluateGoals(
+                                counterexample.solution(), usedFrames));
+                        repairHints = repairHints(goalCounterexampleGoals, runtime);
+                        FailureLocation failure = locateFailure(goals, counterexample.solution(),
+                                usedFrames, current.route(), risky.verdict() == Verdict.VALID);
+                        failureCheckpoint = failure.checkpoint();
+                        invalidatingStep = failure.step();
                     }
                 }
                 continue;
@@ -312,18 +401,25 @@ public final class AclBpmnWholeProcessValidator {
             }
         }
 
-        Verdict processVerdict = goals == null || goalAchievingExecutions > 0
-                ? Verdict.VALID : Verdict.INVALID;
+        Verdict processVerdict = goals == null
+                ? realizableExecutions > 0 ? Verdict.VALID : Verdict.INVALID
+                : goalAchievingExecutions > 0 ? Verdict.VALID : Verdict.INVALID;
         String detail = goals == null
-                ? BACKEND + " synthesized a formal ACL state path for every maximal bounded execution; "
-                        + "no AOL scenario was loaded or used."
+                ? realizableExecutions == 0
+                        ? BACKEND + " returned UNSATISFIABLE for every maximal bounded BPMN execution;"
+                                + " no ACL state path exists inside the boundary."
+                        : BACKEND + " synthesized " + realizableExecutions
+                                + " realizable formal ACL state path(s); no AOL scenario was loaded or used."
                 : BACKEND + " found " + goalAchievingExecutions + " goal-achieving path(s) among "
                         + realizableExecutions + " realizable bounded BPMN execution(s). Root targets: "
                         + String.join(", ", goals.rootGoalLabels())
                         + ". iStar was evaluated over the generated ACL path, not an iStar state space.";
         return result(runtime, self.id(), processVerdict, configurations, transitions, completed,
                 executions, loopCutoffs, snapshotCutoffs, solverCalls, realizableExecutions,
-                goalAchievingExecutions, goalCounterexample, exampleWitness, detail);
+                goalAchievingExecutions, nonGoalAchievingExecutions, riskyExecutions,
+                goals == null && realizableExecutions > 0 ? List.of() : goalCounterexample,
+                goalCounterexampleStates, goalCounterexampleGoals,
+                repairHints, failureCheckpoint, invalidatingStep, exampleWitness, detail);
     }
 
     private SolveResult solve(AclKodkodSymbolicModel symbolic, AclBpmnFlowRuntime runtime,
@@ -345,7 +441,9 @@ public final class AclBpmnWholeProcessValidator {
                 for (String pre : runtime.preExpressions(step)) {
                     formula = formula.and(symbolic.expression(pre, before, before, self));
                 }
-                for (String post : runtime.postExpressions(step)) {
+                List<String> posts = runtime.postExpressions(step);
+                formula = formula.and(symbolic.frameCondition(before, after, oclIdentifiers(posts)));
+                for (String post : posts) {
                     formula = formula.and(symbolic.expression(post, after, before, self));
                 }
             }
@@ -358,13 +456,15 @@ public final class AclBpmnWholeProcessValidator {
                     || solution.outcome() == Outcome.TRIVIALLY_SATISFIABLE;
             return sat
                     ? new SolveResult(Verdict.VALID,
-                            symbolic.decodePath(solution, route.size() + 1), solution.outcome().toString())
-                    : new SolveResult(Verdict.INVALID, List.of(), solution.outcome().toString());
+                            symbolic.decodePath(solution, route.size() + 1),
+                            solution.outcome().toString(), solution)
+                    : new SolveResult(Verdict.INVALID, List.of(),
+                            solution.outcome().toString(), solution);
         } catch (IllegalArgumentException unsupported) {
-            return new SolveResult(Verdict.INCONCLUSIVE, List.of(), message(unsupported));
+            return new SolveResult(Verdict.INCONCLUSIVE, List.of(), message(unsupported), null);
         } catch (RuntimeException | LinkageError solverError) {
             return new SolveResult(Verdict.INCONCLUSIVE, List.of(),
-                    "Kodkod solver error: " + message(solverError));
+                    "Kodkod solver error: " + message(solverError), null);
         }
     }
 
@@ -400,7 +500,8 @@ public final class AclBpmnWholeProcessValidator {
                 : "the symbolic encoder could not decide this bounded execution";
         return result(runtime, self.id(), solved.verdict(), configurations, transitions,
                 completed, executions, loopCutoffs, snapshotCutoffs, solverCalls,
-                realizableExecutions, goalAchievingExecutions, routeLabels(route), List.of(),
+                realizableExecutions, goalAchievingExecutions, 0, 0,
+                routeLabels(route), List.of(), List.of(), List.of(), -1, "-", List.of(),
                 BACKEND + " returned " + solved.outcome()
                         + ": " + meaning + ". Last contract: " + last);
     }
@@ -411,18 +512,152 @@ public final class AclBpmnWholeProcessValidator {
                                         int solverCalls, List<String> route,
                                         List<String> witness, String detail) {
         return result(runtime, self, verdict, configurations, transitions, completed, executions,
-                loopCutoffs, snapshotCutoffs, solverCalls, 0, 0, route, witness, detail);
+                loopCutoffs, snapshotCutoffs, solverCalls, 0, 0, 0, 0,
+                route, List.of(), List.of(), List.of(), -1, "-", witness, detail);
     }
 
     private static ProcessResult result(AclBpmnFlowRuntime runtime, String self, Verdict verdict,
                                         int configurations, int transitions, int completed,
                                         int executions, int loopCutoffs, int snapshotCutoffs,
                                         int solverCalls, int realizableExecutions,
-                                        int goalAchievingExecutions, List<String> route,
+                                        int goalAchievingExecutions,
+                                        int nonGoalAchievingExecutions, int riskyExecutions,
+                                        List<String> route, List<String> counterexampleStates,
+                                        List<GoalEvidence> counterexampleGoals,
+                                        List<String> repairHints,
+                                        int failureCheckpoint, String invalidatingStep,
                                         List<String> witness, String detail) {
         return new ProcessResult(runtime.process().id(), self, verdict, configurations,
                 transitions, completed, executions, loopCutoffs, snapshotCutoffs,
-                solverCalls, realizableExecutions, goalAchievingExecutions, route, witness, detail);
+                solverCalls, realizableExecutions, goalAchievingExecutions,
+                nonGoalAchievingExecutions, riskyExecutions, route, counterexampleStates,
+                counterexampleGoals, repairHints, failureCheckpoint, invalidatingStep,
+                witness, detail);
+    }
+
+    private static FailureLocation locateFailure(AclIStarSymbolicSemantics goals,
+                                                   Solution solution, int usedFrames,
+                                                   List<FlowStep> route, boolean destructive) {
+        if (!destructive) {
+            return new FailureLocation(usedFrames - 1, "unresolved at process completion");
+        }
+        Map<String, AclIStarSymbolicSemantics.MarkingValue> previous = goals
+                .evaluateGoals(solution, 1).stream().collect(java.util.stream.Collectors.toMap(
+                        GoalEvaluation::label, GoalEvaluation::value));
+        for (int prefixFrames = 2; prefixFrames <= usedFrames; prefixFrames++) {
+            List<GoalEvaluation> current = goals.evaluateGoals(solution, prefixFrames);
+            Map<String, AclIStarSymbolicSemantics.MarkingValue> prior = previous;
+            boolean destroyed = current.stream().anyMatch(goal ->
+                    prior.get(goal.label()) == AclIStarSymbolicSemantics.MarkingValue.SATISFIED
+                            && goal.value() == AclIStarSymbolicSemantics.MarkingValue.VIOLATED);
+            if (!destroyed) {
+                previous = current.stream().collect(java.util.stream.Collectors.toMap(
+                        GoalEvaluation::label, GoalEvaluation::value));
+                continue;
+            }
+            int checkpoint = prefixFrames - 1;
+            String step = checkpoint == 0 || route.isEmpty()
+                    ? "initial state" : route.get(checkpoint - 1).label();
+            return new FailureLocation(checkpoint, step);
+        }
+        return new FailureLocation(usedFrames - 1, "violated at process completion");
+    }
+
+    private static List<GoalEvidence> evidence(List<GoalEvaluation> evaluations) {
+        return evaluations.stream().map(value -> new GoalEvidence(value.label(), value.root(),
+                switch (value.value()) {
+                    case SATISFIED -> GoalStatus.SATISFIED;
+                    case UNKNOWN -> GoalStatus.UNKNOWN;
+                    case VIOLATED -> GoalStatus.VIOLATED;
+                }, value.condition())).toList();
+    }
+
+    /** Conservative repair obligations, not automatically proven process repairs. */
+    private static List<String> repairHints(List<GoalEvidence> goals,
+                                            AclBpmnFlowRuntime runtime) {
+        List<String> result = new ArrayList<>();
+        goals.stream().filter(goal -> goal.status() == GoalStatus.VIOLATED && !goal.root()
+                        && !goal.condition().equals("-"))
+                .forEach(goal -> {
+                    String obligation = "Re-establish and preserve " + goal.goal()
+                            + " before process completion; required condition: " + goal.condition();
+                    Activity candidate = closestRepairActivity(runtime, goal.condition());
+                    if (candidate != null) {
+                        obligation += " Candidate process action: execute or repeat '"
+                                + (candidate.name() == null ? candidate.id() : candidate.name())
+                                + "' after the invalidating change.";
+                    }
+                    result.add(obligation);
+                });
+        if (result.isEmpty()) {
+            goals.stream().filter(goal -> goal.root() && goal.status() != GoalStatus.SATISFIED)
+                    .forEach(goal -> result.add("Ensure all refinements of " + goal.goal()
+                            + " are satisfied before process completion."));
+        }
+        return List.copyOf(result);
+    }
+
+    private static Activity closestRepairActivity(AclBpmnFlowRuntime runtime, String condition) {
+        Set<String> required = oclWords(condition);
+        Set<String> requiredClauses = normalizedClauses(condition);
+        Set<String> requiredNegative = negatedProperties(condition);
+        Set<String> requiredPositive = positiveProperties(condition);
+        Activity best = null;
+        double bestScore = 0;
+        for (FlowElement element : runtime.process().flowElements()) {
+            if (!(element instanceof Activity activity)) continue;
+            String post = activity.postconditions().stream().map(value -> value.oclBody())
+                    .reduce("", (left, right) -> left + " " + right);
+            Set<String> postNegative = negatedProperties(post);
+            Set<String> postPositive = positiveProperties(post);
+            if (!disjoint(postNegative, requiredPositive)
+                    || !disjoint(postPositive, requiredNegative)) continue;
+            Set<String> postClauses = normalizedClauses(post);
+            Set<String> sharedClauses = new LinkedHashSet<>(requiredClauses);
+            sharedClauses.retainAll(postClauses);
+            double score = 2.0 * sharedClauses.size() + jaccard(required, oclWords(post));
+            if (score > bestScore) {
+                best = activity;
+                bestScore = score;
+            }
+        }
+        return bestScore > 0 ? best : null;
+    }
+
+    private static Set<String> positiveProperties(String source) {
+        Set<String> result = propertyNames(source);
+        result.removeAll(negatedProperties(source));
+        return result;
+    }
+
+    private static Set<String> propertyNames(String source) {
+        Set<String> result = new LinkedHashSet<>();
+        var matcher = OCL_PROPERTY.matcher(String.valueOf(source));
+        while (matcher.find()) result.add(matcher.group(1).toLowerCase());
+        return result;
+    }
+
+    private static Set<String> negatedProperties(String source) {
+        Set<String> result = new LinkedHashSet<>();
+        var matcher = NEGATED_OCL_PROPERTY.matcher(String.valueOf(source));
+        while (matcher.find()) result.add(matcher.group(1).toLowerCase());
+        return result;
+    }
+
+    private static boolean disjoint(Set<String> left, Set<String> right) {
+        return left.stream().noneMatch(right::contains);
+    }
+
+    private static Set<String> normalizedClauses(String source) {
+        Set<String> result = new LinkedHashSet<>();
+        for (String clause : String.valueOf(source).split("(?i)\\band\\b")) {
+            String normalized = clause.replace("self.orgContext.", "")
+                    .replace("self.group.", "")
+                    .replace("self.", "").replace("@pre", "")
+                    .replaceAll("[(){}\\[\\]\\s]", "");
+            if (!normalized.isBlank()) result.add(normalized);
+        }
+        return Set.copyOf(result);
     }
 
     private static List<String> rootGoalLabels(GoalModel model) {
@@ -542,6 +777,15 @@ public final class AclBpmnWholeProcessValidator {
                     "target", "source", "in", "classroom").contains(value)) result.add(value);
         }
         return result;
+    }
+
+    private static Set<String> oclIdentifiers(List<String> expressions) {
+        Set<String> result = new LinkedHashSet<>();
+        for (String expression : expressions) {
+            var matcher = OCL_IDENTIFIER.matcher(String.valueOf(expression));
+            while (matcher.find()) result.add(matcher.group());
+        }
+        return Set.copyOf(result);
     }
 
     private static String stem(String value) {

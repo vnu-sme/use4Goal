@@ -57,7 +57,7 @@ Goal là desired state, không phải biến lưu trạng thái. Nó có:
 
 - `activation`: predicate xác định goal có áp dụng tại checkpoint hay không;
 - `condition`: predicate xác định desired state hiện đang đúng hay sai;
-- `goalType`: `ACHIEVE`, `MAINTAIN`, `SUSTAIN`, `RECUR`.
+- `goalType`: `ACHIEVE`, `MAINTAIN`, `SUSTAIN`.
 
 ### `Task`
 

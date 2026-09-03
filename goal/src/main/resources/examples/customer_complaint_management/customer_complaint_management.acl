@@ -1,0 +1,87 @@
+// Shared organizational and domain state for Process 2: Customer Complaint Management.
+// Monetary values are expressed in thousands of NIS so the 5,000-NIS threshold is 5.
+acl v3.0 CustomerComplaintState {
+  orgContext CustomerComplaintCase {
+    role Customer {
+      responseReceived : Boolean mutable default false;
+    }
+
+    role FieldPerson {
+      handledComplaintCount : Integer mutable default 0;
+    }
+
+    role Nutritionist {
+      completedExaminationCount : Integer mutable default 0;
+    }
+
+    role CustomerManager {
+      approvalLimit : Integer default 5;
+    }
+
+    role LabManager {
+      proactiveCheckCount : Integer mutable default 0;
+    }
+
+    role CFO {
+      approvalLimit : Integer default 8;
+    }
+
+    role CEO {
+      approvalLimit : Integer default 8;
+    }
+
+    role Accountant {
+      processedRefundCount : Integer mutable default 0;
+    }
+
+    // This actor occurs in the intentional view but has no dedicated lane in
+    // the source BPMN process.
+    role QualityCommittee;
+
+    entity Complaint {
+      created : Boolean mutable default false;
+      artifactsUpdated : Boolean mutable default false;
+      prematureClosureSelected : Boolean mutable default false;
+      additionalExaminationRequired : Boolean mutable default false;
+      examined : Boolean mutable default false;
+      proactiveTestChecked : Boolean mutable default false;
+      improvementOpportunity : Boolean mutable default false;
+      improvementSuggested : Boolean mutable default false;
+      compensationSuggested : Boolean mutable default false;
+      refundRequested : Boolean mutable default false;
+      refundAmount : Integer mutable default 0;
+      financialApproved : Boolean mutable default false;
+      refundRecorded : Boolean mutable default false;
+      resolved : Boolean mutable default false;
+      closed : Boolean mutable default false;
+      updated : Boolean mutable default false;
+    }
+  }
+
+  context FieldPerson inv NonNegativeHandledCount:
+    self.handledComplaintCount >= 0;
+
+  context Nutritionist inv NonNegativeExaminationCount:
+    self.completedExaminationCount >= 0;
+
+  context LabManager inv NonNegativeProactiveCheckCount:
+    self.proactiveCheckCount >= 0;
+
+  context Accountant inv NonNegativeProcessedRefundCount:
+    self.processedRefundCount >= 0;
+
+  context Complaint inv NonNegativeRefund:
+    self.refundAmount >= 0;
+
+  context Complaint inv ExaminationHasEvidence:
+    self.examined implies self.artifactsUpdated;
+
+  context Complaint inv ImprovementFollowsProactiveCheck:
+    self.improvementSuggested implies self.proactiveTestChecked;
+
+  context Complaint inv RefundRecordingRequiresApproval:
+    self.refundRecorded implies self.financialApproved;
+
+  context Complaint inv ResolutionRequiresRegistration:
+    self.resolved implies self.created;
+}

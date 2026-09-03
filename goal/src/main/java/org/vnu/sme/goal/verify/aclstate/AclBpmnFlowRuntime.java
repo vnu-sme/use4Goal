@@ -106,7 +106,7 @@ final class AclBpmnFlowRuntime {
 
     boolean preHolds(FlowStep step, AclSystemState before, String selfObject) {
         return AclOclTransitionEvaluator.preconditionsHold(
-                step.flow().target().preconditions(), before, selfObject);
+                executedElement(step.flow()).preconditions(), before, selfObject);
     }
 
     boolean postHolds(FlowStep step, AclSystemState before,
@@ -136,7 +136,7 @@ final class AclBpmnFlowRuntime {
 
     String contractDescription(FlowStep step) {
         FlowRef flow = step.flow();
-        String pre = flow.target().preconditions().stream()
+        String pre = executedElement(flow).preconditions().stream()
                 .map(c -> c.oclBody()).reduce((a, b) -> a + " and " + b).orElse("true");
         String post;
         if (flow.initial()) post = "true";
@@ -152,9 +152,15 @@ final class AclBpmnFlowRuntime {
     }
 
     List<String> preExpressions(FlowStep step) {
-        return step.flow().target() instanceof EndEvent ? List.of()
-                : step.flow().target().preconditions().stream()
-                        .map(constraint -> constraint.oclBody()).toList();
+        return executedElement(step.flow()).preconditions().stream()
+                .map(constraint -> constraint.oclBody()).toList();
+    }
+
+    private static FlowElement executedElement(FlowRef flow) {
+        // The synthetic bottom -> Start step executes the Start Event. Every
+        // ordinary sequence-flow step executes its source element; its source
+        // pre- and postconditions must therefore be evaluated at the same step.
+        return flow.initial() ? flow.target() : flow.source();
     }
 
     List<String> postExpressions(FlowStep step) {

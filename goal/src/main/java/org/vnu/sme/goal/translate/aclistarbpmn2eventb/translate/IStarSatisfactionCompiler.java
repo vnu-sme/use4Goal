@@ -105,9 +105,6 @@ final class IStarSatisfactionCompiler {
                         "G({" + occurrence.active() + " ≠ ∅} => (! {" + occurrence.progress()
                                 + " ≠ ∅} U G {" + occurrence.stable() + " = " + occurrence.set() + "}))",
                         "iStar sustain goal " + goal.id()));
-                case RECUR -> properties.add(new Property("LTL_RECUR_" + id(goal.id()), "RECURRENCE",
-                        "G({" + occurrence.active() + " ≠ ∅} => G F {" + occurrence.progress() + " ≠ ∅})",
-                        "iStar recurrent goal " + goal.id()));
             }
         }
 
@@ -154,10 +151,10 @@ final class IStarSatisfactionCompiler {
         }
         if(!goals.isEmpty()) {
             sets.add("GOAL_DECL"); sets.add("GOAL_KIND");
-            for(String kind:List.of("ACHIEVE","MAINTAIN","SUSTAIN","RECUR")) constants.add(new Constant(kind));
+            for(String kind:List.of("ACHIEVE","MAINTAIN","SUSTAIN")) constants.add(new Constant(kind));
             constants.add(new Constant("goalKind"));
             axioms.add(new Predicate("axm_goal_decl",partition("GOAL_DECL",goals),false));
-            axioms.add(new Predicate("axm_goal_kind","partition(GOAL_KIND,{ACHIEVE},{MAINTAIN},{SUSTAIN},{RECUR})",false));
+            axioms.add(new Predicate("axm_goal_kind","partition(GOAL_KIND,{ACHIEVE},{MAINTAIN},{SUSTAIN})",false));
             axioms.add(new Predicate("axm_goal_kind_type","goalKind ∈ GOAL_DECL → GOAL_KIND",false));
             for(Actor actor:model.getActors()) for(IntentionalElement element:actor.elements()) if(element instanceof Goal goal) {
                 GoalType kind=goal.goalType()==null?GoalType.ACHIEVE:goal.goalType();

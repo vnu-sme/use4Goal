@@ -17,7 +17,7 @@ final class AclOclFormulaParser {
     record AtPre(Node expression) implements Node {}
 
     private enum Kind { ID, STRING, NUMBER, TRUE, FALSE, AND, OR, NOT, IMPLIES,
-                        EQ, NE, LT, LE, GT, GE, DOT, ARROW, LP, RP, BAR, COMMA,
+                        EQ, NE, LT, LE, GT, GE, PLUS, DOT, ARROW, LP, RP, BAR, COMMA,
                         HASH, COLON2, AT_PRE, EOF }
     private record Token(Kind kind, String text, int column) {}
 
@@ -63,11 +63,17 @@ final class AclOclFormulaParser {
     }
 
     private Node comparison() {
-        Node result = unary();
+        Node result = additive();
         while (peek(Kind.LT) || peek(Kind.LE) || peek(Kind.GT) || peek(Kind.GE)) {
             String operator = take().text();
-            result = new Binary(operator, result, unary());
+            result = new Binary(operator, result, additive());
         }
+        return result;
+    }
+
+    private Node additive() {
+        Node result = unary();
+        while (accept(Kind.PLUS)) result = new Binary("+", result, unary());
         return result;
     }
 
@@ -200,6 +206,7 @@ final class AclOclFormulaParser {
                 case ',' -> result.add(new Token(Kind.COMMA, ",", column));
                 case '#' -> result.add(new Token(Kind.HASH, "#", column));
                 case '=' -> result.add(new Token(Kind.EQ, "=", column));
+                case '+' -> result.add(new Token(Kind.PLUS, "+", column));
                 case '@' -> {
                     if (source.startsWith("pre", at)) {
                         at += 3;

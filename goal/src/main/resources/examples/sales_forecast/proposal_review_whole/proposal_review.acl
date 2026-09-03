@@ -1,49 +1,62 @@
-// Shared state for the ProposalReview motivating example.  Validation is tied
-// to a concrete revision, so changing currentRevision does not silently make
-// the new proposal valid.
-acl v2.0 ProposalReviewState {
-  enum ProposalRevision {
-    none,
-    r1,
-    r2
+// Shared organizational and domain state for ProposalReview.
+acl v3.0 ProposalReviewState {
+
+  // The OrgContext is structural and therefore has no attributes of its own.
+  orgContext ProposalReviewCase {
+    role ProposalManager {
+      // Organizational authority required by Validate and Finalize proposal.
+      authorityLevel : Integer default 1;
+    }
+
+    role Customer {
+      // Observable result produced when the Customer performs the review.
+      reviewCompleted : Boolean mutable default false;
+      requestedChangeCount : Integer mutable default 0;
+    }
+
+    entity Proposal {
+      requiredAuthorityLevel : Integer default 1;
+
+      prepared : Boolean mutable default false;
+      currentRevision : Integer mutable default 0;
+      validationRevision : Integer mutable default 0;
+
+      incorporatedChangeCount : Integer mutable default 0;
+      finalized : Boolean mutable default false;
+      sent : Boolean mutable default false;
+      sentRevision : Integer mutable default 0;
+    }
   }
 
-  role ProposalManager {
-  }
+  // ACL states only structural and lifecycle facts. Equality between the
+  // current and validated revisions remains an i* requirement, so BPMN can
+  // still produce the conflicting state currentRevision=2 and
+  // validationRevision=1.
+  context ProposalManager inv NonNegativeAuthority:
+    self.authorityLevel >= 0;
 
-  role Customer {
-  }
+  context Customer inv NonNegativeRequestedChanges:
+    self.requestedChangeCount >= 0;
 
-  group ProposalReviewCase {
-    prepared : Boolean default false;
-    currentRevision : ProposalRevision default none;
-    validationRevision : ProposalRevision default none;
+  context Customer inv NoRequestBeforeReview:
+    not self.reviewCompleted implies self.requestedChangeCount = 0;
 
-    reviewCompleted : Boolean default false;
-    reviewRequestsChanges : Boolean default false;
-    changesRequested : Boolean default false;
-    changesIncorporated : Boolean default false;
+  context Proposal inv NonNegativeProposalState:
+    self.requiredAuthorityLevel >= 0 and
+    self.currentRevision >= 0 and
+    self.validationRevision >= 0 and
+    self.incorporatedChangeCount >= 0 and
+    self.sentRevision >= 0;
 
-    finalized : Boolean default false;
-    sent : Boolean default false;
-    sentRevision : ProposalRevision default none;
-    processCompleted : Boolean default false;
+  context Proposal inv PreparationMatchesRevision:
+    self.prepared = (self.currentRevision > 0);
 
-    ProposalManager [1];
-    Customer [1];
-  }
+  context Proposal inv ValidationReferencesExistingRevision:
+    self.validationRevision <= self.currentRevision;
 
-  // Structural/lifecycle invariants only.  In particular, "the current
-  // revision is validated" is intentionally an iStar requirement rather than
-  // an ACL invariant; otherwise the defective BPMN branch would be removed
-  // from the state space instead of being returned as a cross-model conflict.
-  context ProposalReviewCase inv ValidationRequiresPreparation:
-    self.validationRevision <> ProposalRevision::none implies self.prepared;
+  context Proposal inv SendingRequiresFinalization:
+    self.sent implies self.finalized;
 
-  context ProposalReviewCase inv SentRevisionIsCurrent:
-    self.sentRevision <> ProposalRevision::none implies
-      self.sentRevision = self.currentRevision;
-
-  context ProposalReviewCase inv CompletionRequiresSending:
-    self.processCompleted implies self.sent;
+  context Proposal inv SentRevisionIsCurrent:
+    self.sent implies self.sentRevision = self.currentRevision;
 }

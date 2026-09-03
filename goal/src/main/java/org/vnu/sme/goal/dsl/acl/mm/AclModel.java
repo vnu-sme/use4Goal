@@ -39,6 +39,9 @@ public final class AclModel extends StructuralSpecification {
     public String version() { return version; }
     public String name() { return name; }
     public List<AclGroup> groups() { return groups; }
+    public List<AclGroup> orgContexts() {
+        return groups.stream().filter(AclGroup::isOrganizationalContext).toList();
+    }
     public List<AclRelation> relations() { return relations; }
     /**
      * Legacy projection for translators that have not yet migrated to
@@ -64,6 +67,9 @@ public final class AclModel extends StructuralSpecification {
     public Optional<AclRole> findRole(String value) { return roles().stream().filter(x -> x.name().equals(value)).findFirst(); }
     public Optional<AclEntity> findEntity(String value) { return entities().stream().filter(x -> x.name().equals(value)).findFirst(); }
     public Optional<AclGroup> findGroup(String value) { return groups.stream().filter(x -> x.name().equals(value)).findFirst(); }
+    public Optional<AclGroup> findOrgContext(String value) {
+        return orgContexts().stream().filter(x -> x.name().equals(value)).findFirst();
+    }
     private static AclGroup emptyRoot() {
         return new AclGroup("__root__", Optional.empty(), List.of(), List.of(), List.of(), List.of(), List.of());
     }

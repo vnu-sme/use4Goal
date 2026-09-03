@@ -92,7 +92,7 @@ model ClassroomProcess {
       self.attendanceRecorded
       and self.attendanceMethod = #electronic
       and self.target_Student_in_Classroom->forAll(student |
-        student.attendanceMarked)
+        student.present and student.attendanceMarked)
     ]}
     flow attendanceMerge
   }
@@ -109,7 +109,7 @@ model ClassroomProcess {
       self.attendanceRecorded
       and self.attendanceMethod = #manual
       and self.target_Student_in_Classroom->forAll(student |
-        student.attendanceMarked)
+        student.present and student.attendanceMarked)
     ]}
     flow attendanceMerge
   }

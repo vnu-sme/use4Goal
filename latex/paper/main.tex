@@ -8,6 +8,7 @@
 \usepackage{svg}
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
+\usepackage{mathtools}
 \usepackage{amsthm}
 \newtheorem{definition}{Definition}
 %\usepackage{algorithmic}
@@ -282,9 +283,9 @@ goal conditions to be interpreted over the same evolving state.
 \label{sect:overview}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The proposed method brings ACL, i*, and BPMN into one state-based verification workflow. ACL defines the organizational and domain state; i* states which intentions must hold over that state; and BPMN defines how the state changes during process execution. The method receives three model specifications and a scenario specification. The latter supplies an initial ACL population, the concrete process instance and execution choices, and, optionally, expected i* markings used as an oracle.
+The proposed method brings ACL, BPMN, and i* into one state-based verification workflow around a single principle: process execution and goal evaluation share the same runtime state. ACL makes this state explicit by representing domain objects and organizational instances; BPMN execution progresses over a control-flow configuration and constrains how the ACL state may change; and i* intentional elements are evaluated over the resulting ACL states rather than over an independent representation of the environment. OCL is the common expression language over this shared state throughout: ACL invariants characterize admissible states, BPMN preconditions and postconditions constrain execution, and intentional conditions determine goal satisfaction. What follows is not a complete formal semantics of ACL, BPMN, i*, and OCL, but only the elements needed to state precisely how a process execution relates to goal satisfaction: Section~\ref{sec:acl-language} defines the shared ACL state, Section~\ref{sec:bpmn} the BPMN control state and its ACL-facing contracts, Section~\ref{sec:istar} instance-level goal evaluation over that state, Section~\ref{sec:eventb-transformation} their joint transformation to Event-B, and Section~\ref{sec:checking} the resulting synchronization and scenario-conformance criterion.
 
-Figure~\ref{fig:overview} summarizes the workflow. To make its information flow explicit, it consists of the following stages. First, the three models are compiled and cross-references are resolved: a BPMN pool is bound to an ACL group, BPMN lanes and i* actors are bound to ACL roles, and all OCL expressions are type-checked over the ACL schema. Second, an AOL snapshot instantiates the initial ACL state $\Sigma_0$. Third, the selected BPMN scenario is executed from $\Sigma_0$. Each activity consumes and produces control-flow tokens, checks its precondition, and establishes its postcondition, thereby producing the next ACL state. The state after every executed step is retained as a checkpoint. Fourth, the i* semantics evaluates the applicable goal and task occurrences at every checkpoint and propagates their markings through refinements and dependencies. Finally, the checker combines ACL validity, BPMN execution, root-goal satisfaction, and the optional scenario oracle into a conformance verdict and a diagnostic trace. In parallel, the ACL, i*, and BPMN specifications are transformed into one Event-B development whose proof obligations are discharged in Rodin. Thus, the execution branch answers whether the selected scenario conforms, whereas the Event-B branch checks that the integrated formalization is well-defined and preserves its stated invariants.
+The method receives three model specifications and a scenario specification; the latter supplies an initial ACL population, the concrete process instance and execution choices, and, optionally, expected i* markings used as an oracle. Figure~\ref{fig:overview} summarizes the resulting workflow. First, the three models are compiled and cross-referenced: a BPMN pool is bound to an ACL group, BPMN lanes and i* actors are bound to ACL roles, and all OCL expressions are type-checked over the ACL schema. Second, an AOL snapshot instantiates the initial ACL state $\sigma_M^0$. Third, the selected BPMN scenario is executed from $\sigma_M^0$ as a sequence of synchronized steps (Section~\ref{sec:checking}), and every resulting state is retained as a checkpoint at which the i* semantics evaluates the applicable goal and task occurrences and propagates their markings through refinements and dependencies. Finally, the checker combines ACL validity, BPMN execution, root-goal satisfaction, and the optional oracle into one conformance verdict and a diagnostic trace. In parallel, the ACL, BPMN, and i* specifications are transformed into one Event-B development whose proof obligations are discharged in Rodin: the execution branch answers whether the selected scenario conforms, while the Event-B branch checks that the integrated formalization is itself well-defined and preserves its stated invariants.
 
 \begin{figure}[htbp]
 \vspace{-.3em}
@@ -304,50 +305,69 @@ Figure~\ref{fig:overview} summarizes the workflow. To make its information flow 
 \label{sec:acl-language}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-ACL is a structural language for specifying the state on which the process and goal views agree. Its metamodel, shown in Figure~\ref{fig:acl-metamodel}, distinguishes three classes. An \emph{entity} represents a domain object, a \emph{group} delimits an organizational context, and a \emph{role} represents a position that an agent may play in a group. Classes may own typed properties. Associations, aggregations, and compositions relate their instances, with multiplicities declared at both ends. An owner relation places a role or a child group inside a group. Role extension has an organizational meaning: an occurrence of a child role is played through exactly one occurrence of its parent role, and the resulting chain terminates at one agent. It is therefore different from entity or group generalization. Compatibility is declared for a pair of roles within a group; undeclared role pairs conflict by default. These constructs retain the organizational concepts of role and group used in MOISE~\cite{hubner2002moise}, while adding the domain state and constraints needed by OCL expressions.
+ACL is a structural language for specifying the organizational and domain state shared by the process and goal views. Rather than a general-purpose class diagram, an ACL specification reads like a small declarative language: a \emph{group} declaration directly contains the \emph{role} declarations and nested \emph{group} declarations that belong to it, together with the group's own properties, as illustrated by the excerpt in Figure~\ref{fig:acl-metamodel}. An \emph{entity} instead represents a domain object that relates to this organizational structure only through an ordinary association, never through containment. Every role, group, or entity may own typed properties, and associations, aggregations, and compositions relate their occurrences with multiplicities declared at both ends. Role extension is an organizational chain rather than a class hierarchy: an occurrence of a child role is played through exactly one occurrence of its parent role, and the resulting chain terminates at one agent. Compatibility is declared for a pair of roles within a group; undeclared role pairs conflict by default. These constructs retain the organizational concepts of role and group used in MOISE~\cite{hubner2002moise}, expressed here as containment-based declarations and given the domain state and OCL-checked constraints needed to evaluate goals and process guards.
 
 \begin{figure}[htbp]
 \vspace{-.3em}
 \begin{center}
-\includegraphics[width=\columnwidth,keepaspectratio]{images/ACLMetamodel.png}
+\resizebox{\columnwidth}{!}{%
+\begin{tikzpicture}
+% entity box, outside the containment tree
+\draw[rounded corners=2pt, thick, fill=black!5] (-3.3,-0.5) rectangle (-0.9,0.55);
+\node[font=\ttfamily\bfseries\scriptsize] at (-2.1,0.25) {entity Proposal};
+\node[anchor=west, font=\ttfamily\scriptsize] at (-3.2,-0.2) {status : Status;};
+% association crossing into the group (not containment)
+\draw[->, thin] (-0.9,0.1) -- (0.0,0.1);
+\node[font=\scriptsize\itshape] at (-0.45,0.35) {reviews};
+% outer group box: Team
+\draw[very thick, rounded corners=3pt, fill=orange!6] (0.0,-4.6) rectangle (7.2,2.4);
+\node[anchor=north west, font=\ttfamily\bfseries\scriptsize] at (0.15,2.3) {group Team \{};
+\node[anchor=west, font=\ttfamily\scriptsize] at (0.9,1.75) {code : String;};
+\node[anchor=south west, font=\ttfamily\bfseries\scriptsize] at (0.15,-4.5) {\}};
+% role box: Reviewer, shadow stack denotes [1..*]
+\draw[rounded corners=2pt, fill=blue!5] (1.0,0.5) rectangle (3.2,1.3);
+\draw[rounded corners=2pt, thick, fill=blue!15] (0.8,0.7) rectangle (3.0,1.5);
+\node[font=\ttfamily\scriptsize] at (1.9,1.1) {role Reviewer};
+\node[anchor=west, font=\scriptsize] at (3.3,1.1) {[1..*]};
+% role box: Initiator
+\draw[rounded corners=2pt, thick, fill=blue!15] (0.8,-0.6) rectangle (3.0,0.2);
+\node[font=\ttfamily\scriptsize] at (1.9,-0.2) {role Initiator};
+\node[anchor=west, font=\scriptsize] at (3.1,-0.2) {[1]};
+% compatibility link between the two roles
+\draw[<->, dashed, thick] (1.9,0.7) -- (1.9,0.2);
+\node[anchor=west, font=\scriptsize\itshape] at (2.0,0.45) {compatible};
+% nested group box: SubTeam, contained inside Team
+\draw[very thick, rounded corners=3pt, fill=orange!14] (0.5,-4.2) rectangle (6.8,-1.0);
+\node[anchor=north west, font=\ttfamily\bfseries\scriptsize] at (0.65,-1.1) {group SubTeam \{};
+\node[anchor=south west, font=\ttfamily\bfseries\scriptsize] at (0.65,-4.1) {\}};
+% role box: Approver, contained inside SubTeam
+\draw[rounded corners=2pt, thick, fill=blue!15] (1.0,-2.6) rectangle (3.4,-1.8);
+\node[font=\ttfamily\scriptsize] at (2.2,-2.2) {role Approver};
+\node[anchor=west, font=\scriptsize] at (3.5,-2.2) {[1]};
+\node[anchor=west, font=\ttfamily\scriptsize] at (1.0,-3.4) {deadline : Date;};
+\end{tikzpicture}%
+}
 \vspace{-1.1em}
 \begin{center}
-\caption{The ACL metamodel.}
+\caption{The ACL language as declarative, block-structured syntax rather than a class hierarchy. Solid nesting is containment: \texttt{group Team} directly encloses its \texttt{role} members and a nested \texttt{group SubTeam}, which in turn encloses its own role. A thin arrow is an ordinary domain association crossing from an \texttt{entity} into the containment tree; a dashed double arrow is a declared role \texttt{compatible} constraint.}
 \label{fig:acl-metamodel}
 \end{center}
 \vspace{-2.7em}
 \end{center}
 \end{figure}
 
-An ACL specification is a schema rather than a population. Its instance semantics is a state containing the currently existing agents, entity/group/role occurrences, property values, domain links, ownership links, and play links. The fixed identity carriers used by the Event-B translation must therefore be distinguished from the mutable extents of existing occurrences. This distinction is made explicit below.
+An ACL specification is a schema; Definition~\ref{def:acl-model} makes precise the state space it admits.
 
-\begin{definition}[ACL schema]
+\begin{definition}[ACL Model]
 \label{def:acl-model}
-An ACL schema is a tuple
+An ACL model is a pair $\mathcal A=(\mathit{Class},\mathit{Rel})$, where $\mathit{Class}=\mathit{Entity}\uplus\mathit{Group}\uplus\mathit{Role}$ is a finite set of typed classes and $\mathit{Rel}$ collects their typed properties together with the declared associations, compositions, generalizations, role-extension edges, and scoped role-compatibility pairs relating them. Every role or child group is composed into exactly one enclosing group, so $\mathit{Group}\cup\mathit{Role}$ forms a rooted containment forest whose internal nodes are groups and whose members are, at every level, either roles or nested groups; an entity relates to this forest only through ordinary associations, never through containment. A state of $\mathcal A$ is
 \[
- \begin{aligned}
- \mathcal{A}=(&D,E,G,R,P,L,O,H,\\
-              &\mathit{Gen},\mathit{Cmp},\mathit{mult}),
- \end{aligned}
+\sigma_M=(\sigma_{\mathit{Class}},\sigma_{\mathit{Att}},\sigma_{\mathit{Assoc}},\sigma_{\mathit{Play}}),
 \]
-where $D$, $E$, $G$, and $R$ are finite sets of datatypes, entities, groups, and roles; $P$ is a set of typed properties; $L$ is a set of associations, aggregations, and compositions; $O\subseteq G\times(G\cup R)$ contains ownership declarations; $H\subseteq R\times R$ contains parent--child role declarations; $\mathit{Gen}\subseteq(E\times E)\cup(G\times G)$ contains ordinary generalizations; $\mathit{Cmp}\subseteq G\times R\times R$ contains scoped role compatibilities; and $\mathit{mult}$ assigns a lower and upper bound to every property and relationship end. Each root entity or group $c$ has a fixed identity carrier $U_c$, its ordinary specializations reuse that carrier, and every role $r$ has a distinct occurrence carrier $U_r$. Agents have a separate fixed carrier $U_A$; primitive and enumeration domains provide the value ranges in $D$.
+giving, respectively, the currently existing occurrences of every class, their attribute values, the association/composition/aggregation links currently holding between occurrences (including group containment), and, for every role-extension edge, the parent-role occurrence through which each child-role occurrence is played. The state is admissible, written $\sigma_M\models\mathit{Inv}(\mathcal A)$, iff it respects the typing, multiplicity, generalization, containment, role-chain, and compatibility constraints declared in $\mathcal A$; these constraints become, one for one, the structural invariants of the Event-B machine produced in Section~\ref{sec:eventb-transformation}.
 \end{definition}
 
-\begin{definition}[ACL state]
-\label{def:system-marking}
-A state of $\mathcal{A}$ is
-\[
- \begin{aligned}
- \Sigma=\bigl(&A_\Sigma,(X_c)_c,(v_p)_p,(\ell_l)_l,\\
-               &(\mathit{own}_o)_o,(\mathit{play}_r)_r\bigr),
- \end{aligned}
-\]
-where $A_\Sigma\subseteq U_A$ and $X_c$ are the current agent and class extents: $X_c\subseteq U_c$ for a root entity or group and for every role, while $X_c\subseteq X_{c_p}$ for an ordinary specialization of $c_p$. Let $\mathit{Val}(d)$ denote the value domain of datatype $d$. A required property $p$ owned by $c$ is a total function $v_p\in X_c\rightarrow\mathit{Val}(\mathit{type}(p))$, whereas an optional property is a partial function $v_p\in X_c\rightharpoonup\mathit{Val}(\mathit{type}(p))$. A domain relation $l:c\leftrightarrow d$ is interpreted as $\ell_l\in X_c\leftrightarrow X_d$. Each declaration $o=(g,c)\in O$ is interpreted by $\mathit{own}_o\in X_g\leftrightarrow X_c$. For a root role $r$, $\mathit{play}_r\in A_\Sigma\leftrightarrow X_r$; for a child role $(r_p,r)\in H$, $\mathit{play}_r\in X_{r_p}\leftrightarrow X_r$.
-
-The state is valid, written $\Sigma\models\mathit{Inv}_{\mathcal A}$, iff all property and relation multiplicities hold; every owned occurrence has exactly one owner; every child-role occurrence has exactly one parent-role occurrence; entity and group extents respect $\mathit{Gen}$; composition parts have at most one composite; ownership and role-play chains remain in the same group context; and an agent may hold two roles in that context only when they form a parent--child chain or are listed in $\mathit{Cmp}$. Acyclicity of the static ownership and role hierarchies is checked when the schema is compiled. The remaining conditions become the typing and structural invariants of the ACL part of the Event-B machine.
-\end{definition}
-
-Figure~\ref{fig:acl-mtg} illustrates the schema for \textit{MeetingScheduler}. \texttt{MeetingUnit} owns one initiator, one organizer, an optional secretary, and at least two participants. The common meeting-party role records contact and calendar information, while participant occurrences record whether their timetable was collected, whether they were notified, and whether they attended. The association \texttt{knowsPhoneOf} records the contacts available to the secretary. Compatibility permits the initiator also to be a participant and the organizer also to be the secretary; the remaining same-group role pairs conflict. An AOL snapshot supplies the concrete meeting unit, agents, role occurrences, links, and initial property values used as $\Sigma_0$.
+Figure~\ref{fig:acl-mtg} instantiates this containment structure for \textit{MeetingScheduler}. \texttt{MeetingUnit} owns one initiator, one organizer, an optional secretary, and at least two participants. The common meeting-party role records contact and calendar information, while participant occurrences record whether their timetable was collected, whether they were notified, and whether they attended. The association \texttt{knowsPhoneOf} records the contacts available to the secretary. Compatibility permits the initiator also to be a participant and the organizer also to be the secretary; the remaining same-group role pairs conflict. An AOL snapshot supplies the concrete meeting unit, agents, role occurrences, links, and initial property values used as $\sigma_M^0$.
 
 \begin{figure}[htbp]
 \vspace{-.3em}
@@ -363,47 +383,12 @@ Figure~\ref{fig:acl-mtg} illustrates the schema for \textit{MeetingScheduler}. \
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{The Extended i* Language}
-\label{sec:istar}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-The extended i* language specifies intentions over ACL states. Its metamodel retains actors, goals, tasks, resources, qualities, obstacles, refinements, contributions, and strategic dependencies from i*~\cite{yu1997towards}. An actor is typed by an ACL role, so one actor definition can induce several actor occurrences in a concrete ACL population. Goals have one of four temporal kinds---\texttt{Achieve}, \texttt{Maintain}, \texttt{Sustain}, or \texttt{Recur}---and carry OCL \texttt{activation} and \texttt{condition} predicates. Tasks carry OCL preconditions and postconditions. Consequently, an intentional element is evaluated for a specific role occurrence and its enclosing ACL group, rather than once at the model type level.
-
-Figure~\ref{fig:istar-metamodel} also shows the two quantified refinements introduced for instance-level reasoning. Ordinary AND and OR refinements relate intentional elements in the same actor context. A \texttt{forall} refinement creates a child context for every matching role occurrence and aggregates all of them; a \texttt{pick} refinement selects one matching occurrence and keeps that choice stable across checkpoints. Strategic dependencies transfer the evaluation context from a depender occurrence to a matching dependee occurrence. If a quantified domain is empty, its result is unknown rather than vacuously satisfied.
-
-\begin{figure}[htbp]
-\vspace{-.3em}
-\begin{center}
-\includegraphics[width=\columnwidth,keepaspectratio]{images/IstarMetamodel.png}
-\vspace{-1.1em}
-\begin{center}
-\caption{The extended i* metamodel.}
-\label{fig:istar-metamodel}
-\end{center}
-\vspace{-2.7em}
-\end{center}
-\end{figure}
-
-\begin{definition}[i* marking]
-\label{def:goal-marking}
-Let $\Omega_I(\Sigma)$ be the intentional-element occurrences obtained by binding i* actors and context paths to role occurrences in an ACL state $\Sigma$. At checkpoint $i$, an i* marking is
-\[
- M_i=(M_G^i,M_T^i,M_Q^i,M_O^i).
-\]
-For a goal occurrence $(g,o)\in\Omega_I(\Sigma_i)$, $M_G^i(g,o)=(A_i,P_i,S_i)$ records whether it is active, whether its condition or refinement currently holds, and whether its obligation has remained valid during the current activation episode. A task occurrence is marked by $(Q_i,R_i)$, denoting that it has been requested and realized. Quality and obstacle markings are derived from their conditions and incoming contributions. The observable status of an occurrence is \texttt{UNKNOWN}, \texttt{PENDING}, \texttt{FULFILLED}, or \texttt{VIOLATED}; the temporal interpretation of $(A_i,P_i,S_i)$ is determined by the goal kind. Markings are reset when an occurrence is inactive and are propagated through AND, OR, \texttt{forall}, \texttt{pick}, contribution, obstruction, and dependency relations.
-\end{definition}
-
-An \texttt{Achieve} goal latches fulfillment once its condition becomes true during an activation episode. A \texttt{Maintain} goal requires its condition throughout that episode; \texttt{Sustain} begins this preservation obligation after its first achievement; and \texttt{Recur} permits repeated achievements. For tasks, $Q_i$ becomes true when the task is requested and $R_i$ when its postcondition is established. These histories are why the goal model is reevaluated at every checkpoint instead of only at the final state.
-
-In Figure~\ref{fig:istar-mtg}, \texttt{MeetingOrganized} is evaluated for the concrete initiator occurrence. Its scheduling branch is delegated to an organizer, while its attendance branch uses \texttt{forall} over the participant occurrences owned by the same meeting unit. Timetable collection may use an OR between calendar and telephone channels, and a \texttt{pick} identifies the secretary occurrence that performs the call. Hence the same i* model can distinguish a meeting in which all participants attend from one in which only one of several participants is reached.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{The Simplified BPMN Language}
 \label{sec:bpmn}
 \label{sec:bpmn-semantics}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The simplified BPMN language gives operational semantics to the process view. It retains pools, lanes, activities, start and end events, sequence flows, and exclusive and parallel gateways from BPMN~\cite{omg2013bpmn}. A pool is typed by an ACL group and therefore denotes one process instance for each matching group occurrence. A lane is typed by an ACL role; an activity executed in that lane must be performed by an agent playing the corresponding role in the pool's group occurrence. Activities carry OCL preconditions and postconditions over ACL. A precondition determines whether an activity is enabled, while a postcondition relates its before-state to its after-state. Sequence-flow guards select exclusive branches. Gateways change control tokens but do not directly modify the ACL state.
+The simplified BPMN language gives operational semantics to the process view. It retains pools, lanes, activities, start and end events, sequence flows, and exclusive, inclusive, and parallel gateways from BPMN~\cite{omg2013bpmn} (Figure~\ref{fig:bpmn-metamodel}). A pool is typed by an ACL group and denotes one process instance for each matching group occurrence; a lane is typed by an ACL role, and an activity executed in that lane must be performed by an agent playing the corresponding role in the pool's group occurrence.
 
 \begin{figure}[htbp]
 \vspace{-.3em}
@@ -418,23 +403,65 @@ The simplified BPMN language gives operational semantics to the process view. It
 \end{center}
 \end{figure}
 
-\begin{definition}[BPMN transition semantics]
+\begin{definition}[BPMN Process State]
 \label{def:bpmn-model}
-A simplified BPMN model over $\mathcal A$ is
+A BPMN process is $B=(T,F)$, where $T=E\uplus A\uplus G_B$ partitions its flow nodes into start/end events, activities, and gateways, and $F\subseteq T\times T$ is the sequence-flow relation. Writing $F_B=F\cup\{(\bot,s)\mid s\text{ a start event}\}$ for the flow domain extended with a process-entry symbol $\bot$, a control state is a set of active flows $\sigma_F\subseteq F_B$, initially the entry flows of every start event. Executing an active flow $f$ transitions
 \[
- \begin{aligned}
- B=(&N,F,s,e,\mathit{pool},\mathit{lane},\\
-    &\mathit{pre},\mathit{post},\mathit{guard}),
- \end{aligned}
+\sigma_F \xrightarrow{\mathit{target}(f)}_B \sigma_F': \quad \sigma_F' = (\sigma_F\setminus \mathit{Pass}(f)) \cup \mathit{Next}(f),
 \]
-where $N=Act\uplus Gw\uplus Ev$, $F\subseteq N\times N$, and $s,e\in Ev$ are the flow nodes, sequence flows, and boundary events. A runtime configuration is $c=(m,\Sigma)$, where $m:F\rightarrow\mathbb N$ is a token marking and $\Sigma\models\mathit{Inv}_{\mathcal A}$. For an activity $a$ and a binding $\beta$ of its process instance, group occurrence, and performer,
-\[
- (m,\Sigma)\xrightarrow{a,\beta}_B(m',\Sigma')
-\]
-iff the required incoming token and role binding exist, $\mathit{pre}(a)$ holds in $\Sigma$, $\mathit{post}(a)$ holds over $(\Sigma,\Sigma')$, $\Sigma'\models\mathit{Inv}_{\mathcal A}$, and $m'$ consumes the incoming token and produces the outgoing token. Exclusive gateways choose exactly one enabled guarded flow; parallel splits produce all outgoing tokens and parallel joins require all incoming tokens. A process is complete when an end event consumes the last required tokens.
+where $\mathit{Pass}(f)$ and $\mathit{Next}(f)$ specialize by node type: an activity or a start/end event consumes just $f$ and, unless it is an end event, produces every outgoing flow; an exclusive gateway consumes $f$ and produces exactly one outgoing flow; an inclusive gateway consumes and produces non-empty subsets of, respectively, its incoming and outgoing flows; and a parallel gateway consumes all incoming flows and produces all outgoing flows. A configuration is final when every active flow targets an end event.
 \end{definition}
 
-Figure~\ref{fig:bpmn-mtg} instantiates this language with one pool for a meeting unit and lanes for its initiator, organizer, secretary, and participants. The initial activities decide the meeting details; an exclusive gateway selects calendar collection or telephone contact according to ACL data; subsequent activities choose a time, notify the participants, and record attendance. The process thereby generates the state changes on which the i* model in Figure~\ref{fig:istar-mtg} is evaluated.
+Activities additionally carry an OCL precondition and, per outgoing flow, a branch-specific postcondition over ACL: a precondition determines whether the activity's execution is enabled, and a postcondition relates the ACL state before execution to the state after it. Gateways change only the control configuration $\sigma_F$; how activity execution is checked and applied against the shared ACL state is given uniformly, together with the other node types, in Section~\ref{sec:checking}.
+
+Figure~\ref{fig:bpmn-mtg} instantiates this language with one pool for a meeting unit and lanes for its initiator, organizer, secretary, and participants. The initial activities decide the meeting details; an exclusive gateway selects calendar collection or telephone contact according to ACL data; subsequent activities choose a time, notify the participants, and record attendance. The process thereby generates the ACL state changes over which the i* model of Section~\ref{sec:istar} is evaluated.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{The Extended i* Language}
+\label{sec:istar}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The extended i* language specifies intentions over ACL states. Its metamodel (Figure~\ref{fig:istar-metamodel}) retains actors, goals, tasks, resources, qualities, obstacles, refinements, contributions, and strategic dependencies from i*~\cite{yu1997towards}. An actor is typed by an ACL role, so one actor definition induces one intentional-element instance for every matching role occurrence in a concrete ACL population, rather than a single model-level truth value. Goals carry a temporal kind---\texttt{Achieve}, \texttt{Maintain}, \texttt{Sustain}, or \texttt{Recur} (repeated \texttt{Achieve})---and an OCL \texttt{condition}; tasks carry OCL pre/postconditions. Two quantified refinements support this instance-level reasoning: a \texttt{forall} refinement creates a child context for every matching role occurrence and aggregates all of them, while a \texttt{pick} refinement selects one matching occurrence and keeps that choice stable across checkpoints; an empty quantified domain yields an unknown result rather than vacuous satisfaction. Strategic dependencies transfer the evaluation context from a depender occurrence to a matching dependee occurrence.
+
+\begin{figure}[htbp]
+\vspace{-.3em}
+\begin{center}
+\includegraphics[width=\columnwidth,keepaspectratio]{images/IstarMetamodel.png}
+\vspace{-1.1em}
+\begin{center}
+\caption{The extended i* metamodel.}
+\label{fig:istar-metamodel}
+\end{center}
+\vspace{-2.7em}
+\end{center}
+\end{figure}
+
+\begin{definition}[Instance-Level Goal Marking]
+\label{def:goal-marking}
+An i* actor is typed by an ACL role $a$; its runtime instances at checkpoint $i$ are the occurrences $\sigma_{\mathit{Class}}^i(a)$, and $g^x$ denotes the instance of goal $g$ bound to occurrence $x$. Its state condition is
+\[
+\mathit{eval}_{\sigma_M^i}(g^x)=\top \iff \mathit{condition}(g)\text{ holds for }x\text{ in }\sigma_M^i,
+\]
+and its marking $\mathit{evalGoal}_i(g^x)\in\Delta=\{(?,?),(\top,\bot),(\top,\top)\}$---respectively undetermined, activated but unfulfilled, and fulfilled---follows its temporal kind:
+\[
+\mathit{evalGoal}_i(g^x)=
+\begin{cases}
+(\top,\top), & \mathit{eval}_{\sigma_M^i}(g^x)=\top,\\
+(\top,\bot), & \mathit{eval}_{\sigma_M^i}(g^x)=\bot,
+\end{cases}
+\]
+for a \texttt{Maintain} goal;
+\[
+\mathit{evalGoal}_i(g^x)=
+\begin{cases}
+(\top,\top), & \mathit{evalGoal}_{i-1}(g^x)=(\top,\top) \text{ or } \mathit{eval}_{\sigma_M^i}(g^x)=\top,\\
+(?,?), & \text{otherwise},
+\end{cases}
+\]
+for an \texttt{Achieve} goal, so that fulfillment latches; and, for a \texttt{Sustain} goal, as \texttt{Achieve} until first fulfilled, after which a later violation of $\mathit{eval}_{\sigma_M^i}$ yields $(\top,\bot)$, which then persists as under \texttt{Maintain}. A non-leaf goal or task carries no directly attached condition and is evaluated exclusively from its AND/OR-, \texttt{forall}-, or \texttt{pick}-refined children, so a parent marking never bypasses or contradicts them; task, quality, obstacle, and dependency markings are derived analogously, from their own preconditions, postconditions, and incoming contribution or obstruction links.
+\end{definition}
+
+In Figure~\ref{fig:istar-mtg}, \texttt{MeetingOrganized} is evaluated for the concrete initiator occurrence. Its scheduling branch is delegated to an organizer, while its attendance branch uses \texttt{forall} over the participant occurrences owned by the same meeting unit. Timetable collection may use an OR between calendar and telephone channels, and a \texttt{pick} identifies the secretary occurrence that performs the call. Hence the same i* model can distinguish a meeting in which all participants attend from one in which only one of several participants is reached.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Transformation to Event-B}
@@ -443,43 +470,48 @@ Figure~\ref{fig:bpmn-mtg} instantiates this language with one pool for a meeting
 
 The transformation $\mathcal T(\mathcal A,I,B)$ produces an Event-B context containing static domains and a machine containing the integrated dynamic state. The rules are compositional and preserve the bindings established among the source models.
 
-\emph{ACL rules.} Each root entity/group identity domain and each role occurrence domain becomes a carrier set; ordinary entity/group specializations reuse their parent's domain, and enumerations become finite partitions. Current extents, properties, associations, ownership relations, and play relations become machine variables. Their typing, multiplicity, generalization, composition, ownership, role-chain, and compatibility conditions become invariants, and all dynamic extents and relations are initialized to the empty set. This encoding is the basis of Definitions~\ref{def:acl-model} and~\ref{def:system-marking}.
+\emph{ACL rules.} Each root entity/group identity domain and each role occurrence domain becomes a carrier set; ordinary entity/group specializations reuse their parent's domain, and enumerations become finite partitions. Current extents, properties, associations, containment links, and play relations become machine variables. Their typing, multiplicity, generalization, containment, role-chain, and compatibility conditions become invariants, and all dynamic extents and relations are initialized to the empty set. This encoding is the basis of Definition~\ref{def:acl-model}.
 
-\emph{BPMN rules.} A pool introduces process-instance and lifecycle variables together with a scope function from each process instance to its ACL group occurrence. Every sequence flow becomes a token-count function indexed by process instance. Start, activity, gateway, and end nodes become Event-B events. An activity event is guarded by its input token, lane-role binding, and translated OCL precondition; its simultaneous actions update the token functions and ACL variables according to the postcondition. Exclusive and parallel gateways are translated into guarded branch, split, merge, and join events.
+\emph{BPMN rules.} A pool introduces process-instance and lifecycle variables together with a scope function from each process instance to its ACL group occurrence. Every sequence flow becomes a token-count function indexed by process instance. Start, activity, gateway, and end nodes become Event-B events. An activity event is guarded by its input token, lane-role binding, and translated OCL precondition; its simultaneous actions update the token functions and ACL variables according to the postcondition. Exclusive, inclusive, and parallel gateways are translated into guarded branch, split, merge, and join events.
 
 \emph{i* rules.} i* actors reuse the ACL role extents rather than introducing duplicate actor populations. Goal and task occurrences, context bindings, and marking components become machine variables. Activation and condition expressions become predicates, while AND, OR, \texttt{forall}, \texttt{pick}, contribution, obstruction, and dependency relations determine the marking-update actions. Quantified refinements range over the current ACL role occurrences in the required group context.
 
 \emph{Synchronization rule.} The integrated machine has phases \texttt{READY} and \texttt{DIRTY}. Every translated BPMN step moves the machine from \texttt{READY} to \texttt{DIRTY}. The event \texttt{EvaluateAllGoals} then evaluates the entire i* model atomically and returns it to \texttt{READY}; only such states are observable checkpoints. Rodin generates well-definedness and invariant-preservation obligations for these events, so the proof concerns the integrated semantics rather than three unrelated translations. This follows the established use of Event-B for formal BPMN analysis~\cite{bryans2010eventb}, extended here with ACL state and i* markings.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Scenario-Based Conformance Checking}
+\subsection{Synchronization and Conformance}
 \label{sec:checking}
-\label{def:checkpoint-trace}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The scenario checker operates on one concrete execution. Let
-\[
- S=(\mathcal A,I,B,\Sigma_0,\tau,\mathcal O)
-\]
-contain the three models, an AOL-derived initial state, a concrete sequence $\tau=\langle(x_1,\beta_1),\ldots,(x_n,\beta_n)\rangle$ of BPMN nodes and instance bindings, and an optional ISCN oracle $\mathcal O$. Starting from the initial token marking $m_0$, replay produces
-\[
- \Gamma_S:\quad
- (m_0,\Sigma_0)\xrightarrow{x_1,\beta_1}_B
- (m_1,\Sigma_1)\cdots
- \xrightarrow{x_n,\beta_n}_B(m_n,\Sigma_n).
-\]
-For an activity, $\Sigma_i$ is the state established by its postcondition; for a gateway or event that has no domain effect, $\Sigma_i=\Sigma_{i-1}$. Each configuration is retained as a checkpoint, and Definition~\ref{def:goal-marking} yields the corresponding marking trace $\langle M_0,\ldots,M_n\rangle$.
+The definitions above give each language its own state: ACL contributes the domain and organizational state $\sigma_M$, BPMN the control state $\sigma_F$, and i* a marking derived from $\sigma_M$ at every checkpoint (Definition~\ref{def:goal-marking}). Conformance checking aligns these along one concrete execution.
 
-The conformance criterion is
+\begin{definition}[Synchronized Step]
+\label{def:synchronized-transition}
+Let $f$ be a BPMN flow, with precondition $\mathit{Pre}_B(f)$ taken from its target activity (or $\top$ if its target is not an activity) and branch postcondition $\mathit{Post}_B(f)$ taken from its source. Executing $f$ as step $i$ is a synchronized step
+\[
+\langle\sigma_F^{i-1},\sigma_M^{i-1}\rangle \xRightarrow{f}\langle\sigma_F^i,\sigma_M^i\rangle
+\]
+iff (a) $\sigma_F^{i-1}\xrightarrow{\mathit{target}(f)}_B\sigma_F^i$ (Definition~\ref{def:bpmn-model}), (b) $\sigma_M^{i-1}\models\mathit{Pre}_B(f)$, (c) $(\sigma_M^{i-1},\sigma_M^i)\models\mathit{Post}_B(f)$, and (d) $\sigma_M^i\models\mathit{Inv}(\mathcal A)$.
+\end{definition}
+
+Condition (a) is a purely BPMN control-flow step; conditions (b)--(d) tie that step to the shared ACL state and, being OCL, are declarative rather than constructive: (b) constrains the state in which $f$ may execute, (c) constrains the relationship between the two consecutive ACL states, and (d) constrains every admissible state. A step whose control flow is possible but whose associated domain-state change is not licensed by (b)--(d) is rejected. Every resulting $\sigma_M^i$ is a new checkpoint at which the i* marking is reevaluated (Definition~\ref{def:goal-marking}), so a BPMN execution step is related to its effect on intentional satisfaction without introducing a separate state representation for the goal model.
+
+\begin{definition}[Scenario Conformance]
+\label{def:conformance}
+A scenario is $S=(\mathcal A,I,B,\sigma_M^0,\tau,\mathcal O)$, where $\sigma_M^0$ is an AOL-derived initial ACL state, $\tau=\langle f_1,\ldots,f_n\rangle$ is a concrete BPMN execution with its process-instance and role bindings, and $\mathcal O$ is an optional oracle of expected i* markings. Replaying $\tau$ from $(\sigma_F^0,\sigma_M^0)$ through repeated synchronized steps yields a checkpoint trace and, by Definition~\ref{def:goal-marking}, a marking trace $\langle M_0,\ldots,M_n\rangle$. Writing $G_{\mathit{root}}^n$ for the instantiated root-goal occurrences present at the final checkpoint, the scenario conforms iff
 \begin{align*}
-\mathit{Conform}(S) \iff{}&
- \bigwedge_{i=0}^{n}(\Sigma_i\models\mathit{Inv}_{\mathcal A})\ \land
- \bigwedge_{i=1}^{n}\bigl(c_{i-1}\xrightarrow{x_i,\beta_i}_B c_i\bigr) \\
- &{}\land\ \mathit{Complete}_B(c_n)
- \land\ \mathit{SatRoots}_I(M_n)
- \land\ \mathit{Agree}(M_n,\mathcal O),
+\mathit{Conform}(S)\iff{}&
+\textstyle\bigwedge_{i=1}^n\langle\sigma_F^{i-1},\sigma_M^{i-1}\rangle\xRightarrow{f_i}\langle\sigma_F^i,\sigma_M^i\rangle\\
+&{}\land\ \mathit{Final}_B(\sigma_F^n)\\
+&{}\land\ \forall g^x\in G_{\mathit{root}}^n:\ \mathit{evalGoal}_n(g^x)=(\top,\top)\\
+&{}\land\ \mathit{Agree}(M_n,\mathcal O),
 \end{align*}
-where the last conjunct is omitted when no oracle is supplied. The checker evaluates ACL invariants first, BPMN pre/postconditions around their respective transitions, i* root goals at the final checkpoint, and the oracle over the occurrences it observes. It reports these as separate ACL, BPMN, goal, and oracle failures so that a failed verdict identifies both the first divergent checkpoint and the responsible model. The verdict is deliberately scoped to $\tau$; paths and instance populations not represented by the scenario are outside its claim.
+where the last conjunct is omitted when no oracle is supplied.
+\end{definition}
+
+The four conjuncts are diagnostically distinct. The first requires every replayed step to be a valid synchronized step, so a violated ACL invariant, an unmet precondition, or a falsified postcondition each break the chain at the checkpoint where it occurs. The second requires the BPMN execution to reach a final configuration: a process may execute all of its activities and terminate normally while still producing a state that does not satisfy the intentions it is expected to serve, which is why process completion alone does not establish conformance. The third is instance-quantified: because $G_{\mathit{root}}^n$ ranges over root-goal \emph{instances} rather than model-level goals, a scenario is not conformant merely because some instance of a root goal is satisfied---every relevant instance present at the final checkpoint must be, so that a satisfied participant cannot mask a violation concerning another participant represented by the same model-level goal. The last conjunct compares the computed marking trace against the supplied oracle, when one is given. The checker reports these four possibilities separately, as \texttt{aclFailures}, \texttt{bpmnFailures}, \texttt{goalFailures}, and \texttt{oracleFailures}, so a failed verdict identifies both the first divergent checkpoint and the responsible model (Section~\ref{sect:discussion}). The notion is deliberately scenario-based: it establishes conformance for the analyzed execution $\tau$, not a universal property over every trace reachable from the BPMN model; paths and instance populations not represented by the scenario are outside its claim.
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Tool Support}
@@ -520,7 +552,7 @@ The evaluation is organized around two research questions:
   \item \textbf{RQ2.} How can the evolving states of a goal model and a process model be represented in a shared intermediate model so that their consistency can be checked along a concrete execution scenario?
 \end{itemize}
 
-RQ1 is addressed by the ACL, extended i*, and simplified BPMN metamodels (Sections~\ref{sec:acl-language}--\ref{sec:bpmn}). RQ2 is addressed by the state-transition semantics and checking algorithm (Sections~\ref{sec:bpmn-semantics}--\ref{sec:checking}) and the tool of Section~\ref{sect:toolSupport}. The rest of this section positions these answers against three representative techniques.
+RQ1 is addressed by the ACL, simplified BPMN, and extended i* metamodels (Sections~\ref{sec:acl-language}, \ref{sec:bpmn}, and~\ref{sec:istar}). RQ2 is addressed by the state-transition semantics and checking algorithm (Sections~\ref{sec:bpmn-semantics}, \ref{sec:eventb-transformation}, and~\ref{sec:checking}) and the tool of Section~\ref{sect:toolSupport}. The rest of this section positions these answers against three representative techniques.
 
 GoBIS~\cite{gobis2015} provides integration guidelines and traceability between goal and process perspectives, but operates at design time. Gr\"oner et al.'s~\cite{groner2014vadl} Description-Logic approach automatically validates mappings between intentional relations and process structures, but does not represent execution order. Caballero-Villalobos et al.~\cite{caballero2026alig} provide the strongest behavioral guarantee, a verdict over every reachable execution rather than one trace; this method instead evaluates one concrete scenario over the actor and domain instances represented in the shared USE/OCL state.
 

@@ -42,7 +42,7 @@ import org.vnu.sme.goal.dsl.istar.mm.ContextResolution;
  * </ol>
  * The companion {@code .tocl} file holds one formula per supported iStar Goal,
  * encoding ACHIEVE / MAINTAIN / SUSTAIN semantics with {@code sometime} and
- * {@code always}. RECUR is deliberately omitted for now.
+ * {@code always}.
  *
  * <p>Actors in iStar are matched to ACL roles by name (case-sensitive).
  * Unmatched actors are emitted as standalone classes with a warning.

@@ -1,0 +1,287 @@
+// Executable abstraction of Process 2: Customer Complaint Management.
+// The premature-closure branch makes Appendix 4 situation 2.1 explicit so
+// that the documented potential misalignment can be checked as a scenario.
+model CustomerComplaintProcess {
+  pool ComplaintHandling for CustomerComplaintCase {
+    name "Customer Complaint Management"
+    lane FieldPerson;
+    lane Nutritionist;
+    lane CustomerManager;
+    lane LabManager;
+    lane CFO;
+    lane CEO;
+    lane Accountant;
+  }
+
+  start complaintReceived {
+    lane FieldPerson
+    trigger none
+    pre {[
+      not self.complaint.created
+      and not self.complaint.closed
+      and not self.complaint.resolved
+    ]}
+    flow createComplaint
+  }
+
+  activity createComplaint {
+    name "Creating complaint"
+    type task
+    lane FieldPerson
+    post {[
+      self.complaint.created
+    ]}
+    flow updateArtifacts
+  }
+
+  activity updateArtifacts {
+    name "Updating artifacts"
+    type task
+    lane FieldPerson
+    pre {[
+      self.complaint.created
+    ]}
+    post {[
+      self.complaint.artifactsUpdated
+    ]}
+    flow handlingDecision
+  }
+
+  gateway handlingDecision {
+    lane FieldPerson
+    type xor
+    flow closePendingComplaint post {[
+      self.complaint.prematureClosureSelected
+    ]}
+    flow examinationRequired post {[
+      not self.complaint.prematureClosureSelected
+    ]}
+  }
+
+  // This branch represents the documented possibility of closing a pending
+  // complaint without actually resolving or updating it.
+  activity closePendingComplaint {
+    name "Closing pending complaint"
+    type task
+    lane LabManager
+    pre {[
+      not self.complaint.resolved
+    ]}
+    post {[
+      self.complaint.closed
+      and not self.complaint.resolved
+      and not self.complaint.updated
+    ]}
+    flow complaintCompleted
+  }
+
+  gateway examinationRequired {
+    lane FieldPerson
+    type xor
+    flow examineComplaint post {[
+      self.complaint.additionalExaminationRequired
+    ]}
+    flow examinationMerge post {[
+      not self.complaint.additionalExaminationRequired
+      and not self.complaint.examined
+      and not self.complaint.proactiveTestChecked
+      and not self.complaint.improvementOpportunity
+      and not self.complaint.improvementSuggested
+    ]}
+  }
+
+  activity examineComplaint {
+    name "Examining artifacts and updating findings"
+    type task
+    lane Nutritionist
+    pre {[
+      self.complaint.artifactsUpdated
+    ]}
+    post {[
+      self.complaint.examined
+      and self.nutritionist.completedExaminationCount =
+        self.nutritionist.completedExaminationCount@pre + 1
+    ]}
+    flow checkProactiveTests
+  }
+
+  activity checkProactiveTests {
+    name "Checking proactive tests"
+    type task
+    lane LabManager
+    pre {[
+      self.complaint.examined
+    ]}
+    post {[
+      self.complaint.proactiveTestChecked
+      and self.labManager.proactiveCheckCount =
+        self.labManager.proactiveCheckCount@pre + 1
+    ]}
+    flow improvementOpportunity
+  }
+
+  gateway improvementOpportunity {
+    lane LabManager
+    type xor
+    flow updateImprovementSuggestion post {[
+      self.complaint.improvementOpportunity
+    ]}
+    flow examinationMerge post {[
+      not self.complaint.improvementOpportunity
+      and not self.complaint.improvementSuggested
+    ]}
+  }
+
+  activity updateImprovementSuggestion {
+    name "Updating improvement suggestion"
+    type task
+    lane LabManager
+    pre {[
+      self.complaint.proactiveTestChecked
+    ]}
+    post {[
+      self.complaint.improvementSuggested
+    ]}
+    flow examinationMerge
+  }
+
+  gateway examinationMerge {
+    lane FieldPerson
+    type xor
+    flow compensationSuggestion
+  }
+
+  activity compensationSuggestion {
+    name "Compensation suggestion"
+    type task
+    lane FieldPerson
+    post {[
+      self.complaint.compensationSuggested
+    ]}
+    flow refundDecision
+  }
+
+  gateway refundDecision {
+    lane FieldPerson
+    type xor
+    flow amountDecision post {[
+      self.complaint.refundRequested
+    ]}
+    flow resolveComplaint post {[
+      not self.complaint.refundRequested
+      and self.complaint.refundAmount = 0
+      and not self.complaint.financialApproved
+      and not self.complaint.refundRecorded
+    ]}
+  }
+
+  gateway amountDecision {
+    lane CustomerManager
+    type xor
+    flow approveLowValueRefund post {[
+      self.complaint.refundAmount = 4
+    ]}
+    flow reviewHighValueRefund post {[
+      self.complaint.refundAmount = 6
+    ]}
+  }
+
+  activity approveLowValueRefund {
+    name "Approve refund below 5000 NIS"
+    type task
+    lane CustomerManager
+    pre {[
+      self.complaint.refundRequested
+    ]}
+    post {[
+      self.complaint.financialApproved
+    ]}
+    flow approvalMerge
+  }
+
+  activity reviewHighValueRefund {
+    name "Review refund above 5000 NIS"
+    type task
+    lane CFO
+    pre {[
+      self.complaint.refundRequested
+    ]}
+    flow approveHighValueRefund
+  }
+
+  activity approveHighValueRefund {
+    name "Approve high-value refund"
+    type task
+    lane CEO
+    pre {[
+      self.complaint.refundAmount > self.customerManager.approvalLimit
+      and self.complaint.refundAmount <= self.cEO.approvalLimit
+    ]}
+    post {[
+      self.complaint.financialApproved
+    ]}
+    flow approvalMerge
+  }
+
+  gateway approvalMerge {
+    lane Accountant
+    type xor
+    flow recordRefund
+  }
+
+  activity recordRefund {
+    name "Updating refund in the system"
+    type task
+    lane Accountant
+    pre {[
+      self.complaint.refundRequested
+      and self.complaint.financialApproved
+    ]}
+    post {[
+      self.complaint.refundRecorded
+      and self.accountant.processedRefundCount =
+        self.accountant.processedRefundCount@pre + 1
+    ]}
+    flow resolveComplaint
+  }
+
+  activity resolveComplaint {
+    name "Resolving customer complaint"
+    type task
+    lane FieldPerson
+    pre {[
+      self.complaint.created
+      and self.complaint.artifactsUpdated
+      and (not self.complaint.additionalExaminationRequired
+        or self.complaint.examined)
+      and (not self.complaint.refundRequested
+        or self.complaint.refundRecorded)
+    ]}
+    post {[
+      self.complaint.resolved
+      and self.customer.responseReceived
+      and self.fieldPerson.handledComplaintCount =
+        self.fieldPerson.handledComplaintCount@pre + 1
+    ]}
+    flow updateComplaint
+  }
+
+  activity updateComplaint {
+    name "Update complaint"
+    type task
+    lane FieldPerson
+    pre {[
+      self.complaint.resolved
+    ]}
+    post {[
+      self.complaint.updated
+      and self.complaint.closed
+    ]}
+    flow complaintCompleted
+  }
+
+  end complaintCompleted {
+    lane FieldPerson
+    trigger none
+  }
+}

@@ -1,22 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: org.vnu.sme.goal.dsl.acl.view.AclUseViewModelTest
 -------------------------------------------------------------------------------
-Tests run: 2, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.016 s <<< FAILURE! -- in org.vnu.sme.goal.dsl.acl.view.AclUseViewModelTest
-org.vnu.sme.goal.dsl.acl.view.AclUseViewModelTest.associationUsesRealUseMetamodelEndsAndRoleNames -- Time elapsed: 0.001 s <<< ERROR!
-java.nio.file.NoSuchFileException: src/main/resources/examples/mtg/mtg.acl
-	at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:92)
-	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:106)
-	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)
-	at java.base/sun.nio.fs.UnixFileAttributeViews$Basic.readAttributes(UnixFileAttributeViews.java:55)
-	at java.base/sun.nio.fs.UnixFileSystemProvider.readAttributes(UnixFileSystemProvider.java:171)
-	at java.base/sun.nio.fs.LinuxFileSystemProvider.readAttributes(LinuxFileSystemProvider.java:99)
-	at java.base/java.nio.file.Files.readAttributes(Files.java:1854)
-	at java.base/java.nio.file.Files.size(Files.java:2463)
-	at org.antlr.v4.runtime.CharStreams.fromPath(CharStreams.java:86)
-	at org.antlr.v4.runtime.CharStreams.fromPath(CharStreams.java:76)
-	at org.vnu.sme.goal.dsl.acl.parser.AclCompiler.compile(AclCompiler.java:35)
-	at org.vnu.sme.goal.dsl.acl.view.AclUseViewModelTest.associationUsesRealUseMetamodelEndsAndRoleNames(AclUseViewModelTest.java:14)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
-
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.178 s -- in org.vnu.sme.goal.dsl.acl.view.AclUseViewModelTest

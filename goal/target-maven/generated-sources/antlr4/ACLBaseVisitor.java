@@ -80,6 +80,20 @@ public class ACLBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements AC
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitOrgContextDecl(ACLParser.OrgContextDeclContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitOrgContextItem(ACLParser.OrgContextItemContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitAttributeBlock(ACLParser.AttributeBlockContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

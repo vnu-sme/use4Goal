@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.vnu.sme.goal.dsl.acl.mm.*;
 
-/** Builds a stable four-column Class-style layout: Entity, Role, Group, Enumeration. */
+/** Builds a stable four-column Class-style layout: Entity, Role, OrgContext, Enumeration. */
 public final class AclLayoutBuilder {
     private static final int MARGIN = 42;
     private static final int COLUMN_GAP = 64;
@@ -37,9 +37,11 @@ public final class AclLayoutBuilder {
                 id(model, value.source().type()), id(model, value.target().type()),
                 AclEdgeKind.valueOf(value.kind().name()), endLabel(value.source()),
                 endLabel(value.target()), value.name(), false, false)));
-        model.owners().forEach(value -> edges.add(AclEdge.of(
-                groupId(value.sourceGroup()), id(model, value.target()), AclEdgeKind.OWNER,
-                null, cardinality(value.multiplicity()), null, false, false)));
+        model.owners().stream()
+                .filter(value -> model.findOrgContext(value.sourceGroup()).isEmpty())
+                .forEach(value -> edges.add(AclEdge.of(
+                        groupId(value.sourceGroup()), id(model, value.target()), AclEdgeKind.OWNER,
+                        null, cardinality(value.multiplicity()), null, false, false)));
         model.compatibilities().forEach(value -> edges.add(AclEdge.of(
                 roleId(value.fromRole()), roleId(value.toRole()), AclEdgeKind.COMPATIBILITY,
                 null, null, null, value.bidirectional(),
@@ -75,7 +77,10 @@ public final class AclLayoutBuilder {
     private static int layoutGroups(AclModel model, Map<String, AclNode> nodes, int x) {
         int y = MARGIN, right = x;
         for (AclGroup value : model.groups()) {
-            AclNode node = node(groupId(value.name()), value.name(), AclNodeKind.GROUP, "group",
+            AclNodeKind kind = value.isOrganizationalContext()
+                    ? AclNodeKind.ORG_CONTEXT : AclNodeKind.GROUP;
+            String subtitle = value.isOrganizationalContext() ? "orgContext" : "group";
+            AclNode node = node(groupId(value.name()), value.name(), kind, subtitle,
                     attributeLines(value.attributes()));
             node.x = x; node.y = y; nodes.put(node.id, node);
             y += node.h + ROW_GAP; right = Math.max(right, node.x + node.w);

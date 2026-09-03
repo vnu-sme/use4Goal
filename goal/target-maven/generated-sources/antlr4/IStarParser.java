@@ -21,8 +21,7 @@ public class IStarParser extends Parser {
 		T__9=10, T__10=11, T__11=12, T__12=13, T__13=14, T__14=15, T__15=16, T__16=17, 
 		T__17=18, T__18=19, T__19=20, T__20=21, T__21=22, T__22=23, T__23=24, 
 		T__24=25, T__25=26, T__26=27, T__27=28, T__28=29, T__29=30, T__30=31, 
-		T__31=32, OCL_CLAUSE=33, OCL_BLOCK=34, IDENT=35, WS=36, LINE_COMMENT=37, 
-		BLOCK_COMMENT=38;
+		OCL_CLAUSE=32, OCL_BLOCK=33, IDENT=34, WS=35, LINE_COMMENT=36, BLOCK_COMMENT=37;
 	public static final int
 		RULE_model = 0, RULE_actorDef = 1, RULE_actorKind = 2, RULE_actorBody = 3, 
 		RULE_goalType = 4, RULE_goalTypeName = 5, RULE_rel = 6, RULE_dependency = 7, 
@@ -41,7 +40,7 @@ public class IStarParser extends Parser {
 		return new String[] {
 			null, "'istar'", "'{'", "'}'", "'role'", "'agent'", "'goal'", "'task'", 
 			"'resource'", "'quality'", "'is-a'", "'participates-in'", "':'", "'Achieve'", 
-			"'Maintain'", "'Sustain'", "'Recur'", "'>'", "'or'", "'qualifies'", "'needed-by'", 
+			"'Maintain'", "'Sustain'", "'>'", "'or'", "'qualifies'", "'needed-by'", 
 			"'depend'", "'->'", "'.'", "'make'", "'help'", "'hurt'", "'break'", "'pre'", 
 			"'post'", "'condition'", "'satisfy'", "'ensure'"
 		};
@@ -51,7 +50,7 @@ public class IStarParser extends Parser {
 		return new String[] {
 			null, null, null, null, null, null, null, null, null, null, null, null, 
 			null, null, null, null, null, null, null, null, null, null, null, null, 
-			null, null, null, null, null, null, null, null, null, "OCL_CLAUSE", "OCL_BLOCK", 
+			null, null, null, null, null, null, null, null, "OCL_CLAUSE", "OCL_BLOCK", 
 			"IDENT", "WS", "LINE_COMMENT", "BLOCK_COMMENT"
 		};
 	}
@@ -170,7 +169,7 @@ public class IStarParser extends Parser {
 			setState(40);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (_la==T__20) {
+			while (_la==T__19) {
 				{
 				{
 				setState(37);
@@ -508,7 +507,7 @@ public class IStarParser extends Parser {
 				setState(67);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				while (_la==T__16) {
+				while (_la==T__15) {
 					{
 					{
 					setState(64);
@@ -522,7 +521,7 @@ public class IStarParser extends Parser {
 				setState(73);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__29) | (1L << T__30) | (1L << T__31) | (1L << OCL_CLAUSE))) != 0)) {
+				while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__28) | (1L << T__29) | (1L << T__30) | (1L << OCL_CLAUSE))) != 0)) {
 					{
 					{
 					setState(70);
@@ -546,7 +545,7 @@ public class IStarParser extends Parser {
 				setState(81);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				while (_la==T__16) {
+				while (_la==T__15) {
 					{
 					{
 					setState(78);
@@ -560,7 +559,7 @@ public class IStarParser extends Parser {
 				setState(87);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__27) | (1L << T__28) | (1L << OCL_CLAUSE))) != 0)) {
+				while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__26) | (1L << T__27) | (1L << OCL_CLAUSE))) != 0)) {
 					{
 					{
 					setState(84);
@@ -584,7 +583,7 @@ public class IStarParser extends Parser {
 				setState(95);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				while (_la==T__16) {
+				while (_la==T__15) {
 					{
 					{
 					setState(92);
@@ -608,7 +607,7 @@ public class IStarParser extends Parser {
 				setState(103);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				while (_la==T__16) {
+				while (_la==T__15) {
 					{
 					{
 					setState(100);
@@ -733,7 +732,7 @@ public class IStarParser extends Parser {
 			{
 			setState(117);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__12) | (1L << T__13) | (1L << T__14) | (1L << T__15))) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__12) | (1L << T__13) | (1L << T__14))) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -871,7 +870,7 @@ public class IStarParser extends Parser {
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(119);
-				match(T__16);
+				match(T__15);
 				setState(120);
 				((RelAndContext)_localctx).target = match(IDENT);
 				}
@@ -881,9 +880,9 @@ public class IStarParser extends Parser {
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(121);
-				match(T__16);
+				match(T__15);
 				setState(122);
-				match(T__17);
+				match(T__16);
 				setState(123);
 				((RelOrContext)_localctx).target = match(IDENT);
 				}
@@ -893,7 +892,7 @@ public class IStarParser extends Parser {
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(124);
-				match(T__16);
+				match(T__15);
 				setState(125);
 				contribType();
 				setState(126);
@@ -905,9 +904,9 @@ public class IStarParser extends Parser {
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(128);
-				match(T__16);
+				match(T__15);
 				setState(129);
-				match(T__18);
+				match(T__17);
 				setState(130);
 				((RelQualifiesContext)_localctx).target = match(IDENT);
 				}
@@ -917,9 +916,9 @@ public class IStarParser extends Parser {
 				enterOuterAlt(_localctx, 5);
 				{
 				setState(131);
-				match(T__16);
+				match(T__15);
 				setState(132);
-				match(T__19);
+				match(T__18);
 				setState(133);
 				((RelNeededByContext)_localctx).target = match(IDENT);
 				}
@@ -973,15 +972,15 @@ public class IStarParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(136);
-			match(T__20);
+			match(T__19);
 			setState(137);
 			depEnd();
 			setState(138);
-			match(T__21);
+			match(T__20);
 			setState(139);
 			dependumRef();
 			setState(140);
-			match(T__21);
+			match(T__20);
 			setState(141);
 			depEnd();
 			}
@@ -1130,10 +1129,10 @@ public class IStarParser extends Parser {
 			setState(151);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (_la==T__22) {
+			if (_la==T__21) {
 				{
 				setState(149);
-				match(T__22);
+				match(T__21);
 				setState(150);
 				match(IDENT);
 				}
@@ -1235,36 +1234,36 @@ public class IStarParser extends Parser {
 			setState(157);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
-			case T__23:
+			case T__22:
 				_localctx = new CtMakeContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(153);
-				match(T__23);
+				match(T__22);
 				}
 				break;
-			case T__24:
+			case T__23:
 				_localctx = new CtHelpContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(154);
-				match(T__24);
+				match(T__23);
 				}
 				break;
-			case T__25:
+			case T__24:
 				_localctx = new CtHurtContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(155);
-				match(T__25);
+				match(T__24);
 				}
 				break;
-			case T__26:
+			case T__25:
 				_localctx = new CtBreakContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(156);
-				match(T__26);
+				match(T__25);
 				}
 				break;
 			default:
@@ -1312,13 +1311,13 @@ public class IStarParser extends Parser {
 			setState(162);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
+			case T__26:
 			case T__27:
-			case T__28:
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(159);
 				_la = _input.LA(1);
-				if ( !(_la==T__27 || _la==T__28) ) {
+				if ( !(_la==T__26 || _la==T__27) ) {
 				_errHandler.recoverInline(this);
 				}
 				else {
@@ -1382,14 +1381,14 @@ public class IStarParser extends Parser {
 			setState(167);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
+			case T__28:
 			case T__29:
 			case T__30:
-			case T__31:
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(164);
 				_la = _input.LA(1);
-				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__29) | (1L << T__30) | (1L << T__31))) != 0)) ) {
+				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__28) | (1L << T__29) | (1L << T__30))) != 0)) ) {
 				_errHandler.recoverInline(this);
 				}
 				else {
@@ -1424,7 +1423,7 @@ public class IStarParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3(\u00ac\4\2\t\2\4"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\'\u00ac\4\2\t\2\4"+
 		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
 		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\3\2\3\2\3\2\3\2\7\2#\n\2\f\2\16"+
 		"\2&\13\2\3\2\7\2)\n\2\f\2\16\2,\13\2\3\2\3\2\3\2\3\3\3\3\3\3\3\3\7\3\65"+
@@ -1436,42 +1435,42 @@ public class IStarParser extends Parser {
 		"\3\b\3\b\3\b\5\b\u0089\n\b\3\t\3\t\3\t\3\t\3\t\3\t\3\t\3\n\3\n\3\n\3\13"+
 		"\3\13\3\f\3\f\3\f\5\f\u009a\n\f\3\r\3\r\3\r\3\r\5\r\u00a0\n\r\3\16\3\16"+
 		"\3\16\5\16\u00a5\n\16\3\17\3\17\3\17\5\17\u00aa\n\17\3\17\2\2\20\2\4\6"+
-		"\b\n\f\16\20\22\24\26\30\32\34\2\7\3\2\6\7\3\2\17\22\3\2\b\13\3\2\36\37"+
-		"\3\2 \"\2\u00b6\2\36\3\2\2\2\4\60\3\2\2\2\6;\3\2\2\2\br\3\2\2\2\nt\3\2"+
-		"\2\2\fw\3\2\2\2\16\u0088\3\2\2\2\20\u008a\3\2\2\2\22\u0091\3\2\2\2\24"+
+		"\b\n\f\16\20\22\24\26\30\32\34\2\7\3\2\6\7\3\2\17\21\3\2\b\13\3\2\35\36"+
+		"\3\2\37!\2\u00b6\2\36\3\2\2\2\4\60\3\2\2\2\6;\3\2\2\2\br\3\2\2\2\nt\3"+
+		"\2\2\2\fw\3\2\2\2\16\u0088\3\2\2\2\20\u008a\3\2\2\2\22\u0091\3\2\2\2\24"+
 		"\u0094\3\2\2\2\26\u0096\3\2\2\2\30\u009f\3\2\2\2\32\u00a4\3\2\2\2\34\u00a9"+
-		"\3\2\2\2\36\37\7\3\2\2\37 \7%\2\2 $\7\4\2\2!#\5\4\3\2\"!\3\2\2\2#&\3\2"+
+		"\3\2\2\2\36\37\7\3\2\2\37 \7$\2\2 $\7\4\2\2!#\5\4\3\2\"!\3\2\2\2#&\3\2"+
 		"\2\2$\"\3\2\2\2$%\3\2\2\2%*\3\2\2\2&$\3\2\2\2\')\5\20\t\2(\'\3\2\2\2)"+
 		",\3\2\2\2*(\3\2\2\2*+\3\2\2\2+-\3\2\2\2,*\3\2\2\2-.\7\5\2\2./\7\2\2\3"+
-		"/\3\3\2\2\2\60\61\5\6\4\2\61\62\7%\2\2\62\66\7\4\2\2\63\65\5\b\5\2\64"+
+		"/\3\3\2\2\2\60\61\5\6\4\2\61\62\7$\2\2\62\66\7\4\2\2\63\65\5\b\5\2\64"+
 		"\63\3\2\2\2\658\3\2\2\2\66\64\3\2\2\2\66\67\3\2\2\2\679\3\2\2\28\66\3"+
-		"\2\2\29:\7\5\2\2:\5\3\2\2\2;<\t\2\2\2<\7\3\2\2\2=>\7\b\2\2>@\7%\2\2?A"+
+		"\2\2\29:\7\5\2\2:\5\3\2\2\2;<\t\2\2\2<\7\3\2\2\2=>\7\b\2\2>@\7$\2\2?A"+
 		"\5\n\6\2@?\3\2\2\2@A\3\2\2\2AE\3\2\2\2BD\5\16\b\2CB\3\2\2\2DG\3\2\2\2"+
 		"EC\3\2\2\2EF\3\2\2\2FK\3\2\2\2GE\3\2\2\2HJ\5\34\17\2IH\3\2\2\2JM\3\2\2"+
-		"\2KI\3\2\2\2KL\3\2\2\2Ls\3\2\2\2MK\3\2\2\2NO\7\t\2\2OS\7%\2\2PR\5\16\b"+
+		"\2KI\3\2\2\2KL\3\2\2\2Ls\3\2\2\2MK\3\2\2\2NO\7\t\2\2OS\7$\2\2PR\5\16\b"+
 		"\2QP\3\2\2\2RU\3\2\2\2SQ\3\2\2\2ST\3\2\2\2TY\3\2\2\2US\3\2\2\2VX\5\32"+
 		"\16\2WV\3\2\2\2X[\3\2\2\2YW\3\2\2\2YZ\3\2\2\2Zs\3\2\2\2[Y\3\2\2\2\\]\7"+
-		"\n\2\2]a\7%\2\2^`\5\16\b\2_^\3\2\2\2`c\3\2\2\2a_\3\2\2\2ab\3\2\2\2bs\3"+
-		"\2\2\2ca\3\2\2\2de\7\13\2\2ei\7%\2\2fh\5\16\b\2gf\3\2\2\2hk\3\2\2\2ig"+
-		"\3\2\2\2ij\3\2\2\2js\3\2\2\2ki\3\2\2\2lm\7%\2\2mn\7\f\2\2ns\7%\2\2op\7"+
-		"%\2\2pq\7\r\2\2qs\7%\2\2r=\3\2\2\2rN\3\2\2\2r\\\3\2\2\2rd\3\2\2\2rl\3"+
+		"\n\2\2]a\7$\2\2^`\5\16\b\2_^\3\2\2\2`c\3\2\2\2a_\3\2\2\2ab\3\2\2\2bs\3"+
+		"\2\2\2ca\3\2\2\2de\7\13\2\2ei\7$\2\2fh\5\16\b\2gf\3\2\2\2hk\3\2\2\2ig"+
+		"\3\2\2\2ij\3\2\2\2js\3\2\2\2ki\3\2\2\2lm\7$\2\2mn\7\f\2\2ns\7$\2\2op\7"+
+		"$\2\2pq\7\r\2\2qs\7$\2\2r=\3\2\2\2rN\3\2\2\2r\\\3\2\2\2rd\3\2\2\2rl\3"+
 		"\2\2\2ro\3\2\2\2s\t\3\2\2\2tu\7\16\2\2uv\5\f\7\2v\13\3\2\2\2wx\t\3\2\2"+
-		"x\r\3\2\2\2yz\7\23\2\2z\u0089\7%\2\2{|\7\23\2\2|}\7\24\2\2}\u0089\7%\2"+
-		"\2~\177\7\23\2\2\177\u0080\5\30\r\2\u0080\u0081\7%\2\2\u0081\u0089\3\2"+
-		"\2\2\u0082\u0083\7\23\2\2\u0083\u0084\7\25\2\2\u0084\u0089\7%\2\2\u0085"+
-		"\u0086\7\23\2\2\u0086\u0087\7\26\2\2\u0087\u0089\7%\2\2\u0088y\3\2\2\2"+
+		"x\r\3\2\2\2yz\7\22\2\2z\u0089\7$\2\2{|\7\22\2\2|}\7\23\2\2}\u0089\7$\2"+
+		"\2~\177\7\22\2\2\177\u0080\5\30\r\2\u0080\u0081\7$\2\2\u0081\u0089\3\2"+
+		"\2\2\u0082\u0083\7\22\2\2\u0083\u0084\7\24\2\2\u0084\u0089\7$\2\2\u0085"+
+		"\u0086\7\22\2\2\u0086\u0087\7\25\2\2\u0087\u0089\7$\2\2\u0088y\3\2\2\2"+
 		"\u0088{\3\2\2\2\u0088~\3\2\2\2\u0088\u0082\3\2\2\2\u0088\u0085\3\2\2\2"+
-		"\u0089\17\3\2\2\2\u008a\u008b\7\27\2\2\u008b\u008c\5\26\f\2\u008c\u008d"+
-		"\7\30\2\2\u008d\u008e\5\22\n\2\u008e\u008f\7\30\2\2\u008f\u0090\5\26\f"+
-		"\2\u0090\21\3\2\2\2\u0091\u0092\5\24\13\2\u0092\u0093\7%\2\2\u0093\23"+
-		"\3\2\2\2\u0094\u0095\t\4\2\2\u0095\25\3\2\2\2\u0096\u0099\7%\2\2\u0097"+
-		"\u0098\7\31\2\2\u0098\u009a\7%\2\2\u0099\u0097\3\2\2\2\u0099\u009a\3\2"+
-		"\2\2\u009a\27\3\2\2\2\u009b\u00a0\7\32\2\2\u009c\u00a0\7\33\2\2\u009d"+
-		"\u00a0\7\34\2\2\u009e\u00a0\7\35\2\2\u009f\u009b\3\2\2\2\u009f\u009c\3"+
+		"\u0089\17\3\2\2\2\u008a\u008b\7\26\2\2\u008b\u008c\5\26\f\2\u008c\u008d"+
+		"\7\27\2\2\u008d\u008e\5\22\n\2\u008e\u008f\7\27\2\2\u008f\u0090\5\26\f"+
+		"\2\u0090\21\3\2\2\2\u0091\u0092\5\24\13\2\u0092\u0093\7$\2\2\u0093\23"+
+		"\3\2\2\2\u0094\u0095\t\4\2\2\u0095\25\3\2\2\2\u0096\u0099\7$\2\2\u0097"+
+		"\u0098\7\30\2\2\u0098\u009a\7$\2\2\u0099\u0097\3\2\2\2\u0099\u009a\3\2"+
+		"\2\2\u009a\27\3\2\2\2\u009b\u00a0\7\31\2\2\u009c\u00a0\7\32\2\2\u009d"+
+		"\u00a0\7\33\2\2\u009e\u00a0\7\34\2\2\u009f\u009b\3\2\2\2\u009f\u009c\3"+
 		"\2\2\2\u009f\u009d\3\2\2\2\u009f\u009e\3\2\2\2\u00a0\31\3\2\2\2\u00a1"+
-		"\u00a2\t\5\2\2\u00a2\u00a5\7$\2\2\u00a3\u00a5\7#\2\2\u00a4\u00a1\3\2\2"+
-		"\2\u00a4\u00a3\3\2\2\2\u00a5\33\3\2\2\2\u00a6\u00a7\t\6\2\2\u00a7\u00aa"+
-		"\7$\2\2\u00a8\u00aa\7#\2\2\u00a9\u00a6\3\2\2\2\u00a9\u00a8\3\2\2\2\u00aa"+
+		"\u00a2\t\5\2\2\u00a2\u00a5\7#\2\2\u00a3\u00a5\7\"\2\2\u00a4\u00a1\3\2"+
+		"\2\2\u00a4\u00a3\3\2\2\2\u00a5\33\3\2\2\2\u00a6\u00a7\t\6\2\2\u00a7\u00aa"+
+		"\7#\2\2\u00a8\u00aa\7\"\2\2\u00a9\u00a6\3\2\2\2\u00a9\u00a8\3\2\2\2\u00aa"+
 		"\35\3\2\2\2\22$*\66@EKSYair\u0088\u0099\u009f\u00a4\u00a9";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());

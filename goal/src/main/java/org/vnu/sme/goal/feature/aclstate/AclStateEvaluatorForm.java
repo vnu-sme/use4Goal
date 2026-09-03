@@ -22,8 +22,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -48,6 +46,7 @@ import org.vnu.sme.goal.verify.aclstate.AclBpmnWholeProcessValidator.MappingEntr
 import org.vnu.sme.goal.verify.aclstate.AclBpmnWholeProcessValidator.ProcessResult;
 import org.vnu.sme.goal.verify.aclstate.AclBpmnWholeProcessValidator.ValidationResult;
 import org.vnu.sme.goal.verify.aclstate.AclStateScenario;
+import org.vnu.sme.goal.feature.aclstate.ConformanceReportBuilder.Row;
 
 /**
  * Validation-mode UI for ACL states. The ACL file defines the state space and
@@ -90,17 +89,22 @@ public final class AclStateEvaluatorForm extends JDialog {
             "Step", "State pair", "Process", "Self", "Flow", "Source", "Target",
             "Pass", "Next", "Result", "Alternatives");
     private final DefaultTableModel wholeProcessModel = readOnlyModel(
-            "Process", "Self", "Consistency", "Backend", "Loop bound", "Snapshots", "BPMN configs",
-            "Transitions", "Executions", "Completed", "Loop cutoffs", "State cutoffs",
+            "Process", "Self", "Consistency", "Risk", "Backend", "Loop bound", "Snapshots",
+            "BPMN configs", "Transitions", "Executions", "Completed", "Conforming routes",
+            "Non-conforming routes", "Risky routes", "Loop cutoffs", "State cutoffs",
             "Solver calls", "Detail");
     private final DefaultTableModel mappingModel = readOnlyModel(
             "Process", "BPMN activity", "Activity name", "Lane", "iStar actor",
             "Leaf kind", "Leaf element", "Score", "Mapping basis");
+    private final DefaultTableModel reportModel = readOnlyModel(
+            "Type", "Process", "BPMN element", "iStar goal/element", "Status",
+            "Evidence / countermeasure");
     private final JTable statesTable = new JTable(statesModel);
     private final JTable constraintsTable = new JTable(constraintsModel);
     private final JTable bpmnStepsTable = new JTable(bpmnStepsModel);
     private final JTable wholeProcessTable = new JTable(wholeProcessModel);
     private final JTable mappingTable = new JTable(mappingModel);
+    private final JTable reportTable = new JTable(reportModel);
     private final JTextArea aclOclSource = new JTextArea();
     private final JTextArea bpmnSource = new JTextArea();
     private final JTextArea istarSource = new JTextArea();
@@ -112,7 +116,7 @@ public final class AclStateEvaluatorForm extends JDialog {
     private ValidationResult wholeProcessValidation;
 
     public AclStateEvaluatorForm(MainWindow owner) {
-        super(owner, "ACL State Evaluator", false);
+        super(owner, "Goal–Process Conformance", false);
         buildUi();
         aclField.setText(PREFS.get(PREF_ACL, ""));
         bpmnField.setText(PREFS.get(PREF_BPMN, ""));
@@ -139,14 +143,9 @@ public final class AclStateEvaluatorForm extends JDialog {
         label.setPreferredSize(new Dimension(125, label.getPreferredSize().height));
         JButton browse = new JButton("Browse...");
         browse.addActionListener(e -> chooseAcl());
-        JButton load = new JButton("Load ACL");
-        load.setFont(load.getFont().deriveFont(Font.BOLD));
-        load.addActionListener(e -> loadAcl());
-        aclField.addActionListener(e -> loadAcl());
         aclRow.add(label);
         aclRow.add(aclField);
         aclRow.add(browse);
-        aclRow.add(load);
 
         JPanel bpmnRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 2));
         JLabel bpmnLabel = new JLabel("BPMN process:");
@@ -159,7 +158,6 @@ public final class AclStateEvaluatorForm extends JDialog {
         bpmnRow.add(bpmnLabel);
         bpmnRow.add(bpmnField);
         bpmnRow.add(browseBpmn);
-        bpmnRow.add(loadBpmnButton);
 
         JPanel istarRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 2));
         JLabel istarLabel = new JLabel("iStar requirements:");
@@ -172,7 +170,6 @@ public final class AclStateEvaluatorForm extends JDialog {
         istarRow.add(istarLabel);
         istarRow.add(istarField);
         istarRow.add(browseIStar);
-        istarRow.add(loadIStarButton);
 
         JPanel boundaryRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 2));
         JLabel boundaryLabel = new JLabel("Validation boundary:");
@@ -185,20 +182,17 @@ public final class AclStateEvaluatorForm extends JDialog {
         boundaryRow.add(boundaryLabel);
         boundaryRow.add(boundaryField);
         boundaryRow.add(browseBoundary);
-        boundaryRow.add(loadBoundaryButton);
 
         JPanel stateRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 2));
-        addStateButton.setEnabled(false);
-        addStateButton.addActionListener(e -> addStates());
-        loadScenarioButton.addActionListener(e -> loadScenario());
-        validateWholeButton.setEnabled(false);
+        validateWholeButton.setText("Verify conformance");
+        validateWholeButton.setFont(validateWholeButton.getFont().deriveFont(Font.BOLD));
+        validateWholeButton.setEnabled(true);
         validateWholeButton.setToolTipText(
-                "Kodkod/SAT4J generates bounded ACL paths and checks BPMN execution against iStar root goals");
-        validateWholeButton.addActionListener(e -> refreshWholeProcessValidation());
-        stateRow.add(loadScenarioButton);
-        stateRow.add(addStateButton);
+                "Load ACL, BPMN, iStar and boundary, then produce one conditional report");
+        validateWholeButton.addActionListener(e -> verifySelectedModels());
         stateRow.add(validateWholeButton);
-        stateRow.add(new JLabel("Scenario uses AOL. Whole validation uses ACL + BPMN + iStar + boundary."));
+        stateRow.add(new JLabel(
+                "Consistent: mapping table. Otherwise: partial mappings and countermeasure."));
 
         inputs.add(aclRow);
         inputs.add(bpmnRow);
@@ -209,65 +203,17 @@ public final class AclStateEvaluatorForm extends JDialog {
     }
 
     private Component buildContent() {
-        configureTables();
-        JPanel stateHistory = new JPanel(new BorderLayout(0, 4));
-        stateHistory.setBorder(BorderFactory.createTitledBorder("System states"));
-        stateHistory.add(new JScrollPane(statesTable), BorderLayout.CENTER);
-
-        JPanel constraintDetail = new JPanel(new BorderLayout(0, 4));
-        constraintDetail.setBorder(BorderFactory.createTitledBorder("OCL results at selected state"));
-        constraintDetail.add(new JScrollPane(constraintsTable), BorderLayout.CENTER);
-
-        JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, stateHistory, constraintDetail);
-        split.setResizeWeight(0.35);
-        split.setDividerLocation(220);
-
-        aclOclSource.setEditable(false);
-        aclOclSource.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-        aclOclSource.setTabSize(2);
-
-        bpmnSource.setEditable(false);
-        bpmnSource.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-        bpmnSource.setTabSize(2);
-        istarSource.setEditable(false);
-        istarSource.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-        istarSource.setTabSize(2);
-        bpmnDetail.setEditable(false);
-        bpmnDetail.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-        bpmnDetail.setLineWrap(true);
-        bpmnDetail.setWrapStyleWord(true);
-
-        wholeProcessDetail.setEditable(false);
-        wholeProcessDetail.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-        wholeProcessDetail.setLineWrap(true);
-        wholeProcessDetail.setWrapStyleWord(true);
-
-        JPanel bpmnEvaluation = new JPanel(new BorderLayout(0, 4));
-        bpmnEvaluation.setBorder(BorderFactory.createTitledBorder("State-only BPMN conformance"));
-        JSplitPane bpmnSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-                new JScrollPane(bpmnStepsTable), new JScrollPane(bpmnDetail));
-        bpmnSplit.setResizeWeight(0.68);
-        bpmnSplit.setDividerLocation(330);
-        bpmnEvaluation.add(bpmnSplit, BorderLayout.CENTER);
-
-        JPanel wholeEvaluation = new JPanel(new BorderLayout(0, 4));
-        wholeEvaluation.setBorder(BorderFactory.createTitledBorder(
-                "Kodkod whole validation: ACL state paths + BPMN process + iStar goals"));
-        JSplitPane wholeSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-                new JScrollPane(wholeProcessTable), new JScrollPane(wholeProcessDetail));
-        wholeSplit.setResizeWeight(0.55);
-        wholeSplit.setDividerLocation(280);
-        wholeEvaluation.add(wholeSplit, BorderLayout.CENTER);
-
-        JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("State evaluation", split);
-        tabs.addTab("BPMN inferred trace", bpmnEvaluation);
-        tabs.addTab("Whole consistency", wholeEvaluation);
-        tabs.addTab("BPMN–iStar mapping", new JScrollPane(mappingTable));
-        tabs.addTab("ACL/OCL specification", new JScrollPane(aclOclSource));
-        tabs.addTab("BPMN specification", new JScrollPane(bpmnSource));
-        tabs.addTab("iStar specification", new JScrollPane(istarSource));
-        return tabs;
+        reportTable.setAutoCreateRowSorter(true);
+        reportTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        int[] widths = {120, 130, 260, 260, 190, 680};
+        for (int index = 0; index < widths.length; index++) {
+            reportTable.getColumnModel().getColumn(index).setPreferredWidth(widths[index]);
+        }
+        reportTable.getColumnModel().getColumn(4).setCellRenderer(new StatusRenderer());
+        JPanel report = new JPanel(new BorderLayout(0, 4));
+        report.setBorder(BorderFactory.createTitledBorder("Integrated conformance report"));
+        report.add(new JScrollPane(reportTable), BorderLayout.CENTER);
+        return report;
     }
 
     private void configureTables() {
@@ -300,11 +246,13 @@ public final class AclStateEvaluatorForm extends JDialog {
 
         wholeProcessTable.setAutoCreateRowSorter(true);
         wholeProcessTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        int[] wholeWidths = {140, 100, 100, 130, 90, 90, 110, 100, 100, 100, 100, 100, 100, 520};
+        int[] wholeWidths = {140, 100, 130, 110, 130, 90, 90, 110, 100, 100, 100,
+                120, 145, 100, 100, 100, 100, 520};
         for (int i = 0; i < wholeWidths.length; i++) {
             wholeProcessTable.getColumnModel().getColumn(i).setPreferredWidth(wholeWidths[i]);
         }
         wholeProcessTable.getColumnModel().getColumn(2).setCellRenderer(new StatusRenderer());
+        wholeProcessTable.getColumnModel().getColumn(3).setCellRenderer(new StatusRenderer());
         wholeProcessTable.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) showSelectedWholeProcess();
         });
@@ -319,15 +267,9 @@ public final class AclStateEvaluatorForm extends JDialog {
 
     private JPanel buildFooter() {
         JPanel footer = new JPanel(new BorderLayout(4, 3));
-        JPanel navigation = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 1));
-        previousButton.addActionListener(e -> moveSelection(-1));
-        nextButton.addActionListener(e -> moveSelection(1));
-        navigation.add(previousButton);
-        navigation.add(summaryLabel);
-        navigation.add(nextButton);
-        footer.add(navigation, BorderLayout.NORTH);
+        summaryLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        footer.add(summaryLabel, BorderLayout.NORTH);
         footer.add(statusLabel, BorderLayout.SOUTH);
-        updateNavigation();
         return footer;
     }
 
@@ -337,7 +279,6 @@ public final class AclStateEvaluatorForm extends JDialog {
         if (!aclField.getText().isBlank()) chooser.setSelectedFile(new File(aclField.getText().trim()));
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             aclField.setText(chooser.getSelectedFile().getAbsolutePath());
-            loadAcl();
         }
     }
 
@@ -348,7 +289,6 @@ public final class AclStateEvaluatorForm extends JDialog {
         if (!bpmnField.getText().isBlank()) chooser.setSelectedFile(new File(bpmnField.getText().trim()));
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             bpmnField.setText(chooser.getSelectedFile().getAbsolutePath());
-            loadBpmn();
         }
     }
 
@@ -360,7 +300,6 @@ public final class AclStateEvaluatorForm extends JDialog {
         }
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             istarField.setText(chooser.getSelectedFile().getAbsolutePath());
-            loadIStar();
         }
     }
 
@@ -373,7 +312,6 @@ public final class AclStateEvaluatorForm extends JDialog {
         }
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             boundaryField.setText(chooser.getSelectedFile().getAbsolutePath());
-            loadBoundary();
         }
     }
 
@@ -403,7 +341,6 @@ public final class AclStateEvaluatorForm extends JDialog {
             wholeProcessDetail.setText("Load BPMN and an .aclboundary file for whole validation.");
             bpmnTrace = null;
             wholeProcessValidation = null;
-            boundaryField.setText("");
             PREFS.put(PREF_ACL, loaded.aclFile().toString());
             summaryLabel.setText("No AOL states added yet.");
             updateNavigation();
@@ -710,7 +647,38 @@ public final class AclStateEvaluatorForm extends JDialog {
         bpmnDetail.setCaretPosition(0);
     }
 
+    private void verifySelectedModels() {
+        reportModel.setRowCount(0);
+        List<String> missing = new java.util.ArrayList<>();
+        if (aclField.getText().isBlank()) missing.add("ACL");
+        if (bpmnField.getText().isBlank()) missing.add("BPMN");
+        if (istarField.getText().isBlank()) missing.add("iStar");
+        if (boundaryField.getText().isBlank()) missing.add("boundary");
+        if (!missing.isEmpty()) {
+            String detail = "Select the required input(s): " + String.join(", ", missing) + ".";
+            reportModel.addRow(new Object[] {"DIAGNOSTIC", "-", "-", "-",
+                    "INPUT_REQUIRED", detail});
+            status(detail, RED);
+            return;
+        }
+        validateWholeButton.setEnabled(false);
+        try {
+            loadAcl();
+            if (evaluation == null) return;
+            loadBpmn();
+            if (evaluation.bpmnEvaluator() == null) return;
+            loadIStar();
+            if (evaluation.goalModel() == null) return;
+            loadBoundary();
+            if (evaluation.boundary() == null) return;
+            refreshWholeProcessValidation();
+        } finally {
+            validateWholeButton.setEnabled(true);
+        }
+    }
+
     private void refreshWholeProcessValidation() {
+        reportModel.setRowCount(0);
         wholeProcessModel.setRowCount(0);
         mappingModel.setRowCount(0);
         wholeProcessDetail.setText("");
@@ -731,11 +699,13 @@ public final class AclStateEvaluatorForm extends JDialog {
         for (ProcessResult process : wholeProcessValidation.processes()) {
             wholeProcessModel.addRow(new Object[] {
                     process.processId(), process.selfObject(), wholeProcessValidation.consistency(),
-                    wholeProcessValidation.backend(), wholeProcessValidation.loopBound(),
-                    wholeProcessValidation.snapshots(),
+                    wholeProcessValidation.risk(), wholeProcessValidation.backend(),
+                    wholeProcessValidation.loopBound(), wholeProcessValidation.snapshots(),
                     process.productStates(), process.transitions(), process.boundedExecutions(),
-                    process.completedStates(), process.loopCutoffs(), process.snapshotCutoffs(),
-                    process.solverCalls(), process.detail()
+                    process.completedStates(), process.goalAchievingExecutions(),
+                    process.nonGoalAchievingExecutions(), process.riskyExecutions(),
+                    process.loopCutoffs(), process.snapshotCutoffs(), process.solverCalls(),
+                    process.detail()
             });
         }
         for (MappingEntry mapping : wholeProcessValidation.mappings()) {
@@ -744,6 +714,12 @@ public final class AclStateEvaluatorForm extends JDialog {
                     mapping.actor(), mapping.leafKind(), mapping.leafId(), mapping.score(), mapping.basis()
             });
         }
+        for (Row row : ConformanceReportBuilder.build(wholeProcessValidation)) {
+            reportModel.addRow(new Object[] {row.type(), row.process(), row.bpmnElement(),
+                    row.iStarElement(), row.status(), row.evidenceOrAction()});
+        }
+        summaryLabel.setText(wholeProcessValidation.consistency() + " / "
+                + wholeProcessValidation.risk());
         if (wholeProcessModel.getRowCount() > 0) {
             wholeProcessTable.setRowSelectionInterval(0, 0);
         } else {
@@ -772,6 +748,7 @@ public final class AclStateEvaluatorForm extends JDialog {
                 .append(", self=").append(process.selfObject())
                 .append(", result=").append(process.verdict())
                 .append(", consistency=").append(wholeProcessValidation.consistency())
+                .append(", risk=").append(wholeProcessValidation.risk())
                 .append(", backend=").append(wholeProcessValidation.backend())
                 .append(", loop bound=").append(wholeProcessValidation.loopBound())
                 .append(", snapshots=").append(wholeProcessValidation.snapshots())
@@ -785,11 +762,31 @@ public final class AclStateEvaluatorForm extends JDialog {
                 .append("Snapshot-bound cutoffs: ").append(process.snapshotCutoffs()).append('\n')
                 .append("Kodkod solver calls: ").append(process.solverCalls()).append('\n');
         text.append("Realizable BPMN executions: ").append(process.realizableExecutions()).append('\n')
-                .append("Goal-achieving executions: ").append(process.goalAchievingExecutions()).append('\n')
+                .append("Routes admitting a conforming state path: ")
+                .append(process.goalAchievingExecutions()).append('\n')
+                .append("Routes admitting a non-conforming state path: ")
+                .append(process.nonGoalAchievingExecutions()).append('\n')
+                .append("Routes admitting a risky state path: ")
+                .append(process.riskyExecutions()).append('\n')
                 .append("Root iStar goals: ").append(wholeProcessValidation.rootGoals()).append('\n');
         if (!process.counterexample().isEmpty()) {
             text.append("\nCounterexample execution:\n  ")
                     .append(String.join("\n  -> ", process.counterexample())).append('\n');
+        }
+        if (!process.counterexampleGoals().isEmpty()) {
+            text.append("\nGoal marking on the counterexample:\n");
+            process.counterexampleGoals().forEach(goal -> text.append("  ")
+                    .append(goal.root() ? "[root] " : "[leaf] ")
+                    .append(goal.goal()).append(" = ").append(goal.status())
+                    .append("\n    condition: ").append(goal.condition()).append('\n'));
+        }
+        if (!process.counterexampleStates().isEmpty()) {
+            text.append("\nCounterexample ACL state path:\n  ")
+                    .append(String.join("\n  -> ", process.counterexampleStates())).append('\n');
+        }
+        if (!process.repairHints().isEmpty()) {
+            text.append("\nCountermeasure candidates (repair obligations, not proven repairs):\n");
+            process.repairHints().forEach(hint -> text.append("  - ").append(hint).append('\n'));
         }
         if (!process.witnessStates().isEmpty()) {
             text.append("\nExample SAT witness (state_at_i):\n  ")
@@ -871,12 +868,17 @@ public final class AclStateEvaluatorForm extends JDialog {
                                                         boolean focus, int row, int column) {
             super.getTableCellRendererComponent(table, value, selected, focus, row, column);
             if (!selected) {
-                Color color = switch (String.valueOf(value)) {
-                    case "TRUE", "VALID", "CONFORMANT", "CONSISTENT" -> GREEN;
-                    case "FALSE", "INVALID", "ERROR", "NON_CONFORMANT", "INCONSISTENT" -> RED;
-                    case "UNDEFINED", "AMBIGUOUS", "INCONCLUSIVE", "WEAKLY_CONSISTENT" -> AMBER;
-                    default -> GRAY;
-                };
+                String status = String.valueOf(value);
+                Color color = status.contains("INVALIDATING") || status.contains("INCONSISTENT")
+                        || status.contains("RISK_PRONE") || status.equals("FALSE")
+                        || status.equals("INVALID") || status.equals("ERROR") ? RED
+                        : status.contains("WEAKLY") || status.contains("INCONCLUSIVE")
+                                || status.contains("CANDIDATE") || status.contains("UNMAPPED")
+                                || status.equals("UNDEFINED") || status.equals("AMBIGUOUS") ? AMBER
+                        : status.contains("MAPPED") || status.contains("CONSISTENT")
+                                || status.contains("RISK_FREE") || status.equals("TRUE")
+                                || status.equals("VALID") || status.equals("CONFORMANT") ? GREEN
+                        : GRAY;
                 setForeground(color);
                 setFont(getFont().deriveFont(Font.BOLD));
             }

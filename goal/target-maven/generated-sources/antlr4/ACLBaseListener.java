@@ -124,6 +124,30 @@ public class ACLBaseListener implements ACLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterOrgContextDecl(ACLParser.OrgContextDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitOrgContextDecl(ACLParser.OrgContextDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterOrgContextItem(ACLParser.OrgContextItemContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitOrgContextItem(ACLParser.OrgContextItemContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterAttributeBlock(ACLParser.AttributeBlockContext ctx) { }
 	/**
 	 * {@inheritDoc}

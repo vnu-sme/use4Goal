@@ -10,7 +10,7 @@ thành công (126/126 PO discharged):
 
 Mỗi luật có 4 phần: **Luật** (tóm tắt), **Nguồn thật** (trích từ file `.acl`/`.istar`/`.bpmn2`
 thật, không phải ví dụ minh họa), **Event-B thật** (trích từ `.buc`/`.bum` thật), **Trạng
-thái kiểm chứng**. Khi ca MTG không có construct đó (ví dụ AND-split, Recur, message flow),
+thái kiểm chứng**. Khi ca MTG không có construct đó (ví dụ AND-split hoặc message flow),
 mục "Nguồn thật" ghi rõ "không có trong MTG" và giữ nguyên ví dụ minh họa của doc gốc — không
 được coi là đã kiểm chứng.
 
@@ -1009,7 +1009,7 @@ việc R3/R6 dùng chung 1 khuôn `(A,P,S)` cho mọi loại Goal.
 **Trạng thái:** ✅ Khớp — nhưng cũng có nghĩa: file Event-B **không tự phân biệt** được đâu là
 Maintain, đâu là Achieve nếu chỉ đọc riêng `.bum`; phân loại goal-type nằm ở tầng dịch (mapping
 trong `_translation.md` không ghi goal-type) chứ không "chảy" vào artefact Rodin. Muốn biết
-Goal nào Maintain/Sustain/Recur phải quay lại `mtg.istar` hoặc file `.ltl`.
+Goal nào Maintain/Sustain phải quay lại `mtg.istar` hoặc file `.ltl`.
 
 ---
 
@@ -1023,14 +1023,6 @@ condition {[ self.group.Participant->forAll(participant | participant.notified) 
 
 **Trạng thái:** ✅ Khớp cấu trúc biến (cùng nhận xét R9) — chưa đối chiếu được property LTL
 dạng `!Sat U G Sat` vì chưa đọc file `.ltl` (xem Phần C cuối / khuyến nghị).
-
----
-
-### R11 — Recur
-
-**Nguồn thật:** `mtg.istar` không có Goal nào khai `: Recur`.
-
-**Trạng thái:** ◻ Chưa kiểm chứng (không có Recur trong MTG).
 
 ---
 
@@ -1231,7 +1223,7 @@ Goal `pick`/`forall` tương ứng đã kiểm ở R16/R17.
 **Trạng thái:** ◻ Chưa kiểm chứng phần LTL — file `.ltl`
 (`MeetingSchedulerMarking22_properties.ltl`) tồn tại trong cùng thư mục nhưng **chưa được đọc**
 trong lần đối chiếu này. Đây là hạng mục nên đọc tiếp nếu bạn cần kiểm chứng riêng phần
-Achieve/Sustain/Recur/dependency-liveness — Rodin's 126 PO **không** bao gồm các property này
+Achieve/Sustain/dependency-liveness — Rodin's 126 PO **không** bao gồm các property này
 (đúng khớp cảnh báo `mtg-eventb-experiment.md`: "Kết quả này không tự động chứng minh các công
 thức temporal trong file `.ltl`").
 
@@ -1262,7 +1254,7 @@ ngược về dòng `goal SecretaryRequested` trong `mtg.istar` — phải tìm 
   hàm `Sat_X` riêng như ví dụ rút gọn của chính tài liệu này minh họa (mục "Ví dụ" của
   `aclIstarBpmn2eventB.md` viết `Sat_MeetingOrganized`-style; output thật không có định danh
   `Sat_*` nào trong `.bum`/`.buc`) — cùng loại lệch đã ghi ở Phần C/R2.
-- "Progress như eventually hoặc recurrence được sinh thành LTL cho ProB" → ◻ chưa kiểm chứng
+- "Progress như eventually được sinh thành LTL cho ProB" → ◻ chưa kiểm chứng
   (chưa đọc file `.ltl`).
 
 ### Danh sách lỗi đã sửa (`mtg-eventb-experiment.md` §6) — đối chiếu nhanh
@@ -1293,8 +1285,8 @@ output hiện tại:
 4. **`GOcc_X`/`Sat_X`/`Act_X` là cách trình bày trừu tượng, không phải định danh thật** (Phần
    C/R2, R4, R14; Phần D) — nên ghi chú rõ trong 3 file luật để người đọc không tìm nhầm các
    định danh này trong `.bum`/`.buc` thật.
-5. **Chưa đối chiếu file `.ltl`** — toàn bộ Phần Achieve/Sustain/Recur/dependency-liveness (R8,
-   R10, R11, R19 của `istar2eventb.md`, R19 của `bpmn2eventb.md`) mới kiểm chứng được phần cấu
+5. **Chưa đối chiếu file `.ltl`** — toàn bộ Phần Achieve/Sustain/dependency-liveness (R8,
+   R10, R19 của `istar2eventb.md`, R19 của `bpmn2eventb.md`) mới kiểm chứng được phần cấu
    trúc biến/Rodin PO, chưa kiểm chứng được property temporal thật. Đọc
    `MeetingSchedulerMarking22_properties.ltl` là bước kiểm chứng tiếp theo hợp lý.
 
@@ -1304,9 +1296,9 @@ output hiện tại:
 |---|---|---|---|---|
 | ACL (R1–R21) | 21 | 15 | 0 | 6 |
 | BPMN (R0–R20, tính cả R0 ngầm) | 21 | 15 | 1 | 5 |
-| iStar (R1–R22) | 22 | 16 | 3 | 3 |
-| **Tổng** | **64** | **46** | **4** | **14** |
+| iStar (R1–R22, không còn R11) | 21 | 16 | 3 | 2 |
+| **Tổng** | **63** | **46** | **4** | **13** |
 
-`◻ Chưa kiểm chứng` phần lớn vì ca MTG đơn giản (1 Group, không AND-split, không Recur, không
-message flow, không loop) — không phải vì luật sai; muốn kiểm chứng hết cần thêm 1-2 ca MTG mở
-rộng (ví dụ thêm gateway `type and`, 1 Goal `Recur`, 1 message flow giữa 2 pool).
+`◻ Chưa kiểm chứng` phần lớn vì ca MTG đơn giản (1 Group, không AND-split, không message flow,
+không loop) — không phải vì luật sai; muốn kiểm chứng hết cần thêm 1-2 ca MTG mở rộng (ví dụ
+thêm gateway `type and` và một message flow giữa 2 pool).

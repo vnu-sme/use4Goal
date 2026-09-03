@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.vnu.sme.goal.feature.aclstate.ConformanceReportBuilder;
 import org.vnu.sme.goal.verify.aclstate.AclBpmnStateTraceEvaluator.Verdict;
 import org.vnu.sme.goal.verify.aclstate.AclBpmnWholeProcessValidator;
 import org.vnu.sme.goal.verify.aclstate.AclStateEvaluationSession;
@@ -89,6 +90,11 @@ class AclBpmnStateTraceEvaluatorTest {
         assertTrue(result.mappings().stream().anyMatch(mapping ->
                 mapping.activityId().equals("recordAttendanceManually")
                         && mapping.leafId().equals("RecordAttendanceManually")));
+        var report = ConformanceReportBuilder.build(result);
+        assertTrue(report.stream().anyMatch(row -> row.type().equals("MAPPING")
+                && row.status().equals("INFERRED_MAPPING")), report::toString);
+        assertTrue(report.stream().noneMatch(row -> row.type().equals("COUNTERMEASURE")),
+                report::toString);
         assertTrue(session.states().isEmpty(), "integrated whole validation must not load AOL");
     }
 
@@ -128,16 +134,37 @@ class AclBpmnStateTraceEvaluatorTest {
                 integrated(temp, acl, istar, boundary, "strong", """
                         activity good { type task lane Worker post {[ self.done ]} flow closed }
                         """).consistency());
-        assertEquals(AclBpmnWholeProcessValidator.ConsistencyVerdict.WEAKLY_CONSISTENT,
-                integrated(temp, acl, istar, boundary, "weak", """
+        var weak = integrated(temp, acl, istar, boundary, "weak", """
                         gateway choose { lane Worker type xor flow good flow bad }
                         activity good { type task lane Worker post {[ self.done ]} flow closed }
                         activity bad { type task lane Worker post {[ not self.done ]} flow closed }
-                        """).consistency());
+                        """);
+        assertEquals(AclBpmnWholeProcessValidator.ConsistencyVerdict.WEAKLY_CONSISTENT,
+                weak.consistency());
+        assertEquals(AclBpmnWholeProcessValidator.RiskVerdict.RISK_FREE, weak.risk(),
+                "a never-achieved Sustain Goal remains unknown rather than violated");
         assertEquals(AclBpmnWholeProcessValidator.ConsistencyVerdict.INCONSISTENT,
                 integrated(temp, acl, istar, boundary, "missing", """
                         activity bad { type task lane Worker post {[ not self.done ]} flow closed }
                         """).consistency());
+
+        var risk = integrated(temp, acl, istar, boundary, "risk", """
+                activity good { type task lane Worker post {[ self.done ]} flow broken }
+                activity broken { type task lane Worker post {[ not self.done ]} flow closed }
+                """);
+        assertEquals(AclBpmnWholeProcessValidator.ConsistencyVerdict.INCONSISTENT,
+                risk.consistency());
+        assertEquals(AclBpmnWholeProcessValidator.RiskVerdict.RISK_PRONE, risk.risk());
+        assertEquals(1, risk.riskyExecutions());
+
+        var recovered = integrated(temp, acl, istar, boundary, "recovered", """
+                activity good { type task lane Worker post {[ self.done ]} flow broken }
+                activity broken { type task lane Worker post {[ not self.done ]} flow repaired }
+                activity repaired { type task lane Worker post {[ self.done ]} flow closed }
+                """);
+        assertEquals(AclBpmnWholeProcessValidator.ConsistencyVerdict.INCONSISTENT,
+                recovered.consistency(), "Sustain violations must persist after re-establishment");
+        assertEquals(AclBpmnWholeProcessValidator.RiskVerdict.RISK_PRONE, recovered.risk());
     }
 
     private static AclBpmnWholeProcessValidator.ValidationResult integrated(
