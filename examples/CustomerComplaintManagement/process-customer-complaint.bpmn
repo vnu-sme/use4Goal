@@ -1,0 +1,714 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_Process_CCM" targetNamespace="http://bpmn.io/schema/bpmn" exporter="bpmn-js (https://demo.bpmn.io)" exporterVersion="18.27.0">
+  <bpmn:collaboration id="Process_CCM_collab">
+    <bpmn:participant id="Process_CCM_p" name="Customer Complaint Management" processRef="Process_CCM"/>
+  </bpmn:collaboration>
+  <bpmn:process id="Process_CCM" isExecutable="false">
+    <bpmn:laneSet id="Process_CCM_ls">
+      <bpmn:lane id="Process_CCM_lane0" name="Field Man">
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_create</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_updartifacts</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_examdone</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_reqexam</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_route</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_comp</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_refund</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_amount</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_updcompl</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_updcompl</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_1</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Process_CCM_lane1" name="Customer Manager">
+        <bpmn:flowNodeRef>Act_cm_exam</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_cm_req</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_cm_sugg</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_cm_appr</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Process_CCM_lane2" name="Nutritionist">
+        <bpmn:flowNodeRef>Act_nu_exam</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_nu_req</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Process_CCM_lane3" name="Lab Manager">
+        <bpmn:flowNodeRef>Act_lm_exam</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_lm_check</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_lm_qio</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_lm_improve</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_lm_merge</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Process_CCM_lane4" name="CFO">
+        <bpmn:flowNodeRef>Act_cfo_sugg</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_cfo_appr</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_cfo_complex</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Process_CCM_lane5" name="CEO">
+        <bpmn:flowNodeRef>Act_ceo_exam</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_ceo_appr</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Process_CCM_lane6" name="Accountment">
+        <bpmn:flowNodeRef>Gw_refund_merge</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_acc_update</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:sequenceFlow id="Process_CCM_f0" sourceRef="StartEvent_1" targetRef="Act_create"/>
+    <bpmn:sequenceFlow id="Process_CCM_f1" sourceRef="Act_create" targetRef="Act_updartifacts"/>
+    <bpmn:sequenceFlow id="Process_CCM_f2" sourceRef="Act_updartifacts" targetRef="Gw_reqexam"/>
+    <bpmn:sequenceFlow id="Process_CCM_f3" name="No" sourceRef="Gw_reqexam" targetRef="Act_comp"/>
+    <bpmn:sequenceFlow id="Process_CCM_f6" name="Nutrition-related issue" sourceRef="Gw_route" targetRef="Act_nu_exam"/>
+    <bpmn:sequenceFlow id="Process_CCM_f7" name="Lab/quality-related issue" sourceRef="Gw_route" targetRef="Act_lm_exam"/>
+    <bpmn:sequenceFlow id="Process_CCM_f9" name="Yes" sourceRef="Gw_cm_req" targetRef="Act_nu_exam"/>
+    <bpmn:sequenceFlow id="Process_CCM_f10" name="No" sourceRef="Gw_cm_req" targetRef="Gw_examdone"/>
+    <bpmn:sequenceFlow id="Process_CCM_f11" sourceRef="Act_nu_exam" targetRef="Gw_nu_req"/>
+    <bpmn:sequenceFlow id="Process_CCM_f12" name="Yes" sourceRef="Gw_nu_req" targetRef="Act_lm_exam"/>
+    <bpmn:sequenceFlow id="Process_CCM_f13" name="No" sourceRef="Gw_nu_req" targetRef="Gw_examdone"/>
+    <bpmn:sequenceFlow id="Process_CCM_f19" sourceRef="Gw_lm_merge" targetRef="Gw_examdone"/>
+    <bpmn:sequenceFlow id="Process_CCM_f20" sourceRef="Gw_examdone" targetRef="Act_updartifacts"/>
+    <bpmn:startEvent id="StartEvent_1" name="Complaint received">
+      <bpmn:documentation>-- trigger, no precondition
+post StartEvent_1_post: complaint.created = false</bpmn:documentation>
+      <bpmn:outgoing>Process_CCM_f0</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Act_create" name="Creating complaint">
+      <bpmn:documentation>context FieldMan::creatingComplaint()
+post CreatingComplaint_post: complaint.created = true</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f0</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f1</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Act_updartifacts" name="Updating artifacts">
+      <bpmn:documentation>context FieldMan::updatingArtifacts()
+pre  UpdatingArtifacts_pre: complaint.created = true
+post UpdatingArtifacts_post: complaint.artifactsUpdated = true</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f1</bpmn:incoming>
+      <bpmn:incoming>Process_CCM_f20</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_examdone">
+      <bpmn:documentation>-- pure merge, no guard: exactly one of CmReq=No / NuReq=No / Gw_lm_merge feeds here, loops back to FieldMan::updatingArtifacts()</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f10</bpmn:incoming>
+      <bpmn:incoming>Process_CCM_f13</bpmn:incoming>
+      <bpmn:incoming>Process_CCM_f19</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f20</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Act_cm_exam" name="Examining the artifacts and updating">
+      <bpmn:documentation>context CustomerManager::examiningArtifactsAndUpdating()
+post ExaminingCM_post: complaint.examinedBy = complaint.examinedBy-&gt;including(Role::CustomerManager)</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f5</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f8</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_cm_req" name="Require additional examination?">
+      <bpmn:documentation>context Complaint inv CmRequireMore_guard:
+  self.needsMoreExamination = true  -- escalate to Nutritionist
+  self.needsMoreExamination = false -- return to FieldMan::updatingArtifacts()</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f8</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f9</bpmn:outgoing>
+      <bpmn:outgoing>Process_CCM_f10</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Process_CCM_f4" name="Yes" sourceRef="Gw_reqexam" targetRef="Gw_route"/>
+    <bpmn:sequenceFlow id="Process_CCM_f5" name="Customer/account issue" sourceRef="Gw_route" targetRef="Act_cm_exam"/>
+    <bpmn:sequenceFlow id="Process_CCM_f8" sourceRef="Act_cm_exam" targetRef="Gw_cm_req"/>
+    <bpmn:task id="Act_nu_exam" name="Examining the artifacts and updating">
+      <bpmn:documentation>context Nutritionist::examiningArtifactsAndUpdating()
+post ExaminingNu_post: complaint.examinedBy = complaint.examinedBy-&gt;including(Role::Nutritionist)</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f6</bpmn:incoming>
+      <bpmn:incoming>Process_CCM_f9</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f11</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_reqexam" name="Required additional examination?">
+      <bpmn:documentation>context Complaint inv RequiredAdditionalExamination_guard:
+  self.needsMoreExamination = true  -- 'Yes' branch
+  self.needsMoreExamination = false -- 'No' branch (skips Complaints examination entirely)</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f2</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f3</bpmn:outgoing>
+      <bpmn:outgoing>Process_CCM_f4</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gw_route">
+      <bpmn:documentation>context Complaint inv Route_guard:
+  self.category = #customerAccount -- 'Customer/account issue'
+  self.category = #nutrition       -- 'Nutrition-related issue'
+  self.category = #labQuality      -- 'Lab/quality-related issue'</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f4</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f5</bpmn:outgoing>
+      <bpmn:outgoing>Process_CCM_f6</bpmn:outgoing>
+      <bpmn:outgoing>Process_CCM_f7</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gw_nu_req" name="Require additional examination?">
+      <bpmn:documentation>context Complaint inv NuRequireMore_guard:
+  self.needsMoreExamination = true  -- escalate to LabManager
+  self.needsMoreExamination = false -- return to FieldMan::updatingArtifacts()</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f11</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f12</bpmn:outgoing>
+      <bpmn:outgoing>Process_CCM_f13</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Act_lm_exam" name="Examining the artifacts and updating">
+      <bpmn:documentation>context LabManager::examiningArtifactsAndUpdating()
+post ExaminingLm_post: complaint.examinedBy = complaint.examinedBy-&gt;including(Role::LabManager)</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f7</bpmn:incoming>
+      <bpmn:incoming>Process_CCM_f12</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f14</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Act_lm_check" name="Checking in proactive tests">
+      <bpmn:documentation>context LabManager::checkingInProactiveTests()
+post CheckingProactive_post: complaint.qualityChecked = true</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f14</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f15</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_lm_qio" name="Quality improvement opportunity?">
+      <bpmn:documentation>context Complaint inv QualityImprovementOpportunity_guard:
+  self.qualityImprovementFlagged = true  -- 'Yes'
+  self.qualityImprovementFlagged = false -- 'No' (opportunity never argued for Increase feed quality)</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f15</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f16</bpmn:outgoing>
+      <bpmn:outgoing>Process_CCM_f17</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Act_lm_improve" name="Updating as improvement suggestion">
+      <bpmn:documentation>context LabManager::updatingAsImprovementSuggestion()
+post UpdatingImprovement_post: complaint.qualityImprovementFlagged = true and labManager.conclusionsUpdated = true</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f16</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f18</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_lm_merge">
+      <bpmn:documentation>-- pure merge, no guard: exactly one of Gw_lm_qio's branches feeds here</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f17</bpmn:incoming>
+      <bpmn:incoming>Process_CCM_f18</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f19</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Process_CCM_f14" sourceRef="Act_lm_exam" targetRef="Act_lm_check"/>
+    <bpmn:sequenceFlow id="Process_CCM_f15" sourceRef="Act_lm_check" targetRef="Gw_lm_qio"/>
+    <bpmn:sequenceFlow id="Process_CCM_f16" name="Yes" sourceRef="Gw_lm_qio" targetRef="Act_lm_improve"/>
+    <bpmn:sequenceFlow id="Process_CCM_f17" name="No" sourceRef="Gw_lm_qio" targetRef="Gw_lm_merge"/>
+    <bpmn:sequenceFlow id="Process_CCM_f18" sourceRef="Act_lm_improve" targetRef="Gw_lm_merge"/>
+    <bpmn:task id="Act_comp" name="Compensation suggestion">
+      <bpmn:documentation>context FieldMan::compensationSuggestion()
+pre  CompensationSuggestion_pre: complaint.needsMoreExamination = false
+post CompensationSuggestion_post: complaint.compensationSuggested = true</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f3</bpmn:incoming>
+      <bpmn:incoming>Flow_0wem6br</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f21</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_refund" name="Refund?">
+      <bpmn:documentation>context Complaint inv Refund_guard:
+  self.refundRequested = true  -- 'Yes': Financial compensation approval goal becomes relevant
+  self.refundRequested = false -- 'No': that goal is never invoked on this path (not a violation)</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f21</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f22</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0knnjmy</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gw_amount">
+      <bpmn:documentation>context Complaint inv Amount_guard:
+  self.refundAmount &lt; 5000  -- Customer Manager approves
+  self.refundAmount &gt;= 5000 -- CFO approves</bpmn:documentation>
+      <bpmn:incoming>Flow_0knnjmy</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f24</bpmn:outgoing>
+      <bpmn:outgoing>Process_CCM_f25</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Act_cm_sugg" name="Suggestion examination and updating">
+      <bpmn:documentation>context CustomerManager::suggestionExaminationAndUpdating()
+pre  CmSugg_pre: complaint.refundAmount &lt; 5000</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f24</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f26</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_cm_appr" name="Approve?">
+      <bpmn:documentation>context Complaint inv CmApprove_guard:
+  self.suggestionApprovedBy-&gt;includes(Role::CustomerManager)  -- 'Yes'
+  else -- 'No': loops back to FieldMan::compensationSuggestion(), goal stays open, not falsified</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f26</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f28</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0wem6br</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gw_updcompl">
+      <bpmn:documentation>-- pure merge, no guard: Refund=No, or CfoApprove=No, or CeoApprove=No, or refund updated, feed here</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f38</bpmn:incoming>
+      <bpmn:incoming>Flow_09y7maz</bpmn:incoming>
+      <bpmn:incoming>Flow_0py28w8</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f39</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Act_updcompl" name="Updating the complaint">
+      <bpmn:documentation>context FieldMan::updatingTheComplaint()
+post UpdatingComplaint_post: complaint.handled = (complaint.examinedBy-&gt;notEmpty() or complaint.refundRequested = false) and complaint.artifactsUpdated = true</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f39</bpmn:incoming>
+      <bpmn:incoming>Process_CCM_f22</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f40</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="EndEvent_1" name="Complaint closed">
+      <bpmn:documentation>context Complaint inv ComplaintClosed_endInvariant:
+  self.closed = true
+  -- NOTE: self.closed = true does NOT logically imply self.handled = true;
+  -- see Case B in mapping-customer-complaint.md (BPMN-complete vs i*-goal-satisfied).</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f40</bpmn:incoming>
+      <bpmn:messageEventDefinition id="EndEvent_1_med"/>
+    </bpmn:endEvent>
+    <bpmn:task id="Act_cfo_sugg" name="Suggestion examination and updating">
+      <bpmn:documentation>context CFO::suggestionExaminationAndUpdating()
+pre  CfoSugg_pre: complaint.refundAmount &gt;= 5000</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f25</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f29</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_cfo_appr" name="Approve?">
+      <bpmn:documentation>context Complaint inv CfoApprove_guard:
+  self.suggestionApprovedBy-&gt;includes(Role::CFO)  -- 'Yes'
+  else -- 'No': loops back to FieldMan::compensationSuggestion()</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f29</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f31</bpmn:outgoing>
+      <bpmn:outgoing>Flow_09y7maz</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gw_cfo_complex" name="Complex complaint?">
+      <bpmn:documentation>context Complaint inv ComplexComplaint_guard:
+  self.complex = true  -- 'Yes': dependency Get_approval_for_complex_complaint (CFO -&gt; CEO) invoked
+  self.complex = false -- 'No': CEO never involved, straight to Accounting</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f31</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f32</bpmn:outgoing>
+      <bpmn:outgoing>Process_CCM_f33</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Act_ceo_exam" name="Complaint examination and updating">
+      <bpmn:documentation>context CEO::complaintExaminationAndUpdating()
+pre  CeoExam_pre: complaint.complex = true</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f33</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f34</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_ceo_appr" name="Approve?">
+      <bpmn:documentation>context Complaint inv CeoApprove_guard:
+  self.suggestionApprovedBy-&gt;includes(Role::CEO)  -- 'Yes'
+  else -- 'No': loops back to FieldMan::compensationSuggestion()</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f34</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f36</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0py28w8</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gw_refund_merge">
+      <bpmn:documentation>-- pure merge, no guard: exactly one of CmApprove=Yes / CfoComplex=No / CeoApprove=Yes feeds here</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f28</bpmn:incoming>
+      <bpmn:incoming>Process_CCM_f32</bpmn:incoming>
+      <bpmn:incoming>Process_CCM_f36</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f37</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Act_acc_update" name="Updating refund in the system">
+      <bpmn:documentation>context Accounting::updatingRefundInTheSystem()
+post UpdatingRefund_post: complaint.refundUpdatedInSystem = true</bpmn:documentation>
+      <bpmn:incoming>Process_CCM_f37</bpmn:incoming>
+      <bpmn:outgoing>Process_CCM_f38</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_0wem6br" name="No" sourceRef="Gw_cm_appr" targetRef="Act_comp"/>
+    <bpmn:sequenceFlow id="Process_CCM_f21" sourceRef="Act_comp" targetRef="Gw_refund"/>
+    <bpmn:sequenceFlow id="Process_CCM_f22" name="No" sourceRef="Gw_refund" targetRef="Act_updcompl"/>
+    <bpmn:sequenceFlow id="Flow_0knnjmy" name="Yes" sourceRef="Gw_refund" targetRef="Gw_amount"/>
+    <bpmn:sequenceFlow id="Process_CCM_f24" name="&lt;5000 NIS" sourceRef="Gw_amount" targetRef="Act_cm_sugg"/>
+    <bpmn:sequenceFlow id="Process_CCM_f25" name="&gt;5000 NIS" sourceRef="Gw_amount" targetRef="Act_cfo_sugg"/>
+    <bpmn:sequenceFlow id="Process_CCM_f26" sourceRef="Act_cm_sugg" targetRef="Gw_cm_appr"/>
+    <bpmn:sequenceFlow id="Process_CCM_f28" name="Yes" sourceRef="Gw_cm_appr" targetRef="Gw_refund_merge"/>
+    <bpmn:sequenceFlow id="Process_CCM_f38" sourceRef="Act_acc_update" targetRef="Gw_updcompl"/>
+    <bpmn:sequenceFlow id="Flow_09y7maz" name="No" sourceRef="Gw_cfo_appr" targetRef="Gw_updcompl"/>
+    <bpmn:sequenceFlow id="Flow_0py28w8" name="No" sourceRef="Gw_ceo_appr" targetRef="Gw_updcompl"/>
+    <bpmn:sequenceFlow id="Process_CCM_f39" sourceRef="Gw_updcompl" targetRef="Act_updcompl"/>
+    <bpmn:sequenceFlow id="Process_CCM_f40" sourceRef="Act_updcompl" targetRef="EndEvent_1"/>
+    <bpmn:sequenceFlow id="Process_CCM_f29" sourceRef="Act_cfo_sugg" targetRef="Gw_cfo_appr"/>
+    <bpmn:sequenceFlow id="Process_CCM_f31" name="Yes" sourceRef="Gw_cfo_appr" targetRef="Gw_cfo_complex"/>
+    <bpmn:sequenceFlow id="Process_CCM_f32" name="No" sourceRef="Gw_cfo_complex" targetRef="Gw_refund_merge"/>
+    <bpmn:sequenceFlow id="Process_CCM_f33" name="Yes" sourceRef="Gw_cfo_complex" targetRef="Act_ceo_exam"/>
+    <bpmn:sequenceFlow id="Process_CCM_f34" sourceRef="Act_ceo_exam" targetRef="Gw_ceo_appr"/>
+    <bpmn:sequenceFlow id="Process_CCM_f36" name="Yes" sourceRef="Gw_ceo_appr" targetRef="Gw_refund_merge"/>
+    <bpmn:sequenceFlow id="Process_CCM_f37" sourceRef="Gw_refund_merge" targetRef="Act_acc_update"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Process_CCM_diagram">
+    <bpmndi:BPMNPlane id="Process_CCM_plane" bpmnElement="Process_CCM_collab">
+      <bpmndi:BPMNShape id="Process_CCM_p_di" bpmnElement="Process_CCM_p" isHorizontal="true">
+        <dc:Bounds x="140" y="80" width="2660" height="1540"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Process_CCM_lane6_di" bpmnElement="Process_CCM_lane6" isHorizontal="true">
+        <dc:Bounds x="170" y="1400" width="2630" height="220"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Process_CCM_lane5_di" bpmnElement="Process_CCM_lane5" isHorizontal="true">
+        <dc:Bounds x="170" y="1180" width="2630" height="220"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Process_CCM_lane4_di" bpmnElement="Process_CCM_lane4" isHorizontal="true">
+        <dc:Bounds x="170" y="960" width="2630" height="220"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Process_CCM_lane3_di" bpmnElement="Process_CCM_lane3" isHorizontal="true">
+        <dc:Bounds x="170" y="740" width="2630" height="220"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Process_CCM_lane2_di" bpmnElement="Process_CCM_lane2" isHorizontal="true">
+        <dc:Bounds x="170" y="520" width="2630" height="220"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Process_CCM_lane1_di" bpmnElement="Process_CCM_lane1" isHorizontal="true">
+        <dc:Bounds x="170" y="340" width="2630" height="180"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Process_CCM_lane0_di" bpmnElement="Process_CCM_lane0" isHorizontal="true">
+        <dc:Bounds x="170" y="80" width="2630" height="260"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="222" y="172" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="215" y="212" width="50" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_create_di" bpmnElement="Act_create">
+        <dc:Bounds x="300" y="152" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_updartifacts_di" bpmnElement="Act_updartifacts">
+        <dc:Bounds x="490" y="152" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_examdone_di" bpmnElement="Gw_examdone" isMarkerVisible="true">
+        <dc:Bounds x="525" y="285" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_cm_exam_di" bpmnElement="Act_cm_exam">
+        <dc:Bounds x="670" y="392" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_cm_req_di" bpmnElement="Gw_cm_req" isMarkerVisible="true">
+        <dc:Bounds x="875" y="405" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="797" y="370" width="66" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_nu_exam_di" bpmnElement="Act_nu_exam">
+        <dc:Bounds x="940" y="562" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_reqexam_di" bpmnElement="Gw_reqexam" isMarkerVisible="true">
+        <dc:Bounds x="985" y="165" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="977" y="115" width="66" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_route_di" bpmnElement="Gw_route" isMarkerVisible="true">
+        <dc:Bounds x="985" y="265" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_nu_req_di" bpmnElement="Gw_nu_req" isMarkerVisible="true">
+        <dc:Bounds x="1145" y="575" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1067" y="550" width="66" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_lm_exam_di" bpmnElement="Act_lm_exam">
+        <dc:Bounds x="1203" y="782" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_lm_check_di" bpmnElement="Act_lm_check">
+        <dc:Bounds x="1390" y="782" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_lm_qio_di" bpmnElement="Gw_lm_qio" isMarkerVisible="true">
+        <dc:Bounds x="1565" y="795" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1558" y="855" width="64" height="40"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_lm_improve_di" bpmnElement="Act_lm_improve">
+        <dc:Bounds x="1690" y="782" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_lm_merge_di" bpmnElement="Gw_lm_merge" isMarkerVisible="true">
+        <dc:Bounds x="1895" y="795" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_comp_di" bpmnElement="Act_comp">
+        <dc:Bounds x="1540" y="142" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_refund_di" bpmnElement="Gw_refund" isMarkerVisible="true">
+        <dc:Bounds x="1690" y="155" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1694" y="131" width="42" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_amount_di" bpmnElement="Gw_amount" isMarkerVisible="true">
+        <dc:Bounds x="1775" y="265" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_cm_sugg_di" bpmnElement="Act_cm_sugg">
+        <dc:Bounds x="1740" y="392" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_cm_appr_di" bpmnElement="Gw_cm_appr" isMarkerVisible="true">
+        <dc:Bounds x="1900" y="405" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1901" y="381" width="48" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_updcompl_di" bpmnElement="Gw_updcompl" isMarkerVisible="true">
+        <dc:Bounds x="2465" y="235" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_updcompl_di" bpmnElement="Act_updcompl">
+        <dc:Bounds x="2430" y="92" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1_di" bpmnElement="EndEvent_1">
+        <dc:Bounds x="2722" y="112" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2698" y="152" width="85" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_cfo_sugg_di" bpmnElement="Act_cfo_sugg">
+        <dc:Bounds x="1990" y="1022" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_cfo_appr_di" bpmnElement="Gw_cfo_appr" isMarkerVisible="true">
+        <dc:Bounds x="2145" y="1035" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2146" y="1089" width="48" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_cfo_complex_di" bpmnElement="Gw_cfo_complex" isMarkerVisible="true">
+        <dc:Bounds x="2265" y="1035" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2263" y="997.5" width="54" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_ceo_exam_di" bpmnElement="Act_ceo_exam">
+        <dc:Bounds x="2310" y="1232" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_ceo_appr_di" bpmnElement="Gw_ceo_appr" isMarkerVisible="true">
+        <dc:Bounds x="2465" y="1245" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2525" y="1263" width="48" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_refund_merge_di" bpmnElement="Gw_refund_merge" isMarkerVisible="true">
+        <dc:Bounds x="2465" y="1485" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_acc_update_di" bpmnElement="Act_acc_update">
+        <dc:Bounds x="2630" y="1472" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Process_CCM_f0_di" bpmnElement="Process_CCM_f0">
+        <di:waypoint x="258" y="190"/>
+        <di:waypoint x="300" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f1_di" bpmnElement="Process_CCM_f1">
+        <di:waypoint x="420" y="190"/>
+        <di:waypoint x="490" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f2_di" bpmnElement="Process_CCM_f2">
+        <di:waypoint x="610" y="190"/>
+        <di:waypoint x="985" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f3_di" bpmnElement="Process_CCM_f3">
+        <di:waypoint x="1035" y="190"/>
+        <di:waypoint x="1363" y="190"/>
+        <di:waypoint x="1363" y="180"/>
+        <di:waypoint x="1540" y="180"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1382" y="155" width="15" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f6_di" bpmnElement="Process_CCM_f6">
+        <di:waypoint x="1010" y="315"/>
+        <di:waypoint x="1010" y="562"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f7_di" bpmnElement="Process_CCM_f7">
+        <di:waypoint x="1035" y="290"/>
+        <di:waypoint x="1293" y="290"/>
+        <di:waypoint x="1293" y="782"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f9_di" bpmnElement="Process_CCM_f9">
+        <di:waypoint x="925" y="430"/>
+        <di:waypoint x="980" y="430"/>
+        <di:waypoint x="980" y="562"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="917" y="543" width="18" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f10_di" bpmnElement="Process_CCM_f10">
+        <di:waypoint x="900" y="455"/>
+        <di:waypoint x="900" y="490"/>
+        <di:waypoint x="650" y="490"/>
+        <di:waypoint x="650" y="310"/>
+        <di:waypoint x="575" y="310"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="819" y="466" width="15" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f11_di" bpmnElement="Process_CCM_f11">
+        <di:waypoint x="1060" y="600"/>
+        <di:waypoint x="1145" y="600"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f12_di" bpmnElement="Process_CCM_f12">
+        <di:waypoint x="1195" y="600"/>
+        <di:waypoint x="1243" y="600"/>
+        <di:waypoint x="1243" y="782"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1209" y="578" width="18" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f13_di" bpmnElement="Process_CCM_f13">
+        <di:waypoint x="1170" y="625"/>
+        <di:waypoint x="1170" y="690"/>
+        <di:waypoint x="550" y="690"/>
+        <di:waypoint x="550" y="335"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1114" y="633" width="15" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f19_di" bpmnElement="Process_CCM_f19">
+        <di:waypoint x="1920" y="845"/>
+        <di:waypoint x="1920" y="900"/>
+        <di:waypoint x="470" y="900"/>
+        <di:waypoint x="470" y="310"/>
+        <di:waypoint x="525" y="310"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f20_di" bpmnElement="Process_CCM_f20">
+        <di:waypoint x="550" y="285"/>
+        <di:waypoint x="550" y="228"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f4_di" bpmnElement="Process_CCM_f4">
+        <di:waypoint x="1010" y="215"/>
+        <di:waypoint x="1010" y="265"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1019" y="232" width="18" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f5_di" bpmnElement="Process_CCM_f5">
+        <di:waypoint x="985" y="290"/>
+        <di:waypoint x="730" y="290"/>
+        <di:waypoint x="730" y="392"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f8_di" bpmnElement="Process_CCM_f8">
+        <di:waypoint x="790" y="430"/>
+        <di:waypoint x="875" y="430"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f14_di" bpmnElement="Process_CCM_f14">
+        <di:waypoint x="1323" y="820"/>
+        <di:waypoint x="1390" y="820"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f15_di" bpmnElement="Process_CCM_f15">
+        <di:waypoint x="1510" y="820"/>
+        <di:waypoint x="1565" y="820"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f16_di" bpmnElement="Process_CCM_f16">
+        <di:waypoint x="1615" y="820"/>
+        <di:waypoint x="1690" y="820"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1622" y="808" width="18" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f17_di" bpmnElement="Process_CCM_f17">
+        <di:waypoint x="1590" y="795"/>
+        <di:waypoint x="1590" y="760"/>
+        <di:waypoint x="1920" y="760"/>
+        <di:waypoint x="1920" y="795"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1591" y="746" width="15" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f18_di" bpmnElement="Process_CCM_f18">
+        <di:waypoint x="1810" y="820"/>
+        <di:waypoint x="1895" y="820"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0wem6br_di" bpmnElement="Flow_0wem6br">
+        <di:waypoint x="1925" y="455"/>
+        <di:waypoint x="1925" y="490"/>
+        <di:waypoint x="1600" y="490"/>
+        <di:waypoint x="1600" y="218"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1771" y="466" width="15" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f21_di" bpmnElement="Process_CCM_f21">
+        <di:waypoint x="1660" y="180"/>
+        <di:waypoint x="1690" y="180"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f22_di" bpmnElement="Process_CCM_f22">
+        <di:waypoint x="1740" y="180"/>
+        <di:waypoint x="2205" y="180"/>
+        <di:waypoint x="2205" y="130"/>
+        <di:waypoint x="2430" y="130"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1962" y="138" width="15" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0knnjmy_di" bpmnElement="Flow_0knnjmy">
+        <di:waypoint x="1715" y="205"/>
+        <di:waypoint x="1715" y="290"/>
+        <di:waypoint x="1775" y="290"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1721" y="244.5" width="18" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f24_di" bpmnElement="Process_CCM_f24">
+        <di:waypoint x="1800" y="315"/>
+        <di:waypoint x="1800" y="392"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1808" y="363" width="53" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f25_di" bpmnElement="Process_CCM_f25">
+        <di:waypoint x="1825" y="290"/>
+        <di:waypoint x="2050" y="290"/>
+        <di:waypoint x="2050" y="1022"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1621" y="273" width="53" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f26_di" bpmnElement="Process_CCM_f26">
+        <di:waypoint x="1860" y="430"/>
+        <di:waypoint x="1900" y="430"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f28_di" bpmnElement="Process_CCM_f28">
+        <di:waypoint x="1950" y="430"/>
+        <di:waypoint x="1980" y="430"/>
+        <di:waypoint x="1980" y="1590"/>
+        <di:waypoint x="2490" y="1590"/>
+        <di:waypoint x="2490" y="1535"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2001" y="220" width="18" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f38_di" bpmnElement="Process_CCM_f38">
+        <di:waypoint x="2690" y="1472"/>
+        <di:waypoint x="2690" y="260"/>
+        <di:waypoint x="2515" y="260"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_09y7maz_di" bpmnElement="Flow_09y7maz">
+        <di:waypoint x="2170" y="1035"/>
+        <di:waypoint x="2170" y="260"/>
+        <di:waypoint x="2465" y="260"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2178" y="983.5" width="15" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0py28w8_di" bpmnElement="Flow_0py28w8">
+        <di:waypoint x="2490" y="1245"/>
+        <di:waypoint x="2490" y="285"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2498" y="1213" width="15" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f39_di" bpmnElement="Process_CCM_f39">
+        <di:waypoint x="2490" y="235"/>
+        <di:waypoint x="2490" y="168"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f40_di" bpmnElement="Process_CCM_f40">
+        <di:waypoint x="2550" y="130"/>
+        <di:waypoint x="2722" y="130"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f29_di" bpmnElement="Process_CCM_f29">
+        <di:waypoint x="2110" y="1060"/>
+        <di:waypoint x="2145" y="1060"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f31_di" bpmnElement="Process_CCM_f31">
+        <di:waypoint x="2195" y="1060"/>
+        <di:waypoint x="2265" y="1060"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2201" y="1035" width="18" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f32_di" bpmnElement="Process_CCM_f32">
+        <di:waypoint x="2290" y="1085"/>
+        <di:waypoint x="2290" y="1510"/>
+        <di:waypoint x="2465" y="1510"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2252" y="1103" width="15" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f33_di" bpmnElement="Process_CCM_f33">
+        <di:waypoint x="2315" y="1060"/>
+        <di:waypoint x="2370" y="1060"/>
+        <di:waypoint x="2370" y="1232"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2361" y="1035" width="18" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f34_di" bpmnElement="Process_CCM_f34">
+        <di:waypoint x="2430" y="1270"/>
+        <di:waypoint x="2465" y="1270"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f36_di" bpmnElement="Process_CCM_f36">
+        <di:waypoint x="2490" y="1295"/>
+        <di:waypoint x="2490" y="1485"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2511" y="1303" width="18" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_CCM_f37_di" bpmnElement="Process_CCM_f37">
+        <di:waypoint x="2515" y="1510"/>
+        <di:waypoint x="2630" y="1510"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

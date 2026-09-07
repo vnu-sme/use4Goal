@@ -1,0 +1,400 @@
+// Process 1 - Sales Forecast, in the state-oriented BPMN DSL. One pool,
+// scoped to one Deal entity instance (`for DealCase`, see sales-forecast.acl).
+//
+// `requiredPresaleEngineer` is the one genuine OR-split in this process
+// (type `or`): the main flow always continues to `thereIsVendorBom`, and
+// the Presale sub-flow is *additionally* spun off in parallel whenever
+// `presaleInvoked` holds, exactly like classroom.bpmn2's own `pool`-level
+// note about parallel branches -- it does not rejoin, it terminates at its
+// own `end hldSent`. Every merge below it is `xor`: exactly one branch is
+// ever active per case, never a genuine concurrent join.
+model DealProcess {
+  pool SalesForecast for DealCase {
+    name "Sales Forecast"
+    lane CustomerManager;
+    lane PresaleEngineer;
+    lane ServiceAgreements;
+    lane DeptManager;
+    lane SectorManager;
+    lane BusinessVp;
+    lane FinancialControl;
+    lane CreditControl;
+  }
+
+  start dealOpportunity {
+    lane CustomerManager
+    trigger none
+    pre {[ not self.deal.dealDetailsInserted ]}
+    flow newCustomer
+  }
+
+  gateway newCustomer {
+    lane CustomerManager
+    type xor
+    flow updatingCustomerDetails post {[ not self.deal.customerIsNew ]}
+    flow creatingCustomerTicket post {[ self.deal.customerIsNew ]}
+  }
+
+  activity updatingCustomerDetails {
+    name "Updating customer details"
+    type task
+    lane CustomerManager
+    pre {[ not self.deal.customerIsNew ]}
+    flow custMerge
+  }
+
+  activity creatingCustomerTicket {
+    name "Creating Customer Ticket"
+    type task
+    lane CustomerManager
+    pre {[ self.deal.customerIsNew ]}
+    flow custMerge
+  }
+
+  gateway custMerge {
+    lane CustomerManager
+    type xor
+    flow insertingDealDetails
+  }
+
+  activity insertingDealDetails {
+    name "Inserting and updating deal details"
+    type task
+    lane CustomerManager
+    post {[ self.deal.dealDetailsInserted ]}
+    flow requiredPresaleEngineer
+  }
+
+  gateway requiredPresaleEngineer {
+    lane CustomerManager
+    type or
+    flow creatingBomPresale post {[ self.deal.presaleInvoked ]}
+    flow thereIsVendorBom
+  }
+
+  activity creatingBomPresale {
+    name "Creating BOM"
+    type task
+    lane PresaleEngineer
+    pre {[ self.deal.presaleInvoked ]}
+    flow writingHldDocument
+  }
+
+  activity writingHldDocument {
+    name "Writing HLD Document"
+    type task
+    lane PresaleEngineer
+    flow sendingHldToCustomerManager
+  }
+
+  activity sendingHldToCustomerManager {
+    name "Sending HLD to Customer Manager"
+    type task
+    lane PresaleEngineer
+    post {[ self.deal.bomReady and self.deal.hldReady ]}
+    flow hldSent
+  }
+
+  end hldSent {
+    lane PresaleEngineer
+    trigger message
+  }
+
+  gateway thereIsVendorBom {
+    lane CustomerManager
+    type xor
+    flow creatingBomManually post {[ not self.deal.vendorBomExists ]}
+    flow updatingBomAndHld post {[ self.deal.vendorBomExists ]}
+  }
+
+  activity creatingBomManually {
+    name "Creating a BOM manually"
+    type task
+    lane CustomerManager
+    post {[ self.deal.bomReady ]}
+    flow bomMerge
+  }
+
+  activity updatingBomAndHld {
+    name "Updating BOM and HLD"
+    type task
+    lane CustomerManager
+    post {[ self.deal.bomReady and self.deal.hldReady ]}
+    flow bomMerge
+  }
+
+  gateway bomMerge {
+    lane CustomerManager
+    type xor
+    flow missingPn
+  }
+
+  gateway missingPn {
+    lane CustomerManager
+    type xor
+    flow updatingPnsPrice post {[ not self.deal.pnMissing ]}
+    flow creatingPns post {[ self.deal.pnMissing ]}
+  }
+
+  activity creatingPns {
+    name "Creating PNs"
+    type task
+    lane CustomerManager
+    pre {[ self.deal.pnMissing ]}
+    flow updatingPnsPrice
+  }
+
+  activity updatingPnsPrice {
+    name "Updating PNs Price"
+    type task
+    lane CustomerManager
+    pre {[ self.deal.bomReady ]}
+    post {[ self.deal.pnsReady ]}
+    flow updatingServiceContractPct
+  }
+
+  activity updatingServiceContractPct {
+    name "Updating percentages for service contract"
+    type task
+    lane CustomerManager
+    pre {[ self.deal.pnsReady ]}
+    flow serviceFee
+  }
+
+  gateway serviceFee {
+    lane CustomerManager
+    type xor
+    flow svcPending post {[ self.deal.serviceContractPct > 7 ]}
+    flow svcMerge post {[ self.deal.serviceContractPct <= 7 ]}
+  }
+
+  activity svcPending {
+    name "Pending approval"
+    type task
+    lane ServiceAgreements
+    pre {[ self.deal.serviceContractPct > 7 ]}
+    flow contractReviewAndApproval
+  }
+
+  activity contractReviewAndApproval {
+    name "Contract review and approval"
+    type task
+    lane ServiceAgreements
+    flow saApprove
+  }
+
+  gateway saApprove {
+    lane ServiceAgreements
+    type xor
+    flow svcMerge post {[ self.deal.serviceAgreementApproved ]}
+    flow updatingServiceContractPct post {[ not self.deal.serviceAgreementApproved ]}
+  }
+
+  gateway svcMerge {
+    lane CustomerManager
+    type xor
+    flow updatingDealProfitability
+  }
+
+  activity updatingDealProfitability {
+    name "Updating deal profitability and closure percentages"
+    type task
+    lane CustomerManager
+    flow profitability
+  }
+
+  gateway loopMerge {
+    lane CustomerManager
+    type xor
+    flow updatingDealProfitability
+  }
+
+  gateway profitability {
+    lane CustomerManager
+    type xor
+    flow approvalMerge post {[ self.deal.profitabilityPct > 12 ]}
+    flow deptPending post {[ self.deal.profitabilityPct <= 12 ]}
+  }
+
+  activity deptPending {
+    name "Pending approval"
+    type task
+    lane DeptManager
+    pre {[ self.deal.profitabilityPct <= 12 ]}
+    flow deptExam
+  }
+
+  activity deptExam {
+    name "Profitability examination"
+    type task
+    lane DeptManager
+    flow deptApprove
+  }
+
+  gateway deptApprove {
+    lane DeptManager
+    type xor
+    flow loopMerge post {[ self.deal.deptApproval = ApprovalOutcome::Rejected ]}
+    flow kitMerge post {[ self.deal.deptApproval = ApprovalOutcome::Approved and self.deal.profitabilityPct > self.deptManager.profitabilityCeilingPct ]}
+    flow sectorPending post {[ self.deal.deptApproval = ApprovalOutcome::Approved and self.deal.profitabilityPct <= self.deptManager.profitabilityCeilingPct ]}
+  }
+
+  activity sectorPending {
+    name "Pending approval"
+    type task
+    lane SectorManager
+    pre {[ self.deal.profitabilityPct <= 10 ]}
+    flow sectorExam
+  }
+
+  activity sectorExam {
+    name "Profitability examination"
+    type task
+    lane SectorManager
+    flow sectorApprove
+  }
+
+  gateway sectorApprove {
+    lane SectorManager
+    type xor
+    flow loopMerge post {[ self.deal.sectorApproval = ApprovalOutcome::Rejected ]}
+    flow kitMerge post {[ self.deal.sectorApproval = ApprovalOutcome::Approved and self.deal.profitabilityPct > self.sectorManager.profitabilityCeilingPct ]}
+    flow vpPending post {[ self.deal.sectorApproval = ApprovalOutcome::Approved and self.deal.profitabilityPct <= self.sectorManager.profitabilityCeilingPct ]}
+  }
+
+  activity vpPending {
+    name "Pending approval"
+    type task
+    lane BusinessVp
+    pre {[ self.deal.profitabilityPct <= 5 ]}
+    flow vpExam
+  }
+
+  activity vpExam {
+    name "Profitability examination"
+    type task
+    lane BusinessVp
+    flow vpApprove
+  }
+
+  gateway vpApprove {
+    lane BusinessVp
+    type xor
+    flow loopMerge post {[ self.deal.businessVpApproval = ApprovalOutcome::Rejected ]}
+    flow kitMerge post {[ self.deal.businessVpApproval = ApprovalOutcome::Approved ]}
+  }
+
+  gateway kitMerge {
+    lane CustomerManager
+    type xor
+    flow approvalMerge
+  }
+
+  gateway approvalMerge {
+    lane CustomerManager
+    type xor
+    flow above250k
+  }
+
+  gateway above250k {
+    lane CustomerManager
+    type xor
+    flow fcPending post {[ self.deal.dealValue > self.financialControl.dealValueThreshold ]}
+    flow ccMerge post {[ self.deal.dealValue <= self.financialControl.dealValueThreshold ]}
+  }
+
+  activity fcPending {
+    name "Pending approval"
+    type task
+    lane FinancialControl
+    pre {[ self.deal.dealValue > 250000 ]}
+    flow fcExam
+  }
+
+  activity fcExam {
+    name "Deal financial examination"
+    type task
+    lane FinancialControl
+    flow fcApprove
+  }
+
+  gateway fcApprove {
+    lane FinancialControl
+    type xor
+    flow insertingDealDetails post {[ self.deal.financialControlApproval = ApprovalOutcome::Rejected ]}
+    flow ccMerge post {[ self.deal.financialControlApproval = ApprovalOutcome::Approved ]}
+  }
+
+  gateway ccMerge {
+    lane CustomerManager
+    type xor
+    flow ccPending
+  }
+
+  activity ccPending {
+    name "Pending approval"
+    type task
+    lane CreditControl
+    flow ccExam
+  }
+
+  activity ccExam {
+    name "Deal credit examination"
+    type task
+    lane CreditControl
+    flow ccApprove
+  }
+
+  gateway ccApprove {
+    lane CreditControl
+    type xor
+    flow dealApproved post {[ self.deal.creditControlApproval = ApprovalOutcome::Approved ]}
+    flow dealRejected post {[ self.deal.creditControlApproval = ApprovalOutcome::Rejected ]}
+  }
+
+  activity dealApproved {
+    name "Deal approved"
+    type task
+    lane CustomerManager
+    pre {[ self.deal.creditControlApproval = ApprovalOutcome::Approved ]}
+    post {[ self.deal.approvedProposalVersion = self.deal.proposalVersion ]}
+    flow completionOfKitComponents
+  }
+
+  activity completionOfKitComponents {
+    name "Completion of kit components"
+    type task
+    lane CustomerManager
+    pre {[ self.deal.approvedProposalVersion = self.deal.proposalVersion ]}
+    post {[ self.deal.kitCompleted ]}
+    flow transferringToOrderOperator
+  }
+
+  activity transferringToOrderOperator {
+    name "Transferring to order operator"
+    type task
+    lane CustomerManager
+    pre {[ self.deal.kitCompleted ]}
+    post {[ self.deal.transferredToOperator ]}
+    flow creatingPoInCrmSystem
+  }
+
+  activity creatingPoInCrmSystem {
+    name "Creating PO in CRM System"
+    type task
+    lane CustomerManager
+    pre {[ self.deal.transferredToOperator ]}
+    post {[ self.deal.poCreated ]}
+    flow poCreatedEnd
+  }
+
+  end poCreatedEnd {
+    lane CustomerManager
+    trigger message
+  }
+
+  end dealRejected {
+    lane CreditControl
+    trigger message
+  }
+}

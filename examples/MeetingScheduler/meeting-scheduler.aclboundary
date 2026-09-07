@@ -1,0 +1,27 @@
+// Bounded-verification scope for the Meeting Scheduler case study
+// (meeting-scheduler.acl / .istar / .bpmn2). One MeetingUnit, one Meeting,
+// two Participants (the smallest set that makes "a common free day" a real
+// constraint), and the single replan the AS-IS process allows.
+acl-bpmn-boundary v1.0 MeetingSchedulerBound {
+  snapshots 24;
+  loop-bound 1;
+  integer 0..31;
+
+  objects MeetingUnit 1;
+  objects MeetingParty 1;
+  objects Initiator 1;
+  objects Organizer 1;
+  objects Secretary 1;
+  objects Participant 2;
+  objects Meeting 1;
+
+  links MeetingUnit_contains_Initiator 1;
+  links MeetingUnit_contains_Organizer 1;
+  links MeetingUnit_contains_Secretary 1;
+  links MeetingUnit_contains_Participant 2;
+  links MeetingUnit_contains_Meeting 1;
+
+  links knowsPhoneOf 2;
+  links meetingParticipants 2;
+  links meetingOrganizedBy 1;
+}

@@ -1,0 +1,1091 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_Process_SF" targetNamespace="http://bpmn.io/schema/bpmn" exporter="bpmn-js (https://demo.bpmn.io)" exporterVersion="18.27.0">
+  <bpmn:collaboration id="Process_SF_collab">
+    <bpmn:participant id="Process_SF_p" name="Sales Forecast" processRef="Process_SF"/>
+  </bpmn:collaboration>
+  <bpmn:process id="Process_SF" isExecutable="false">
+    <bpmn:laneSet id="Process_SF_ls">
+      <bpmn:lane id="Process_SF_lane7" name="Credit Control">
+        <bpmn:flowNodeRef>Act_cc_pending</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_cc_exam</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_cc_appr</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_reject</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Process_SF_lane6" name="Financial Control">
+        <bpmn:flowNodeRef>Act_fc_pending</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_fc_exam</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_fc_appr</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Process_SF_lane5" name="Business VP">
+        <bpmn:flowNodeRef>Act_vp_pending</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_vp_exam</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_vp_appr</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Process_SF_lane4" name="Sector Manager">
+        <bpmn:flowNodeRef>Act_sm_pending</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_sm_exam</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_sm_lvl</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Process_SF_lane3" name="Department Manager">
+        <bpmn:flowNodeRef>Act_dm_pending</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_dm_exam</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_dm_appr</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Process_SF_lane2" name="Service Agreements">
+        <bpmn:flowNodeRef>Act_sa_pending</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_sa_review</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_sa_appr</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Process_SF_lane1" name="Presale Engineer">
+        <bpmn:flowNodeRef>Act_ps_bom</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_ps_hld</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_ps_send</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_ps</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Process_SF_lane0" name="Customer Manager">
+        <bpmn:flowNodeRef>Start_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_newcust</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_updcust</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_ticket</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_cust_m</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_insertdeal</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_presale</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_vendorbom</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_bomupdate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_bommanual</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_bom_m</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_missingpn</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_pnsprice</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_creatingpns</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_svcpct</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_svcfee</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_svc_m</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_updprofit</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_loop_m</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_profit</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_kit_m</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_appr_m</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_250k</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_dealapproved</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_kitcomplete</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_transfer</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Act_createpo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_done</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_0rt5rll</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_1" name="Deal opportunity">
+      <bpmn:documentation>-- trigger
+post DealOpportunity_post: deal.dealDetailsInserted = false</bpmn:documentation>
+      <bpmn:outgoing>Process_SF_f0</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="Gw_newcust" name="New customer?">
+      <bpmn:documentation>context Deal inv NewCustomer_guard:
+  self.customerIsNew = true  -- 'Yes'
+  self.customerIsNew = false -- 'No'</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f0</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f1</bpmn:outgoing>
+      <bpmn:outgoing>Process_SF_f2</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Act_updcust" name="Updating customer details">
+      <bpmn:documentation>context CustomerManager::updatingCustomerDetails()
+pre UpdatingCustomerDetails_pre: deal.customerIsNew = false</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f1</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Act_ticket" name="Creating Customer Ticket">
+      <bpmn:documentation>context CustomerManager::creatingCustomerTicket()
+pre CreatingCustomerTicket_pre: deal.customerIsNew = true</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f2</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f4</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_cust_m">
+      <bpmn:documentation>-- pure merge, no guard</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f3</bpmn:incoming>
+      <bpmn:incoming>Process_SF_f4</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f5</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Act_insertdeal" name="Inserting and updating deal details">
+      <bpmn:documentation>context CustomerManager::insertingAndUpdatingDealDetails()
+post InsertingDeal_post: deal.dealDetailsInserted = true</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f5</bpmn:incoming>
+      <bpmn:incoming>Process_SF_f54</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f6</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:inclusiveGateway id="Gw_presale" name="Required Presale Engineer?">
+      <bpmn:documentation>context Deal inv RequiredPresaleEngineer_guard:
+  self.presaleInvoked = true  -- inclusive: main flow continues in parallel with the Presale sub-flow
+  self.presaleInvoked = false -- main flow proceeds directly to vendor-BOM check</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f6</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f7</bpmn:outgoing>
+      <bpmn:outgoing>Process_SF_f8</bpmn:outgoing>
+    </bpmn:inclusiveGateway>
+    <bpmn:exclusiveGateway id="Gw_vendorbom" name="There is vendor BOM?">
+      <bpmn:documentation>context Deal inv VendorBom_guard:
+  self.vendorBomExists = true  -- 'Yes': Updating BOM and HLD
+  self.vendorBomExists = false -- 'No': Creating a BOM manually</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f8</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f12</bpmn:outgoing>
+      <bpmn:outgoing>Process_SF_f13</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Act_bomupdate" name="Updating BOM and HLD">
+      <bpmn:documentation>context CustomerManager::updatingBomAndHld()
+post UpdatingBomHld_post: deal.bomReady = true and deal.hldReady = true</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f13</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f15</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Act_bommanual" name="Creating a BOM manually">
+      <bpmn:documentation>context CustomerManager::creatingBomManually()
+post CreatingBomManually_post: deal.bomReady = true</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f12</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f14</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_bom_m">
+      <bpmn:documentation>-- pure merge, no guard</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f14</bpmn:incoming>
+      <bpmn:incoming>Process_SF_f15</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f16</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gw_missingpn" name="Missing PN?">
+      <bpmn:documentation>context Deal inv MissingPn_guard:
+  self.pnMissing = true  -- 'Yes': Creating PNs
+  self.pnMissing = false -- 'No'</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f16</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f17</bpmn:outgoing>
+      <bpmn:outgoing>Process_SF_f18</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Act_pnsprice" name="Updating PNs Price">
+      <bpmn:documentation>context CustomerManager::updatingPnsPrice()
+pre  UpdatingPnsPrice_pre: deal.bomReady = true
+post UpdatingPnsPrice_post: deal.pnsReady = true</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f17</bpmn:incoming>
+      <bpmn:incoming>Process_SF_f19</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f20</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Act_creatingpns" name="Creating PNs">
+      <bpmn:documentation>context CustomerManager::creatingPns()
+pre  CreatingPns_pre: deal.pnMissing = true</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f18</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f19</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Act_svcpct" name="Updating percentages for service contract">
+      <bpmn:documentation>context CustomerManager::updatingPercentagesForServiceContract()
+post UpdatingServicePct_post: deal.serviceContractPct = deal.serviceContractPct@pre</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f20</bpmn:incoming>
+      <bpmn:incoming>Process_SF_f26</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f21</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_svcfee" name="Service fee">
+      <bpmn:documentation>context Deal inv ServiceFee_guard:
+  self.serviceContractPct &gt; 7  -- 'Yes': Service Agreements approval required
+  self.serviceContractPct &lt;= 7 -- 'No': skip service-agreement approval entirely (not a violation)</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f21</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f22</bpmn:outgoing>
+      <bpmn:outgoing>Process_SF_f23</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gw_svc_m">
+      <bpmn:documentation>-- pure merge, no guard: ServiceFee&lt;=7 or SaApprove=Yes feed here</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f23</bpmn:incoming>
+      <bpmn:incoming>Process_SF_f27</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f28</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Act_ps_bom" name="Creating BOM">
+      <bpmn:documentation>context PresaleEngineer::creatingBom()
+pre  CreatingBomPresale_pre: deal.presaleInvoked = true</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f7</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f9</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Act_ps_hld" name="Writing HLD Document">
+      <bpmn:documentation>context PresaleEngineer::writingHldDocument()
+pre  WritingHld_pre: deal.bomReady = true</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f9</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f10</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Act_ps_send" name="Sending HLD to Customer Manager">
+      <bpmn:documentation>context PresaleEngineer::sendingHldToCustomerManager()
+post SendingHld_post: deal.hldReady = true and deal.bomReady = true</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f10</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f11</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="End_ps" name="HLD sent">
+      <bpmn:documentation>context Deal inv HldSent_endInvariant: deal.hldReady = true</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f11</bpmn:incoming>
+      <bpmn:messageEventDefinition id="End_ps_med"/>
+    </bpmn:endEvent>
+    <bpmn:task id="Act_sa_pending" name="Pending approval">
+      <bpmn:documentation>context ServiceAgreements::pendingApproval()
+pre SaPending_pre: deal.serviceContractPct &gt; 7</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f22</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f24</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Act_sa_review" name="Contract review and approval">
+      <bpmn:documentation>context ServiceAgreements::contractReviewAndApproval()</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f24</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f25</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_sa_appr" name="Approved?">
+      <bpmn:documentation>context Deal inv SaApprove_guard:
+  self.serviceAgreementApproved = true  -- 'Yes'
+  else -- 'No': loops back to Act_sa_review, goal stays open</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f25</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f26</bpmn:outgoing>
+      <bpmn:outgoing>Process_SF_f27</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Act_updprofit" name="Updating deal profitability and closure percentages">
+      <bpmn:documentation>context CustomerManager::updatingDealProfitabilityAndClosurePercentages()
+post UpdatingProfitability_post: deal.profitabilityPct = deal.profitabilityPct@pre</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f28</bpmn:incoming>
+      <bpmn:incoming>Process_SF_f29</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f30</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_loop_m">
+      <bpmn:documentation>-- pure merge, no guard: exactly one rejection loop (Dept/Sector/VP 'No') feeds back here</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f35</bpmn:incoming>
+      <bpmn:incoming>Process_SF_f47</bpmn:incoming>
+      <bpmn:incoming>Flow_07pzf14</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f29</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gw_profit" name="Profitability">
+      <bpmn:documentation>context Deal inv Profitability_guard:
+  self.profitabilityPct &gt; 12  -- 'Yes': skip Dept/Sector/VP chain entirely
+  self.profitabilityPct &lt;= 12 -- 'No': Department Manager pending approval</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f30</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f31</bpmn:outgoing>
+      <bpmn:outgoing>Process_SF_f32</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Act_dm_pending" name="Pending approval">
+      <bpmn:documentation>context DeptManager::pendingApproval()
+pre DmPending_pre: deal.profitabilityPct &lt;= 12</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f32</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f33</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Act_dm_exam" name="Profitability examination">
+      <bpmn:documentation>context DeptManager::profitabilityExamination()</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f33</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f34</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_dm_appr" name="Approved?">
+      <bpmn:documentation>context Deal inv DmApprove_guard:
+  self.approvedBy-&gt;includes(Role::DeptManager) and deal.profitabilityPct &gt; 10 -- 'Yes, &gt;10%'
+  self.approvedBy-&gt;includes(Role::DeptManager) and deal.profitabilityPct &lt;= 10 -- 'Yes, &lt;10%': escalate to Sector Manager
+  else -- 'No': loops back to Act_updprofit</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f34</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f35</bpmn:outgoing>
+      <bpmn:outgoing>Process_SF_f36</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0lukkhq</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Act_sm_pending" name="Pending approval">
+      <bpmn:documentation>context SectorManager::pendingApproval()
+pre SmPending_pre: deal.profitabilityPct &lt;= 10</bpmn:documentation>
+      <bpmn:incoming>Flow_0lukkhq</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f39</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Act_sm_exam" name="Profitability examination">
+      <bpmn:documentation>context SectorManager::profitabilityExamination()</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f39</bpmn:incoming>
+      <bpmn:outgoing>Flow_1qb4suh</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_sm_lvl" name="Approved?">
+      <bpmn:documentation>context Deal inv SmApprove_guard:
+  self.approvedBy-&gt;includes(Role::SectorManager) and deal.profitabilityPct &gt; 5  -- 'Yes, &gt;5%'
+  self.approvedBy-&gt;includes(Role::SectorManager) and deal.profitabilityPct &lt;= 5 -- 'Yes, &lt;5%': escalate to Business VP
+  else -- 'No': loops back to Act_updprofit</bpmn:documentation>
+      <bpmn:incoming>Flow_1qb4suh</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f44</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1x6ystf</bpmn:outgoing>
+      <bpmn:outgoing>Flow_07pzf14</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Act_vp_pending" name="Pending approval">
+      <bpmn:documentation>context BusinessVP::pendingApproval()
+pre VpPending_pre: deal.profitabilityPct &lt;= 5</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f44</bpmn:incoming>
+      <bpmn:outgoing>Flow_1c4basn</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Act_vp_exam" name="Profitability examination">
+      <bpmn:documentation>context BusinessVP::profitabilityExamination()</bpmn:documentation>
+      <bpmn:incoming>Flow_1c4basn</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f46</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_vp_appr" name="Approved?">
+      <bpmn:documentation>context Deal inv VpApprove_guard:
+  self.approvedBy-&gt;includes(Role::BusinessVP)  -- 'Yes'
+  else -- 'No': loops back to Act_updprofit</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f46</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f47</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1ogjw5x</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gw_kit_m">
+      <bpmn:documentation>-- pure merge, no guard: exactly one of the profitability-approval outcomes feeds here</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f36</bpmn:incoming>
+      <bpmn:incoming>Flow_1x6ystf</bpmn:incoming>
+      <bpmn:incoming>Flow_1ogjw5x</bpmn:incoming>
+      <bpmn:outgoing>Flow_1rm70yq</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gw_appr_m">
+      <bpmn:documentation>-- pure merge, no guard: Profitability&gt;12 or the profitability-approval chain feed here</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f31</bpmn:incoming>
+      <bpmn:incoming>Flow_1rm70yq</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f49</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gw_250k" name="&gt;250,000 NIS?">
+      <bpmn:documentation>context Deal inv Above250k_guard:
+  self.dealValue &gt; 250000  -- 'Yes': Financial Control approval required
+  self.dealValue &lt;= 250000 -- 'No': skip Financial Control -- NOTE: no i* actor represents Financial Control at all</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f49</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f51</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0ik94bb</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Act_dealapproved" name="Deal approved">
+      <bpmn:documentation>context CustomerManager::dealApproved()
+pre  DealApproved_pre: deal.creditControlApproved = true
+post DealApproved_post: deal.approvedProposal = deal.currentProposal</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f59</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f60</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Act_kitcomplete" name="Completion of kit components">
+      <bpmn:documentation>context CustomerManager::completionOfKitComponents()
+pre  KitComplete_pre: deal.approvedProposal-&gt;notEmpty()
+post KitComplete_post: deal.kitCompleted = true
+-- NOTE: if this operation changes deal.currentProposal, then
+-- deal.currentProposal &lt;&gt; deal.approvedProposal afterwards (see Case A)</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f60</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f62</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Act_transfer" name="Transferring to order operator">
+      <bpmn:documentation>context CustomerManager::transferringToOrderOperator()
+pre  Transfer_pre: deal.kitCompleted = true
+post Transfer_post: deal.transferredToOperator = true</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f62</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f63</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Act_createpo" name="Creating PO in CRM System">
+      <bpmn:documentation>context CustomerManager::creatingPoInCrmSystem()
+post CreatePo_post: deal.poCreated = true</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f63</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f64</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="End_done" name="PO created">
+      <bpmn:documentation>context Deal inv PoCreated_endInvariant:
+  self.poCreated = true
+  -- NOTE: does NOT logically imply self.currentProposal = self.approvedProposal (Case A)</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f64</bpmn:incoming>
+      <bpmn:messageEventDefinition id="End_done_med"/>
+    </bpmn:endEvent>
+    <bpmn:task id="Act_fc_pending" name="Pending approval">
+      <bpmn:documentation>context FinancialControl::pendingApproval()
+pre FcPending_pre: deal.dealValue &gt; 250000</bpmn:documentation>
+      <bpmn:incoming>Flow_0ik94bb</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f52</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Act_fc_exam" name="Deal financial examination">
+      <bpmn:documentation>context FinancialControl::dealFinancialExamination()</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f52</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f53</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_fc_appr" name="Approved?">
+      <bpmn:documentation>context Deal inv FcApprove_guard:
+  self.financialControlApproved = true  -- 'Yes': Credit Control next
+  else -- 'No': loops back to Act_updprofit</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f53</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f54</bpmn:outgoing>
+      <bpmn:outgoing>Process_SF_f55</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Act_cc_pending" name="Pending approval">
+      <bpmn:documentation>context CreditControl::pendingApproval()
+pre CcPending_pre: deal.dealValue &lt;= 250000 or deal.financialControlApproved = true</bpmn:documentation>
+      <bpmn:incoming>Flow_1p1hf2s</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f56</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Act_cc_exam" name="Deal credit examination">
+      <bpmn:documentation>context CreditControl::dealCreditExamination()</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f56</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f57</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gw_cc_appr" name="Approved?">
+      <bpmn:documentation>context Deal inv CcApprove_guard:
+  self.creditControlApproved = true  -- 'Yes'
+  self.creditControlApproved = false -- 'No': deal rejected, process ends (not a loop)</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f57</bpmn:incoming>
+      <bpmn:outgoing>Process_SF_f58</bpmn:outgoing>
+      <bpmn:outgoing>Process_SF_f59</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="End_reject" name="Deal rejected">
+      <bpmn:documentation>context Deal inv DealRejected_endInvariant: self.creditControlApproved = false</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f58</bpmn:incoming>
+      <bpmn:messageEventDefinition id="End_reject_med"/>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="Gateway_0rt5rll">
+      <bpmn:documentation>-- pure merge, no guard: Above250k=No, or FcApprove=Yes, feed here (Credit Control always runs downstream)</bpmn:documentation>
+      <bpmn:incoming>Process_SF_f51</bpmn:incoming>
+      <bpmn:incoming>Process_SF_f55</bpmn:incoming>
+      <bpmn:outgoing>Flow_1p1hf2s</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Process_SF_f0" sourceRef="Start_1" targetRef="Gw_newcust"/>
+    <bpmn:sequenceFlow id="Process_SF_f1" name="No" sourceRef="Gw_newcust" targetRef="Act_updcust"/>
+    <bpmn:sequenceFlow id="Process_SF_f2" name="Yes" sourceRef="Gw_newcust" targetRef="Act_ticket"/>
+    <bpmn:sequenceFlow id="Process_SF_f3" sourceRef="Act_updcust" targetRef="Gw_cust_m"/>
+    <bpmn:sequenceFlow id="Process_SF_f4" sourceRef="Act_ticket" targetRef="Gw_cust_m"/>
+    <bpmn:sequenceFlow id="Process_SF_f5" sourceRef="Gw_cust_m" targetRef="Act_insertdeal"/>
+    <bpmn:sequenceFlow id="Process_SF_f54" name="No" sourceRef="Gw_fc_appr" targetRef="Act_insertdeal"/>
+    <bpmn:sequenceFlow id="Process_SF_f6" sourceRef="Act_insertdeal" targetRef="Gw_presale"/>
+    <bpmn:sequenceFlow id="Process_SF_f7" name="Yes" sourceRef="Gw_presale" targetRef="Act_ps_bom"/>
+    <bpmn:sequenceFlow id="Process_SF_f8" name="No" sourceRef="Gw_presale" targetRef="Gw_vendorbom"/>
+    <bpmn:sequenceFlow id="Process_SF_f12" name="No" sourceRef="Gw_vendorbom" targetRef="Act_bommanual"/>
+    <bpmn:sequenceFlow id="Process_SF_f13" name="Yes" sourceRef="Gw_vendorbom" targetRef="Act_bomupdate"/>
+    <bpmn:sequenceFlow id="Process_SF_f15" sourceRef="Act_bomupdate" targetRef="Gw_bom_m"/>
+    <bpmn:sequenceFlow id="Process_SF_f14" sourceRef="Act_bommanual" targetRef="Gw_bom_m"/>
+    <bpmn:sequenceFlow id="Process_SF_f16" sourceRef="Gw_bom_m" targetRef="Gw_missingpn"/>
+    <bpmn:sequenceFlow id="Process_SF_f17" name="No" sourceRef="Gw_missingpn" targetRef="Act_pnsprice"/>
+    <bpmn:sequenceFlow id="Process_SF_f18" name="Yes" sourceRef="Gw_missingpn" targetRef="Act_creatingpns"/>
+    <bpmn:sequenceFlow id="Process_SF_f19" sourceRef="Act_creatingpns" targetRef="Act_pnsprice"/>
+    <bpmn:sequenceFlow id="Process_SF_f20" sourceRef="Act_pnsprice" targetRef="Act_svcpct"/>
+    <bpmn:sequenceFlow id="Process_SF_f26" name="No" sourceRef="Gw_sa_appr" targetRef="Act_svcpct"/>
+    <bpmn:sequenceFlow id="Process_SF_f21" sourceRef="Act_svcpct" targetRef="Gw_svcfee"/>
+    <bpmn:sequenceFlow id="Process_SF_f22" name="&gt; 7%" sourceRef="Gw_svcfee" targetRef="Act_sa_pending"/>
+    <bpmn:sequenceFlow id="Process_SF_f23" name="&lt; 7%" sourceRef="Gw_svcfee" targetRef="Gw_svc_m"/>
+    <bpmn:sequenceFlow id="Process_SF_f27" name="Yes" sourceRef="Gw_sa_appr" targetRef="Gw_svc_m"/>
+    <bpmn:sequenceFlow id="Process_SF_f28" sourceRef="Gw_svc_m" targetRef="Act_updprofit"/>
+    <bpmn:sequenceFlow id="Process_SF_f9" sourceRef="Act_ps_bom" targetRef="Act_ps_hld"/>
+    <bpmn:sequenceFlow id="Process_SF_f10" sourceRef="Act_ps_hld" targetRef="Act_ps_send"/>
+    <bpmn:sequenceFlow id="Process_SF_f11" sourceRef="Act_ps_send" targetRef="End_ps"/>
+    <bpmn:sequenceFlow id="Process_SF_f24" sourceRef="Act_sa_pending" targetRef="Act_sa_review"/>
+    <bpmn:sequenceFlow id="Process_SF_f25" sourceRef="Act_sa_review" targetRef="Gw_sa_appr"/>
+    <bpmn:sequenceFlow id="Process_SF_f29" sourceRef="Gw_loop_m" targetRef="Act_updprofit"/>
+    <bpmn:sequenceFlow id="Process_SF_f30" sourceRef="Act_updprofit" targetRef="Gw_profit"/>
+    <bpmn:sequenceFlow id="Process_SF_f35" name="No" sourceRef="Gw_dm_appr" targetRef="Gw_loop_m"/>
+    <bpmn:sequenceFlow id="Process_SF_f47" name="No" sourceRef="Gw_vp_appr" targetRef="Gw_loop_m"/>
+    <bpmn:sequenceFlow id="Flow_07pzf14" name="No" sourceRef="Gw_sm_lvl" targetRef="Gw_loop_m"/>
+    <bpmn:sequenceFlow id="Process_SF_f31" name="&gt; 12%" sourceRef="Gw_profit" targetRef="Gw_appr_m"/>
+    <bpmn:sequenceFlow id="Process_SF_f32" name="&lt; 12%" sourceRef="Gw_profit" targetRef="Act_dm_pending"/>
+    <bpmn:sequenceFlow id="Process_SF_f33" sourceRef="Act_dm_pending" targetRef="Act_dm_exam"/>
+    <bpmn:sequenceFlow id="Process_SF_f34" sourceRef="Act_dm_exam" targetRef="Gw_dm_appr"/>
+    <bpmn:sequenceFlow id="Process_SF_f36" name="&gt; 10% Profitability" sourceRef="Gw_dm_appr" targetRef="Gw_kit_m"/>
+    <bpmn:sequenceFlow id="Flow_0lukkhq" name="&lt; 10% Profitability" sourceRef="Gw_dm_appr" targetRef="Act_sm_pending"/>
+    <bpmn:sequenceFlow id="Process_SF_f39" sourceRef="Act_sm_pending" targetRef="Act_sm_exam"/>
+    <bpmn:sequenceFlow id="Flow_1qb4suh" sourceRef="Act_sm_exam" targetRef="Gw_sm_lvl"/>
+    <bpmn:sequenceFlow id="Process_SF_f44" name="&lt; 5% Profitability" sourceRef="Gw_sm_lvl" targetRef="Act_vp_pending"/>
+    <bpmn:sequenceFlow id="Flow_1x6ystf" name="&gt; 5% Profitability" sourceRef="Gw_sm_lvl" targetRef="Gw_kit_m"/>
+    <bpmn:sequenceFlow id="Flow_1c4basn" sourceRef="Act_vp_pending" targetRef="Act_vp_exam"/>
+    <bpmn:sequenceFlow id="Process_SF_f46" sourceRef="Act_vp_exam" targetRef="Gw_vp_appr"/>
+    <bpmn:sequenceFlow id="Flow_1ogjw5x" name="Yes" sourceRef="Gw_vp_appr" targetRef="Gw_kit_m"/>
+    <bpmn:sequenceFlow id="Flow_1rm70yq" sourceRef="Gw_kit_m" targetRef="Gw_appr_m"/>
+    <bpmn:sequenceFlow id="Process_SF_f49" sourceRef="Gw_appr_m" targetRef="Gw_250k"/>
+    <bpmn:sequenceFlow id="Process_SF_f51" name="No" sourceRef="Gw_250k" targetRef="Gateway_0rt5rll"/>
+    <bpmn:sequenceFlow id="Flow_0ik94bb" sourceRef="Gw_250k" targetRef="Act_fc_pending"/>
+    <bpmn:sequenceFlow id="Process_SF_f59" name="Yes" sourceRef="Gw_cc_appr" targetRef="Act_dealapproved"/>
+    <bpmn:sequenceFlow id="Process_SF_f60" sourceRef="Act_dealapproved" targetRef="Act_kitcomplete"/>
+    <bpmn:sequenceFlow id="Process_SF_f62" sourceRef="Act_kitcomplete" targetRef="Act_transfer"/>
+    <bpmn:sequenceFlow id="Process_SF_f63" sourceRef="Act_transfer" targetRef="Act_createpo"/>
+    <bpmn:sequenceFlow id="Process_SF_f64" sourceRef="Act_createpo" targetRef="End_done"/>
+    <bpmn:sequenceFlow id="Process_SF_f52" sourceRef="Act_fc_pending" targetRef="Act_fc_exam"/>
+    <bpmn:sequenceFlow id="Process_SF_f53" sourceRef="Act_fc_exam" targetRef="Gw_fc_appr"/>
+    <bpmn:sequenceFlow id="Process_SF_f55" name="Yes" sourceRef="Gw_fc_appr" targetRef="Gateway_0rt5rll"/>
+    <bpmn:sequenceFlow id="Flow_1p1hf2s" sourceRef="Gateway_0rt5rll" targetRef="Act_cc_pending"/>
+    <bpmn:sequenceFlow id="Process_SF_f56" sourceRef="Act_cc_pending" targetRef="Act_cc_exam"/>
+    <bpmn:sequenceFlow id="Process_SF_f57" sourceRef="Act_cc_exam" targetRef="Gw_cc_appr"/>
+    <bpmn:sequenceFlow id="Process_SF_f58" name="No" sourceRef="Gw_cc_appr" targetRef="End_reject"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Process_SF_diagram">
+    <bpmndi:BPMNPlane id="Process_SF_plane" bpmnElement="Process_SF_collab">
+      <bpmndi:BPMNShape id="Process_SF_p_di" bpmnElement="Process_SF_p" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="3620" height="2170"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Process_SF_lane7_di" bpmnElement="Process_SF_lane7" isHorizontal="true">
+        <dc:Bounds x="190" y="1850" width="3590" height="400"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Process_SF_lane6_di" bpmnElement="Process_SF_lane6" isHorizontal="true">
+        <dc:Bounds x="190" y="1570" width="3590" height="280"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Process_SF_lane5_di" bpmnElement="Process_SF_lane5" isHorizontal="true">
+        <dc:Bounds x="190" y="1285" width="3590" height="285"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Process_SF_lane4_di" bpmnElement="Process_SF_lane4" isHorizontal="true">
+        <dc:Bounds x="190" y="1030" width="3590" height="255"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Process_SF_lane3_di" bpmnElement="Process_SF_lane3" isHorizontal="true">
+        <dc:Bounds x="190" y="700" width="3590" height="330"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Process_SF_lane2_di" bpmnElement="Process_SF_lane2" isHorizontal="true">
+        <dc:Bounds x="190" y="440" width="3590" height="260"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Process_SF_lane1_di" bpmnElement="Process_SF_lane1" isHorizontal="true">
+        <dc:Bounds x="190" y="330" width="3590" height="110"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Process_SF_lane0_di" bpmnElement="Process_SF_lane0" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="3590" height="250"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_1_di" bpmnElement="Start_1">
+        <dc:Bounds x="242" y="172" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="220" y="212" width="81" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_newcust_di" bpmnElement="Gw_newcust" isMarkerVisible="true">
+        <dc:Bounds x="325" y="165" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="384.5" y="193" width="77" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_updcust_di" bpmnElement="Act_updcust">
+        <dc:Bounds x="400" y="92" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_ticket_di" bpmnElement="Act_ticket">
+        <dc:Bounds x="400" y="222" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_cust_m_di" bpmnElement="Gw_cust_m" isMarkerVisible="true">
+        <dc:Bounds x="535" y="165" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_insertdeal_di" bpmnElement="Act_insertdeal">
+        <dc:Bounds x="620" y="152" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_presale_di" bpmnElement="Gw_presale">
+        <dc:Bounds x="785" y="165" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="737" y="115.5" width="85" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_vendorbom_di" bpmnElement="Gw_vendorbom" isMarkerVisible="true">
+        <dc:Bounds x="865" y="165" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="924.5" y="176.5" width="77" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_bomupdate_di" bpmnElement="Act_bomupdate">
+        <dc:Bounds x="950" y="222" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_bommanual_di" bpmnElement="Act_bommanual">
+        <dc:Bounds x="950" y="92" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_bom_m_di" bpmnElement="Gw_bom_m" isMarkerVisible="true">
+        <dc:Bounds x="1095" y="165" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_missingpn_di" bpmnElement="Gw_missingpn" isMarkerVisible="true">
+        <dc:Bounds x="1175" y="165" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1169" y="141" width="62" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_pnsprice_di" bpmnElement="Act_pnsprice">
+        <dc:Bounds x="1380" y="152" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_creatingpns_di" bpmnElement="Act_creatingpns">
+        <dc:Bounds x="1240" y="232" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_svcpct_di" bpmnElement="Act_svcpct">
+        <dc:Bounds x="1540" y="152" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_svcfee_di" bpmnElement="Gw_svcfee" isMarkerVisible="true">
+        <dc:Bounds x="1695" y="165" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1692" y="141" width="56" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_019zg3u_di" bpmnElement="Gw_svc_m" isMarkerVisible="true">
+        <dc:Bounds x="1825" y="165" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_ps_bom_di" bpmnElement="Act_ps_bom">
+        <dc:Bounds x="750" y="342" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_ps_hld_di" bpmnElement="Act_ps_hld">
+        <dc:Bounds x="920" y="342" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_ps_send_di" bpmnElement="Act_ps_send">
+        <dc:Bounds x="1070" y="342" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_ps_di" bpmnElement="End_ps">
+        <dc:Bounds x="1232" y="362" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1227" y="402" width="46" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_sa_pending_di" bpmnElement="Act_sa_pending">
+        <dc:Bounds x="1660" y="472" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_sa_review_di" bpmnElement="Act_sa_review">
+        <dc:Bounds x="1660" y="572" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_sa_appr_di" bpmnElement="Gw_sa_appr" isMarkerVisible="true">
+        <dc:Bounds x="1825" y="585" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1793" y="561" width="54" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_updprofit_di" bpmnElement="Act_updprofit">
+        <dc:Bounds x="1920" y="152" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_loop_m_di" bpmnElement="Gw_loop_m" isMarkerVisible="true">
+        <dc:Bounds x="1955" y="265" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_profit_di" bpmnElement="Gw_profit" isMarkerVisible="true">
+        <dc:Bounds x="2095" y="165" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2093" y="141" width="54" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_dm_pending_di" bpmnElement="Act_dm_pending">
+        <dc:Bounds x="2060" y="816" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_dm_exam_di" bpmnElement="Act_dm_exam">
+        <dc:Bounds x="2060" y="932" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_dm_appr_di" bpmnElement="Gw_dm_appr" isMarkerVisible="true">
+        <dc:Bounds x="2225" y="945" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2183" y="923" width="54" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_sm_pending_di" bpmnElement="Act_sm_pending">
+        <dc:Bounds x="2250" y="1052" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_sm_exam_di" bpmnElement="Act_sm_exam">
+        <dc:Bounds x="2250" y="1162" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_sm_lvl_di" bpmnElement="Gw_sm_lvl" isMarkerVisible="true">
+        <dc:Bounds x="2405" y="1175" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2373" y="1143" width="54" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_vp_pending_di" bpmnElement="Act_vp_pending">
+        <dc:Bounds x="2430" y="1312" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_vp_exam_di" bpmnElement="Act_vp_exam">
+        <dc:Bounds x="2430" y="1412" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_vp_appr_di" bpmnElement="Gw_vp_appr" isMarkerVisible="true">
+        <dc:Bounds x="2585" y="1425" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2645" y="1443" width="54" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1o07pet_di" bpmnElement="Gw_kit_m" isMarkerVisible="true">
+        <dc:Bounds x="2405" y="255" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0hk6hy1_di" bpmnElement="Gw_appr_m" isMarkerVisible="true">
+        <dc:Bounds x="2405" y="165" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_250k_di" bpmnElement="Gw_250k" isMarkerVisible="true">
+        <dc:Bounds x="2685" y="165" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2673" y="141" width="74" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_dealapproved_di" bpmnElement="Act_dealapproved">
+        <dc:Bounds x="3040" y="212" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_kitcomplete_di" bpmnElement="Act_kitcomplete">
+        <dc:Bounds x="3040" y="112" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_transfer_di" bpmnElement="Act_transfer">
+        <dc:Bounds x="3200" y="112" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_createpo_di" bpmnElement="Act_createpo">
+        <dc:Bounds x="3370" y="112" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_done_di" bpmnElement="End_done">
+        <dc:Bounds x="3532" y="132" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3522" y="172" width="56" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_fc_pending_di" bpmnElement="Act_fc_pending">
+        <dc:Bounds x="2650" y="1592" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_fc_exam_di" bpmnElement="Act_fc_exam">
+        <dc:Bounds x="2650" y="1702" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_fc_appr_di" bpmnElement="Gw_fc_appr" isMarkerVisible="true">
+        <dc:Bounds x="2815" y="1715" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2875" y="1733" width="54" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_cc_pending_di" bpmnElement="Act_cc_pending">
+        <dc:Bounds x="2910" y="1982" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Act_cc_exam_di" bpmnElement="Act_cc_exam">
+        <dc:Bounds x="2910" y="2112" width="120" height="76"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_cc_appr_di" bpmnElement="Gw_cc_appr" isMarkerVisible="true">
+        <dc:Bounds x="3075" y="2125" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3073" y="2179" width="54" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_reject_di" bpmnElement="End_reject">
+        <dc:Bounds x="3262" y="2132" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3248" y="2172" width="65" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_11fmmva" bpmnElement="Gateway_0rt5rll" isMarkerVisible="true">
+        <dc:Bounds x="2815" y="165" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Process_SF_f0_di" bpmnElement="Process_SF_f0">
+        <di:waypoint x="278" y="190"/>
+        <di:waypoint x="325" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f1_di" bpmnElement="Process_SF_f1">
+        <di:waypoint x="350" y="165"/>
+        <di:waypoint x="350" y="130"/>
+        <di:waypoint x="400" y="130"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="358" y="138" width="15" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f2_di" bpmnElement="Process_SF_f2">
+        <di:waypoint x="350" y="215"/>
+        <di:waypoint x="350" y="260"/>
+        <di:waypoint x="400" y="260"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="356" y="227" width="18" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f3_di" bpmnElement="Process_SF_f3">
+        <di:waypoint x="520" y="130"/>
+        <di:waypoint x="560" y="130"/>
+        <di:waypoint x="560" y="165"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f4_di" bpmnElement="Process_SF_f4">
+        <di:waypoint x="520" y="260"/>
+        <di:waypoint x="560" y="260"/>
+        <di:waypoint x="560" y="215"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f5_di" bpmnElement="Process_SF_f5">
+        <di:waypoint x="585" y="190"/>
+        <di:waypoint x="620" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f54_di" bpmnElement="Process_SF_f54">
+        <di:waypoint x="2840" y="1765"/>
+        <di:waypoint x="2840" y="1820"/>
+        <di:waypoint x="660" y="1820"/>
+        <di:waypoint x="660" y="228"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2249" y="1833" width="15" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f6_di" bpmnElement="Process_SF_f6">
+        <di:waypoint x="740" y="190"/>
+        <di:waypoint x="785" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f7_di" bpmnElement="Process_SF_f7">
+        <di:waypoint x="810" y="215"/>
+        <di:waypoint x="810" y="342"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="781" y="227" width="18" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f8_di" bpmnElement="Process_SF_f8">
+        <di:waypoint x="835" y="190"/>
+        <di:waypoint x="865" y="190"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="828" y="165" width="15" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f12_di" bpmnElement="Process_SF_f12">
+        <di:waypoint x="890" y="165"/>
+        <di:waypoint x="890" y="130"/>
+        <di:waypoint x="950" y="130"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="898" y="138" width="15" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f13_di" bpmnElement="Process_SF_f13">
+        <di:waypoint x="890" y="215"/>
+        <di:waypoint x="890" y="260"/>
+        <di:waypoint x="950" y="260"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="897" y="245" width="18" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f15_di" bpmnElement="Process_SF_f15">
+        <di:waypoint x="1070" y="260"/>
+        <di:waypoint x="1120" y="260"/>
+        <di:waypoint x="1120" y="215"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f14_di" bpmnElement="Process_SF_f14">
+        <di:waypoint x="1070" y="130"/>
+        <di:waypoint x="1120" y="130"/>
+        <di:waypoint x="1120" y="165"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f16_di" bpmnElement="Process_SF_f16">
+        <di:waypoint x="1145" y="190"/>
+        <di:waypoint x="1175" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f17_di" bpmnElement="Process_SF_f17">
+        <di:waypoint x="1225" y="190"/>
+        <di:waypoint x="1380" y="190"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1295" y="165" width="15" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f18_di" bpmnElement="Process_SF_f18">
+        <di:waypoint x="1200" y="215"/>
+        <di:waypoint x="1200" y="270"/>
+        <di:waypoint x="1240" y="270"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1206" y="245" width="18" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f19_di" bpmnElement="Process_SF_f19">
+        <di:waypoint x="1360" y="270"/>
+        <di:waypoint x="1440" y="270"/>
+        <di:waypoint x="1440" y="228"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f20_di" bpmnElement="Process_SF_f20">
+        <di:waypoint x="1500" y="190"/>
+        <di:waypoint x="1540" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f26_di" bpmnElement="Process_SF_f26">
+        <di:waypoint x="1850" y="635"/>
+        <di:waypoint x="1850" y="670"/>
+        <di:waypoint x="1600" y="670"/>
+        <di:waypoint x="1600" y="228"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1802" y="683" width="15" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f21_di" bpmnElement="Process_SF_f21">
+        <di:waypoint x="1660" y="190"/>
+        <di:waypoint x="1695" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f22_di" bpmnElement="Process_SF_f22">
+        <di:waypoint x="1720" y="215"/>
+        <di:waypoint x="1720" y="472"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1722" y="227" width="26" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f23_di" bpmnElement="Process_SF_f23">
+        <di:waypoint x="1745" y="190"/>
+        <di:waypoint x="1825" y="190"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1772" y="165" width="26" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f27_di" bpmnElement="Process_SF_f27">
+        <di:waypoint x="1850" y="585"/>
+        <di:waypoint x="1850" y="215"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1870" y="561" width="19" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f28_di" bpmnElement="Process_SF_f28">
+        <di:waypoint x="1875" y="190"/>
+        <di:waypoint x="1920" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f9_di" bpmnElement="Process_SF_f9">
+        <di:waypoint x="870" y="380"/>
+        <di:waypoint x="920" y="380"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f10_di" bpmnElement="Process_SF_f10">
+        <di:waypoint x="1040" y="380"/>
+        <di:waypoint x="1070" y="380"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f11_di" bpmnElement="Process_SF_f11">
+        <di:waypoint x="1190" y="380"/>
+        <di:waypoint x="1232" y="380"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f24_di" bpmnElement="Process_SF_f24">
+        <di:waypoint x="1720" y="548"/>
+        <di:waypoint x="1720" y="572"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f25_di" bpmnElement="Process_SF_f25">
+        <di:waypoint x="1780" y="610"/>
+        <di:waypoint x="1825" y="610"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f29_di" bpmnElement="Process_SF_f29">
+        <di:waypoint x="1980" y="265"/>
+        <di:waypoint x="1980" y="228"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f30_di" bpmnElement="Process_SF_f30">
+        <di:waypoint x="2040" y="190"/>
+        <di:waypoint x="2095" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f35_di" bpmnElement="Process_SF_f35">
+        <di:waypoint x="2250" y="995"/>
+        <di:waypoint x="2250" y="1020"/>
+        <di:waypoint x="2030" y="1020"/>
+        <di:waypoint x="2030" y="290"/>
+        <di:waypoint x="2005" y="290"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2202" y="1003" width="15" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f47_di" bpmnElement="Process_SF_f47">
+        <di:waypoint x="2610" y="1475"/>
+        <di:waypoint x="2610" y="1510"/>
+        <di:waypoint x="1930" y="1510"/>
+        <di:waypoint x="1930" y="290"/>
+        <di:waypoint x="1955" y="290"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2586" y="1486" width="15" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_07pzf14_di" bpmnElement="Flow_07pzf14">
+        <di:waypoint x="2430" y="1225"/>
+        <di:waypoint x="2430" y="1260"/>
+        <di:waypoint x="1980" y="1260"/>
+        <di:waypoint x="1980" y="315"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2370" y="1242" width="15" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f31_di" bpmnElement="Process_SF_f31">
+        <di:waypoint x="2145" y="190"/>
+        <di:waypoint x="2405" y="190"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2260" y="165" width="32" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f32_di" bpmnElement="Process_SF_f32">
+        <di:waypoint x="2120" y="215"/>
+        <di:waypoint x="2120" y="816"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2119" y="509" width="32" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f33_di" bpmnElement="Process_SF_f33">
+        <di:waypoint x="2120" y="892"/>
+        <di:waypoint x="2120" y="932"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f34_di" bpmnElement="Process_SF_f34">
+        <di:waypoint x="2180" y="970"/>
+        <di:waypoint x="2225" y="970"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f36_di" bpmnElement="Process_SF_f36">
+        <di:waypoint x="2250" y="945"/>
+        <di:waypoint x="2250" y="280"/>
+        <di:waypoint x="2405" y="280"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2265" y="854" width="89" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0lukkhq_di" bpmnElement="Flow_0lukkhq">
+        <di:waypoint x="2275" y="970"/>
+        <di:waypoint x="2310" y="970"/>
+        <di:waypoint x="2310" y="1052"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2315" y="983" width="89" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f44_di" bpmnElement="Process_SF_f44">
+        <di:waypoint x="2455" y="1200"/>
+        <di:waypoint x="2490" y="1200"/>
+        <di:waypoint x="2490" y="1312"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2508" y="1242" width="83" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1x6ystf_di" bpmnElement="Flow_1x6ystf">
+        <di:waypoint x="2430" y="1175"/>
+        <di:waypoint x="2430" y="305"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2438" y="1094.5" width="83" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ogjw5x_di" bpmnElement="Flow_1ogjw5x">
+        <di:waypoint x="2610" y="1425"/>
+        <di:waypoint x="2610" y="280"/>
+        <di:waypoint x="2455" y="280"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2616" y="1392.5" width="18" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1rm70yq_di" bpmnElement="Flow_1rm70yq">
+        <di:waypoint x="2430" y="255"/>
+        <di:waypoint x="2430" y="215"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f49_di" bpmnElement="Process_SF_f49">
+        <di:waypoint x="2455" y="190"/>
+        <di:waypoint x="2685" y="190"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f39_di" bpmnElement="Process_SF_f39">
+        <di:waypoint x="2310" y="1128"/>
+        <di:waypoint x="2310" y="1162"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1qb4suh_di" bpmnElement="Flow_1qb4suh">
+        <di:waypoint x="2370" y="1200"/>
+        <di:waypoint x="2405" y="1200"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1c4basn_di" bpmnElement="Flow_1c4basn">
+        <di:waypoint x="2490" y="1388"/>
+        <di:waypoint x="2490" y="1412"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f46_di" bpmnElement="Process_SF_f46">
+        <di:waypoint x="2550" y="1450"/>
+        <di:waypoint x="2585" y="1450"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f51_di" bpmnElement="Process_SF_f51">
+        <di:waypoint x="2735" y="190"/>
+        <di:waypoint x="2815" y="190"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2764" y="165" width="15" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ik94bb_di" bpmnElement="Flow_0ik94bb">
+        <di:waypoint x="2710" y="215"/>
+        <di:waypoint x="2710" y="1592"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f59_di" bpmnElement="Process_SF_f59">
+        <di:waypoint x="3100" y="2125"/>
+        <di:waypoint x="3100" y="288"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3106" y="1198" width="18" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f60_di" bpmnElement="Process_SF_f60">
+        <di:waypoint x="3100" y="212"/>
+        <di:waypoint x="3100" y="188"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f62_di" bpmnElement="Process_SF_f62">
+        <di:waypoint x="3160" y="150"/>
+        <di:waypoint x="3200" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f63_di" bpmnElement="Process_SF_f63">
+        <di:waypoint x="3320" y="150"/>
+        <di:waypoint x="3370" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f64_di" bpmnElement="Process_SF_f64">
+        <di:waypoint x="3490" y="150"/>
+        <di:waypoint x="3532" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f52_di" bpmnElement="Process_SF_f52">
+        <di:waypoint x="2710" y="1668"/>
+        <di:waypoint x="2710" y="1702"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f53_di" bpmnElement="Process_SF_f53">
+        <di:waypoint x="2770" y="1740"/>
+        <di:waypoint x="2815" y="1740"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f55_di" bpmnElement="Process_SF_f55">
+        <di:waypoint x="2840" y="1715"/>
+        <di:waypoint x="2840" y="215"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2811" y="1682" width="18" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1p1hf2s_di" bpmnElement="Flow_1p1hf2s">
+        <di:waypoint x="2865" y="190"/>
+        <di:waypoint x="2970" y="190"/>
+        <di:waypoint x="2970" y="1982"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f56_di" bpmnElement="Process_SF_f56">
+        <di:waypoint x="2970" y="2058"/>
+        <di:waypoint x="2970" y="2112"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f57_di" bpmnElement="Process_SF_f57">
+        <di:waypoint x="3030" y="2150"/>
+        <di:waypoint x="3075" y="2150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Process_SF_f58_di" bpmnElement="Process_SF_f58">
+        <di:waypoint x="3125" y="2150"/>
+        <di:waypoint x="3262" y="2150"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3229" y="2128" width="15" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

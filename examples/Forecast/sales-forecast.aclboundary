@@ -1,0 +1,43 @@
+// Bounded-verification scope for the Sales Forecast case study
+// (sales-forecast.acl / .istar / .bpmn2). One DealCase, one Deal, and one
+// ApprovalStep per escalation level actually consulted on the motivating
+// trace (department -> sector -> VP is the deepest path).
+acl-bpmn-boundary v1.0 SalesForecastBound {
+  snapshots 40;
+  loop-bound 1;
+  integer -1..300000;
+
+  objects DealCase 1;
+  objects CustomerManager 1;
+  objects PresaleEngineer 1;
+  objects ServiceAgreements 1;
+  objects DeptManager 1;
+  objects SectorManager 1;
+  objects BusinessVp 1;
+  objects FinancialControl 1;
+  objects CreditControl 1;
+  objects Economy 1;
+  objects Customer 1;
+  objects Management 1;
+  objects Deal 1;
+  objects ApprovalStep 3;
+
+  links DealCase_contains_CustomerManager 1;
+  links DealCase_contains_PresaleEngineer 1;
+  links DealCase_contains_ServiceAgreements 1;
+  links DealCase_contains_DeptManager 1;
+  links DealCase_contains_SectorManager 1;
+  links DealCase_contains_BusinessVp 1;
+  links DealCase_contains_FinancialControl 1;
+  links DealCase_contains_CreditControl 1;
+  links DealCase_contains_Economy 1;
+  links DealCase_contains_Customer 1;
+  links DealCase_contains_Management 1;
+  links DealCase_contains_Deal 1;
+  links DealCase_contains_ApprovalStep 3;
+
+  links dealHandledBy 1;
+  links dealForCustomer 1;
+  links dealApprovalChain 3;
+  links stepDecidedBy 3;
+}

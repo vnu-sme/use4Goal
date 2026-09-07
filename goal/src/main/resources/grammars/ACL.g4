@@ -2,10 +2,52 @@ grammar ACL;
 
 @header { package org.vnu.sme.goal.dsl.acl.parser; }
 
-model : 'acl' VERSION IDENT '{' topLevelDecl* '}' EOF ;
+// Canonical ACL concrete syntax
+// -----------------------------
+// The surface mirrors docs/model/acl.ecore 1:1: AclModel owns Object
+// declarations (Entity, Role, Group, Association), named DataType /
+// Enumeration declarations, OrgCtx declarations, and Invariants. An OrgCtx
+// (which now has a `name`) recursively contains Entity, Role, Association
+// and child OrgCtx declarations. Entity, Role and Group are the
+// state-bearing Objects. A Group is an Entity that also composes Role /
+// Entity memberships with multiplicity. Both the top-level and the
+// orgContext-nested placements are valid abstract syntax.
+//
+// ─────────────────────────────────────────────────────────────────────
+// CHANGE LOG — this grammar is now a FAITHFUL concrete syntax of
+// docs/model/acl.ecore. Every production maps to an EClass/feature; the
+// ecore itself was completed this pass to remove its own gaps.
+// ─────────────────────────────────────────────────────────────────────
+//  v3.1:
+//   1. `association | aggregation | composition` allowed INSIDE `orgContext`
+//      -> OrgCtx.associations.
+//   2. `endpointDecl endpointDecl+` (>= 2 ends) -> Association.ends [2..*].
+//   3. `datatype IDENT ;` -> AclModel.dataTypes.
+//  v3.2 (ecore completion — nothing below is an extension any more):
+//   4. `enum IDENT { ... }` -> Enumeration (a DataType subclass with
+//      `literals`), newly defined in acl.ecore. USE `enum` maps 1:1.
+//   5. `orgContext IDENT` -> OrgCtx.name (added; a context now has an
+//      identity that BPMN `pool ... for X` and `.aclboundary` can name).
+//   6. `group IDENT { attrs; MemberName[card]; X compatible Y; }`
+//      -> Group (Entity subclass) with roleMemberships / entityMemberships
+//      (RoleMembership / EntityMembership carry lower/upper), added to
+//      acl.ecore. `compatible` still fills Role.compatibility (symmetric).
+//   7. `context X inv N: <ocl> ;` -> Invariant + AclModel.invariants
+//      (contextName / name / oclBody), added to acl.ecore.
+//   8. `aggregation` / `composition` -> Association.kind : AssociationRelKind
+//      {PLAIN, AGGREGATION, COMPOSITION}, added to acl.ecore.
+//   9. `*` in a cardinality maps to upper = -1 (AssociationEnd / *Membership).
+// Java to update: regenerate dsl.acl.parser; builder reads the new
+// classes; translate.acl2use / acl2eventb emit orgContext associations,
+// datatypes, enums, group memberships, invariants; EMF codegen from the
+// updated acl.ecore.
+model
+    : 'acl' VERSION IDENT '{' topLevelDecl* '}' EOF
+    ;
 
 topLevelDecl
     : enumDecl
+    | datatypeDecl
     | entityDecl
     | roleDecl
     | orgContextDecl
@@ -14,39 +56,80 @@ topLevelDecl
     | invariantDecl
     ;
 
-// ACL embeds state predicates using the standard OCL invariant surface form.
-// The expression is retained verbatim by the ACL CST/model and is evaluated
-// directly over an ACL system state; it is not translated to a USE model.
-invariantDecl : 'context' IDENT 'inv' IDENT ':' oclExpression ';' ;
-oclExpression : oclToken+ ;
+// OCL is intentionally captured rather than interpreted by this grammar.
+// NativeOclEvaluator is the single authority that validates/evaluates the
+// expression.  Keeping punctuation here prevents the ACL parser from
+// rejecting valid OCL text before it reaches that component.
+invariantDecl
+    : 'context' IDENT 'inv' IDENT ':' oclExpression ';'
+    ;
+
+oclExpression
+    : oclToken+
+    ;
+
 oclToken
     : IDENT
-    | 'group'
-    | 'orgContext'
+    | oclKeyword
     | STRING_LITERAL
     | SIGNED_NUMBER
     | BOOLEAN
     | INT
-    | '.' | '->' | '(' | ')' | '|'
-    | '#' | '::'
+    | '.' | '->' | '(' | ')' | '[' | ']' | '{' | '}'
+    | ',' | '|' | '@' | '#' | '::' | ':'
     | '=' | '<>' | '<' | '<=' | '>' | '>='
     | '+' | '-' | '*' | '/'
     ;
 
+// Literal keywords receive their own implicit lexer tokens.  Listing them
+// here also permits an OCL property/operation to have one of these names.
+oclKeyword
+    : 'acl'
+    | 'enum'
+    | 'datatype'
+    | 'entity'
+    | 'role'
+    | 'specializes'
+    | 'extends'
+    | 'orgContext'
+    | 'group'
+    | 'association'
+    | 'aggregation'
+    | 'composition'
+    | 'compatible'
+    | 'context'
+    | 'inv'
+    | 'attribute'
+    | 'optional'
+    | 'required'
+    | 'mutable'
+    | 'default'
+    ;
+
+// acl.ecore Enumeration (a DataType subclass): name + ordered literals.
 enumDecl : 'enum' IDENT '{' IDENT (',' IDENT)* ','? '}' ;
+
+// acl.ecore DataType (bare, name only). Primitive names (Boolean, Integer,
+// Real, String) remain usable without declaration; this is for a named
+// domain type a downstream translator maps explicitly.
+datatypeDecl : 'datatype' IDENT ';' ;
 
 entityDecl : 'entity' IDENT specializesClause? (';' | attributeBlock) ;
 roleDecl : 'role' IDENT specializesClause? (';' | attributeBlock) ;
 specializesClause : ('specializes' | 'extends') IDENT ;
 
-// An organizational context is a structural container.  Unlike the legacy
-// Group declaration it owns declarations directly and cannot carry state
+// acl.ecore OrgCtx: a NAMED structural container that owns Entity / Role /
+// Association / child-OrgCtx declarations directly and carries no state
 // attributes of its own.
-orgContextDecl : 'orgContext' IDENT '{' orgContextItem* '}' ;
+orgContextDecl
+    : 'orgContext' IDENT '{' orgContextItem* '}'
+    ;
+
 orgContextItem
     : entityDecl
     | roleDecl
     | orgContextDecl
+    | entityRelationDecl
     | compatibilityDecl
     ;
 
@@ -65,18 +148,21 @@ groupDecl : 'group' IDENT specializesClause? '{' groupItem* '}' ;
 groupItem
     : attributeDecl
     | groupMemberDecl
+    | entityRelationDecl
     | compatibilityDecl
     ;
 groupMemberDecl : IDENT cardinality ';' ;
 
-entityRelationDecl : relationKind IDENT '{' endpointDecl endpointDecl '}' ;
+// acl.ecore Association::ends [2..*]. Two ends are the common case; extra
+// ends are accepted for n-ary associations. Each end is a USE-style member
+// end: `Classifier [multiplicity] role navigationName;` (the `role`
+// keyword is optional, legacy).
+entityRelationDecl : relationKind IDENT '{' endpointDecl endpointDecl+ '}' ;
 relationKind
     : 'association'
     | 'aggregation'
     | 'composition'
     ;
-// USE-style member end: `Classifier [multiplicity] role navigationName;`.
-// The `role` keyword remains optional only for legacy ACL files.
 endpointDecl : IDENT cardinality ('role'? IDENT)? ';' ;
 
 compatibilityDecl

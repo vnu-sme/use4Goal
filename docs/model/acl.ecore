@@ -2,19 +2,20 @@
 <ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="acl" nsURI="https://vnu.edu.vn/sme/goal/acl/3.0" nsPrefix="acl">
   <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-    <details key="documentation" value="High-level ACL DSL metamodel. Entity, Role, and Association specialize Object. Group specializes Entity and composes Entity and Role declarations."/>
+    <details key="documentation" value="High-level ACL DSL metamodel. Entity, Role, and Association specialize Object. Group specializes Entity and composes Role/Entity memberships with multiplicity. v3.1 completion pass: Enumeration (a named DataType with literals) so `enum` has a metamodel home; OrgCtx.name so a context is referenceable (BPMN `pool ... for X`, .aclboundary); Group + RoleMembership/EntityMembership so the legacy `group` concrete form has an abstract-syntax home; Invariant + AclModel.invariants so `context X inv N: ...` is a containment feature, not just a paper extension; Association.kind (AssociationRelKind) so aggregation/composition are first-class. ACL.g4 is now a faithful concrete syntax of this metamodel."/>
   </eAnnotations>
   <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
     <details key="validationDelegates" value="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG"/>
   </eAnnotations>
   <eClassifiers xsi:type="ecore:EClass" name="AclModel">
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
-      <details key="constraints" value="NonEmptyName UniqueObjectNames UniqueDataTypeNames"/>
+      <details key="constraints" value="NonEmptyName UniqueObjectNames UniqueDataTypeNames UniqueOrgCtxNames"/>
     </eAnnotations>
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
       <details key="NonEmptyName" value="name.size() > 0"/>
       <details key="UniqueObjectNames" value="Object.allInstances()->isUnique(name)"/>
       <details key="UniqueDataTypeNames" value="dataTypes->isUnique(name)"/>
+      <details key="UniqueOrgCtxNames" value="OrgCtx.allInstances()->isUnique(name)"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="objects" upperBound="-1"
@@ -23,6 +24,8 @@
         eType="#//DataType" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="orgctx" upperBound="-1"
         eType="#//OrgCtx" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="invariants" upperBound="-1"
+        eType="#//Invariant" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Object" abstract="true">
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
@@ -48,14 +51,24 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="OrgCtx">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-      <details key="documentation" value="A Group is both an Entity and a contained subsystem. It composes Entity declarations (including child Groups) and Role declarations."/>
+      <details key="documentation" value="A named structural container. It composes Entity declarations (including Groups and child OrgCtx) and Role declarations, and may hold Associations whose ends are its own members. It carries no state attributes of its own."/>
     </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="NonEmptyName UniqueMemberNames"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="NonEmptyName" value="name.size() > 0"/>
+      <details key="UniqueMemberNames" value="entities->collect(name)->union(roles->collect(name))->union(orgctx->collect(name))->asBag()->forAll(n | entities->union(roles)->union(orgctx)->select(m | m.name = n)->size() = 1)"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="entities" upperBound="-1"
         eType="#//Entity" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="roles" upperBound="-1"
         eType="#//Role" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="orgctx" upperBound="-1"
         eType="#//OrgCtx" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="associations" upperBound="-1"
+        eType="#//Association" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Role" eSuperTypes="#//Object">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -86,6 +99,61 @@
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="ends" lowerBound="2"
         upperBound="-1" eType="#//AssociationEnd" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1"
+        eType="#//AssociationRelKind" defaultValueLiteral="PLAIN"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Group" eSuperTypes="#//Entity">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="An Entity that is also a small organisational subsystem: it composes Role and Entity memberships, each with its own multiplicity, plus Associations between its members. The legacy `group X { attrs; RoleName[card]; }` concrete form maps here (attributes are inherited from Entity)."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="roleMemberships" upperBound="-1"
+        eType="#//RoleMembership" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="entityMemberships" upperBound="-1"
+        eType="#//EntityMembership" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="associations" upperBound="-1"
+        eType="#//Association" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="RoleMembership">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="ValidMultiplicity"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="ValidMultiplicity" value="lower >= 0 and (upper = -1 or upper >= lower) and not (lower = 0 and upper = 0)"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="member" lowerBound="1" eType="#//Role"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="lower" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt" defaultValueLiteral="1"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="upper" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt" defaultValueLiteral="1"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="EntityMembership">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="ValidMultiplicity"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="ValidMultiplicity" value="lower >= 0 and (upper = -1 or upper >= lower) and not (lower = 0 and upper = 0)"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="member" lowerBound="1" eType="#//Entity"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="lower" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt" defaultValueLiteral="1"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="upper" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt" defaultValueLiteral="1"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Invariant">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="A named OCL invariant scoped to one Object (Entity, Role or Group) by name. `oclBody` is captured raw; the NativeOclEvaluator validates it against the ACL/AOL state."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="NonEmptyName NonEmptyContext NonEmptyOclBody"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="NonEmptyName" value="name.size() > 0"/>
+      <details key="NonEmptyContext" value="contextName.size() > 0"/>
+      <details key="NonEmptyOclBody" value="oclBody.size() > 0"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="contextName" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="oclBody" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="AssociationEnd">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -130,5 +198,24 @@
       <details key="NonEmptyName" value="name.size() > 0"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Enumeration" eSuperTypes="#//DataType">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="A DataType whose values are a fixed ordered list of named literals. Maps 1:1 to a USE `enum`."/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="NonEmptyLiterals UniqueLiterals"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
+      <details key="NonEmptyLiterals" value="literals->size() > 0"/>
+      <details key="UniqueLiterals" value="literals->isUnique(l | l)"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="literals" lowerBound="1"
+        upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="AssociationRelKind">
+    <eLiterals name="PLAIN"/>
+    <eLiterals name="AGGREGATION" value="1"/>
+    <eLiterals name="COMPOSITION" value="2"/>
   </eClassifiers>
 </ecore:EPackage>

@@ -2,7 +2,7 @@
 <ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="bpmn" nsURI="https://vnu.edu.vn/sme/goal/bpmn/2.0" nsPrefix="bpmn">
   <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-    <details key="documentation" value="Canonical Ecore metamodel for the project's state-oriented BPMN subset. It extends process control flow with ACL-scoped OCL preconditions, postconditions and gateway guards."/>
+    <details key="documentation" value="Canonical Ecore metamodel for the project's state-oriented BPMN subset. It extends process control flow with ACL-scoped OCL preconditions, postconditions and gateway guards. v2.1 completion pass: Event.trigger (EventTrigger enum), typed IntermediateEvent.direction (EventDirection enum), GatewayKind::EVENT_BASED, and SupportedGatewayKind widened to XOR/AND/OR/EVENT_BASED so the enum and the constraint agree. Bpmn.g4 is now a faithful concrete syntax of this metamodel."/>
   </eAnnotations>
   <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
     <details key="validationDelegates" value="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG"/>
@@ -110,14 +110,20 @@
       <details key="constraints" value="SupportedGatewayKind HasOutgoingFlow XorHasAtMostOneDefault AndHasNoGuards"/>
     </eAnnotations>
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
-      <details key="SupportedGatewayKind" value="kind = GatewayKind::XOR or kind = GatewayKind::AND"/>
+      <details key="SupportedGatewayKind" value="kind = GatewayKind::XOR or kind = GatewayKind::AND or kind = GatewayKind::OR or kind = GatewayKind::EVENT_BASED"/>
       <details key="HasOutgoingFlow" value="SequenceFlow.allInstances()->exists(f | f.source = self)"/>
       <details key="XorHasAtMostOneDefault" value="kind &lt;> GatewayKind::XOR or SequenceFlow.allInstances()->select(f | f.source = self and f.isDefault)->size() &lt;= 1"/>
       <details key="AndHasNoGuards" value="kind &lt;> GatewayKind::AND or SequenceFlow.allInstances()->select(f | f.source = self)->forAll(f | not f.isDefault and f.guard.oclIsUndefined())"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1" eType="#//GatewayKind"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Event" abstract="true" eSuperTypes="#//FlowElement"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Event" abstract="true" eSuperTypes="#//FlowElement">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+      <details key="documentation" value="Common base of Start/End/Intermediate events. `trigger` records which BPMN event definition fires the event; `none` is a plain (unspecified) trigger."/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="trigger" lowerBound="1"
+        eType="#//EventTrigger" defaultValueLiteral="none"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="StartEvent" eSuperTypes="#//Event">
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
       <details key="constraints" value="NoIncomingFlow HasOutgoingFlow"/>
@@ -143,7 +149,8 @@
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
       <details key="NoPrecondition" value="precondition.oclIsUndefined()"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="direction" lowerBound="1"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="direction" lowerBound="1"
+        eType="#//EventDirection"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="SequenceFlow">
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
@@ -204,5 +211,20 @@
     <eLiterals name="XOR"/>
     <eLiterals name="AND" value="1"/>
     <eLiterals name="OR" value="2"/>
+    <eLiterals name="EVENT_BASED" value="3"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="EventTrigger">
+    <eLiterals name="none"/>
+    <eLiterals name="message" value="1"/>
+    <eLiterals name="timer" value="2"/>
+    <eLiterals name="error" value="3"/>
+    <eLiterals name="signal" value="4"/>
+    <eLiterals name="terminate" value="5"/>
+    <eLiterals name="compensation" value="6"/>
+    <eLiterals name="conditional" value="7"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="EventDirection">
+    <eLiterals name="catching"/>
+    <eLiterals name="throwing" value="1"/>
   </eClassifiers>
 </ecore:EPackage>

@@ -1,0 +1,161 @@
+// AS-IS Meeting Scheduler process, state-oriented BPMN DSL. One pool,
+// scoped to one MeetingUnit instance. Participants with a calendar are read
+// directly; the rest are reached by the Secretary over the phone. If the
+// collected feasible windows leave no common day the Organizer replans
+// once, then cancels.
+model MeetingSchedulerProcess {
+  pool MeetingScheduling for MeetingUnit {
+    name "Meeting Scheduler"
+    lane Initiator;
+    lane Organizer;
+    lane Secretary;
+    lane Participant;
+  }
+
+  start meetingRequested {
+    name "Meeting requested"
+    lane Initiator
+    trigger none
+    pre {[ self.meeting.phase = MeetingPhase::Requested ]}
+    flow requestTimetables
+  }
+
+  activity requestTimetables {
+    name "Request participant timetables"
+    type task
+    lane Organizer
+    pre {[ self.meeting.phase = MeetingPhase::Requested ]}
+    post {[
+      self.meeting.phase = MeetingPhase::ConstraintsRequested
+      and self.meeting.invitee->forAll(p | p.timetableStatus = CollectionStatus::Requested)
+    ]}
+    flow collectionChannel
+  }
+
+  gateway collectionChannel {
+    name "Has a shared calendar?"
+    lane Organizer
+    type xor
+    flow readCalendars label "calendar" post {[ self.meeting.invitee->forAll(p | p.hasCalendar) ]}
+    flow callParticipants label "phone" post {[ self.meeting.invitee->exists(p | not p.hasCalendar) ]}
+  }
+
+  activity readCalendars {
+    name "Read shared calendars"
+    type task
+    lane Organizer
+    post {[
+      self.meeting.invitee->forAll(p | p.timetableStatus = CollectionStatus::Collected
+        and p.timetableChannel = TimetableChannel::Calendar)
+    ]}
+    flow constraintsMerge
+  }
+
+  activity callParticipants {
+    name "Phone participants for constraints"
+    type task
+    lane Secretary
+    post {[
+      self.meeting.invitee->forAll(p | p.timetableStatus = CollectionStatus::Collected
+        and p.timetableChannel = TimetableChannel::Phone)
+    ]}
+    flow recordConstraints
+  }
+
+  activity recordConstraints {
+    name "Record phoned-in constraints"
+    type task
+    lane Secretary
+    post {[ self.meeting.invitee->forAll(p | p.timetableStatus = CollectionStatus::Collected) ]}
+    flow constraintsMerge
+  }
+
+  gateway constraintsMerge {
+    lane Organizer
+    type xor
+    flow determineDate
+  }
+
+  activity determineDate {
+    name "Determine meeting date"
+    type task
+    lane Organizer
+    pre {[ self.meeting.invitee->forAll(p | p.timetableStatus = CollectionStatus::Collected) ]}
+    post {[
+      self.meeting.phase = MeetingPhase::ConstraintsCollected
+      and self.meeting.constraintsResolved = true
+    ]}
+    flow feasibleDate
+  }
+
+  gateway feasibleDate {
+    name "A common day exists?"
+    lane Organizer
+    type xor
+    flow chooseDate label "yes" post {[ self.meeting.constraintsResolved ]}
+    flow replanNeeded label "no" post {[ not self.meeting.constraintsResolved ]}
+  }
+
+  activity chooseDate {
+    name "Choose the meeting day"
+    type task
+    lane Organizer
+    post {[
+      self.meeting.phase = MeetingPhase::DateChosen
+      and self.meeting.chosenDay > 0
+      and self.meeting.chosenDay >= self.meeting.proposedFromDay
+      and self.meeting.chosenDay <= self.meeting.proposedToDay
+    ]}
+    flow notifyParticipants
+  }
+
+  activity notifyParticipants {
+    name "Notify participants"
+    type task
+    lane Organizer
+    pre {[ self.meeting.chosenDay > 0 ]}
+    post {[
+      self.meeting.phase = MeetingPhase::ParticipantsNotified
+      and self.meeting.allNotified = true
+      and self.meeting.invitee->forAll(p | p.notified = NotificationStatus::Sent)
+    ]}
+    flow holdMeeting
+  }
+
+  activity holdMeeting {
+    name "Hold the meeting"
+    type task
+    lane Participant
+    pre {[ self.meeting.allNotified ]}
+    post {[ self.meeting.phase = MeetingPhase::Held and self.meeting.held = true ]}
+    flow meetingHeld
+  }
+
+  end meetingHeld {
+    name "Meeting held"
+    lane Participant
+    trigger none
+  }
+
+  gateway replanNeeded {
+    name "Replan once?"
+    lane Organizer
+    type xor
+    flow requestTimetables label "retry"
+    flow cancelMeeting label "give up"
+  }
+
+  activity cancelMeeting {
+    name "Cancel the meeting"
+    type task
+    lane Organizer
+    post {[ self.meeting.phase = MeetingPhase::Cancelled ]}
+    flow meetingCancelled
+  }
+
+  end meetingCancelled {
+    name "Meeting cancelled"
+    lane Organizer
+    trigger none
+  }
+}

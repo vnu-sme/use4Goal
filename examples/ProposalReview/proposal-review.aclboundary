@@ -1,0 +1,25 @@
+// Bounded-verification scope for the ProposalReview case study
+// (proposal-review.acl / .istar / .bpmn2). The changes-requested branch
+// runs one extra activity (Update proposal) and needs one more state than
+// the accepted-without-changes branch; two ReviewRound rows cover the
+// review + (unperformed) re-review the defect is about.
+acl-bpmn-boundary v1.0 ProposalReviewBound {
+  snapshots 16;
+  loop-bound 1;
+  integer -1..4;
+
+  objects ProposalReviewCase 1;
+  objects ProposalManager 1;
+  objects Customer 1;
+  objects Proposal 1;
+  objects ReviewRound 2;
+
+  links ProposalReviewCase_contains_ProposalManager 1;
+  links ProposalReviewCase_contains_Customer 1;
+  links ProposalReviewCase_contains_Proposal 1;
+  links ProposalReviewCase_contains_ReviewRound 2;
+
+  links proposalOwnedBy 1;
+  links proposalReviewedBy 1;
+  links proposalReviewRounds 2;
+}

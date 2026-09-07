@@ -1,0 +1,249 @@
+// AS-IS ProposalReview process. Both branches reach End, but the
+// changes-requested branch does not revalidate the updated revision.
+model ProposalReviewProcess {
+  pool ProposalReview for ProposalReviewCase {
+    name "Proposal review — AS-IS missing re-validation"
+    lane ProposalManager;
+    lane Customer;
+  }
+
+  start reviewRequested {
+    lane ProposalManager
+    trigger none
+    pre {[
+      not self.proposal.prepared
+      and self.proposal.currentRevision = 0
+      and self.proposal.validationRevision = 0
+      and self.proposal.incorporatedChangeCount = 0
+      and not self.proposal.finalized
+      and not self.proposal.sent
+      and self.proposal.sentRevision = 0
+      and not self.customer.reviewCompleted
+      and self.customer.requestedChangeCount = 0
+    ]}
+    flow prepareProposal
+  }
+
+  activity prepareProposal {
+    name "Prepare proposal"
+    type task
+    lane ProposalManager
+    post {[
+      self.proposal.prepared
+      and self.proposal.currentRevision = 1
+      and self.proposal.validationRevision = 0
+      and self.proposal.incorporatedChangeCount = 0
+      and not self.proposal.finalized
+      and not self.proposal.sent
+      and self.proposal.sentRevision = 0
+      and not self.customer.reviewCompleted
+      and self.customer.requestedChangeCount = 0
+    ]}
+    flow validateProposal
+  }
+
+  activity validateProposal {
+    name "Validate proposal"
+    type task
+    lane ProposalManager
+    pre {[
+      self.proposal.prepared
+      and self.proposalManager.authorityLevel >=
+        self.proposal.requiredAuthorityLevel
+    ]}
+    post {[
+      self.proposal.prepared
+      and self.proposal.currentRevision =
+        self.proposal.currentRevision@pre
+      and self.proposal.validationRevision =
+        self.proposal.currentRevision@pre
+      and self.proposal.incorporatedChangeCount =
+        self.proposal.incorporatedChangeCount@pre
+      and self.proposal.finalized = self.proposal.finalized@pre
+      and self.proposal.sent = self.proposal.sent@pre
+      and self.proposal.sentRevision = self.proposal.sentRevision@pre
+      and self.customer.reviewCompleted =
+        self.customer.reviewCompleted@pre
+      and self.customer.requestedChangeCount =
+        self.customer.requestedChangeCount@pre
+    ]}
+    flow reviewProposal
+  }
+
+  activity reviewProposal {
+    name "Review proposal"
+    type task
+    lane Customer
+    pre {[
+      self.proposal.validationRevision = self.proposal.currentRevision
+    ]}
+    post {[
+      self.customer.reviewCompleted
+      and self.customer.requestedChangeCount >= 0
+      and self.proposal.prepared = self.proposal.prepared@pre
+      and self.proposal.currentRevision =
+        self.proposal.currentRevision@pre
+      and self.proposal.validationRevision =
+        self.proposal.validationRevision@pre
+      and self.proposal.incorporatedChangeCount =
+        self.proposal.incorporatedChangeCount@pre
+      and self.proposal.finalized = self.proposal.finalized@pre
+      and self.proposal.sent = self.proposal.sent@pre
+      and self.proposal.sentRevision = self.proposal.sentRevision@pre
+    ]}
+    flow changesRequested
+  }
+
+  gateway changesRequested {
+    lane Customer
+    type xor
+    flow updateProposal post {[
+      self.customer.reviewCompleted =
+        self.customer.reviewCompleted@pre
+      and self.customer.reviewCompleted
+      and self.customer.requestedChangeCount =
+        self.customer.requestedChangeCount@pre
+      and self.customer.requestedChangeCount > 0
+      and self.proposal.prepared = self.proposal.prepared@pre
+      and self.proposal.currentRevision =
+        self.proposal.currentRevision@pre
+      and self.proposal.validationRevision =
+        self.proposal.validationRevision@pre
+      and self.proposal.incorporatedChangeCount =
+        self.proposal.incorporatedChangeCount@pre
+      and self.proposal.finalized = self.proposal.finalized@pre
+      and self.proposal.sent = self.proposal.sent@pre
+      and self.proposal.sentRevision = self.proposal.sentRevision@pre
+    ]}
+    flow feedbackMerge post {[
+      self.customer.reviewCompleted =
+        self.customer.reviewCompleted@pre
+      and self.customer.reviewCompleted
+      and self.customer.requestedChangeCount =
+        self.customer.requestedChangeCount@pre
+      and self.customer.requestedChangeCount = 0
+      and self.proposal.prepared = self.proposal.prepared@pre
+      and self.proposal.currentRevision =
+        self.proposal.currentRevision@pre
+      and self.proposal.validationRevision =
+        self.proposal.validationRevision@pre
+      and self.proposal.incorporatedChangeCount =
+        self.proposal.incorporatedChangeCount@pre
+      and self.proposal.finalized = self.proposal.finalized@pre
+      and self.proposal.sent = self.proposal.sent@pre
+      and self.proposal.sentRevision = self.proposal.sentRevision@pre
+    ]}
+  }
+
+  activity updateProposal {
+    name "Update proposal"
+    type task
+    lane ProposalManager
+    pre {[
+      self.customer.reviewCompleted
+      and self.customer.requestedChangeCount > 0
+    ]}
+    // The current revision advances, but validation deliberately remains on
+    // the previous revision. This is the defect detected by the i* model.
+    post {[
+      self.proposal.prepared
+      and self.proposal.currentRevision =
+        self.proposal.currentRevision@pre + 1
+      and self.proposal.validationRevision =
+        self.proposal.validationRevision@pre
+      and self.proposal.incorporatedChangeCount =
+        self.customer.requestedChangeCount
+      and not self.proposal.finalized
+      and not self.proposal.sent
+      and self.proposal.sentRevision = self.proposal.sentRevision@pre
+      and self.customer.reviewCompleted =
+        self.customer.reviewCompleted@pre
+      and self.customer.requestedChangeCount =
+        self.customer.requestedChangeCount@pre
+    ]}
+    flow feedbackMerge
+  }
+
+  gateway feedbackMerge {
+    lane ProposalManager
+    type xor
+    flow finalizeProposal post {[
+      self.proposal.prepared = self.proposal.prepared@pre
+      and self.proposal.currentRevision =
+        self.proposal.currentRevision@pre
+      and self.proposal.validationRevision =
+        self.proposal.validationRevision@pre
+      and self.proposal.incorporatedChangeCount =
+        self.proposal.incorporatedChangeCount@pre
+      and self.proposal.finalized = self.proposal.finalized@pre
+      and self.proposal.sent = self.proposal.sent@pre
+      and self.proposal.sentRevision = self.proposal.sentRevision@pre
+      and self.customer.reviewCompleted =
+        self.customer.reviewCompleted@pre
+      and self.customer.requestedChangeCount =
+        self.customer.requestedChangeCount@pre
+    ]}
+  }
+
+  activity finalizeProposal {
+    name "Finalize proposal"
+    type task
+    lane ProposalManager
+    pre {[
+      self.customer.reviewCompleted
+      and self.proposalManager.authorityLevel >=
+        self.proposal.requiredAuthorityLevel
+      and (self.customer.requestedChangeCount = 0 or
+        self.proposal.incorporatedChangeCount =
+          self.customer.requestedChangeCount)
+    ]}
+    post {[
+      self.proposal.finalized
+      and not self.proposal.sent
+      and self.proposal.prepared = self.proposal.prepared@pre
+      and self.proposal.currentRevision =
+        self.proposal.currentRevision@pre
+      and self.proposal.validationRevision =
+        self.proposal.validationRevision@pre
+      and self.proposal.incorporatedChangeCount =
+        self.proposal.incorporatedChangeCount@pre
+      and self.proposal.sentRevision = self.proposal.sentRevision@pre
+      and self.customer.reviewCompleted =
+        self.customer.reviewCompleted@pre
+      and self.customer.requestedChangeCount =
+        self.customer.requestedChangeCount@pre
+    ]}
+    flow sendProposal
+  }
+
+  activity sendProposal {
+    name "Send proposal"
+    type task
+    lane ProposalManager
+    pre {[
+      self.proposal.finalized
+    ]}
+    post {[
+      self.proposal.sent
+      and self.proposal.finalized
+      and self.proposal.sentRevision = self.proposal.currentRevision
+      and self.proposal.prepared = self.proposal.prepared@pre
+      and self.proposal.currentRevision =
+        self.proposal.currentRevision@pre
+      and self.proposal.validationRevision =
+        self.proposal.validationRevision@pre
+      and self.proposal.incorporatedChangeCount =
+        self.proposal.incorporatedChangeCount@pre
+      and self.customer.reviewCompleted =
+        self.customer.reviewCompleted@pre
+      and self.customer.requestedChangeCount =
+        self.customer.requestedChangeCount@pre
+    ]}
+    flow proposalCompleted
+  }
+
+  end proposalCompleted {
+    lane ProposalManager
+    trigger none
+  }
+}

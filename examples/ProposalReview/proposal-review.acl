@@ -1,0 +1,98 @@
+// ACL structural model for the ProposalReview case study.
+//
+// Structural: ProposalManager and Customer are Roles with their own state
+// (authority level, requested-change counter); the Proposal is an entity
+// with an enumerated lifecycle `phase` plus the two Integer revision
+// counters whose divergence is the defect this case study exists to catch;
+// each customer review pass is a first-class `ReviewRound` sub-entity
+// linked to the Proposal and to the reviewing Customer.
+//
+// The AS-IS process reaches "sent" without re-validating the revision that
+// the customer's change requests produced: currentRevision advances while
+// validationRevision does not. `CurrentRevisionValidated` (i*) detects it.
+acl v3.1 ProposalReviewState {
+
+  enum ProposalPhase {
+    Requested, Prepared, Validated, UnderReview, ChangesRequested,
+    ChangesIncorporated, Finalized, Sent
+  }
+
+  orgContext ProposalReviewCase {
+
+    role ProposalManager {
+      authorityLevel : Integer default 1;
+      openProposalCount : Integer mutable default 0;
+    }
+
+    role Customer {
+      reviewCompleted      : Boolean mutable default false;
+      requestedChangeCount  : Integer mutable default 0;
+    }
+
+    entity Proposal {
+      phase                   : ProposalPhase mutable default Requested;
+      requiredAuthorityLevel  : Integer default 1;
+
+      currentRevision         : Integer mutable default 0;
+      validationRevision      : Integer mutable default 0;
+      incorporatedChangeCount : Integer mutable default 0;
+
+      prepared   : Boolean mutable default false;
+      finalized  : Boolean mutable default false;
+      sent       : Boolean mutable default false;
+      sentRevision : Integer mutable default 0;
+    }
+
+    // One row per customer review pass. The AS-IS loop performs exactly one
+    // on the accepted-without-changes branch and one more if changes are
+    // requested and then re-reviewed (not modelled here -- the defect is
+    // that no re-review happens).
+    entity ReviewRound {
+      round          : Integer default 1;
+      changesRaised  : Integer mutable default 0;
+      onRevision     : Integer default 0;
+    }
+
+    association proposalOwnedBy {
+      Proposal        [0..*] role ownedProposal;
+      ProposalManager [1]    role proposalOwner;
+    }
+    association proposalReviewedBy {
+      Proposal [0..*] role reviewedProposal;
+      Customer [1]    role reviewer;
+    }
+    association proposalReviewRounds {
+      Proposal    [1]    role roundedProposal;
+      ReviewRound [0..*] role reviewRound;
+    }
+  }
+
+  context ProposalManager inv NonNegativeAuthority:
+    self.authorityLevel >= 0 and self.openProposalCount >= 0;
+
+  context Customer inv NonNegativeRequestedChanges:
+    self.requestedChangeCount >= 0;
+
+  context Customer inv NoRequestBeforeReview:
+    not self.reviewCompleted implies self.requestedChangeCount = 0;
+
+  context Proposal inv NonNegativeProposalState:
+    self.requiredAuthorityLevel >= 0 and self.currentRevision >= 0
+    and self.validationRevision >= 0 and self.incorporatedChangeCount >= 0
+    and self.sentRevision >= 0;
+
+  context Proposal inv PreparationMatchesRevision:
+    self.prepared = (self.currentRevision > 0);
+
+  context Proposal inv ValidationReferencesExistingRevision:
+    self.validationRevision <= self.currentRevision;
+
+  context Proposal inv SendingRequiresFinalization:
+    self.sent implies self.finalized;
+
+  context Proposal inv SentRevisionIsCurrent:
+    self.sent implies self.sentRevision = self.currentRevision;
+
+  context ReviewRound inv RoundOnKnownRevision:
+    self.onRevision >= 0 and self.round >= 1;
+}

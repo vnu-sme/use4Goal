@@ -10,12 +10,12 @@
         <showrolenames>true</showrolenames>
         <showgrid>false</showgrid>
     </diagramOptions>
-    <node height="1208.0" id="ProposalManager" sizeCalculated="false"
-        type="IStarNode" width="984.0">
+    <node height="1142.0" id="ProposalManager" sizeCalculated="false"
+        type="IStarNode" width="871.0">
         <name>ProposalManager</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>-36.0</x>
-            <y>25.0</y>
+            <x>47.0</x>
+            <y>82.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
@@ -23,8 +23,8 @@
         sizeCalculated="false" type="IStarNode" width="250.0">
         <name>ProposalSuccessfullyCompleted</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>81.0</x>
-            <y>115.0</y>
+            <x>164.0</x>
+            <y>172.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
@@ -32,8 +32,8 @@
         sizeCalculated="false" type="IStarNode" width="385.0">
         <name>CurrentProposalPreparedAndValidated</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>410.0</x>
-            <y>158.0</y>
+            <x>493.0</x>
+            <y>215.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
@@ -41,17 +41,17 @@
         type="IStarNode" width="250.0">
         <name>ProposalPrepared</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>535.0</x>
-            <y>283.0</y>
+            <x>618.0</x>
+            <y>340.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="82.0" id="CurrentRevisionValidated"
+    <node height="82.0" id="CurrentRevisionVerified"
         sizeCalculated="false" type="IStarNode" width="250.0">
-        <name>CurrentRevisionValidated</name>
+        <name>CurrentRevisionVerified</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>670.0</x>
-            <y>53.0</y>
+            <x>135.0</x>
+            <y>355.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
@@ -59,8 +59,8 @@
         sizeCalculated="false" type="IStarNode" width="250.0">
         <name>ProposalFinalizedAndSent</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>1.0</x>
-            <y>296.0</y>
+            <x>84.0</x>
+            <y>353.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
@@ -68,8 +68,8 @@
         type="IStarNode" width="250.0">
         <name>ProposalFinalized</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>-8.0</x>
-            <y>638.0</y>
+            <x>75.0</x>
+            <y>695.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
@@ -77,8 +77,8 @@
         type="IStarNode" width="250.0">
         <name>ProposalSent</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>165.0</x>
-            <y>500.0</y>
+            <x>248.0</x>
+            <y>557.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
@@ -86,8 +86,8 @@
         sizeCalculated="false" type="IStarNode" width="250.0">
         <name>CustomerFeedbackResolved</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>396.0</x>
-            <y>487.0</y>
+            <x>479.0</x>
+            <y>544.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
@@ -95,8 +95,8 @@
         sizeCalculated="false" type="IStarNode" width="250.0">
         <name>ProposalAcceptedWithoutChanges</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>557.0</x>
-            <y>707.0</y>
+            <x>640.0</x>
+            <y>764.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
@@ -104,8 +104,8 @@
         sizeCalculated="false" type="IStarNode" width="250.0">
         <name>RequestedChangesIncorporated</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>437.0</x>
-            <y>812.0</y>
+            <x>520.0</x>
+            <y>869.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
@@ -113,26 +113,35 @@
         type="IStarNode" width="250.0">
         <name>UpdateProposal</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>427.0</x>
-            <y>1015.0</y>
+            <x>510.0</x>
+            <y>1072.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="82.0" id="CustomerReviewReceived"
+    <node height="82.0" id="CurrentVersionApprovedByCustomer"
         sizeCalculated="false" type="IStarNode" width="250.0">
-        <name>CustomerReviewReceived</name>
+        <name>CurrentVersionApprovedByCustomer</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>636.0</x>
-            <y>473.0</y>
+            <x>135.0</x>
+            <y>1019.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="174.0" id="Customer" sizeCalculated="false"
-        type="IStarNode" width="306.0">
-        <name>Customer</name>
+    <node height="82.0" id="ProposalProjectClosed"
+        sizeCalculated="false" type="IStarNode" width="250.0">
+        <name>ProposalProjectClosed</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>954.0</x>
-            <y>140.0</y>
+            <x>135.0</x>
+            <y>1113.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="278.0" id="CustomerReviewer" sizeCalculated="false"
+        type="IStarNode" width="306.0">
+        <name>CustomerReviewer</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>1175.0</x>
+            <y>73.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
@@ -140,17 +149,17 @@
         type="IStarNode" width="250.0">
         <name>ReviewProposal</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>982.0</x>
-            <y>190.0</y>
+            <x>1203.0</x>
+            <y>233.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
-    <node height="36.0" id="dependum:11:ProposalReviewedByCustomer"
+    <node height="36.0" id="dependum:12:ProposalReviewedByCustomer"
         sizeCalculated="false" type="IStarNode" width="126.0">
-        <name>dependum:11:ProposalReviewedByCustomer</name>
+        <name>dependum:12:ProposalReviewedByCustomer</name>
         <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
-            <x>980.0</x>
-            <y>445.0</y>
+            <x>289.0</x>
+            <y>546.0</y>
         </strategy>
         <hidden>false</hidden>
     </node>
@@ -190,13 +199,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="IStarEdge">
-        <source>CurrentRevisionValidated</source>
+        <source>CurrentRevisionVerified</source>
         <target>CurrentProposalPreparedAndValidated</target>
         <name>and_refine</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::AND_REFINE::CurrentRevisionValidated::CurrentProposalPreparedAndValidated::WayPoint::0"
+                id="istar::AND_REFINE::CurrentRevisionVerified::CurrentProposalPreparedAndValidated::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -209,7 +218,42 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::AND_REFINE::CurrentRevisionValidated::CurrentProposalPreparedAndValidated::WayPoint::1"
+                id="istar::AND_REFINE::CurrentRevisionVerified::CurrentProposalPreparedAndValidated::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>CurrentVersionApprovedByCustomer</source>
+        <target>ProposalSuccessfullyCompleted</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::CurrentVersionApprovedByCustomer::ProposalSuccessfullyCompleted::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::CurrentVersionApprovedByCustomer::ProposalSuccessfullyCompleted::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -245,48 +289,6 @@
             </edgeproperty>
             <edgeproperty
                 id="istar::AND_REFINE::CustomerFeedbackResolved::ProposalSuccessfullyCompleted::WayPoint::1"
-                sizeCalculated="true" type="WayPoint"
-                userDefined="false" visible="true">
-                <name>1</name>
-                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
-                    <userOffsetX>0.0</userOffsetX>
-                    <userOffsetY>0.0</userOffsetY>
-                </strategy>
-                <id>1</id>
-                <specialid>2</specialid>
-                <hidden>false</hidden>
-            </edgeproperty>
-        </waypoints>
-        <hidden>false</hidden>
-    </edge>
-    <edge type="IStarEdge">
-        <source>CustomerReviewReceived</source>
-        <target>ProposalSuccessfullyCompleted</target>
-        <name>and_refine</name>
-        <properties/>
-        <waypoints>
-            <edgeproperty
-                id="istar::AND_REFINE::CustomerReviewReceived::ProposalSuccessfullyCompleted::WayPoint::0"
-                sizeCalculated="true" type="WayPoint" userDefined="true" visible="true">
-                <name>0</name>
-                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyRelativeToCorner">
-                    <userOffsetX>232.43531566984083</userOffsetX>
-                    <userOffsetY>-308.3210106332738</userOffsetY>
-                    <basisDeltaX>ABSOLUTE</basisDeltaX>
-                    <deltaX>0.0</deltaX>
-                    <maxDeltaX>1.7976931348623157E308</maxDeltaX>
-                    <basisDeltaY>ABSOLUTE</basisDeltaY>
-                    <deltaY>0.0</deltaY>
-                    <maxDeltaY>1.7976931348623157E308</maxDeltaY>
-                    <corner>NORTH_WEST</corner>
-                    <relativeNodeId>CustomerReviewReceived</relativeNodeId>
-                </strategy>
-                <id>0</id>
-                <specialid>1</specialid>
-                <hidden>false</hidden>
-            </edgeproperty>
-            <edgeproperty
-                id="istar::AND_REFINE::CustomerReviewReceived::ProposalSuccessfullyCompleted::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -407,6 +409,41 @@
         <hidden>false</hidden>
     </edge>
     <edge type="IStarEdge">
+        <source>ProposalProjectClosed</source>
+        <target>ProposalSuccessfullyCompleted</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::ProposalProjectClosed::ProposalSuccessfullyCompleted::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::ProposalProjectClosed::ProposalSuccessfullyCompleted::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
         <source>ProposalSent</source>
         <target>ProposalFinalizedAndSent</target>
         <name>and_refine</name>
@@ -442,13 +479,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="IStarEdge">
-        <source>CustomerReviewReceived</source>
-        <target>dependum:11:ProposalReviewedByCustomer</target>
+        <source>CurrentVersionApprovedByCustomer</source>
+        <target>dependum:12:ProposalReviewedByCustomer</target>
         <name>dependency</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::DEPENDENCY::CustomerReviewReceived::dependum:11:ProposalReviewedByCustomer::WayPoint::0"
+                id="istar::DEPENDENCY::CurrentVersionApprovedByCustomer::dependum:12:ProposalReviewedByCustomer::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -461,7 +498,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::DEPENDENCY::CustomerReviewReceived::dependum:11:ProposalReviewedByCustomer::WayPoint::1"
+                id="istar::DEPENDENCY::CurrentVersionApprovedByCustomer::dependum:12:ProposalReviewedByCustomer::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
@@ -477,13 +514,13 @@
         <hidden>false</hidden>
     </edge>
     <edge type="IStarEdge">
-        <source>dependum:11:ProposalReviewedByCustomer</source>
+        <source>dependum:12:ProposalReviewedByCustomer</source>
         <target>ReviewProposal</target>
         <name>dependency</name>
         <properties/>
         <waypoints>
             <edgeproperty
-                id="istar::DEPENDENCY::dependum:11:ProposalReviewedByCustomer::ReviewProposal::WayPoint::0"
+                id="istar::DEPENDENCY::dependum:12:ProposalReviewedByCustomer::ReviewProposal::WayPoint::0"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>0</name>
@@ -496,7 +533,7 @@
                 <hidden>false</hidden>
             </edgeproperty>
             <edgeproperty
-                id="istar::DEPENDENCY::dependum:11:ProposalReviewedByCustomer::ReviewProposal::WayPoint::1"
+                id="istar::DEPENDENCY::dependum:12:ProposalReviewedByCustomer::ReviewProposal::WayPoint::1"
                 sizeCalculated="true" type="WayPoint"
                 userDefined="false" visible="true">
                 <name>1</name>
