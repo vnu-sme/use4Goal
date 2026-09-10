@@ -73,7 +73,11 @@ public final class AclCompiler {
         }
         for (var invariant : ast.invariants()) {
             try {
-                NativeOclEvaluator.validate(invariant.expression());
+                if (ast.version().startsWith("v4.")) {
+                    AclCoreOclSyntax.validate(invariant.expression());
+                } else {
+                    NativeOclEvaluator.validate(invariant.expression());
+                }
             } catch (IllegalArgumentException ex) {
                 errors.add(format(sourceName, invariant.location().line(), invariant.location().column(),
                         "OCL", ex.getMessage()));

@@ -103,6 +103,7 @@ final class AclKodkodSymbolicModel {
     private final List<Formula> structuralFormulas = new ArrayList<>();
 
     AclKodkodSymbolicModel(AclModel acl, AclBpmnBoundary boundary) {
+        acl.requireLegacyRuntime();
         this.acl = Objects.requireNonNull(acl, "acl");
         this.boundary = Objects.requireNonNull(boundary, "boundary");
         createObjectAtoms();

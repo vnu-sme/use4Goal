@@ -45,6 +45,7 @@ public final class Acl2UseTranslator {
                             boolean multiValued, String roleType) {}
 
     public static String translate(AclModel model) {
+        model.requireLegacyRuntime();
         StringBuilder out = new StringBuilder()
                 .append("-- Generated from ACL. Regenerate instead of editing this file.\n")
                 .append("-- Role 'extends' is a play chain (Owner[1]--Role[mult] association), not USE\n")
@@ -71,7 +72,14 @@ public final class Acl2UseTranslator {
         Set<String> names = new HashSet<>();
         for (AclRelation relation : model.relations()) {
             String relationName = unique(names, relation.name());
-            String sourceRole = relation.source().roleName().orElse("source_" + relationName);
+            boolean groupOwnership = relation.kind() == RelationKind.COMPOSITION
+                    && model.findGroup(relation.source().type())
+                            .map(group -> !group.isOrganizationalContext()).orElse(false)
+                    && (model.findRole(relation.target().type()).isPresent()
+                        || model.findGroup(relation.target().type()).isPresent());
+            String sourceRole = groupOwnership
+                    ? lowerFirst(relation.source().type())
+                    : relation.source().roleName().orElse("source_" + relationName);
             String targetRole = relation.target().roleName().orElse("target_" + relationName);
             relationship(out, relationName, relation.kind().sourceName(),
                     relation.source().type(), relation.source().multiplicity(), sourceRole,
@@ -96,24 +104,30 @@ public final class Acl2UseTranslator {
                     ownerType.equals(agentClass) ? "agent" : lowerFirst(ownerType), true, role.name()));
         }
 
-        // Owner Group->Role and Group->Group both become composition.
+        // Group ownership is already represented by the composition relations
+        // emitted above.  Build the navigation index from those relations; do
+        // not emit a second "<Role>_in_<Group>" composition for the same pair.
         Map<String, List<GroupNav>> roleGroupNavByRole = new LinkedHashMap<>();
         Map<String, List<GroupNav>> groupParentNavByGroup = new LinkedHashMap<>();
         for (AclOwner owner : model.owners()) {
+            AclRelation ownership = model.relations().stream()
+                    .filter(relation -> relation.kind() == RelationKind.COMPOSITION)
+                    .filter(relation -> relation.source().type().equals(owner.sourceGroup()))
+                    .filter(relation -> relation.target().type().equals(owner.target()))
+                    .findFirst().orElseThrow();
+            // USE exposes a classifier-specific owner navigation (company,
+            // department, ...). The semantic ACL relation keeps the generic
+            // `group` navigation used by ACL/OCL expressions.
+            String ownerNavigation = model.findGroup(owner.sourceGroup())
+                    .filter(AclGroup::isOrganizationalContext)
+                    .map(group -> "orgContext")
+                    .orElseGet(() -> lowerFirst(owner.sourceGroup()));
             if (model.findRole(owner.target()).isPresent()) {
-                String inGroup = unique(names, owner.target() + "_in_" + owner.sourceGroup());
-                relationship(out, inGroup, "composition", owner.sourceGroup(), AclCardinality.bounded(1, 1),
-                        lowerFirst(owner.sourceGroup()), owner.target(), owner.multiplicity(),
-                        lowerFirst(owner.target()));
                 roleGroupNavByRole.computeIfAbsent(owner.target(), k -> new ArrayList<>())
-                        .add(new GroupNav(owner.sourceGroup(), lowerFirst(owner.sourceGroup())));
+                        .add(new GroupNav(owner.sourceGroup(), ownerNavigation));
             } else {
-                String name = unique(names, "Owner_" + owner.sourceGroup() + "_" + owner.target());
-                relationship(out, name, "composition", owner.sourceGroup(), AclCardinality.bounded(1, 1),
-                        lowerFirst(owner.sourceGroup()), owner.target(), owner.multiplicity(),
-                        lowerFirst(owner.target()));
                 groupParentNavByGroup.computeIfAbsent(owner.target(), k -> new ArrayList<>())
-                        .add(new GroupNav(owner.sourceGroup(), lowerFirst(owner.sourceGroup())));
+                        .add(new GroupNav(owner.sourceGroup(), ownerNavigation));
             }
         }
 
@@ -420,7 +434,10 @@ public final class Acl2UseTranslator {
         // one logical object across Filmstrip snapshots.  Do not emit a second
         // source-level attribute with the same name.
         domainAttributes.forEach(value -> out.append("  ").append(id(value.name())).append(" : ")
-                .append(id(value.type().sourceName())).append("\n"));
+                // USE has no declaration form for an opaque scalar data type;
+                // String is its executable carrier while ACL retains the name.
+                .append(value.type() instanceof AclNamedDataType
+                        ? "String" : id(value.type().sourceName())).append("\n"));
         out.append("end\n\n");
     }
 

@@ -31,16 +31,20 @@ class Acl2UseCanonicalRulesTest {
         var compiled = AclCompiler.compile("""
                 acl v2.0 Canonical {
                   enum Priority { LOW, HIGH }
+                  datatype DateTime;
                   entity Document { title : String; }
-                  entity Report extends Document;
+                  entity Report extends Document { submittedAt : DateTime; }
                   role Person { name : String; }
                   role Employee extends Person;
-                  group Company { Employee [0..*]; Department [0..*]; }
-                  group Department extends Company { }
-                  association mentors {
-                    Person [0..*] role mentors;
-                    Employee [0..*] role mentees;
+                  group Company {
+                    Employee [0..*];
+                    Department [0..*];
+                    association mentors {
+                      Person [0..*] role mentors;
+                      Employee [0..*] role mentees;
+                    }
                   }
+                  group Department extends Company { }
                   composition reports {
                     Department [1] role department;
                     Report [0..*] role reports;
@@ -53,6 +57,7 @@ class Acl2UseCanonicalRulesTest {
         assertTrue(use.contains("class Agent\nattributes\n  id : Integer\nend"));
         assertTrue(use.contains("class Person\nattributes\n  id : Integer\n  name : String"));
         assertTrue(use.contains("class Report < Document"));
+        assertTrue(use.contains("submittedAt : String"));
         assertTrue(use.contains("class Department < Company"));
         assertFalse(use.contains("class Employee < Person"));
         assertTrue(use.contains("association Person_plays_Employee"));
@@ -61,9 +66,9 @@ class Acl2UseCanonicalRulesTest {
         assertTrue(use.contains("Person[1] role person\n  Employee[0..*] role play_employee"));
         assertTrue(use.contains("association mentors between\n  Person[0..*] role mentors"));
         assertTrue(use.contains("composition reports between\n  Department[1] role department"));
-        assertTrue(use.contains("composition Employee_in_Company"));
+        assertTrue(use.contains("composition Company_contains_Employee"));
         assertTrue(use.contains("Company[1] role company\n  Employee[0..*] role employee"));
-        assertTrue(use.contains("composition Owner_Company_Department"));
+        assertTrue(use.contains("composition Company_contains_Department"));
         assertUseCompiles(use);
     }
 

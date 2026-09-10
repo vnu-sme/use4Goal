@@ -1,38 +1,18 @@
-// Bounded-verification scope for the Customer Complaint Management case
-// study (customer-complaint.acl / .istar / .bpmn2). One ComplaintCase, one
-// Complaint; up to three Examination passes (Customer Manager ->
-// Nutritionist -> Lab Manager) and up to three RefundApproval steps
-// (Customer Manager -> CFO -> CEO) on the deepest trace.
 acl-bpmn-boundary v1.0 CustomerComplaintBound {
-  snapshots 30;
+  snapshots 16;
   loop-bound 1;
-  integer -1..20000;
+  integer -1..4;
 
   objects ComplaintCase 1;
   objects FieldMan 1;
-  objects Nutritionist 1;
+  objects Examiner 1;
   objects CustomerManager 1;
-  objects LabManager 1;
-  objects Cfo 1;
-  objects Ceo 1;
   objects Accountment 1;
-  objects Complaint 1;
-  objects Examination 3;
-  objects RefundApproval 3;
+  objects ExaminationRecord 1;
+  objects RefundDecision 1;
 
-  links ComplaintCase_contains_FieldMan 1;
-  links ComplaintCase_contains_Nutritionist 1;
-  links ComplaintCase_contains_CustomerManager 1;
-  links ComplaintCase_contains_LabManager 1;
-  links ComplaintCase_contains_Cfo 1;
-  links ComplaintCase_contains_Ceo 1;
-  links ComplaintCase_contains_Accountment 1;
-  links ComplaintCase_contains_Complaint 1;
-  links ComplaintCase_contains_Examination 3;
-  links ComplaintCase_contains_RefundApproval 3;
-
-  links complaintOwnedBy 1;
-  links complaintExaminations 3;
-  links complaintRefundChain 3;
-  links refundStepDecidedBy 3;
+  links ComplaintExaminations 1;
+  links ComplaintRefunds 1;
+  links ExaminerRecords 1;
+  links ApproverRefunds 1;
 }

@@ -30,6 +30,7 @@ public final class AclSnapshot implements AclOclState {
     private AclSnapshot(AclModel acl) { this.acl = acl; }
 
     public static AclSnapshot of(AclModel acl, AolModel model) {
+        acl.requireLegacyRuntime();
         AclSnapshot out = new AclSnapshot(acl);
         for (String agent : model.agents()) {
             out.add(new ObjectValue(agent, model.agentProfileRoles().getOrDefault(agent, "Agent"), Kind.AGENT,

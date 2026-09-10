@@ -1,273 +1,112 @@
-// i* SR model for Process 1 - Sales Forecast, in the real iStar DSL
-// (IStar.g4). Actor names are aligned 1:1 with sales-forecast.acl /
-// sales-forecast.bpmn2's role names where a BPMN lane exists for them
-// (CustomerManager, PresaleEngineer, ServiceAgreements, DeptManager,
-// SectorManager, BusinessVp, FinancialControl, CreditControl -- renamed
-// from "Presale Department" / "Service Agreements Department" / "Director
-// of Sales Sector" / "Sales Department Manager" / "VP Business Division"
-// respectively). Approver and Management have no BPMN lane but are Deal
-// orgContext role members too (see sales-forecast.acl) since they own leaf
-// tasks that read Deal entity state. FinancialControl now also gets an explicit
-// `is-a Approver`, alongside the other four approval levels -- the
-// earlier JSON/piStar version of this model had no actor at all for
-// Financial Control (finding F5 in mapping-sales-forecast.md); this is
-// that gap closed, not a new redesign.
+// SalesForecast intentional model.
 //
-// Project Department, Inventory Manager, Service Provider, Customer,
-// Vendor, BiSystem, BSaleSystem stay pure i*-only actors (as in the
-// original model, Sales Forecast's BPMN never reaches installation, PN
-// approval, or kit-provisioning as separate participants) -- their leaf
-// conditions are therefore written as self-contained predicates instead of
-// orgContext-scoped navigation, since they are not Deal entity/role members.
-//
-// As in the Complaint case: condition/pre/post are written ONLY on a
-// Goal/Task that is never the target of a '>' (AND/OR) relation elsewhere
-// in this file; a parent's status is derived from its children. Quality
-// (softgoal) elements never carry a condition -- the grammar has none.
+// OCL context convention: self : Deal
+
 istar SalesForecastGoals {
 
+  agent Deal {
+
+    goal DealClosedSuccessfully : Achieve
+
+    goal DealApprovedAndCompleted : Achieve
+      > or DealClosedSuccessfully
+
+    goal DealPreparedAndAssessed : Sustain
+      > or DealClosedSuccessfully
+
+    goal CustomerRecordedAndDetailsEntered : None
+      > DealPreparedAndAssessed
+
+    goal TechnicalPackagePrepared : None
+      > DealPreparedAndAssessed
+
+    goal PricingAndProfitabilityAssessed : None
+      > DealPreparedAndAssessed
+
+    goal RecordCustomerDetails : Achieve
+      > CustomerRecordedAndDetailsEntered
+    condition {[
+      self.state = DealPhase::CUSTOMER_RECORDED
+    ]}
+
+    goal EnterDealDetails : None
+      > CustomerRecordedAndDetailsEntered
+    condition {[
+      self.dealValue > 0
+    ]}
+
+    goal PrepareTechnicalBOM : Achieve
+      > or TechnicalPackagePrepared
+    condition {[
+      self.TechnicalPackage->notEmpty()
+      and
+      self.TechnicalPackage->forAll(p | p.bomReady = true)
+    ]}
+
+    goal AssessProfitability : Achieve
+      > or PricingAndProfitabilityAssessed
+    condition {[
+      self.ProposalRevision->notEmpty()
+      and
+      self.ProposalRevision->forAll(r | r.profitabilityPct > 0)
+    ]}
+
+    goal CustomerReviewReceived : None
+      > DealPreparedAndAssessed
+
+    goal DealApprovedByManagement : Achieve
+      > or DealApprovedAndCompleted
+    condition {[
+      self.ProposalRevision->notEmpty()
+      and
+      self.ProposalRevision.decisions->notEmpty()
+      and
+      self.ProposalRevision.decisions->forAll(d | d.outcome = ApprovalOutcome::APPROVED)
+    ]}
+
+    goal DealRejectedByManagement : None
+      > or DealApprovedAndCompleted
+
+    task SubmitForApproval
+      > or DealApprovedByManagement
+    pre {[
+      self.state = DealPhase::PRICING_READY
+    ]}
+    post {[
+      self.state = DealPhase::PROFITABILITY_ASSESSED
+    ]}
+
+    task ApproveDeal
+      > or DealApprovedByManagement
+    pre {[
+      self.state = DealPhase::PROFITABILITY_ASSESSED
+    ]}
+    post {[
+      self.state = DealPhase::APPROVED
+    ]}
+
+    task CompleteDeal
+      > or DealApprovedAndCompleted
+    pre {[
+      self.state = DealPhase::APPROVED
+    ]}
+    post {[
+      self.state = DealPhase::COMPLETED
+    ]}
+  }
+
   role Approver {
-    goal ApproveAndProgressPriceProposals : Achieve
 
-    goal MeasuringSalesPerformance : Achieve
-      > help MaintainProfitability
-    condition {[ self.orgContext.deal.profitabilityPct >= 0 ]}
-
-    task ControlAndCheckTheProfitability
-      > ApproveAndProgressPriceProposals
-    pre {[ self.orgContext.deal.dealDetailsInserted ]}
-
-    task ApprovePriceProposal
-      > ApproveAndProgressPriceProposals
-      > help MaintainProfitability
-    pre {[ self.orgContext.deal.profitabilityPct >= 0 ]}
-
-    quality MaintainProfitability
+    task ReviewAndApproveDeal
+    pre {[
+      self.ProposalRevision->notEmpty()
+    ]}
+    post {[
+      self.ProposalRevision.decisions->exists(d | d.outcome = ApprovalOutcome::APPROVED)
+    ]}
   }
 
-  role Management {
-    goal IncreasingTheSalesAndRevenues : Achieve
-
-    goal SalesPerformanceMeasurement : Achieve
-      > IncreasingTheSalesAndRevenues
-    condition {[ self.orgContext.deal.salesPerformanceMeasured ]}
-
-    goal IncreaseTheCustomerBaseO4A : Achieve
-      > IncreasingTheSalesAndRevenues
-    condition {[ self.orgContext.deal.customerBaseIncreased ]}
-
-    goal StrategicSalesDevelopment : Achieve
-      > IncreasingTheSalesAndRevenues
-    condition {[ self.orgContext.deal.strategicSalesDevelopmentDone ]}
-
-    quality EnsureReliability
-      > qualifies IncreasingTheSalesAndRevenues
-    quality EnsureProfitabilityRate
-      > qualifies IncreasingTheSalesAndRevenues
-    quality MaintainExistingCustomersBaseO4B
-      > qualifies IncreaseTheCustomerBaseO4A
-  }
-
-  role BusinessVp {
-    goal PromoteSalesAndProfitabilityStrategicView : Achieve
-
-    task CalculateOrganizationalConsiderationsAndConstraints
-      > PromoteSalesAndProfitabilityStrategicView
-    pre {[ true ]}
-
-    task ControlAndCheckTheProfitabilityOrgLevel
-      > PromoteSalesAndProfitabilityStrategicView
-    pre {[ self.orgContext.deal.profitabilityPct >= 0 ]}
-
-  }
-
-  role PresaleEngineer {
-    goal DevelopSolutionsForCustomers : Achieve
-
-    task CreatingBomIncludesPns
-      > DevelopSolutionsForCustomers
-    pre {[ true ]}
-    post {[ self.orgContext.deal.bomReady and self.orgContext.deal.pnsReady ]}
-
-    task AssignAnEngineerThroughIs
-      > DevelopSolutionsForCustomers
-      > make SolutionQuality
-    pre {[ self.orgContext.deal.presaleInvoked ]}
-
-    task CreatingOfHldDocument
-      > DevelopSolutionsForCustomers
-    pre {[ self.orgContext.deal.presaleInvoked ]}
-    post {[ self.orgContext.deal.hldReady ]}
-
-    quality SolutionQuality
-  }
-
-  role ServiceAgreements {
-    goal EnsureThatPriceProposalIncludesAServiceAgreement : Achieve
-    condition {[ self.orgContext.deal.serviceAgreementApproved ]}
-  }
-
-  role CustomerManager {
-    goal PromoteSalesAccordingToTargets : Achieve
-
-    goal GetApprovalForPriceProposalToProgress : Achieve
-      > PromoteSalesAccordingToTargets
-
-    task RequestApproval
-      > GetApprovalForPriceProposalToProgress
-      > hurt AchieveHighSalesTargetsPerformance
-    pre {[ self.orgContext.deal.dealDetailsInserted ]}
-
-    task GeneratingProposalsBasedOnUniformTemplate
-      > GetApprovalForPriceProposalToProgress
-      > break RespondQuicklyAndFlexibly
-
-    task CreateAndInsertPriceProposalIntoTheSystem
-      > PromoteSalesAccordingToTargets
-      > make AchieveHighSalesTargetsPerformance
-    pre {[ self.orgContext.deal.dealDetailsInserted ]}
-    post {[ self.orgContext.deal.proposalVersion >= 0 ]}
-
-    task SendTheApprovedPriceProposalToTheCustomer
-      > GeneratingProposalsBasedOnUniformTemplate
-      > hurt AchieveHighSalesTargetsPerformance
-      > hurt SatisfyTheCustomer
-      > break RespondQuicklyAndFlexibly
-    pre {[ self.orgContext.deal.approvedProposalVersion = self.orgContext.deal.proposalVersion ]}
-    post {[ self.orgContext.deal.proposalVersion = self.orgContext.deal.proposalVersion@pre + 1 ]}
-
-    task TransferPriceProposalToTheOperation
-      > CreateAndInsertPriceProposalIntoTheSystem
-      > break RespondQuicklyAndFlexibly
-      > make ShortDeliveryTime
-    pre {[ self.orgContext.deal.kitCompleted ]}
-    post {[ self.orgContext.deal.transferredToOperator ]}
-
-    task BuildPartNumbers
-      > CreateAndInsertPriceProposalIntoTheSystem
-      > break RespondQuicklyAndFlexibly
-      > help ShortDeliveryTime
-    pre {[ self.orgContext.deal.bomReady ]}
-    post {[ self.orgContext.deal.pnsReady ]}
-
-    task InsertingBomPriceList
-      > CreateAndInsertPriceProposalIntoTheSystem
-      > hurt RespondQuicklyAndFlexibly
-      > make ShortDeliveryTime
-    pre {[ self.orgContext.deal.bomReady ]}
-    post {[ self.orgContext.deal.pnsReady ]}
-
-    task CompleteKitComponents
-      > CreateAndInsertPriceProposalIntoTheSystem
-      > hurt RespondQuicklyAndFlexibly
-      > help ShortDeliveryTime
-    pre {[ self.orgContext.deal.approvedProposalVersion = self.orgContext.deal.proposalVersion ]}
-    post {[ self.orgContext.deal.kitCompleted ]}
-    // NOTE: if this changes proposalVersion, the pre above no longer holds
-    // afterwards -- see mapping-sales-forecast.md, Case A.
-
-    task CompleteTheMandatoryPriceProposalElements
-      > GeneratingProposalsBasedOnUniformTemplate
-    pre {[ self.orgContext.deal.dealDetailsInserted ]}
-    post {[ self.orgContext.deal.pnsReady and self.orgContext.deal.hldReady ]}
-
-    task InvitePresaleEngineerThroughTheIs
-      > CreateAndInsertPriceProposalIntoTheSystem
-    post {[ self.orgContext.deal.presaleInvoked ]}
-
-    task RequestForSpecialBid
-      > SendTheApprovedPriceProposalToTheCustomer
-      > help SatisfyTheCustomer
-      > help ShortDeliveryTime
-      > make ObtainGoodTermsForCustomers
-    post {[ self.orgContext.deal.specialBidObtained ]}
-
-    task OfferSolutions
-      > SendTheApprovedPriceProposalToTheCustomer
-      > hurt AchieveHighSalesTargetsPerformance
-      > hurt ObtainGoodTermsForCustomers
-
-    quality SatisfyTheCustomer
-    quality RespondQuicklyAndFlexibly
-      > help SatisfyTheCustomer
-    quality ShortDeliveryTime
-      > make SatisfyTheCustomer
-    quality ObtainGoodTermsForCustomers
-    quality AchieveHighSalesTargetsPerformance
-  }
-
-  // CreditControl, FinancialControl, DeptManager, SectorManager and Economy
-  // own no intentional elements of their own in the source model -- they
-  // exist here purely as is-a targets, same as Approver's fifth
-  // generalisation.
-  role CreditControl {
-  }
-  role FinancialControl {
-  }
-  role DeptManager {
-  }
-  role SectorManager {
-  }
-  role Economy {
-  }
-
-  role Customer { }
-  role Vendor { }
-  role InventoryManager { }
-  role ServiceProvider { }
-  role ProjectDepartment {
-    goal PrepareForPostSaleActivities : Achieve
-
-    task InstallationScheduling
-      > PrepareForPostSaleActivities
-
-    task InstallationPlaning
-      > PrepareForPostSaleActivities
-
-    quality BeInformed
-      > qualifies PrepareForPostSaleActivities
-  }
-  agent BiSystem { }
-  agent BSaleSystem { }
-
-  // Every dependency below anchors its `.Element` (where used) to a LEAF
-  // intentional element only -- an element that is never itself the target
-  // of an AND/OR-refinement '>' elsewhere in this file. Where the natural
-  // dependee is an abstract parent goal (e.g. ApproveAndProgressPriceProposals,
-  // SendTheApprovedPriceProposalToTheCustomer, PrepareForPostSaleActivities),
-  // the anchor is redirected down to the specific child that concretely
-  // realises it; where no single child is the obvious fit, the `.Element`
-  // anchor is dropped and the dependency attaches to the whole actor
-  // (a plain SD-view dependency, no SR boundary attachment).
-  // Actor generalisation (GoalModel.actorAssociations), mirroring
-  // sales-forecast.acl's `role X specializes Approver` hierarchy.
-  is-a BusinessVp Approver
-  is-a CreditControl Approver
-  is-a FinancialControl Approver
-  is-a DeptManager Approver
-  is-a SectorManager Approver
-  is-a Economy Approver
-
-  depend CustomerManager.RequestApproval -> goal CompleteTheApprovalsRound -> Approver.ApprovePriceProposal
-  depend Management.StrategicSalesDevelopment -> goal SalesDevelopment -> BusinessVp
-  depend Management.SalesPerformanceMeasurement -> goal StrategicPlan -> BiSystem
-  depend BiSystem -> task ImportSalesPerformance -> BSaleSystem
-  depend Management.SalesPerformanceMeasurement -> goal ObtainARealPictureOfExpectedSales -> CustomerManager.RequestApproval
-  depend Management.EnsureProfitabilityRate -> goal ApproveAccordingToTheProfitabilityRate -> Approver.ControlAndCheckTheProfitability
-  depend Management.EnsureProfitabilityRate -> goal AvoidSendingUnapprovedProposals -> CustomerManager.OfferSolutions
-  depend Management.EnsureReliability -> goal QuotesMustBeSentInAUniformTemplateOnly -> CustomerManager.OfferSolutions
-  depend Management.IncreaseTheCustomerBaseO4A -> goal IncreaseAndMaintainTheCustomerBase -> CustomerManager.SatisfyTheCustomer
-  depend Management.EnsureReliability -> goal OfferSolutionsFromAmongApprovedOnesOnly -> CustomerManager.OfferSolutions
-  depend CustomerManager.RequestForSpecialBid -> goal ObtainASpecialBid -> Vendor
-  depend Customer -> goal GetPriceProposal -> CustomerManager.OfferSolutions
-  depend Approver.MeasuringSalesPerformance -> goal MeasuringAndTrackingSalesTargets -> CustomerManager.AchieveHighSalesTargetsPerformance
-  depend ServiceAgreements.EnsureThatPriceProposalIncludesAServiceAgreement -> goal AddServiceAgreement -> CustomerManager.CompleteTheMandatoryPriceProposalElements
-  depend CustomerManager.BuildPartNumbers -> goal GetApprovalForPnsToProgress -> InventoryManager
-  depend ServiceProvider -> goal GetAllKitComponentsToProgress -> CustomerManager.CompleteKitComponents
-  depend CustomerManager.TransferPriceProposalToTheOperation -> task RequestForInstallation -> ProjectDepartment.InstallationScheduling
-  depend ProjectDepartment.InstallationPlaning -> task GetAnHldDocument -> PresaleEngineer.CreatingOfHldDocument
-  depend PresaleEngineer.CreatingBomIncludesPns -> goal OrderlyManagementOfRequests -> CustomerManager.InvitePresaleEngineerThroughTheIs
-  depend CustomerManager.InsertingBomPriceList -> goal GettingBomAndHld -> PresaleEngineer.AssignAnEngineerThroughIs
-  depend CustomerManager.InvitePresaleEngineerThroughTheIs -> goal GetSolutionCharacterization -> PresaleEngineer.AssignAnEngineerThroughIs
-  depend CustomerManager.CompleteTheMandatoryPriceProposalElements -> task InsertPriceProposal -> BSaleSystem
+  depend Deal.CustomerReviewReceived
+    -> goal DealReviewedByApprover
+    -> Approver.ReviewAndApproveDeal
 }

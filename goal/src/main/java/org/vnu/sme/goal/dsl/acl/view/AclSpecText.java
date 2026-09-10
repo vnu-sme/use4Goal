@@ -16,6 +16,8 @@ public final class AclSpecText {
                 .append(model.name()).append(" {\n");
         model.enums().forEach(value -> out.append('\n').append(INDENT).append("enum ")
                 .append(value.name()).append(" { ").append(String.join(", ", value.literals())).append(" }\n"));
+        model.namedDataTypes().forEach(value -> out.append(INDENT).append("datatype ")
+                .append(value.sourceName()).append(";\n"));
 
         Set<String> nested = new LinkedHashSet<>();
         Set<String> nestedContexts = new LinkedHashSet<>();
@@ -38,8 +40,12 @@ public final class AclSpecText {
         Set<String> derivedContainments = new LinkedHashSet<>();
         model.groups().forEach(context -> context.members().forEach(member ->
                 derivedContainments.add(AclContainment.relationName(context.name(), member.type()))));
-        model.relations().stream().filter(value -> !derivedContainments.contains(value.name()))
+        model.relations().stream().filter(value -> model.isRevisedCore()
+                        || !derivedContainments.contains(value.name()))
                 .forEach(value -> renderRelation(out, value));
+        model.compatibilities().stream().filter(value -> value.groupName().equals("__model__"))
+                .forEach(value -> out.append(INDENT).append(value.fromRole())
+                        .append(" compatible ").append(value.toRole()).append(";\n"));
         model.invariants().forEach(value -> out.append('\n').append(INDENT)
                 .append("context ").append(value.contextType()).append(" inv ")
                 .append(value.name()).append(":\n")
@@ -52,6 +58,7 @@ public final class AclSpecText {
         if (!path.add(context.name())) return;
         out.append('\n').append(INDENT.repeat(depth)).append("orgContext ")
                 .append(context.name()).append(" {\n");
+        context.attributes().forEach(value -> renderAttribute(out, value, depth + 1));
         for (AclGroupMember member : context.members()) {
             model.findRole(member.type()).ifPresent(value -> renderClassifier(out, "role", value.name(),
                     value.parentRoles().stream().findFirst(), value.attributes(), depth + 1));

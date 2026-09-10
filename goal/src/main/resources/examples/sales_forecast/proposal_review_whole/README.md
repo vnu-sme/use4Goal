@@ -1,4 +1,24 @@
-# ProposalReview — bounded ACL/BPMN/iStar inconsistency
+# ProposalReview — ACL core v4 migration
+
+`proposal_review.acl` now follows `examples/ProposalReview/ACL-semantics-core-revised.md`:
+OrgCtx has state; revisions, validations and reviews are domain objects;
+Role inheritance is same-instance inheritance. The new ACL file passes the
+structural parser. This does **not** make this directory an executable v4 bundle.
+
+The neighbouring BPMN, iStar and boundary files still use the previous scalar
+state schema and need migration together with the runtime backend. Legacy
+execution/translation entry points reject v4 explicitly rather than use the old
+play-chain semantics. Do not use the historical counts or verdict below as
+results for the new ACL model. No new conformance experiment was run in this
+migration.
+
+For the new model and migration details see
+`examples/ProposalReview/ACL-core-v4-design.md` at the repository root.
+
+## Historical scalar-schema documentation
+
+Everything below describes the **previous** schema, including its loading
+instructions and expected results; it is retained for migration reference only.
 
 This is the executable counterpart of the paper's `ProposalReview`
 motivating example. It is intentionally separate from the older
@@ -21,8 +41,8 @@ Load the four model files in **ACL State Evaluator**, then press
 The essential ACL attributes are:
 
 ```text
-currentRevision    : { none, r1, r2 }
-validationRevision : { none, r1, r2 }
+currentRevision    : Integer
+validationRevision : Integer
 ```
 
 `Validate proposal` establishes:
@@ -34,7 +54,7 @@ self.validationRevision = self.currentRevision
 If the customer requests changes, `Update proposal` establishes:
 
 ```ocl
-self.currentRevision = #r2
+self.currentRevision = self.currentRevision@pre + 1
 and self.validationRevision = self.validationRevision@pre
 ```
 
@@ -62,7 +82,7 @@ The XOR gateway yields exactly two maximal executions in this boundary.
 | No changes | `currentRevision=r1`, `validationRevision=r1` | fulfilled |
 | Changes requested | `currentRevision=r2`, `validationRevision=r1` | violated |
 
-Both executions reach `proposalCompleted`, so there is no BPMN deadlock. The
+Both executions reach `proposalSent`, so there is no BPMN deadlock. The
 second execution fails only after BPMN effects and iStar goal conditions are
 interpreted over the same evolving ACL state.
 
@@ -81,27 +101,25 @@ changesRequested -> updateProposal
 updateProposal -> feedbackMerge
 feedbackMerge -> finalizeProposal
 finalizeProposal -> sendProposal
-sendProposal -> proposalCompleted
+sendProposal -> proposalSent
 ```
 
 ## iStar evaluation
 
-The verdict targets only these root Goals:
+The verdict targets this root Goal:
 
 ```text
-ProposalManager.ProposalSuccessfullyCompleted
-Customer.ProposalReceived
+ProposalManager.ProposalCompleted
 ```
 
-`ProposalSuccessfullyCompleted` has no condition of its own. It is propagated
-from three branches:
+`ProposalCompleted` has no condition of its own. It is propagated from two
+branches:
 
-1. the proposal is prepared, reviewed, and its **current** revision remains
-   validated;
-2. customer feedback is resolved by acceptance or incorporation;
-3. the current revision is finalized and sent.
+1. the proposal is ready for finalization: it is prepared and validated, the
+   customer review is received, and customer feedback is resolved;
+2. the proposal is finalized and sent.
 
-`CurrentRevisionValidated` is a `Sustain` leaf. It becomes true after
+`CurrentProposalPreparedAndValidated` is a `Sustain` Goal. It becomes true after
 validation of r1, but the r2 update makes it false and it stays violated. The
 other child Goals may still be fulfilled; AND propagation therefore prevents
 the root Goal from being fulfilled on that branch.

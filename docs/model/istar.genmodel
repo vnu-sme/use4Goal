@@ -11,6 +11,7 @@
       <genEnumLiterals ecoreEnumLiteral="istar.ecore#//GoalType/ACHIEVE"/>
       <genEnumLiterals ecoreEnumLiteral="istar.ecore#//GoalType/MAINTAIN"/>
       <genEnumLiterals ecoreEnumLiteral="istar.ecore#//GoalType/SUSTAIN"/>
+      <genEnumLiterals ecoreEnumLiteral="istar.ecore#//GoalType/NONE"/>
     </genEnums>
     <genEnums typeSafeEnumCompatible="false" ecoreEnum="istar.ecore#//ContributionType">
       <genEnumLiterals ecoreEnumLiteral="istar.ecore#//ContributionType/MAKE"/>
@@ -26,13 +27,11 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute istar.ecore#//GoalModel/name"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference istar.ecore#//GoalModel/actors"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference istar.ecore#//GoalModel/dependencies"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference istar.ecore#//GoalModel/actorAssociations"/>
     </genClasses>
     <genClasses image="false" ecoreClass="istar.ecore#//Actor">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute istar.ecore#//Actor/name"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference istar.ecore#//Actor/model"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference istar.ecore#//Actor/elements"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference istar.ecore#//Actor/relations"/>
     </genClasses>
     <genClasses ecoreClass="istar.ecore#//Agent"/>
     <genClasses ecoreClass="istar.ecore#//Role"/>
@@ -40,10 +39,15 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute istar.ecore#//IntentionalElement/id"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute istar.ecore#//IntentionalElement/description"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference istar.ecore#//IntentionalElement/owner"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference istar.ecore#//IntentionalElement/source"/>
     </genClasses>
-    <genClasses ecoreClass="istar.ecore#//Quality"/>
+    <genClasses ecoreClass="istar.ecore#//Quality">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference istar.ecore#//Quality/quality"/>
+    </genClasses>
     <genClasses image="false" ecoreClass="istar.ecore#//ConcreteIntentionalElement"/>
-    <genClasses image="false" ecoreClass="istar.ecore#//GoalTaskElement"/>
+    <genClasses image="false" ecoreClass="istar.ecore#//GoalTaskElement">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference istar.ecore#//GoalTaskElement/parent"/>
+    </genClasses>
     <genClasses ecoreClass="istar.ecore#//Goal">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute istar.ecore#//Goal/goalType"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference istar.ecore#//Goal/condition"/>
@@ -57,25 +61,26 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute istar.ecore#//Condition/condExpr"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute istar.ecore#//Condition/condLang"/>
     </genClasses>
-    <genClasses image="false" ecoreClass="istar.ecore#//IntentionalRelation">
-      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference istar.ecore#//IntentionalRelation/owner"/>
-    </genClasses>
-    <genClasses image="false" ecoreClass="istar.ecore#//Refinement">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference istar.ecore#//Refinement/parent"/>
-    </genClasses>
+    <genClasses image="false" ecoreClass="istar.ecore#//Refinement"/>
     <genClasses ecoreClass="istar.ecore#//AndRefinement">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference istar.ecore#//AndRefinement/children"/>
     </genClasses>
     <genClasses ecoreClass="istar.ecore#//OrRefinement">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference istar.ecore#//OrRefinement/children"/>
     </genClasses>
+    <genClasses ecoreClass="istar.ecore#//ParameterRefinement">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference istar.ecore#//ParameterRefinement/child"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference istar.ecore#//ParameterRefinement/parameter"/>
+    </genClasses>
+    <genClasses ecoreClass="istar.ecore#//ForRefinement">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference istar.ecore#//ForRefinement/child"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference istar.ecore#//ForRefinement/parameter"/>
+    </genClasses>
     <genClasses ecoreClass="istar.ecore#//Contribution">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute istar.ecore#//Contribution/type"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference istar.ecore#//Contribution/source"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference istar.ecore#//Contribution/quality"/>
     </genClasses>
     <genClasses ecoreClass="istar.ecore#//Qualification">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference istar.ecore#//Qualification/quality"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference istar.ecore#//Qualification/element"/>
     </genClasses>
     <genClasses ecoreClass="istar.ecore#//NeededBy">

@@ -1,260 +1,82 @@
-// i* SR model for Process 2 - Customer Complaint Management, in the real
-// iStar DSL (IStar.g4).
+// CustomerComplaint intentional model.
 //
-// Actor split note: the earlier JSON/piStar version of this model merged
-// "Field Man" + "Nutritionist" into one actor, and kept "Customer Manager"'s
-// complaint-handling duties under a separate "Customer and field Manager"
-// actor -- disagreeing with customer-complaint.bpmn2's seven lanes (which
-// treat FieldMan / Nutritionist / CustomerManager as three distinct
-// participants). To keep this file "corresponding" to the .acl/.bpmn2 role
-// set (as the classroom example keeps Teacher/Student identical across all
-// three DSLs), this version re-attributes each element to the lane that
-// actually performs it:
-//   - UpdatingAndExaminingFindings (+ its own FindingsReport resource) moves
-//     from the merged actor to Nutritionist.
-//   - ExaminingTheFindingsAndUpdating and FinancialCompensationApproval
-//     move to CustomerManager as their own leaf elements (no longer
-//     AND-refinement children of ManagingFieldManActivities, which stays
-//     under CustomerManager and now has no children of its own).
-//   - UpdateComplaint moves to FieldMan (matches BPMN lane "Field Man"
-//     performing "Updating the complaint" -- this is the fix for what the
-//     earlier mapping doc flagged as finding F8).
-//   - the existing GettingAFindingsReport dependency is re-pointed
-//     CustomerManager -> Nutritionist instead of being an in-actor
-//     refinement, which is exactly what a cross-actor need should be.
-//
-// Every Goal/Task below carries condition/pre/post ONLY when it is a LEAF
-// (never the target of an AND/OR-refinement '>' elsewhere in this file).
-// A parent's status is derived from its children, never authored by hand.
-// Quality (softgoal) elements never carry a condition -- the grammar has no
-// such clause for `quality` at all; a softgoal's standing is read off the
-// make/help/hurt/break contributions pointing at it. A `pre`/`post` is also
-// left out on a leaf task when the actual outcome is an external/human
-// decision (e.g. an approval) rather than something the task itself
-// mechanically establishes -- the downstream gateway's own branch-`post` in
-// customer-complaint.bpmn2 already states that outcome; see the classroom
-// grammar note "a post outside [the mechanical] shape ... is expected to
-// come from an external adapter".
-istar ComplaintGoals {
+// OCL context convention: self : ComplaintCase
 
-  role FieldMan {
-    goal HandlingCustomerComplaints : Achieve
+istar CustomerComplaintGoals {
 
-    task CreatingComplaint
-      > HandlingCustomerComplaints
-      > make SatisfyTheCustomers
+  agent ComplaintCase {
 
-    task UpdatingCustomerComplaint
-      > CreatingComplaint
-    pre {[ self.orgContext.complaint.created ]}
-    post {[ self.orgContext.complaint.artifactsUpdated ]}
+    goal ComplaintResolvedAndClosed : Achieve
 
-    goal MonitoringCustomerComplaint : Achieve
-      > HandlingCustomerComplaints
-      > help SatisfyTheCustomers
+    goal ComplaintExaminedAndSettled : Achieve
+      > or ComplaintResolvedAndClosed
 
-    task ClosingAHandledComplaint
-      > MonitoringCustomerComplaint
-    pre {[ self.orgContext.complaint.handled ]}
-    post {[ self.orgContext.complaint.closed ]}
+    goal ComplaintReceivedAndRegistered : Sustain
+      > or ComplaintResolvedAndClosed
 
-    goal GetFinancialCompensationApproval : Achieve
-      > HandlingCustomerComplaints
-      > break SatisfyTheCustomers
-
-    task UpdateTheAmountOfCompensation
-      > GetFinancialCompensationApproval
-    pre {[ self.orgContext.complaint.compensationSuggested ]}
-    post {[ self.orgContext.complaint.refundAmount >= 0 ]}
-
-    task SubmitAReopeningRequest
-      > MonitoringCustomerComplaint
-      > hurt SolveStuckComplaint
-      > break SatisfyTheCustomers
-    pre {[ self.orgContext.complaint.closed and not self.orgContext.complaint.handled ]}
-    post {[ not self.orgContext.complaint.closed ]}
-
-    task GettingCustomerStatus
-      > GetFinancialCompensationApproval
-      > help SatisfyTheCustomers
-    pre {[ true ]}
-    post {[ true ]}
-
-    task UpdateComplaint
-      > CreatingComplaint
-    post {[ self.orgContext.complaint.artifactsUpdated ]}
-
-    quality SatisfyTheCustomers
-    quality SolveStuckComplaint
-      > make SatisfyTheCustomers
-  }
-
-  role Nutritionist {
-    task UpdatingAndExaminingFindings
-    post {[ self.orgContext.complaint.examinedByNutritionist ]}
-
-    resource FindingsReport
-      > needed-by UpdatingAndExaminingFindings
-  }
-
-  role CustomerManager {
-    goal ManagingFieldManActivities : Achieve
-    condition {[ self.orgContext.complaint.artifactsUpdated and self.orgContext.complaint.closed ]}
-
-    task ExaminingTheFindingsAndUpdating
-    post {[ self.orgContext.complaint.examinedByCustomerManager ]}
-
-    goal FinancialCompensationApproval : Achieve
+    goal ComplaintArtifactsUpdated : None
+      > or ComplaintReceivedAndRegistered
     condition {[
-      self.orgContext.complaint.refundAmount < 5000 implies self.orgContext.complaint.cmApproval = ApprovalOutcome::Approved
+      self.phase = ComplaintPhase::ARTIFACTS_UPDATED
     ]}
 
+    goal ComplaintExaminedBySpecialist : None
+      > or ComplaintExaminedAndSettled
+
+    goal SpecialistExaminationReceived : None
+      > or ComplaintExaminedAndSettled
+
+    goal RefundApprovedByManager : Achieve
+      > or ComplaintExaminedAndSettled
+    condition {[
+      self.RefundDecision->notEmpty()
+      and
+      self.RefundDecision->forAll(r | r.outcome = ApprovalOutcome::APPROVED)
+    ]}
+
+    goal RefundRejectedByManager : None
+      > or ComplaintExaminedAndSettled
+
+    task ExamineComplaint
+      > or ComplaintExaminedBySpecialist
+    pre {[
+      self.phase = ComplaintPhase::ARTIFACTS_UPDATED
+    ]}
+    post {[
+      self.phase = ComplaintPhase::EXAMINATION_COMPLETE
+    ]}
+
+    task DecideRefund
+      > or RefundApprovedByManager
+    pre {[
+      self.phase = ComplaintPhase::EXAMINATION_COMPLETE
+    ]}
+    post {[
+      self.phase = ComplaintPhase::REFUND_APPROVED
+    ]}
+
+    task RecordRefundAndClose
+      > or ComplaintResolvedAndClosed
+    pre {[
+      self.phase = ComplaintPhase::REFUND_APPROVED
+    ]}
+    post {[
+      self.phase = ComplaintPhase::CLOSED
+    ]}
   }
 
-  role LabManager {
-    quality AchieveLocalQualityTargets
-    quality DecreaseComplaintsNumber
-      > help AchieveLocalQualityTargets
-    quality ClosingComplaintsThatWasHandled
-    quality ExaminingFeedMixesOnEachComplaint
-    quality IncreaseFeedQuality
-      > break AchieveLocalQualityTargets
+  role Examiner {
 
-    goal ComplaintsExamination : Achieve
-
-    task ClosingPendingComplaints
-      > ComplaintsExamination
-      > make AchieveLocalQualityTargets
-    post {[ self.orgContext.complaint.closed ]}
-
-    task MonitorComplaints
-      > ComplaintsExamination
-      > help ClosingComplaintsThatWasHandled
-      > make ExaminingFeedMixesOnEachComplaint
-    post {[ self.orgContext.complaint.examinedByLabManager ]}
-
-    task UpdatingComplaint
-      > ComplaintsExamination
-    pre {[ self.orgContext.complaint.examinedByLabManager ]}
-    post {[ self.orgContext.complaint.artifactsUpdated ]}
-
-    task CheckingFeedQuality
-      > ComplaintsExamination
-    post {[ self.orgContext.complaint.qualityChecked ]}
-
-    resource LabReports
-      > needed-by CheckingFeedQuality
-
-    goal ToDrawConclusions : Achieve
-      > ComplaintsExamination
-
-    task ConclusionsUpdate
-      > ToDrawConclusions
-    pre {[ self.orgContext.complaint.qualityChecked ]}
-
-    quality ImprovingFeedMix
-      > qualifies ToDrawConclusions
-
-    goal ProposeHighQualityFeedOnly : Achieve
-      > ToDrawConclusions
-      > help IncreaseFeedQuality
-    condition {[ self.orgContext.complaint.qualityImprovementFlagged ]}
+    task ConductExamination
+    pre {[
+      self.phase = ComplaintPhase::UNDER_EXAMINATION
+    ]}
+    post {[
+      self.ExaminationRecord->notEmpty()
+    ]}
   }
 
-  role Accountment {
-    // No second real alternative exists in this actor for an OR-refinement
-    // of ProvideAccountingManagement, so the link is left undeclared rather
-    // than forced into a single-branch OR (same reasoning as Cfo/Ceo below).
-    task UpdateFinancialCompensation
-    pre {[ self.orgContext.complaint.cmApproval = ApprovalOutcome::Approved or self.orgContext.complaint.cfoApproval = ApprovalOutcome::Approved or self.orgContext.complaint.ceoApproval = ApprovalOutcome::Approved ]}
-    post {[ self.orgContext.complaint.refundUpdatedInSystem ]}
-
-    goal ProvideAccountingManagement : Achieve
-  }
-
-  role Cfo {
-    // Cfo owns only one task -- an AND-refinement chain of single-child
-    // links here would fail the "AND-refinement needs >=2 children" rule at
-    // every level, so FinanceExaminationAndApproval/ApproveMonetaryCompensation
-    // are left as standalone SR goals with no authored refinement instead of
-    // a fabricated second child.
-    goal FinanceExaminationAndApproval : Achieve
-
-    goal ApproveMonetaryCompensation : Achieve
-
-    task ComplaintExaminationAndUpdating
-    pre {[ self.orgContext.complaint.refundAmount >= 5000 ]}
-
-  }
-
-  role Ceo {
-    // Same reasoning as Cfo: Ceo owns only one task, so
-    // HandlingOfComplexComplaint/CompensationApproval stay standalone goals.
-    goal HandlingOfComplexComplaint : Achieve
-
-    goal CompensationApproval : Achieve
-
-    task ComplaintExaminationAndUpdating
-      > needed-by FindingsReport
-    pre {[ self.orgContext.complaint.complex ]}
-
-    resource FindingsReport
-  }
-
-  role QualityCommittee {
-    goal SupervisionOnFeedQuality : Achieve
-
-    goal SupervisionOnQualityAssessment : Achieve
-      > SupervisionOnFeedQuality
-
-    goal SupervisionOnCorrectiveProposals : Achieve
-      > SupervisionOnFeedQuality
-
-    task ExaminationOfQualityMetrics
-      > SupervisionOnQualityAssessment
-
-    task GeneratingAComplaintsReport
-      > SupervisionOnQualityAssessment
-      > help FrequentMonitoringOfFeedComplaints
-
-    resource ComplaintsReport
-      > needed-by GeneratingAComplaintsReport
-
-    quality FrequentMonitoringOfFeedComplaints
-
-    // DecisionsMakingOnQualityImprovements/SupervisionOnCorrectiveProposals
-    // are left as standalone goals (no authored '>') for the same reason as
-    // Cfo/Ceo above: only one task exists under this goal, so an
-    // AND-refinement chain here would fail the >=2-children rule at every
-    // level without a fabricated second child.
-    goal DecisionsMakingOnQualityImprovements : Achieve
-
-    task UpdateImprovementProtocol
-  }
-
-  role FinancialApprover { }
-
-  agent Customer { }
-
-  // Actor generalisation, mirroring customer-complaint.acl's
-  // `role X specializes FinancialApprover` hierarchy.
-  is-a CustomerManager FinancialApprover
-  is-a Cfo FinancialApprover
-  is-a Ceo FinancialApprover
-
-  depend Ceo.ComplaintExaminationAndUpdating -> goal GetApprovalForComplexComplaint -> Cfo.ComplaintExaminationAndUpdating
-  depend FieldMan -> quality UpdatingOnProblematicIssues -> Customer
-  depend FieldMan.GettingCustomerStatus -> task ContactingTheCustomer -> Customer
-  depend CustomerManager.ExaminingTheFindingsAndUpdating -> goal GettingAFindingsReport -> Nutritionist.UpdatingAndExaminingFindings
-  depend FieldMan.UpdateTheAmountOfCompensation -> goal GetApprovalForBelow5000Nis -> CustomerManager.FinancialCompensationApproval
-  depend FieldMan.ClosingAHandledComplaint -> task CheckingOfCompensationStatus -> Accountment.UpdateFinancialCompensation
-  depend Accountment.UpdateFinancialCompensation -> goal GetApproval -> Cfo.ComplaintExaminationAndUpdating
-  depend FieldMan.UpdateTheAmountOfCompensation -> goal GetApprovalForAbove5000Nis -> Cfo.FinanceExaminationAndApproval
-  depend Ceo.ComplaintExaminationAndUpdating -> goal GetComplaintDetails -> FieldMan.SolveStuckComplaint
-  depend QualityCommittee.ExaminationOfQualityMetrics -> goal GettingClosedComplaintsDetailsQc -> LabManager.ClosingPendingComplaints
-  depend FieldMan.SubmitAReopeningRequest -> goal GettingClosedComplaintsDetailsFm -> LabManager.ClosingPendingComplaints
-  depend Nutritionist.UpdatingAndExaminingFindings -> goal GetDetailedExamination -> LabManager.MonitorComplaints
-  depend LabManager.ProposeHighQualityFeedOnly -> goal GettingCorrectiveInstructions -> QualityCommittee.SupervisionOnCorrectiveProposals
-  depend LabManager.ConclusionsUpdate -> quality OfferCorrectiveAction -> QualityCommittee.DecisionsMakingOnQualityImprovements
-  depend LabManager.MonitorComplaints -> goal GettingComplaintArtifacts -> FieldMan.UpdatingCustomerComplaint
+  depend ComplaintCase.SpecialistExaminationReceived
+    -> goal ComplaintExaminedByExaminer
+    -> Examiner.ConductExamination
 }

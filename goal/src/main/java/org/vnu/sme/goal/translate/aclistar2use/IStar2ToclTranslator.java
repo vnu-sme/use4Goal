@@ -121,8 +121,9 @@ public final class IStar2ToclTranslator {
      * </ul>
      */
     static String toToclBody(GoalType type, String holds) {
-        return switch (type) {
-            case ACHIEVE -> "sometime " + holds;
+        GoalType resolved = type == null ? GoalType.NONE : type;
+        return switch (resolved) {
+            case ACHIEVE, NONE -> "sometime " + holds;
             case MAINTAIN -> "always " + holds;
             case SUSTAIN -> "sometime (always " + holds + ")";
         };

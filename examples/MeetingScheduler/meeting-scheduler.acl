@@ -1,91 +1,89 @@
-// ACL structural model for the Meeting Scheduler case study
-// (van Lamsweerde's classic KAOS example, recast in this project's DSLs).
-//
-// Structural: the meeting participants are a Role specialization hierarchy
-// (MeetingParty -> Initiator / Organizer / Secretary / Participant); each
-// Participant carries its own timetable-collection state as enumerations,
-// not Booleans; a Participant reachable only by phone is linked to the
-// Secretary who holds the number through the `knowsPhoneOf` association;
-// and the meeting itself is an entity with an enumerated `phase` plus the
-// Integer date fields whose comparison ("chosen date lies in every
-// collected timetable, outside every exclusion") is an i* requirement.
-acl v3.1 MeetingSchedulerState {
+acl v4.0 MeetingScheduler {
 
-  enum TimetableChannel { None, Calendar, Phone }
-  enum CollectionStatus { NotRequested, Requested, Collected }
-  enum NotificationStatus { NotSent, Sent }
-  enum AttendanceStatus { Unknown, Attending, Absent }
-  enum MeetingPhase {
-    Requested, ConstraintsRequested, ConstraintsCollected, DateChosen,
-    ParticipantsNotified, Held, Cancelled
-  }
+    datatype DateTime;
 
-  orgContext MeetingUnit {
+    enum CollectionStatus {
+        NOT_REQUESTED,
+        REQUESTED,
+        COLLECTED
+    }
+
+    enum NotificationStatus {
+        NOT_SENT,
+        SENT
+    }
+
+    enum MeetingPhase {
+        REQUESTED,
+        CONSTRAINTS_REQUESTED,
+        CONSTRAINTS_COLLECTED,
+        DATE_CHOSEN,
+        NOTIFIED,
+        HELD,
+        CANCELLED
+    }
 
     role MeetingParty {
-      partyName   : String;
-      phone       : String optional;
-      hasCalendar : Boolean default false;
-    }
-    role Initiator   specializes MeetingParty { }
-    role Organizer   specializes MeetingParty { }
-    role Secretary   specializes MeetingParty { }
-    role Participant specializes MeetingParty {
-      timetableStatus  : CollectionStatus   mutable default NotRequested;
-      timetableChannel : TimetableChannel   mutable default None;
-      notified         : NotificationStatus mutable default NotSent;
-      attendance       : AttendanceStatus   mutable default Unknown;
-      earliestFeasibleDay : Integer mutable default 0;
-      latestFeasibleDay   : Integer mutable default 0;
+        partyName : String;
+        phone : String optional;
     }
 
-    entity Meeting {
-      phase              : MeetingPhase mutable default Requested;
-      proposedFromDay    : Integer default 0;
-      proposedToDay      : Integer default 0;
-      chosenDay          : Integer mutable default 0;
-      constraintsResolved : Boolean mutable default false;
-      allNotified        : Boolean mutable default false;
-      held               : Boolean mutable default false;
+    orgContext MeetingUnit {
+        attribute meetingId : Integer required;
+        attribute phase : MeetingPhase required mutable default REQUESTED;
+        attribute proposedFromDay : Integer required;
+        attribute proposedToDay : Integer required;
+        attribute chosenDay : Integer required mutable default 0;
+
+        role Initiator specializes MeetingParty;
+        role Organizer specializes MeetingParty;
+        role Secretary specializes MeetingParty;
+        role Participant specializes MeetingParty;
+
+        entity TimetableResponse {
+            attribute earliestDay : Integer required;
+            attribute latestDay : Integer required;
+            attribute status : CollectionStatus required;
+        }
+
+        entity PhoneContact {
+            attribute phoneNumber : String required;
+        }
+
+        entity MeetingNotification {
+            attribute status : NotificationStatus required;
+            attribute sentAt : DateTime required;
+        }
     }
 
-    // A Participant with no calendar is reached by phone through a
-    // Secretary who holds the number.
-    association knowsPhoneOf {
-      Secretary   [0..*] role phoneHolder;
-      Participant [0..*] role reachableByPhone;
-    }
-    association meetingParticipants {
-      Meeting     [1]    role scheduledMeeting;
-      Participant [2..*] role invitee;
-    }
-    association meetingOrganizedBy {
-      Meeting   [0..*] role organizedMeeting;
-      Organizer [1]    role organizer;
+    composition UnitTimetables {
+        MeetingUnit [1] role unit;
+        TimetableResponse [0..*] role timetables;
     }
 
-    Initiator compatible Participant;
-    Organizer compatible Secretary;
-  }
+    association ParticipantTimetable {
+        Participant [1] role participant;
+        TimetableResponse [0..1] role timetable;
+    }
 
-  context Meeting inv FeasibleDateWindow:
-    self.proposedFromDay >= 0 and self.proposedToDay >= self.proposedFromDay;
+    association SecretaryContacts {
+        Secretary [1] role secretary;
+        PhoneContact [0..*] role contacts;
+    }
 
-  context Meeting inv ChosenDateInWindow:
-    self.phase = MeetingPhase::DateChosen implies
-      (self.chosenDay >= self.proposedFromDay
-        and self.chosenDay <= self.proposedToDay);
+    association ContactForParticipant {
+        Participant [1] role participant;
+        PhoneContact [0..1] role phoneContact;
+    }
 
-  context Meeting inv NotificationRequiresChosenDate:
-    self.allNotified implies self.chosenDay > 0;
+    composition UnitNotifications {
+        MeetingUnit [1] role unit;
+        MeetingNotification [0..*] role notifications;
+    }
 
-  context Meeting inv HeldRequiresNotification:
-    self.held implies self.allNotified;
-
-  context Participant inv FeasibleWindowNonNegative:
-    self.earliestFeasibleDay >= 0
-    and self.latestFeasibleDay >= self.earliestFeasibleDay;
-
-  context Participant inv PhoneChannelHasNoCalendar:
-    self.timetableChannel = TimetableChannel::Phone implies self.hasCalendar = false;
+    context MeetingUnit inv ChosenDayInWindow:
+        self.chosenDay = 0 or (
+            self.chosenDay >= self.proposedFromDay and
+            self.chosenDay <= self.proposedToDay
+        );
 }

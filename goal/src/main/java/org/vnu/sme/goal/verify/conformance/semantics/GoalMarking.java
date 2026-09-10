@@ -28,7 +28,7 @@ public record GoalMarking(GoalType type, boolean active, boolean condition, bool
     public GoalTaskStatus status() {
         if (!active) return GoalTaskStatus.UNKNOWN;
         return switch (type) {
-            case ACHIEVE -> condition ? GoalTaskStatus.FULFILLED : GoalTaskStatus.PENDING;
+            case ACHIEVE, NONE -> condition ? GoalTaskStatus.FULFILLED : GoalTaskStatus.PENDING;
             case MAINTAIN -> stable && condition
                     ? GoalTaskStatus.FULFILLED : GoalTaskStatus.VIOLATED;
             case SUSTAIN -> !stable ? GoalTaskStatus.VIOLATED

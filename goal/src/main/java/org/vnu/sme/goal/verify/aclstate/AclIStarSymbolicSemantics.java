@@ -12,6 +12,7 @@ import org.vnu.sme.goal.dsl.istar.mm.Actor;
 import org.vnu.sme.goal.dsl.istar.mm.AndRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Goal;
 import org.vnu.sme.goal.dsl.istar.mm.GoalModel;
+import org.vnu.sme.goal.dsl.istar.mm.GoalType;
 import org.vnu.sme.goal.dsl.istar.mm.GoalTaskElement;
 import org.vnu.sme.goal.dsl.istar.mm.OrRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Refinement;
@@ -101,7 +102,7 @@ final class AclIStarSymbolicSemantics {
             List<String> refinementChildren = children.getOrDefault(element.id(), List.of());
             boolean hasDirectGoalCondition = element instanceof Goal goal
                     && goal.oclSource() != null && !goal.oclSource().isBlank();
-            if (!refinementChildren.isEmpty() && !hasDirectGoalCondition) {
+            if (!refinementChildren.isEmpty()) {
                 List<MarkingFormula> values = new ArrayList<>();
                 for (String childId : refinementChildren) {
                     GoalTaskElement child = model.findElement(childId)
@@ -111,10 +112,16 @@ final class AclIStarSymbolicSemantics {
                                     "Unknown iStar refinement child '" + childId + "'"));
                     values.add(marking(child, self, usedFrames, visiting));
                 }
-                if (andRefinement.getOrDefault(element.id(), true)) {
-                    return new MarkingFormula(andMarkings(values), anyViolated(values));
+                MarkingFormula refined = andRefinement.getOrDefault(element.id(), true)
+                        ? new MarkingFormula(andMarkings(values), anyViolated(values))
+                        : new MarkingFormula(anySatisfied(values), allViolated(values));
+                if (hasDirectGoalCondition) {
+                    MarkingFormula direct = leafGoal((Goal) element, self, usedFrames);
+                    return new MarkingFormula(
+                            direct.satisfied().and(refined.satisfied()),
+                            direct.violated().or(refined.violated()));
                 }
-                return new MarkingFormula(anySatisfied(values), allViolated(values));
+                return refined;
             }
             if (element instanceof Goal goal) return leafGoal(goal, self, usedFrames);
             return leafTask((Task) element, self, usedFrames);
@@ -133,8 +140,9 @@ final class AclIStarSymbolicSemantics {
             var previous = symbolic.frame(Math.max(0, index - 1));
             values.add(symbolic.expression(goal.oclSource(), current, previous, self));
         }
-        return switch (goal.goalType()) {
-            case ACHIEVE -> new MarkingFormula(or(values), Formula.FALSE);
+        GoalType type = goal.goalType() == null ? GoalType.NONE : goal.goalType();
+        return switch (type) {
+            case ACHIEVE, NONE -> new MarkingFormula(or(values), Formula.FALSE);
             case MAINTAIN -> new MarkingFormula(and(values), and(values).not());
             case SUSTAIN -> new MarkingFormula(sustainSatisfied(values), sustainViolated(values));
         };

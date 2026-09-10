@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.vnu.sme.goal.dsl.acl.parser.AclCompiler;
+import org.vnu.sme.goal.dsl.bpmn.parser.BpmnCompiler;
 import org.vnu.sme.goal.verify.conformance.semantics.GoalTaskStatus;
 import org.vnu.sme.goal.dsl.istar.parser.IStarCompiler;
 import org.vnu.sme.goal.dsl.istar.mm.GoalActivationGraph;
@@ -20,18 +21,17 @@ class IStarExtendedSemanticsTest {
     @TempDir Path temporaryDirectory;
 
     @Test
-    void nonLeafGoalCannotBypassChildrenWithItsOwnCondition() {
+    void nonLeafGoalMayConstrainItsRefinementWithItsOwnCondition() {
         var result = IStarCompiler.compile("""
                 istar ParentCondition {
                   role Worker {
                     goal Root : Achieve condition {[ self.done ]}
-                    goal Leaf : Achieve > Root condition {[ self.done ]}
+                    goal FirstLeaf : Achieve > Root condition {[ self.done ]}
+                    goal SecondLeaf : Achieve > Root condition {[ self.done ]}
                   }
                 }
                 """);
-        assertFalse(result.ok());
-        assertTrue(result.errors().stream().anyMatch(error ->
-                error.contains("non-leaf goal 'Root' cannot declare a condition")));
+        assertTrue(result.ok(), () -> String.join("\n", result.errors()));
     }
 
     @Test
@@ -190,6 +190,27 @@ class IStarExtendedSemanticsTest {
     }
 
     @Test
+    void supportsNoneGoalType() throws Exception {
+        var model = compile("""
+                istar NoneGoalType {
+                  role Controller {
+                    goal OptionalGoal : None
+                      condition {[ true ]}
+                  }
+                }
+                """);
+        assertEquals(org.vnu.sme.goal.dsl.istar.mm.GoalType.NONE,
+                ((org.vnu.sme.goal.dsl.istar.mm.Goal) model.findElement("OptionalGoal").orElseThrow()).goalType());
+    }
+
+    @Test
+    void proposalReviewFinalIstarCompilesSuccessfully() throws Exception {
+        Path file = Path.of("../examples/ProposalReview/proposal-review-final.istar");
+        var result = IStarCompiler.compile(file);
+        assertTrue(result.ok(), () -> String.join("\n", result.errors()));
+    }
+
+    @Test
     void rejectsRemovedRecurGoalType() {
         IStarCompiler.Result result = IStarCompiler.compile("""
                 istar RemovedGoalType {
@@ -323,6 +344,49 @@ class IStarExtendedSemanticsTest {
         assertFalse(result.ok());
         assertTrue(result.errors().stream().anyMatch(error ->
                 error.contains("more than one 'condition' OCL contract")));
+    }
+
+    @Test
+    void proposalReviewFinalBpmn2CompilesSuccessfully() throws Exception {
+        Path bpmnFile = Path.of("../examples/ProposalReview/proposal-review-final.bpmn2");
+        var result = BpmnCompiler.compile(bpmnFile);
+        assertTrue(result.ok(), () -> String.join("\n", result.errors()));
+    }
+
+    @Test
+    void salesForecastCaseStudyCompilesSuccessfully() throws Exception {
+        var aclRes = AclCompiler.compile(Path.of("../examples/Forecast/sales-forecast.acl"));
+        assertTrue(aclRes.ok(), () -> String.join("\n", aclRes.errors()));
+
+        var bpmnRes = BpmnCompiler.compile(Path.of("../examples/Forecast/sales-forecast.bpmn2"));
+        assertTrue(bpmnRes.ok(), () -> String.join("\n", bpmnRes.errors()));
+
+        var istarRes = IStarCompiler.compile(Path.of("../examples/Forecast/sales-forecast.istar"));
+        assertTrue(istarRes.ok(), () -> String.join("\n", istarRes.errors()));
+    }
+
+    @Test
+    void customerComplaintCaseStudyCompilesSuccessfully() throws Exception {
+        var aclRes = AclCompiler.compile(Path.of("../examples/CustomerComplaintManagement/customer-complaint.acl"));
+        assertTrue(aclRes.ok(), () -> String.join("\n", aclRes.errors()));
+
+        var bpmnRes = BpmnCompiler.compile(Path.of("../examples/CustomerComplaintManagement/customer-complaint.bpmn2"));
+        assertTrue(bpmnRes.ok(), () -> String.join("\n", bpmnRes.errors()));
+
+        var istarRes = IStarCompiler.compile(Path.of("../examples/CustomerComplaintManagement/customer-complaint.istar"));
+        assertTrue(istarRes.ok(), () -> String.join("\n", istarRes.errors()));
+    }
+
+    @Test
+    void meetingSchedulerCaseStudyCompilesSuccessfully() throws Exception {
+        var aclRes = AclCompiler.compile(Path.of("../examples/MeetingScheduler/meeting-scheduler.acl"));
+        assertTrue(aclRes.ok(), () -> String.join("\n", aclRes.errors()));
+
+        var bpmnRes = BpmnCompiler.compile(Path.of("../examples/MeetingScheduler/meeting-scheduler.bpmn2"));
+        assertTrue(bpmnRes.ok(), () -> String.join("\n", bpmnRes.errors()));
+
+        var istarRes = IStarCompiler.compile(Path.of("../examples/MeetingScheduler/meeting-scheduler.istar"));
+        assertTrue(istarRes.ok(), () -> String.join("\n", istarRes.errors()));
     }
 
     private org.vnu.sme.goal.dsl.istar.mm.GoalModel compile(String source) throws Exception {

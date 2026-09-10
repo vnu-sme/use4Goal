@@ -1,0 +1,212 @@
+model ProposalReviewProcess {
+
+  pool ProposalReview for Proposal {
+    name "Proposal Review"
+    lane ProposalManager;
+    lane Customer;
+  }
+
+  start proposalCreated {
+    name "Proposal created"
+    lane ProposalManager
+    trigger none
+
+    pre {[
+      self.state = ProposalState::DRAFT
+      and self.ProposalManager->notEmpty()
+      and self.Customer->notEmpty()
+    ]}
+
+    flow prepareProposal
+  }
+
+  activity prepareProposal {
+    name "Prepare proposal"
+    type task
+    lane ProposalManager
+
+    pre {[
+      self.state = ProposalState::DRAFT
+      and self.ProposalRevision->isEmpty()
+    ]}
+
+    post {[
+      self.state = ProposalState::PREPARED
+      and self.ProposalRevision->size() = 1
+      and self.ProposalRevision->exists(r |
+        r.revisionNo = 1
+      )
+    ]}
+
+    flow validateProposal
+  }
+
+  activity validateProposal {
+    name "Validate proposal"
+    type task
+    lane ProposalManager
+
+    pre {[
+      self.state = ProposalState::PREPARED
+      and self.ProposalRevision->notEmpty()
+    ]}
+
+    post {[
+      self.state = ProposalState::UNDER_REVIEW
+      and
+      self.ProposalRevision->forAll(r |
+        r.validations->notEmpty()
+        and
+        r.validations->forAll(v |
+          v.valid = true
+        )
+      )
+    ]}
+
+    flow reviewProposal
+  }
+
+  activity reviewProposal {
+    name "Review proposal"
+    type task
+    lane Customer
+
+    pre {[
+      self.state = ProposalState::UNDER_REVIEW
+      and
+      self.ProposalRevision->exists(r |
+        r.reviews->isEmpty()
+      )
+      and
+      self.ProposalRevision->forAll(r |
+        r.validations->notEmpty()
+        and
+        r.validations->forAll(v |
+          v.valid = true
+        )
+      )
+    ]}
+
+    post {[
+      self.ProposalRevision@pre->exists(r |
+        r.reviews@pre->isEmpty()
+        and
+        r.reviews->notEmpty()
+      )
+    ]}
+
+    flow reviewDecision
+  }
+
+  gateway reviewDecision {
+    name "Changes requested?"
+    lane Customer
+    type xor
+
+    flow updateProposal label "CHANGES_REQUESTED"
+    when {[
+      self.ProposalRevision->notEmpty()
+      and
+      let maxNo = self.ProposalRevision.revisionNo->max() in
+      let current = self.ProposalRevision->any(r |
+        r.revisionNo = maxNo
+      ) in
+      current.reviews->exists(rv |
+        rv.decision = ReviewDecision::CHANGES_REQUESTED
+      )
+    ]}
+
+    flow feedbackMerge label "ACCEPTED"
+    when {[
+      self.ProposalRevision->notEmpty()
+      and
+      let maxNo = self.ProposalRevision.revisionNo->max() in
+      let current = self.ProposalRevision->any(r |
+        r.revisionNo = maxNo
+      ) in
+      current.reviews->notEmpty()
+      and
+      current.reviews->forAll(rv |
+        rv.decision = ReviewDecision::ACCEPTED
+      )
+    ]}
+  }
+
+  activity updateProposal {
+    name "Update proposal"
+    type task
+    lane ProposalManager
+
+    pre {[
+      self.ProposalRevision->notEmpty()
+      and
+      let maxNo = self.ProposalRevision.revisionNo->max() in
+      let current = self.ProposalRevision->any(r |
+        r.revisionNo = maxNo
+      ) in
+      current.reviews->exists(rv |
+        rv.decision = ReviewDecision::CHANGES_REQUESTED
+      )
+    ]}
+
+    post {[
+      let oldMax =
+        self.ProposalRevision@pre
+          ->collect(r | r.revisionNo)
+          ->max()
+      in
+      self.ProposalRevision
+        ->collect(r | r.revisionNo)
+        ->max()
+      =
+      oldMax + 1
+    ]}
+
+    flow feedbackMerge
+  }
+
+  gateway feedbackMerge {
+    lane ProposalManager
+    type xor
+
+    flow finalizeProposal
+  }
+
+  activity finalizeProposal {
+    name "Finalize proposal"
+    type task
+    lane ProposalManager
+
+    pre {[
+      self.state = ProposalState::UNDER_REVIEW
+    ]}
+
+    post {[
+      self.state = ProposalState::FINALIZED
+    ]}
+
+    flow sendProposal
+  }
+
+  activity sendProposal {
+    name "Send proposal"
+    type task
+    lane ProposalManager
+
+    pre {[
+      self.state = ProposalState::FINALIZED
+    ]}
+
+    post {[
+      self.state = ProposalState::SENT
+    ]}
+
+    flow proposalSent
+  }
+
+  end proposalSent {
+    name "Proposal sent"
+    lane ProposalManager
+    trigger none
+  }
+}

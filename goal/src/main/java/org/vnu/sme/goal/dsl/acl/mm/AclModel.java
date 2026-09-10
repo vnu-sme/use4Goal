@@ -8,6 +8,7 @@ import java.util.Optional;
 public final class AclModel extends StructuralSpecification {
     private final String version;
     private final String name;
+    private final List<AclNamedDataType> namedDataTypes;
     private final List<AclGroup> groups;
     private final List<AclRelation> relations;
     private final List<AclCompatibility> compatibilities;
@@ -19,25 +20,46 @@ public final class AclModel extends StructuralSpecification {
                     List<AclOwner> owners, List<AclCompatibility> compatibilities,
                     List<AclGeneralization> generalizations) {
         this(version, name, enums, entities, roles, groups, relations, owners,
-                compatibilities, generalizations, List.of());
+                compatibilities, generalizations, List.of(), List.of());
     }
 
     public AclModel(String version, String name, List<AclEnum> enums, List<AclEntity> entities,
                     List<AclRole> roles, List<AclGroup> groups, List<AclRelation> relations,
                     List<AclOwner> owners, List<AclCompatibility> compatibilities,
                     List<AclGeneralization> generalizations, List<AclInvariant> invariants) {
+        this(version, name, enums, entities, roles, groups, relations, owners,
+                compatibilities, generalizations, invariants, List.of());
+    }
+
+    public AclModel(String version, String name, List<AclEnum> enums, List<AclEntity> entities,
+                    List<AclRole> roles, List<AclGroup> groups, List<AclRelation> relations,
+                    List<AclOwner> owners, List<AclCompatibility> compatibilities,
+                    List<AclGeneralization> generalizations, List<AclInvariant> invariants,
+                    List<AclNamedDataType> namedDataTypes) {
         super(name, enums, roles, entities,
                 generalizations.stream().filter(x -> roles.stream().anyMatch(r -> r.name().equals(x.specific())))
                         .map(x -> new AclRoleInheritance(x.specific(), x.general())).toList(),
                 groups.isEmpty() ? emptyRoot() : groups.get(0));
         this.version = Objects.requireNonNull(version, "version"); this.name = Objects.requireNonNull(name, "name");
+        this.namedDataTypes = List.copyOf(namedDataTypes);
         this.groups = List.copyOf(groups); this.relations = List.copyOf(relations);
         this.compatibilities = List.copyOf(compatibilities);
         this.generalizations = List.copyOf(generalizations);
         this.invariants = List.copyOf(invariants);
     }
     public String version() { return version; }
+    /** v4 is the revised M1 core, not the legacy runtime/play-chain encoding. */
+    public boolean isRevisedCore() { return version.startsWith("v4."); }
+    /** Prevent old execution encodings from silently changing v4 semantics. */
+    public void requireLegacyRuntime() {
+        if (isRevisedCore()) {
+            throw new IllegalArgumentException("ACL core v4 supports structural parsing and validation. "
+                    + "This runtime backend has not been migrated to same-instance Role inheritance, "
+                    + "OrgCtx players and declaration-only containment; it cannot execute a v4 model.");
+        }
+    }
     public String name() { return name; }
+    public List<AclNamedDataType> namedDataTypes() { return namedDataTypes; }
     public List<AclGroup> groups() { return groups; }
     public List<AclGroup> orgContexts() {
         return groups.stream().filter(AclGroup::isOrganizationalContext).toList();

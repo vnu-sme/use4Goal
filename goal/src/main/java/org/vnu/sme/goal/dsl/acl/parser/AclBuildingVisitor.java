@@ -28,28 +28,29 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.vnu.sme.goal.dsl.acl.ast.*;
 
-public final class AclBuildingVisitor extends ACLBaseVisitor<AclModelCS> {/**
- * WHY: Scope and compatibility are transitive across group relationships, so visitModel
- * must evaluate the reachable context before accepting or rejecting a local relationship.
- */
+public final class AclBuildingVisitor extends ACLBaseVisitor<AclModelCS> {
 
     @Override public AclModelCS visitModel(ACLParser.ModelContext ctx) {
-        List<AclEnumCS> enums = new ArrayList<>(); List<AclEntityCS> entities = new ArrayList<>();
+        List<AclEnumCS> enums = new ArrayList<>(); List<AclDataTypeCS> dataTypes = new ArrayList<>();
+        List<AclEntityCS> entities = new ArrayList<>();
         List<AclRoleCS> roles = new ArrayList<>(); List<AclRelationCS> relations = new ArrayList<>();
         List<AclGroupCS> groups = new ArrayList<>(); List<AclCompatibilityCS> compatibilities = new ArrayList<>();
         List<AclInvariantCS> invariants = new ArrayList<>();
         for (var d : ctx.topLevelDecl()) {
             if (d.enumDecl() != null) enums.add(enumValue(d.enumDecl()));
+            else if (d.datatypeDecl() != null)
+                dataTypes.add(new AclDataTypeCS(d.datatypeDecl().IDENT().getText(), location(d.datatypeDecl())));
             else if (d.entityDecl() != null) entities.add(entity(d.entityDecl()));
             else if (d.roleDecl() != null) roles.add(role(d.roleDecl()));
             else if (d.orgContextDecl() != null) {
                 orgContext(d.orgContextDecl(), entities, roles, groups, compatibilities);
             }
             else if (d.entityRelationDecl() != null) relations.add(relation(d.entityRelationDecl()));
-            else if (d.groupDecl() != null) { GroupBuild b = group(d.groupDecl()); groups.add(b.group()); compatibilities.addAll(b.compatibilities()); }
+            else if (d.compatibilityDecl() != null)
+                compatibilities.add(compatibility(d.compatibilityDecl(), "__model__"));
             else if (d.invariantDecl() != null) invariants.add(invariant(d.invariantDecl()));
         }
-        return new AclModelCS(ctx.VERSION().getText(), ctx.IDENT().getText(), enums, entities,
+        return new AclModelCS(ctx.VERSION().getText(), ctx.IDENT().getText(), enums, dataTypes, entities,
                 roles, relations, groups, compatibilities, invariants, location(ctx));
     }
 
@@ -74,30 +75,9 @@ public final class AclBuildingVisitor extends ACLBaseVisitor<AclModelCS> {/**
         List<AclEndpointCS> ends = c.endpointDecl().stream().map(e -> new AclEndpointCS(
                 e.IDENT(0).getText(), cardinality(e.cardinality()),
                 e.IDENT().size() > 1 ? Optional.of(e.IDENT(1).getText()) : Optional.empty(), location(e))).toList();
-        return new AclRelationCS(c.relationKind().getText(), c.IDENT().getText(), ends, location(c));
+        return new AclRelationCS(c.relationKind() == null ? "association" : c.relationKind().getText(),
+                c.IDENT().getText(), ends, location(c));
     }
-    private static GroupBuild group(ACLParser.GroupDeclContext c) {
-        return group(c.IDENT().getText(), parent(c.specializesClause()), c.groupItem(), location(c));
-    }/**
- * WHY: Scope and compatibility are transitive across group relationships, so group
- * must evaluate the reachable context before accepting or rejecting a local relationship.
- */
-
-    private static GroupBuild group(String name, Optional<String> specializes,
-                                    List<ACLParser.GroupItemContext> items, AclSourceLocationCS loc) {
-        List<AclAttributeCS> attributes = new ArrayList<>(); List<AclGroupMemberCS> members = new ArrayList<>();
-        List<AclCompatibilityCS> compatibilities = new ArrayList<>();
-        for (var item : items) {
-            if (item.attributeDecl() != null) attributes.add(attribute(item.attributeDecl()));
-            else if (item.groupMemberDecl() != null) { var m=item.groupMemberDecl(); members.add(new AclGroupMemberCS(m.IDENT().getText(), cardinality(m.cardinality()), location(m))); }
-            else if (item.compatibilityDecl() != null) compatibilities.add(compatibility(item.compatibilityDecl(), name));
-        }
-        return new GroupBuild(new AclGroupCS(name, specializes, attributes, members, List.of(), loc), compatibilities);
-    }/**
- * WHY: Scope and compatibility are transitive across group relationships, so compatibility
- * must evaluate the reachable context before accepting or rejecting a local relationship.
- */
-
     private static AclCompatibilityCS compatibility(ACLParser.CompatibilityDeclContext c, String groupName) {
         return new AclCompatibilityCS(c.IDENT(0).getText(), c.IDENT(1).getText(), true,
                 groupName, List.of(), location(c));
@@ -109,10 +89,13 @@ public final class AclBuildingVisitor extends ACLBaseVisitor<AclModelCS> {/**
                                    List<AclGroupCS> groups,
                                    List<AclCompatibilityCS> compatibilities) {
         String name = context.IDENT().getText();
+        List<AclAttributeCS> attributes = new ArrayList<>();
         List<AclGroupMemberCS> members = new ArrayList<>();
         List<ACLParser.OrgContextDeclContext> nested = new ArrayList<>();
         for (var item : context.orgContextItem()) {
-            if (item.entityDecl() != null) {
+            if (item.attributeDecl() != null) {
+                attributes.add(attribute(item.attributeDecl()));
+            } else if (item.entityDecl() != null) {
                 entities.add(entity(item.entityDecl()));
                 members.add(requiredMember(item.entityDecl().IDENT().getText(), item.entityDecl()));
             } else if (item.roleDecl() != null) {
@@ -125,23 +108,26 @@ public final class AclBuildingVisitor extends ACLBaseVisitor<AclModelCS> {/**
                 compatibilities.add(compatibility(item.compatibilityDecl(), name));
             }
         }
-        // Register the parent first: AclModel treats the first structural
-        // context as the root context for an execution.
-        groups.add(new AclGroupCS(name, Optional.empty(), List.of(), members,
+        // Keep declaration order, with each parent before its nested contexts.
+        // Selecting a runtime root and population is outside the M1 grammar.
+        groups.add(new AclGroupCS(name, Optional.empty(), attributes, members,
                 List.of(), true, location(context)));
         nested.forEach(child -> orgContext(child, entities, roles, groups, compatibilities));
     }
 
     private static AclGroupMemberCS requiredMember(String type, ParserRuleContext context) {
+        // Legacy AST carrier only: the v4 resolver ignores these population
+        // bounds. Containment of a declaration does not require an M0 instance.
         AclSourceLocationCS loc = location(context);
         return new AclGroupMemberCS(type,
                 new AclCardinalityCS("1", Optional.of("1"), loc), loc);
     }
     private static List<AclAttributeCS> attrs(ACLParser.AttributeBlockContext b) { return b==null?List.of():b.attributeDecl().stream().map(AclBuildingVisitor::attribute).toList(); }
     private static AclAttributeCS attribute(ACLParser.AttributeDeclContext c) {
-        boolean optional=c.attributeModifier().stream().anyMatch(x->x.getText().equals("optional"));
-        boolean required=c.attributeModifier().stream().anyMatch(x->x.getText().equals("required"));
-        boolean mut=c.attributeModifier().stream().anyMatch(x->x.getText().equals("mutable"));
+        String modifiers = c.attributeModifier() == null ? "" : c.attributeModifier().getText();
+        boolean optional = modifiers.contains("optional");
+        boolean required = modifiers.contains("required");
+        boolean mut = modifiers.contains("mutable");
         Optional<String> def=c.defaultClause()==null?Optional.empty():Optional.of(c.defaultClause().defaultValue().getText());
         return new AclAttributeCS(c.IDENT(0).getText(),c.IDENT(1).getText(),optional,required,mut,def,location(c));
     }
@@ -153,5 +139,4 @@ public final class AclBuildingVisitor extends ACLBaseVisitor<AclModelCS> {/**
         return new AclCardinalityCS(min,c.getText().contains("*")?Optional.empty():Optional.of(ints.get(1).getText()),location(c));
     }
     private static AclSourceLocationCS location(ParserRuleContext c) { return new AclSourceLocationCS(c.getStart().getLine(),c.getStart().getCharPositionInLine()); }
-    private record GroupBuild(AclGroupCS group,List<AclCompatibilityCS> compatibilities){}
 }

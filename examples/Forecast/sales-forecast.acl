@@ -1,171 +1,105 @@
-// ACL structural model for Process 1 - Sales Forecast.
-//
-// This is a STRUCTURAL model, not a bag of process flags: the ten
-// organisational participants are real Roles with their own state
-// (authority, thresholds, workload counters); the deal-approval chain is a
-// Role specialization hierarchy (Approver -> the six escalation levels);
-// the five per-level approval outcomes are one `ApprovalStep` sub-entity
-// linked to the Deal and to the deciding Approver by associations; and
-// every quantity (percentages, money, proposal versions, counters) is an
-// Integer/Real, not a Boolean "over/under threshold" classification.
-//
-// The remaining Booleans on `Deal` are genuine two-valued milestone facts
-// that the i* goals and BPMN gateways in this case study must observe
-// individually (they are the fine-grained divergence witnesses the paper
-// relies on -- see mapping-sales-forecast.md, Case A). `phase` gives the
-// coarse lifecycle on top of them.
-acl v3.1 SalesForecastState {
+acl v4.0 SalesForecast {
 
-  enum DealPhase {
-    Opportunity, CustomerRecorded, DealDetailsRecorded, TechnicalPackageReady,
-    PricingReady, ServiceTermsSettled, ProfitabilityAssessed, Approved,
-    KitCompleted, TransferredToOperations, PoCreated, Rejected
-  }
+    datatype DateTime;
 
-  enum ApprovalOutcome { Pending, Approved, Rejected }
-
-  orgContext DealCase {
-
-    // ---- Organisational participants ---------------------------------
-    // Every BPMN lane and every SR-only actor is a first-class Role that
-    // carries its own state.
-    role CustomerManager {
-      openDealCount    : Integer mutable default 0;
-      authorityLevel   : Integer default 3;
+    enum DealPhase {
+        DRAFT,
+        CUSTOMER_RECORDED,
+        DETAILS_RECORDED,
+        TECHNICAL_READY,
+        PRICING_READY,
+        PROFITABILITY_ASSESSED,
+        APPROVED,
+        REJECTED,
+        COMPLETED
     }
 
-    role PresaleEngineer {
-      openAssignmentCount : Integer mutable default 0;
+    enum ApprovalOutcome {
+        PENDING,
+        APPROVED,
+        REJECTED
     }
 
-    role ServiceAgreements {
-      minServiceFeePct : Integer default 7;   // below this no SA review is needed
+    role DealParticipant {
+        email : String;
     }
 
-    // The escalation chain: one abstract base Role holding the shared
-    // "what did this level decide" state, specialized by the six concrete
-    // approval levels. Each level adds only the datum specific to it.
-    role Approver {
-      levelOutcome : ApprovalOutcome mutable default Pending;
-    }
-    role DeptManager      specializes Approver { profitabilityCeilingPct : Integer default 10; }
-    role SectorManager    specializes Approver { profitabilityCeilingPct : Integer default 5;  }
-    role BusinessVp       specializes Approver { }
-    role FinancialControl specializes Approver { dealValueThreshold : Integer default 250000; }
-    role CreditControl    specializes Approver { }
-    role Economy          specializes Approver { }
-
-    role Customer   { isReturning : Boolean mutable default false; }
-    role Management { }
-
-    // ---- Domain entities --------------------------------------------
-    entity Deal {
-      phase                   : DealPhase mutable default Opportunity;
-
-      // Real quantities, not threshold Booleans.
-      serviceContractPct      : Integer mutable default 0;
-      profitabilityPct        : Integer mutable default 0;
-      dealValue               : Integer mutable default 0;
-      proposalVersion         : Integer mutable default 0;
-      approvedProposalVersion  : Integer mutable default -1;   // Case A witness
-
-      // Genuine two-valued milestone facts observed one-by-one by the
-      // i* leaf conditions / BPMN gateway guards of this case study.
-      customerIsNew            : Boolean mutable default true;
-      dealDetailsInserted      : Boolean mutable default false;
-
-      // Per-level escalation outcomes: three-valued (Pending until the
-      // level is consulted), summarised structurally by `ApprovalStep`
-      // below. The i* leaf conditions / BPMN gateway guards read these.
-      deptApproval             : ApprovalOutcome mutable default Pending;
-      sectorApproval           : ApprovalOutcome mutable default Pending;
-      businessVpApproval       : ApprovalOutcome mutable default Pending;
-      financialControlApproval : ApprovalOutcome mutable default Pending;
-      creditControlApproval    : ApprovalOutcome mutable default Pending;
-
-      presaleInvoked           : Boolean mutable default false;
-      vendorBomExists          : Boolean mutable default false;
-      bomReady                 : Boolean mutable default false;
-      hldReady                 : Boolean mutable default false;
-      pnMissing                : Boolean mutable default true;
-      pnsReady                 : Boolean mutable default false;
-      serviceAgreementApproved : Boolean mutable default false;
-      kitCompleted             : Boolean mutable default false;
-      transferredToOperator    : Boolean mutable default false;
-      poCreated                : Boolean mutable default false;
-      specialBidObtained       : Boolean mutable default false;
-      customerBaseIncreased    : Boolean mutable default false;
-      salesPerformanceMeasured : Boolean mutable default false;
-      strategicSalesDevelopmentDone : Boolean mutable default false;
+    role Approver specializes DealParticipant {
+        authorityLevel : Integer;
     }
 
-    // One row per escalation level actually consulted for this Deal. This
-    // replaces the old {deptManagerApproved, sectorManagerApproved, ...}
-    // Boolean cluster with a first-class structural record.
-    entity ApprovalStep {
-      level             : Integer default 0;
-      outcome           : ApprovalOutcome mutable default Pending;
-      onProposalVersion : Integer default 0;
+    orgContext Deal {
+        attribute dealId : Integer required;
+        attribute title : String required;
+        attribute dealValue : Integer required;
+        attribute state : DealPhase required mutable default DRAFT;
+
+        role CustomerManager specializes DealParticipant;
+        role PresaleEngineer specializes DealParticipant;
+        role Customer specializes DealParticipant;
+        role DeptManager specializes Approver {
+            profitabilityCeilingPct : Integer default 10;
+        }
+        role SectorManager specializes Approver {
+            profitabilityCeilingPct : Integer default 5;
+        }
+        role BusinessVp specializes Approver;
+        role FinancialControl specializes Approver {
+            dealValueThreshold : Integer default 250000;
+        }
+        role CreditControl specializes Approver;
+
+        entity ProposalRevision {
+            attribute revisionNo : Integer required;
+            attribute profitabilityPct : Integer required;
+            attribute createdAt : DateTime required;
+        }
     }
 
-    // ---- Structure: associations, not flags ------------------------
-    association dealHandledBy {
-      Deal            [0..*] role handledDeal;
-      CustomerManager [1]    role dealOwner;
+    entity ApprovalDecision {
+        attribute outcome : ApprovalOutcome required;
+        attribute decidedAt : DateTime required;
     }
-    association dealForCustomer {
-      Deal     [0..*] role customerDeal;
-      Customer [1]    role dealCustomer;
+
+    entity TechnicalPackage {
+        attribute bomReady : Boolean required;
+        attribute hldReady : Boolean required;
     }
-    association dealApprovalChain {
-      Deal         [1]    role approvedDeal;
-      ApprovalStep [0..*] role step;
+
+    composition DealRevisions {
+        Deal [1] role deal;
+        ProposalRevision [0..*] role revisions;
     }
-    association stepDecidedBy {
-      ApprovalStep [0..*] role decidedStep;
-      Approver     [1]    role decidingApprover;
+
+    association CustomerManagerSubmits {
+        CustomerManager [1] role manager;
+        ProposalRevision [0..*] role revisions;
     }
-  }
 
-  // i*-only participants: they appear in sales-forecast.istar's SR view
-  // (installation, PN approval, kit provisioning, BI feeds) but never act
-  // on a Deal inside DealCase, so they are Roles of the model, not members
-  // of the orgContext. Matches goal/.../examples/sales_forecast/sales_forecast.acl.
-  role ProjectDepartment;
-  role InventoryManager;
-  role ServiceProvider;
-  role Vendor;
-  role BiSystem;
-  role BSaleSystem;
+    association ApproverDecisions {
+        Approver [1] role approver;
+        ApprovalDecision [0..*] role decisions;
+    }
 
-  // ---- Invariants (structural + lifecycle) --------------------------
-  context Deal inv NonNegativeQuantities:
-    self.serviceContractPct >= 0 and self.profitabilityPct >= 0
-    and self.dealValue >= 0 and self.proposalVersion >= 0;
+    composition RevisionDecisions {
+        ProposalRevision [1] role revision;
+        ApprovalDecision [0..*] role decisions;
+    }
 
-  context Deal inv ProfitabilityPercentInRange:
-    self.profitabilityPct >= 0 and self.profitabilityPct <= 100;
+    composition DealTechPackages {
+        Deal [1] role deal;
+        TechnicalPackage [0..*] role packages;
+    }
 
-  // Case A: once the deal is Approved, the certified proposal version must
-  // still be the current one -- a later revision silently invalidates it.
-  context Deal inv ApprovalMatchesCurrentProposal:
-    self.phase = DealPhase::Approved implies
-      self.approvedProposalVersion = self.proposalVersion;
+    context Deal inv UniqueRevisionNumbers:
+        self.ProposalRevision->isUnique(revisionNo);
 
-  context Deal inv RejectedHasNoPo:
-    self.phase = DealPhase::Rejected implies self.poCreated = false;
-
-  context ApprovalStep inv StepRecordedForAKnownVersion:
-    self.onProposalVersion >= 0 and self.level >= 0;
-
-  // A Deal is only Approved when no consulted step is still Pending/Rejected.
-  context Deal inv ApprovedMeansAllStepsApproved:
-    self.phase = DealPhase::Approved implies
-      self.step->forAll(s | s.outcome = ApprovalOutcome::Approved);
-
-  context FinancialControl inv ThresholdPositive:
-    self.dealValueThreshold > 0;
-
-  context CustomerManager inv NonNegativeWorkload:
-    self.openDealCount >= 0 and self.authorityLevel >= 0;
+    context Deal inv ApproversBelongToDeal:
+        self.ProposalRevision.decisions->forAll(d |
+            self.DeptManager->includes(d.approver) or
+            self.SectorManager->includes(d.approver) or
+            self.BusinessVp->includes(d.approver) or
+            self.FinancialControl->includes(d.approver) or
+            self.CreditControl->includes(d.approver)
+        );
 }

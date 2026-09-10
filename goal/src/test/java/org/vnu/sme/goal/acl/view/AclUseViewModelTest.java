@@ -17,16 +17,17 @@ class AclUseViewModelTest {
         assertTrue(acl.ok(), () -> String.join("\n", acl.errors()));
 
         var context = acl.model().findOrgContext("ProposalReviewCase").orElseThrow();
-        assertTrue(context.attributes().isEmpty(), "orgContext must not own state attributes");
+        assertEquals(2, context.attributes().size());
         assertEquals(2, context.roles().size());
-        assertEquals(1, context.entities().size());
-        assertEquals(2, acl.model().findRole("Customer").orElseThrow().attributes().size());
-        assertEquals(8, acl.model().findEntity("Proposal").orElseThrow().attributes().size());
+        assertEquals(4, context.entities().size());
+        assertEquals(1, acl.model().findRole("ProposalManager").orElseThrow().attributes().size());
+        assertEquals(4, acl.model().findEntity("Proposal").orElseThrow().attributes().size());
 
         AclUseViewModel adapted = AclUseViewModel.build(acl.model());
         assertTrue(adapted.associations.containsKey("ProposalReviewCase_contains_ProposalManager"));
         assertTrue(adapted.associations.containsKey("ProposalReviewCase_contains_Customer"));
         assertTrue(adapted.associations.containsKey("ProposalReviewCase_contains_Proposal"));
+        assertTrue(adapted.associations.containsKey("ProposalReviewCase_contains_ProposalRevision"));
 
         AclLayout layout = AclLayoutBuilder.build(acl.model());
         assertEquals(AclNodeKind.ORG_CONTEXT,
@@ -45,25 +46,25 @@ class AclUseViewModelTest {
 
     @Test
     void associationUsesRealUseMetamodelEndsAndRoleNames() throws Exception {
-        var acl = AclCompiler.compile(Path.of("src/main/resources/examples/mtg/mtg.acl"));
+        var acl = AclCompiler.compile(Path.of("../examples/ProposalReview/proposal-review-final.acl"));
         assertTrue(acl.ok(), () -> String.join("\n", acl.errors()));
 
         AclUseViewModel adapted = AclUseViewModel.build(acl.model());
-        var association = adapted.associations.get("knowsPhoneOf");
-        assertEquals("knower", association.associationEnds().get(0).name());
-        assertEquals("knownContact", association.associationEnds().get(1).name());
-        assertEquals("MeetingParty", association.associationEnds().get(0).cls().name());
-        assertEquals("MeetingParty", association.associationEnds().get(1).cls().name());
+        var association = adapted.associations.get("ProposalManagerValidates");
+        assertEquals("validator", association.associationEnds().get(0).name());
+        assertEquals("validations", association.associationEnds().get(1).name());
+        assertEquals("ProposalManager", association.associationEnds().get(0).cls().name());
+        assertEquals("Validation", association.associationEnds().get(1).cls().name());
     }
 
     @Test
     void explicitEntityCompositionsDoNotCollideAcrossAnEntityInheritanceChain() {
         var acl = AclCompiler.compile("""
-                acl v2.0 CollisionCheck {
+                acl v4.0 CollisionCheck {
                   entity Document { title : String; }
                   entity Budget extends Document { amount : Real; }
-                  group Department { }
-                  group AuditCommittee { }
+                  orgContext Department { }
+                  orgContext AuditCommittee { }
                   composition departmentBudget {
                     Department [1] role department;
                     Budget [1] role budget;

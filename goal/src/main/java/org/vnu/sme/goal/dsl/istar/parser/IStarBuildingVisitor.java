@@ -27,8 +27,9 @@ public final class IStarBuildingVisitor extends IStarBaseVisitor<Object> {
                 .map(a -> (ActorDefCS) visitActorDef(a))
                 .collect(Collectors.toList());
 
-        List<DependencyCS> deps = ctx.dependency().stream()
-                .map(d -> (DependencyCS) visitDependency(d))
+        List<DependencyCS> deps = ctx.modelStatement().stream()
+                .filter(statement -> statement.dependency() != null)
+                .map(statement -> (DependencyCS) visitDependency(statement.dependency()))
                 .collect(Collectors.toList());
 
         model = new IStarModelCS(ctx.IDENT().getText(), actors, deps);

@@ -39,6 +39,12 @@ final class AclUseViewModel {
             Map<String, MAssociation> associations = new LinkedHashMap<>();
 
             for (AclEnum value : acl.enums()) api.createEnumeration(value.name(), value.literals());
+            // Opaque ACL data types are first-class UML data types in the
+            // presentation model. They must be registered before attributes
+            // reference them; mapping them to String would change the model.
+            for (AclNamedDataType value : acl.namedDataTypes()) {
+                api.createDataType(value.sourceName(), false);
+            }
             for (AclEntity value : acl.entities()) classes.put(value.name(), api.createClass(value.name(), false));
             for (AclRole value : acl.roles()) classes.put(value.name(), api.createClass(value.name(), false));
             for (AclGroup value : acl.groups()) classes.put(value.name(), api.createClass(value.name(), false));
@@ -64,6 +70,19 @@ final class AclUseViewModel {
                         value.target().type(), targetRole,
                         multiplicity(value.target().multiplicity()), MAggregationKind.NONE);
                 associations.put(value.name(), association);
+            }
+            for (AclGroup context : acl.orgContexts()) {
+                for (AclGroupMember member : context.members()) {
+                    String assocName = AclContainment.relationName(context.name(), member.type());
+                    if (!associations.containsKey(assocName)) {
+                        MAssociation association = api.createAssociation(assocName,
+                                context.name(), AclContainment.wholeRoleName(),
+                                multiplicity(AclCardinality.bounded(1, 1)), MAggregationKind.COMPOSITION,
+                                member.type(), AclContainment.partRoleName(member.type()),
+                                multiplicity(member.multiplicity()), MAggregationKind.NONE);
+                        associations.put(assocName, association);
+                    }
+                }
             }
             return new AclUseViewModel(useModel, classes, associations);
         } catch (UseApiException exception) {

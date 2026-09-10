@@ -6,7 +6,7 @@ package org.vnu.sme.goal.dsl.acl.parser;
  * MODULE: ACL CST to semantic-model factory
  * =============================================================================
  * 1. PURPOSE:
- *    Resolves parsed CST declarations into the executable ACL semantic model. A ACLModelCS is the input; linked model objects ready for validation/rendering are the output.
+ *    Resolves parsed CST declarations into an ACL structural model. AclModelCS is the input; linked model objects ready for validation/rendering are the output. Acceptance does not imply support in an execution backend.
  *
  * 2. CORE MAPPING / LOGIC RULES:
  *    - Register declarations before resolving references to support forward references.
@@ -35,6 +35,7 @@ public final class AclModelFactory {
     private static final class Builder {
         private final AclModelCS ast; private final List<SemanticError> errors=new ArrayList<>();
         private final Map<String,AclEnum> enums=new LinkedHashMap<>();
+        private final Map<String,AclNamedDataType> namedDataTypes=new LinkedHashMap<>();
         Builder(AclModelCS ast){this.ast=ast;}
         AclModel build(){
             List<AclEnum> enumList=new ArrayList<>();
@@ -44,6 +45,11 @@ public final class AclModelFactory {
                 AclEnum e=new AclEnum(x.name(),List.copyOf(s));
                 if(enums.putIfAbsent(x.name(),e)!=null)error(x.location(),"duplicate enum name '"+x.name()+"'");
                 else enumList.add(e);
+            }
+            for (var x : ast.dataTypes()) {
+                AclNamedDataType type = new AclNamedDataType(x.name());
+                if (enums.containsKey(x.name()) || namedDataTypes.putIfAbsent(x.name(), type) != null)
+                    error(x.location(), "duplicate data type name '" + x.name() + "'");
             }
             List<AclEntity> entities=ast.entities().stream().map(x->new AclEntity(x.name(),x.specializes(),attributes(x.name(),x.attributes()))).toList();
             List<AclRole> roles=ast.roles().stream().map(x->new AclRole(x.name(),x.parentRoles(),attributes(x.name(),x.attributes()))).toList();
@@ -59,6 +65,9 @@ public final class AclModelFactory {
                     g.roleEntityRelations(),g.cardinalityConstraints(),g.isOrganizationalContext())).toList();
             Map<String,AclGroup> groupMap=indexGroup(groups);
             List<AclRelation> relations=new ArrayList<>();
+            // OrgCtx owns M1 definitions. In v4 it does not generate M0
+            // composition links or force one instance of each member.
+            if (!ast.version().startsWith("v4."))
             for(var source:ast.groups()) for(var member:source.members()) {
                 if (roleMap.containsKey(member.type()) || groupMap.containsKey(member.type())
                         || (source.organizationalContext() && entityMap.containsKey(member.type()))) {
@@ -68,8 +77,7 @@ public final class AclModelFactory {
                                     Optional.of(source.organizationalContext()
                                             ? "orgContext" : AclContainment.wholeRoleName())),
                             new AclEndpoint(member.type(), cardinality(member.multiplicity()),
-                                    Optional.of(source.organizationalContext()
-                                            ? lowerFirst(member.type()) : AclContainment.partRoleName(member.type())))));
+                                    Optional.of(lowerFirst(member.type())))));
                 }
             }
             for(var x:ast.relations())relations.add(relation(x));
@@ -92,16 +100,23 @@ public final class AclModelFactory {
                 if (!invariantNames.add(x.contextType() + "::" + x.name()))
                     error(x.location(), "duplicate OCL invariant '" + x.contextType() + "::" + x.name() + "'");
             }
-            return new AclModel(ast.version(),ast.name(),enumList,entities,roles,groups,relations,List.of(),compatibility,gens,invariants);
+            return new AclModel(ast.version(),ast.name(),enumList,entities,roles,groups,relations,
+                    List.of(),compatibility,gens,invariants,List.copyOf(namedDataTypes.values()));
         }
         private AclGroup group(AclGroupCS x,Map<String,AclEntity> entities,Map<String,AclRole> roles){
-            List<AclGroupMember> members=x.members().stream().map(m->new AclGroupMember(m.type(),cardinality(m.multiplicity()))).toList();
+            List<AclGroupMember> members=x.members().stream().map(m->new AclGroupMember(m.type(),
+                    ast.version().startsWith("v4.") ? AclCardinality.unlimited(0)
+                            : cardinality(m.multiplicity()))).toList();
             List<AclRoleMembership> rp=members.stream().filter(m->roles.containsKey(m.type())).map(m->new AclRoleMembership(m.type(),m.multiplicity())).toList();
             List<AclEntityMembership> ep=members.stream().filter(m->entities.containsKey(m.type())).map(m->new AclEntityMembership(m.type(),m.multiplicity())).toList();
             return new AclGroup(x.name(),x.specializes(),attributes(x.name(),x.attributes()),
                     members,rp,ep,List.of(),List.of(),List.of(),List.of(),x.organizationalContext());
         }
-        private AclRelation relation(AclRelationCS x){ List<AclEndpoint> e=x.endpoints().stream().map(v->new AclEndpoint(v.type(),cardinality(v.multiplicity()),v.roleName())).toList(); return new AclRelation(RelationKind.fromSource(x.kind()),x.name(),e.get(0),e.get(1)); }
+        private AclRelation relation(AclRelationCS x) {
+            List<AclEndpoint> ends = x.endpoints().stream()
+                    .map(v -> new AclEndpoint(v.type(), cardinality(v.multiplicity()), v.roleName())).toList();
+            return new AclRelation(RelationKind.fromSource(x.kind()), x.name(), ends);
+        }
         private AclCompatibility compatibility(AclCompatibilityCS x){
             return new AclCompatibility(x.fromRole(),x.toRole(),AclCompatibilityType.COMPATIBLE,
                     AclScope.INTER_GROUP,true,true,Objects.toString(x.groupName(),"__model__"));
@@ -119,7 +134,8 @@ public final class AclModelFactory {
                     continue;
                 }
                 Optional<AclDataType> t = AclPrimitiveType.fromSource(x.typeName()).map(v -> (AclDataType) v)
-                        .or(() -> Optional.ofNullable(enums.get(x.typeName())));
+                        .or(() -> Optional.ofNullable(enums.get(x.typeName())))
+                        .or(() -> Optional.ofNullable(namedDataTypes.get(x.typeName())));
                 if (t.isEmpty()) {
                     error(x.location(), "unknown attribute type '" + x.typeName() + "'");
                     continue;
@@ -145,7 +161,7 @@ public final class AclModelFactory {
                 int min=new BigInteger(x.min()).intValueExact();
                 AclCardinality result=x.max().isEmpty()?AclCardinality.unlimited(min):AclCardinality.bounded(min,new BigInteger(x.max().get()).intValueExact());
                 // Multiplicity [0] or [0..0] means no members are ever allowed — reject as meaningless.
-                if(result.min()==0&&result.max().isPresent()&&result.max().getAsInt()==0)
+                if(!ast.version().startsWith("v4.") && result.min()==0&&result.max().isPresent()&&result.max().getAsInt()==0)
                     error(x.location(),"multiplicity [0..0] is not meaningful; remove the member declaration or use [0..1] for optional membership");
                 return result;
             }catch(RuntimeException e){error(x.location(),"invalid cardinality");return AclCardinality.unlimited(0);}
@@ -165,7 +181,9 @@ public final class AclModelFactory {
                 case "Boolean" -> value.equals("true") || value.equals("false");
                 case "Integer" -> value.matches("-?[0-9]+");
                 case "Real" -> value.matches("-?[0-9]+(?:\\.[0-9]+)?");
-                case "String" -> value.length() >= 2 && value.startsWith("\"") && value.endsWith("\"");
+                case "String" -> value.length() >= 2
+                        && ((value.startsWith("\"") && value.endsWith("\""))
+                            || (value.startsWith("'") && value.endsWith("'")));
                 default -> true;
             };
         }

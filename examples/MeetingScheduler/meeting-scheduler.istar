@@ -1,110 +1,86 @@
-// i* SR model for the Meeting Scheduler case study, in the real iStar DSL
-// (IStar.g4 v2.1). Actor names match meeting-scheduler.acl / .bpmn2 1:1.
+// MeetingScheduler intentional model.
 //
-// Uses the metamodel-coverage surface: element `description`, a `lang` tag
-// on one OCL block, and the model-level `is-a` / `participates-in` forms
-// (GoalModel.actorAssociations). Leaf conditions observe MeetingUnit state
-// (`self.orgContext.meeting.*` and the invitee collection).
-istar MeetingSchedulerGoals "van Lamsweerde meeting scheduler, AS-IS" {
+// OCL context convention: self : MeetingUnit
 
-  role Initiator {
-    goal MeetingRequestSatisfied : Achieve description "the initiator's meeting actually takes place"
-    condition {[ self.orgContext.meeting.held ]}
-  }
+istar MeetingSchedulerGoals {
 
-  role Organizer {
-    goal MeetingScheduled : Achieve description "a feasible date is fixed and everyone is told"
+  agent MeetingUnit {
 
-    goal ConstraintsKnown : Achieve
-      > MeetingScheduled
+    goal MeetingScheduledAndHeld : Achieve
 
-    task CollectCalendarTimetables
-      > ConstraintsKnown
-      > help LowSchedulingEffort
+    goal MeetingPreparedAndNotified : Achieve
+      > or MeetingScheduledAndHeld
+
+    goal MeetingRequestedAndInitiated : Sustain
+      > or MeetingScheduledAndHeld
+
+    goal TimetablesCollectedFromParticipants : None
+      > or MeetingPreparedAndNotified
+
+    goal TimetablesReceivedFromParticipants : None
+      > or MeetingPreparedAndNotified
+
+    goal MeetingDateChosen : Achieve
+      > or MeetingPreparedAndNotified
+    condition {[
+      self.chosenDay > 0
+    ]}
+
+    goal ParticipantsNotified : Achieve
+      > or MeetingPreparedAndNotified
+    condition {[
+      self.phase = MeetingPhase::NOTIFIED
+    ]}
+
+    task RequestConstraints
+      > or TimetablesCollectedFromParticipants
+    pre {[
+      self.phase = MeetingPhase::REQUESTED
+    ]}
     post {[
-      self.orgContext.meeting.invitee
-        ->select(p | p.hasCalendar)
-        ->forAll(p | p.timetableStatus = CollectionStatus::Collected)
+      self.phase = MeetingPhase::CONSTRAINTS_REQUESTED
     ]}
 
-    task CollectPhonedTimetables
-      > ConstraintsKnown
-      > hurt LowSchedulingEffort
-    post lang OCL {[
-      self.orgContext.meeting.invitee
-        ->reject(p | p.hasCalendar)
-        ->forAll(p | p.timetableStatus = CollectionStatus::Collected)
+    task SelectDate
+      > or MeetingDateChosen
+    pre {[
+      self.phase = MeetingPhase::CONSTRAINTS_COLLECTED
     ]}
-
-    goal DateDetermined : Achieve
-      > MeetingScheduled
-
-    task ComputeFeasibleDate
-      > DateDetermined
-    pre {[ self.orgContext.meeting.invitee->forAll(p | p.timetableStatus = CollectionStatus::Collected) ]}
-    post {[ self.orgContext.meeting.constraintsResolved ]}
-
-    task PickMeetingDay
-      > DateDetermined
-      > help ParticipantSatisfaction
-    pre {[ self.orgContext.meeting.constraintsResolved ]}
     post {[
-      self.orgContext.meeting.chosenDay >= self.orgContext.meeting.proposedFromDay
-      and self.orgContext.meeting.chosenDay <= self.orgContext.meeting.proposedToDay
+      self.phase = MeetingPhase::DATE_CHOSEN
     ]}
 
-    goal ParticipantsInformed : Achieve
-      > MeetingScheduled
-
-    task SendNotifications
-      > ParticipantsInformed
-    pre {[ self.orgContext.meeting.chosenDay > 0 ]}
-    post {[ self.orgContext.meeting.allNotified ]}
-
-    task RecordAttendanceIntent
-      > ParticipantsInformed
-    post {[ self.orgContext.meeting.invitee->forAll(p | p.attendance <> AttendanceStatus::Unknown) ]}
-
-    quality LowSchedulingEffort
-    quality ParticipantSatisfaction
-  }
-
-  role Secretary {
-    task RelayPhoneConstraints description "read constraints to the organizer for participants with no calendar"
+    task NotifyParticipants
+      > or ParticipantsNotified
+    pre {[
+      self.phase = MeetingPhase::DATE_CHOSEN
+    ]}
     post {[
-      self.orgContext.meeting.invitee
-        ->reject(p | p.hasCalendar)
-        ->forAll(p | p.timetableChannel = TimetableChannel::Phone)
+      self.phase = MeetingPhase::NOTIFIED
     ]}
 
-    resource ParticipantPhoneList
-      > needed-by RelayPhoneConstraints
+    task HoldMeeting
+      > or MeetingScheduledAndHeld
+    pre {[
+      self.phase = MeetingPhase::NOTIFIED
+    ]}
+    post {[
+      self.phase = MeetingPhase::HELD
+    ]}
   }
-
-  role MeetingParty { }
 
   role Participant {
-    goal AbleToAttend : Achieve
 
     task ProvideTimetable
-      > AbleToAttend
-    post {[ self.orgContext.meeting.invitee->exists(p | p.timetableStatus = CollectionStatus::Collected) ]}
-
-    task AttendMeeting
-      > AbleToAttend
-    pre {[ self.orgContext.meeting.allNotified ]}
-    post {[ self.orgContext.meeting.held ]}
+    pre {[
+      self.phase = MeetingPhase::CONSTRAINTS_REQUESTED
+    ]}
+    post {[
+      self.TimetableResponse->notEmpty()
+    ]}
   }
 
-  is-a Initiator MeetingParty
-  is-a Organizer MeetingParty
-  is-a Secretary MeetingParty
-  is-a Participant MeetingParty
-
-  depend Initiator -> goal ArrangeTheMeeting -> Organizer
-  depend Organizer.CollectPhonedTimetables -> task ReadOutConstraints -> Secretary.RelayPhoneConstraints
-  depend Organizer.CollectCalendarTimetables -> resource TimetableOfParticipant -> Participant.ProvideTimetable
-  depend Organizer.SendNotifications -> resource MeetingNotice -> Participant.AttendMeeting
-  depend Participant.AttendMeeting -> resource ChosenMeetingDay -> Organizer.PickMeetingDay
-  depend Secretary.RelayPhoneConstraints -> resource ParticipantPhoneNumber -> Participant.ProvideTimetable
+  depend MeetingUnit.TimetablesReceivedFromParticipants
+    -> goal TimetableProvidedByParticipant
+    -> Participant.ProvideTimetable
 }

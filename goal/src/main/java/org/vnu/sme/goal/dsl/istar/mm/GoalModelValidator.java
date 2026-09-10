@@ -39,19 +39,10 @@ public final class GoalModelValidator {
     }
 
     private static void validateOclContracts(GoalModel model, List<String> errors) {
-        Set<String> refinementParents = new LinkedHashSet<>();
-        for (Actor actor : model.getActors()) {
-            actor.refinements().forEach(refinement -> refinementParents.add(refinement.parent()));
-        }
         for (Actor actor : model.getActors()) {
             for (IntentionalElement element : actor.elements()) {
                 if (element instanceof Goal goal) {
                     validateOclBodies(goal.id(), "condition", goal.conditions(), errors);
-                    if (refinementParents.contains(goal.id()) && !goal.conditions().isEmpty()) {
-                        errors.add("semantic: non-leaf goal '" + goal.id()
-                                + "' cannot declare a condition; its value must be propagated"
-                                + " from refinement children");
-                    }
                 } else if (element instanceof Task task) {
                     validateOclBodies(task.id(), "pre", task.preconditions(), errors);
                     validateOclBodies(task.id(), "post", task.postconditions(), errors);

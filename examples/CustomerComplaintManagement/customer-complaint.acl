@@ -1,158 +1,91 @@
-// ACL structural model for Process 2 - Customer Complaint Management.
-//
-// Structural, not a flag bag: the seven organisational participants are
-// Roles with their own state (approval ceilings, workload counters); the
-// two refund-approval levels form a Role specialization hierarchy
-// (FinancialApprover -> CustomerManager / Cfo); the per-level refund
-// decisions are a first-class `RefundApproval` sub-entity linked to the
-// Complaint and to the deciding approver by associations; the refund
-// amount is a Real, and `category` / `phase` / each approval `outcome`
-// are enumerations rather than pairs of Booleans.
-//
-// Money is in whole NIS. The remaining Booleans on `Complaint` are genuine
-// two-valued milestone facts the i* goals / BPMN gateways of this case
-// study observe individually.
-acl v3.1 CustomerComplaintState {
+acl v4.0 CustomerComplaint {
 
-  enum ComplaintCategory { CustomerAccount, Nutrition, LabQuality }
+    datatype DateTime;
 
-  enum ComplaintPhase {
-    Received, ArtifactsUpdated, UnderExamination, ExaminationComplete,
-    CompensationDecided, RefundApproved, RefundRecorded, Closed
-  }
-
-  enum ApprovalOutcome { Pending, Approved, Rejected }
-
-  orgContext ComplaintCase {
-
-    // ---- Organisational participants -------------------------------
-    role FieldMan {
-      openComplaintCount : Integer mutable default 0;
-    }
-    role Nutritionist {
-      completedExaminationCount : Integer mutable default 0;
-    }
-    role LabManager {
-      proactiveCheckCount : Integer mutable default 0;
-    }
-    role Accountment {
-      recordedRefundCount : Integer mutable default 0;
+    enum ComplaintCategory {
+        CUSTOMER_ACCOUNT,
+        NUTRITION,
+        LAB_QUALITY
     }
 
-    // Refund-approval hierarchy: one abstract base holding the shared
-    // "what did this level decide" datum, specialized by the two levels
-    // that differ only in the ceiling each may sign off.
-    role FinancialApprover {
-      levelOutcome : ApprovalOutcome mutable default Pending;
-    }
-    role CustomerManager specializes FinancialApprover {
-      approvalCeilingAmount : Integer default 5000;
-    }
-    role Cfo specializes FinancialApprover { }
-
-    // SR-only actor: appears in the intentional view, has no BPMN lane.
-    role Ceo specializes FinancialApprover { }
-
-    entity Complaint {
-      phase                     : ComplaintPhase mutable default Received;
-      category                  : ComplaintCategory default CustomerAccount;
-      refundAmount              : Integer mutable default 0;
-
-      // Per-level refund decisions: three-valued, summarised structurally
-      // by `RefundApproval` below.
-      cmApproval                : ApprovalOutcome mutable default Pending;
-      cfoApproval               : ApprovalOutcome mutable default Pending;
-      ceoApproval               : ApprovalOutcome mutable default Pending;
-
-      // Genuine two-valued milestone facts.
-      created                   : Boolean mutable default false;
-      artifactsUpdated          : Boolean mutable default false;
-      needsMoreExamination      : Boolean mutable default true;
-      examinedByCustomerManager : Boolean mutable default false;
-      examinedByNutritionist    : Boolean mutable default false;
-      examinedByLabManager      : Boolean mutable default false;
-      qualityChecked            : Boolean mutable default false;
-      qualityImprovementFlagged : Boolean mutable default false;
-      compensationSuggested     : Boolean mutable default false;
-      refundRequested           : Boolean mutable default false;
-      complex                   : Boolean mutable default false;
-      refundUpdatedInSystem     : Boolean mutable default false;
-      handled                   : Boolean mutable default false;
-      closed                    : Boolean mutable default false;
+    enum ComplaintPhase {
+        RECEIVED,
+        ARTIFACTS_UPDATED,
+        UNDER_EXAMINATION,
+        EXAMINATION_COMPLETE,
+        COMPENSATION_DECIDED,
+        REFUND_APPROVED,
+        REFUND_RECORDED,
+        CLOSED
     }
 
-    // One row per refund-approval level actually consulted for this case.
-    entity RefundApproval {
-      level   : Integer default 0;
-      outcome : ApprovalOutcome mutable default Pending;
-      onAmount : Integer default 0;
+    enum ApprovalOutcome {
+        PENDING,
+        APPROVED,
+        REJECTED
     }
 
-    // One row per examiner pass (Customer Manager / Nutritionist / Lab
-    // Manager), replacing the three examinedBy* Booleans with structure
-    // the i* / BPMN observers can also keep reading via the flat fields.
-    entity Examination {
-      byRole   : ComplaintCategory default CustomerAccount;
-      finished : Boolean mutable default false;
+    role ComplaintParticipant {
+        email : String;
     }
 
-    // ---- Structure -----------------------------------------------
-    association complaintOwnedBy {
-      Complaint [0..*] role ownedComplaint;
-      FieldMan  [1]    role complaintOwner;
+    role Examiner specializes ComplaintParticipant;
+
+    role FinancialApprover specializes ComplaintParticipant {
+        approvalCeilingAmount : Integer;
     }
-    association complaintExaminations {
-      Complaint   [1]    role examinedComplaint;
-      Examination [0..*] role examinationPass;
+
+    orgContext ComplaintCase {
+        attribute complaintId : Integer required;
+        attribute category : ComplaintCategory required;
+        attribute refundAmount : Integer required;
+        attribute phase : ComplaintPhase required mutable default RECEIVED;
+
+        role FieldMan specializes ComplaintParticipant;
+        role Nutritionist specializes Examiner;
+        role LabManager specializes Examiner;
+        role CustomerManager specializes FinancialApprover;
+        role Cfo specializes FinancialApprover;
+        role Accountment specializes ComplaintParticipant;
+
+        entity ExaminationRecord {
+            attribute finding : String required;
+            attribute examDate : DateTime required;
+        }
+
+        entity RefundDecision {
+            attribute outcome : ApprovalOutcome required;
+            attribute approvedAmount : Integer required;
+            attribute decidedAt : DateTime required;
+        }
     }
-    association complaintRefundChain {
-      Complaint      [1]    role refundedComplaint;
-      RefundApproval [0..*] role refundStep;
+
+    composition ComplaintExaminations {
+        ComplaintCase [1] role complaint;
+        ExaminationRecord [0..*] role examinations;
     }
-    association refundStepDecidedBy {
-      RefundApproval    [0..*] role decidedRefundStep;
-      FinancialApprover [1]    role decidingApprover;
+
+    composition ComplaintRefunds {
+        ComplaintCase [1] role complaint;
+        RefundDecision [0..*] role refunds;
     }
-  }
 
-  // i*-only participants: present in customer-complaint.istar's SR view,
-  // no BPMN lane, not members of the ComplaintCase orgContext. Matches
-  // goal/.../examples/customer_complaint_management/customer_complaint_management.acl.
-  role Customer {
-    responseReceived : Boolean mutable default false;
-  }
-  role QualityCommittee;
+    association ExaminerRecords {
+        Examiner [1] role examiner;
+        ExaminationRecord [0..*] role examinations;
+    }
 
-  // ---- Invariants ---------------------------------------------------
-  context Complaint inv NonNegativeRefund:
-    self.refundAmount >= 0;
+    association ApproverRefunds {
+        FinancialApprover [1] role approver;
+        RefundDecision [0..*] role refunds;
+    }
 
-  // Reaching the BPMN end guarantees only `closed`, never `handled` on its
-  // own (Appendix 4 Table B, situation 2.1: a pending complaint may be
-  // closed without handling).
-  context Complaint inv HandledRequiresExamination:
-    self.handled = true implies
-      (self.examinedByCustomerManager = true
-        or self.examinedByNutritionist = true
-        or self.examinedByLabManager = true
-        or self.needsMoreExamination = false);
+    context ComplaintCase inv UniqueExaminationDates:
+        self.ExaminationRecord->isUnique(examDate);
 
-  context Complaint inv RefundRecordingRequiresApproval:
-    self.refundUpdatedInSystem = true implies
-      (self.cmApproval = ApprovalOutcome::Approved
-        or self.cfoApproval = ApprovalOutcome::Approved
-        or self.ceoApproval = ApprovalOutcome::Approved);
-
-  context Complaint inv CeoApprovalOnlyForComplexCases:
-    self.ceoApproval = ApprovalOutcome::Approved implies self.complex = true;
-
-  context Complaint inv RefundApprovedMeansAStepApproved:
-    self.phase = ComplaintPhase::RefundApproved implies
-      self.refundStep->exists(s | s.outcome = ApprovalOutcome::Approved);
-
-  context RefundApproval inv StepAmountNonNegative:
-    self.onAmount >= 0 and self.level >= 0;
-
-  context CustomerManager inv CeilingPositive:
-    self.approvalCeilingAmount > 0;
+    context ComplaintCase inv ExaminersBelongToComplaint:
+        self.ExaminationRecord->forAll(e |
+            self.Nutritionist->includes(e.examiner) or
+            self.LabManager->includes(e.examiner)
+        );
 }

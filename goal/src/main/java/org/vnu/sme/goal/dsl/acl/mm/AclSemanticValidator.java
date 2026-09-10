@@ -19,22 +19,31 @@ public final class AclSemanticValidator {
         Map<String, AclRole> roles = new LinkedHashMap<>();
         model.roles().forEach(role -> roles.putIfAbsent(role.name(), role));
         Set<String> entities = names(model.entities().stream().map(AclEntity::name).toList());
+        Set<String> roleNames = roles.keySet();
         Set<String> groups = names(model.groups().stream().map(AclGroup::name).toList());
 
         validateGeneralizations(model, kinds, errors);
         validateInheritedProperties(model, errors);
+        if (model.isRevisedCore()) {
+            validateCore(model, kinds, errors);
+            return List.copyOf(errors);
+        }
         validateRelations(model.relations(), entities, groups, kinds.keySet(), errors);
-        validateCompatibility(model.compatibilities(), roles, groups, errors);
+        OwnerIndex owners = validateOwners(model.owners(), roleNames, groups, errors);
+        validateRoleOwnerScopeMonotonicity(roles, owners, errors);
+        validateCompatibility(model.compatibilities(), roles, groups, owners, errors);
         return List.copyOf(errors);
     }
 
     private static Map<String, String> classifierKinds(AclModel model, List<String> errors) {
         Map<String, String> kinds = new LinkedHashMap<>();
         model.enums().forEach(value -> unique(kinds, value.name(), "Enumeration", errors));
+        model.namedDataTypes().forEach(value -> unique(kinds, value.sourceName(), "DataType", errors));
         model.entities().forEach(value -> unique(kinds, value.name(), "Entity", errors));
         model.roles().forEach(value -> unique(kinds, value.name(), "Role", errors));
-        model.groups().forEach(value -> unique(kinds, value.name(), "Group", errors));
-        if (kinds.containsKey("Agent")) {
+        model.groups().forEach(value -> unique(kinds, value.name(),
+                value.isOrganizationalContext() ? "OrgCtx" : "Group", errors));
+        if (!model.isRevisedCore() && kinds.containsKey("Agent")) {
             errors.add("classifier name 'Agent' is reserved for the generated ACL Agent class");
         }
         return kinds;
@@ -85,6 +94,12 @@ public final class AclSemanticValidator {
         Map<String, String> parent = new HashMap<>();
         model.entities().forEach(value -> value.specializes().ifPresent(p -> parent.put(value.name(), p)));
         model.groups().forEach(value -> value.specializes().ifPresent(p -> parent.put(value.name(), p)));
+        if (model.isRevisedCore()) {
+            model.roles().forEach(value -> {
+                attributes.put(value.name(), value.attributes());
+                value.parentRoles().stream().findFirst().ifPresent(p -> parent.put(value.name(), p));
+            });
+        }
 
         for (String classifier : attributes.keySet()) {
             Map<String, String> inherited = new LinkedHashMap<>();
@@ -100,6 +115,72 @@ public final class AclSemanticValidator {
                 }
                 current = parent.get(current);
             }
+        }
+    }
+
+    /** Reference-dependent M2 rules of ACL core v4, mirrored in acl.ecore. */
+    private static void validateCore(AclModel model, Map<String, String> kinds, List<String> errors) {
+        Set<String> objectNames = new LinkedHashSet<>();
+        model.entities().forEach(x -> objectNames.add(x.name()));
+        model.roles().forEach(x -> objectNames.add(x.name()));
+        model.orgContexts().forEach(x -> objectNames.add(x.name()));
+
+        Map<String, String> declarationOwner = new LinkedHashMap<>();
+        Map<String, String> contextParent = new LinkedHashMap<>();
+        for (AclGroup context : model.groups()) {
+            if (!context.isOrganizationalContext() || context.specializes().isPresent()) {
+                errors.add("core v4 has OrgCtx nesting, not Group or OrgCtx generalization");
+            }
+            Set<String> localNames = new HashSet<>();
+            for (AclGroupMember member : context.members()) {
+                if (!objectNames.contains(member.type()))
+                    errors.add("unknown context member '" + member.type() + "'");
+                if (!localNames.add(member.type()))
+                    errors.add("duplicate member '" + member.type() + "' in OrgCtx '" + context.name() + "'");
+                String previous = declarationOwner.putIfAbsent(member.type(), context.name());
+                if (previous != null && !previous.equals(context.name()))
+                    errors.add("declaration '" + member.type() + "' is contained by more than one OrgCtx");
+                if ("OrgCtx".equals(kinds.get(member.type())))
+                    contextParent.put(member.type(), context.name());
+            }
+        }
+        detectCycles(contextParent, "OrgCtx nesting", errors);
+
+        Set<String> relationNames = new HashSet<>();
+        for (AclRelation relation : model.relations()) {
+            if (!relationNames.add(relation.name())) errors.add("duplicate relationship '" + relation.name() + "'");
+            Set<String> endRoles = new HashSet<>();
+            int nonEntityEnds = 0;
+            for (AclEndpoint end : relation.endpoints()) {
+                if (!objectNames.contains(end.type()))
+                    errors.add("relationship '" + relation.name() + "' has unknown Object end '" + end.type() + "'");
+                if (!"Entity".equals(kinds.get(end.type()))) nonEntityEnds++;
+                end.roleName().ifPresent(name -> {
+                    if (!endRoles.add(name))
+                        errors.add("relationship '" + relation.name() + "' has duplicate end role '" + name + "'");
+                });
+            }
+            if (nonEntityEnds > 1)
+                errors.add("EntityCenteredAssociation: '" + relation.name()
+                        + "' may have at most one non-Entity end; use role generalization,"
+                        + " compatibility or OrgCtx nesting for organizational relationships");
+            if (relation.kind() != RelationKind.ASSOCIATION && relation.endpoints().size() != 2)
+                errors.add("aggregation/composition '" + relation.name() + "' must have exactly two ends");
+            if (relation.kind() == RelationKind.COMPOSITION) {
+                AclCardinality whole = relation.endpoints().get(0).multiplicity();
+                if (whole.max().isEmpty() || whole.max().getAsInt() != 1)
+                    errors.add("composition '" + relation.name() + "' must have whole-end upper bound 1");
+            }
+        }
+
+        Set<String> pairs = new HashSet<>();
+        for (AclCompatibility compatibility : model.compatibilities()) {
+            String a = compatibility.fromRole(), b = compatibility.toRole();
+            if (!"Role".equals(kinds.get(a)) || !"Role".equals(kinds.get(b)))
+                errors.add("compatibility endpoints must be declared Roles: '" + a + "', '" + b + "'");
+            if (a.equals(b)) errors.add("Role '" + a + "' cannot declare compatibility with itself");
+            String key = a.compareTo(b) < 0 ? a + "\0" + b : b + "\0" + a;
+            if (!pairs.add(key)) errors.add("duplicate symmetric compatibility between '" + a + "' and '" + b + "'");
         }
     }
 
@@ -119,14 +200,19 @@ public final class AclSemanticValidator {
                         + relation.source().roleName().get() + "'");
             }
             boolean sourceEntity = entities.contains(relation.source().type());
-            boolean targetEntity = entities.contains(relation.target().type());
-            if (!sourceEntity && !targetEntity) {
-                if (relation.kind() != RelationKind.COMPOSITION
-                        || !groups.contains(relation.source().type())
-                        || relation.source().type().equals(relation.target().type())) {
+            boolean targetIsGroupOrRole = groups.contains(relation.target().type())
+                    || !entities.contains(relation.target().type());
+            if (relation.kind() == RelationKind.COMPOSITION && sourceEntity
+                    && targetIsGroupOrRole) {
+                errors.add("relationship '" + relation.name()
+                        + "': a Role or Group cannot be owned by an Entity");
+            }
+            if (relation.kind() == RelationKind.COMPOSITION
+                    && groups.contains(relation.source().type())
+                    && targetIsGroupOrRole) {
+                if (relation.source().type().equals(relation.target().type())) {
                     errors.add("relationship '" + relation.name()
-                            + "' between Role/Group classifiers must be a binary composition"
-                            + " from a Group to a different Role or Group");
+                            + "' cannot compose a Group into itself");
                 } else if (!groupCompositionPairs.add(relation.source().type() + "\0"
                         + relation.target().type())) {
                     errors.add("Group '" + relation.source().type() + "' and member '"
@@ -192,7 +278,8 @@ public final class AclSemanticValidator {
     }
 
     private static void validateCompatibility(List<AclCompatibility> compatibilities,
-            Map<String, AclRole> roles, Set<String> groups, List<String> errors) {
+            Map<String, AclRole> roles, Set<String> groups, OwnerIndex owners,
+            List<String> errors) {
         Set<String> seen = new HashSet<>();
         for (AclCompatibility compatibility : compatibilities) {
             if (!roles.containsKey(compatibility.fromRole()) || !roles.containsKey(compatibility.toRole())) {
@@ -209,6 +296,10 @@ public final class AclSemanticValidator {
                         + compatibility.toRole() + "' must be declared inside an existing Group");
                 continue;
             }
+            validateCompatibilityEndpointScope(compatibility.fromRole(),
+                    compatibility.groupName(), owners, errors);
+            validateCompatibilityEndpointScope(compatibility.toRole(),
+                    compatibility.groupName(), owners, errors);
             String a = compatibility.fromRole().compareTo(compatibility.toRole()) <= 0
                     ? compatibility.fromRole() : compatibility.toRole();
             String b = a.equals(compatibility.fromRole())

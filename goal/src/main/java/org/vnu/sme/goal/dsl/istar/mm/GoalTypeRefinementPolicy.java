@@ -15,8 +15,9 @@ import java.util.Set;
 public final class GoalTypeRefinementPolicy {
     private static final Map<GoalType, Set<GoalType>> ALLOWED_CHILDREN = Map.of(
             GoalType.ACHIEVE, EnumSet.allOf(GoalType.class),
-            GoalType.MAINTAIN, EnumSet.of(GoalType.MAINTAIN),
-            GoalType.SUSTAIN, EnumSet.of(GoalType.MAINTAIN, GoalType.SUSTAIN));
+            GoalType.MAINTAIN, EnumSet.of(GoalType.MAINTAIN, GoalType.NONE),
+            GoalType.SUSTAIN, EnumSet.of(GoalType.MAINTAIN, GoalType.SUSTAIN, GoalType.NONE),
+            GoalType.NONE, EnumSet.allOf(GoalType.class));
 
     private GoalTypeRefinementPolicy() {}
 

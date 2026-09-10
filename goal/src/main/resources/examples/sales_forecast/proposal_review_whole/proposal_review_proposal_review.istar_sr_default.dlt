@@ -1,0 +1,587 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<diagram_Layout version="13">
+    <diagramOptions>
+        <autolayout>false</autolayout>
+        <antialiasing>true</antialiasing>
+        <showassocnames>false</showassocnames>
+        <showattributes>true</showattributes>
+        <showmultiplicities>false</showmultiplicities>
+        <showoperations>false</showoperations>
+        <showrolenames>true</showrolenames>
+        <showgrid>false</showgrid>
+    </diagramOptions>
+    <node height="1554.0" id="ProposalManager" sizeCalculated="false"
+        type="IStarNode" width="306.0">
+        <name>ProposalManager</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>38.0</x>
+            <y>49.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="50.0" id="ProposalSuccessfullyCompleted"
+        sizeCalculated="false" type="IStarNode" width="126.0">
+        <name>ProposalSuccessfullyCompleted</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>128.0</x>
+            <y>99.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="50.0" id="ReadyForFinalization" sizeCalculated="false"
+        type="IStarNode" width="126.0">
+        <name>ReadyForFinalization</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>128.0</x>
+            <y>161.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="ProposalPrepared" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>ProposalPrepared</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>66.0</x>
+            <y>223.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="ManagerAuthorized" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>ManagerAuthorized</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>66.0</x>
+            <y>317.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="CurrentRevisionValidated"
+        sizeCalculated="false" type="IStarNode" width="250.0">
+        <name>CurrentRevisionValidated</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>66.0</x>
+            <y>411.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="CustomerReviewReceived"
+        sizeCalculated="false" type="IStarNode" width="250.0">
+        <name>CustomerReviewReceived</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>66.0</x>
+            <y>505.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="50.0" id="CustomerFeedbackResolved"
+        sizeCalculated="false" type="IStarNode" width="126.0">
+        <name>CustomerFeedbackResolved</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>128.0</x>
+            <y>599.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="AcceptedWithoutChanges"
+        sizeCalculated="false" type="IStarNode" width="250.0">
+        <name>AcceptedWithoutChanges</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>66.0</x>
+            <y>661.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="RequestedChangesIncorporated"
+        sizeCalculated="false" type="IStarNode" width="250.0">
+        <name>RequestedChangesIncorporated</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>66.0</x>
+            <y>755.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="50.0" id="ProposalFinalizedAndSent"
+        sizeCalculated="false" type="IStarNode" width="126.0">
+        <name>ProposalFinalizedAndSent</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>128.0</x>
+            <y>849.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="ProposalFinalized" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>ProposalFinalized</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>66.0</x>
+            <y>911.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="ProposalSent" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>ProposalSent</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>66.0</x>
+            <y>1005.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="76.0" id="PrepareProposal" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>PrepareProposal</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>66.0</x>
+            <y>1099.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="90.0" id="ValidateProposal" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>ValidateProposal</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>66.0</x>
+            <y>1187.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="90.0" id="UpdateProposal" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>UpdateProposal</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>66.0</x>
+            <y>1289.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="90.0" id="FinalizeProposal" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>FinalizeProposal</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>66.0</x>
+            <y>1391.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="76.0" id="SendProposal" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>SendProposal</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>66.0</x>
+            <y>1493.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="268.0" id="Customer" sizeCalculated="false"
+        type="IStarNode" width="306.0">
+        <name>Customer</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>447.0</x>
+            <y>87.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="82.0" id="ProposalReceived" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>ProposalReceived</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>475.0</x>
+            <y>137.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <node height="90.0" id="ReviewProposal" sizeCalculated="false"
+        type="IStarNode" width="250.0">
+        <name>ReviewProposal</name>
+        <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyFixed">
+            <x>475.0</x>
+            <y>231.0</y>
+        </strategy>
+        <hidden>false</hidden>
+    </node>
+    <edge type="IStarEdge">
+        <source>CurrentRevisionValidated</source>
+        <target>ReadyForFinalization</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::CurrentRevisionValidated::ReadyForFinalization::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::CurrentRevisionValidated::ReadyForFinalization::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>CustomerFeedbackResolved</source>
+        <target>ProposalSuccessfullyCompleted</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::CustomerFeedbackResolved::ProposalSuccessfullyCompleted::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::CustomerFeedbackResolved::ProposalSuccessfullyCompleted::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>CustomerReviewReceived</source>
+        <target>ReadyForFinalization</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::CustomerReviewReceived::ReadyForFinalization::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::CustomerReviewReceived::ReadyForFinalization::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ManagerAuthorized</source>
+        <target>ReadyForFinalization</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::ManagerAuthorized::ReadyForFinalization::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::ManagerAuthorized::ReadyForFinalization::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ProposalFinalized</source>
+        <target>ProposalFinalizedAndSent</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::ProposalFinalized::ProposalFinalizedAndSent::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::ProposalFinalized::ProposalFinalizedAndSent::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ProposalFinalizedAndSent</source>
+        <target>ProposalSuccessfullyCompleted</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::ProposalFinalizedAndSent::ProposalSuccessfullyCompleted::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::ProposalFinalizedAndSent::ProposalSuccessfullyCompleted::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ProposalPrepared</source>
+        <target>ReadyForFinalization</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::ProposalPrepared::ReadyForFinalization::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::ProposalPrepared::ReadyForFinalization::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ProposalSent</source>
+        <target>ProposalFinalizedAndSent</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::ProposalSent::ProposalFinalizedAndSent::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::ProposalSent::ProposalFinalizedAndSent::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>ReadyForFinalization</source>
+        <target>ProposalSuccessfullyCompleted</target>
+        <name>and_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::AND_REFINE::ReadyForFinalization::ProposalSuccessfullyCompleted::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::AND_REFINE::ReadyForFinalization::ProposalSuccessfullyCompleted::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>AcceptedWithoutChanges</source>
+        <target>CustomerFeedbackResolved</target>
+        <name>or_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::OR_REFINE::AcceptedWithoutChanges::CustomerFeedbackResolved::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::OR_REFINE::AcceptedWithoutChanges::CustomerFeedbackResolved::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+    <edge type="IStarEdge">
+        <source>RequestedChangesIncorporated</source>
+        <target>CustomerFeedbackResolved</target>
+        <name>or_refine</name>
+        <properties/>
+        <waypoints>
+            <edgeproperty
+                id="istar::OR_REFINE::RequestedChangesIncorporated::CustomerFeedbackResolved::WayPoint::0"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>0</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>0</id>
+                <specialid>1</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+            <edgeproperty
+                id="istar::OR_REFINE::RequestedChangesIncorporated::CustomerFeedbackResolved::WayPoint::1"
+                sizeCalculated="true" type="WayPoint"
+                userDefined="false" visible="true">
+                <name>1</name>
+                <strategy type="org.tzi.use.gui.views.diagrams.elements.positioning.StrategyAttachedIntersection">
+                    <userOffsetX>0.0</userOffsetX>
+                    <userOffsetY>0.0</userOffsetY>
+                </strategy>
+                <id>1</id>
+                <specialid>2</specialid>
+                <hidden>false</hidden>
+            </edgeproperty>
+        </waypoints>
+        <hidden>false</hidden>
+    </edge>
+</diagram_Layout>

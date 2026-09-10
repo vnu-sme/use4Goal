@@ -1,246 +1,92 @@
-// Process 2 - Customer Complaint Management, in the state-oriented BPMN DSL.
-// One pool, scoped to one Complaint entity instance (`for ComplaintCase`, see
-// customer-complaint.acl). Lane names are the ACL Role names in that orgContext.
-//
-// Escalation (Customer Manager -> Nutritionist -> Lab Manager) is modelled
-// exactly like classroom.bpmn2's manual/electronic XOR split: `route`
-// chooses the first examiner by complaint category, and each examiner's own
-// "require more?" gateway may hand off to the next examiner in the chain.
-//
-// NOTE on the two approval chains below: only the Customer-Manager-level
-// rejection loops back to `compensationSuggestion` for revision. A CFO or
-// CEO rejection is terminal -- it proceeds straight to `updCompleteMerge`
-// (the complaint is still closed, but `refundUpdatedInSystem` stays false).
-model ComplaintProcess {
+model CustomerComplaintProcess {
+
   pool ComplaintHandling for ComplaintCase {
-    name "Customer Complaint Management"
+    name "Customer Complaint Handling"
     lane FieldMan;
+    lane Examiner;
     lane CustomerManager;
-    lane Nutritionist;
-    lane LabManager;
-    lane Cfo;
-    lane Ceo;
     lane Accountment;
   }
 
   start complaintReceived {
+    name "Complaint received"
     lane FieldMan
     trigger none
-    pre {[ not self.complaint.created ]}
-    flow creatingComplaint
+
+    pre {[
+      self.phase = ComplaintPhase::RECEIVED
+    ]}
+
+    flow updateArtifacts
   }
 
-  activity creatingComplaint {
-    name "Creating complaint"
+  activity updateArtifacts {
+    name "Update artifacts"
     type task
     lane FieldMan
-    pre {[ not self.complaint.created ]}
-    post {[ self.complaint.created ]}
-    flow updatingArtifacts
+
+    pre {[
+      self.phase = ComplaintPhase::RECEIVED
+    ]}
+
+    post {[
+      self.phase = ComplaintPhase::ARTIFACTS_UPDATED
+    ]}
+
+    flow examineComplaint
   }
 
-  activity updatingArtifacts {
-    name "Updating artifacts"
+  activity examineComplaint {
+    name "Examine complaint"
     type task
-    lane FieldMan
-    pre {[ self.complaint.created ]}
-    post {[ self.complaint.artifactsUpdated ]}
-    flow requiredAdditionalExamination
+    lane Examiner
+
+    pre {[
+      self.phase = ComplaintPhase::ARTIFACTS_UPDATED
+    ]}
+
+    post {[
+      self.phase = ComplaintPhase::EXAMINATION_COMPLETE
+    ]}
+
+    flow decideRefund
   }
 
-  gateway requiredAdditionalExamination {
-    lane FieldMan
-    type xor
-    flow compensationSuggestion post {[ not self.complaint.needsMoreExamination ]}
-    flow route post {[ self.complaint.needsMoreExamination ]}
-  }
-
-  gateway route {
-    lane FieldMan
-    type xor
-    flow examiningByCustomerManager post {[ self.complaint.category = ComplaintCategory::CustomerAccount ]}
-    flow examiningByNutritionist post {[ self.complaint.category = ComplaintCategory::Nutrition ]}
-    flow examiningByLabManager post {[ self.complaint.category = ComplaintCategory::LabQuality ]}
-  }
-
-  activity examiningByCustomerManager {
-    name "Examining the artifacts and updating"
+  activity decideRefund {
+    name "Decide refund"
     type task
     lane CustomerManager
-    post {[ self.complaint.examinedByCustomerManager ]}
-    flow cmRequireMore
+
+    pre {[
+      self.phase = ComplaintPhase::EXAMINATION_COMPLETE
+    ]}
+
+    post {[
+      self.phase = ComplaintPhase::REFUND_APPROVED
+    ]}
+
+    flow recordRefund
   }
 
-  gateway cmRequireMore {
-    lane CustomerManager
-    type xor
-    flow examiningByNutritionist post {[ self.complaint.needsMoreExamination ]}
-    flow examDone post {[ not self.complaint.needsMoreExamination ]}
-  }
-
-  activity examiningByNutritionist {
-    name "Examining the artifacts and updating"
-    type task
-    lane Nutritionist
-    post {[ self.complaint.examinedByNutritionist ]}
-    flow nuRequireMore
-  }
-
-  gateway nuRequireMore {
-    lane Nutritionist
-    type xor
-    flow examiningByLabManager post {[ self.complaint.needsMoreExamination ]}
-    flow examDone post {[ not self.complaint.needsMoreExamination ]}
-  }
-
-  activity examiningByLabManager {
-    name "Examining the artifacts and updating"
-    type task
-    lane LabManager
-    post {[ self.complaint.examinedByLabManager ]}
-    flow checkingProactiveTests
-  }
-
-  activity checkingProactiveTests {
-    name "Checking in proactive tests"
-    type task
-    lane LabManager
-    post {[ self.complaint.qualityChecked ]}
-    flow qualityImprovementOpportunity
-  }
-
-  gateway qualityImprovementOpportunity {
-    lane LabManager
-    type xor
-    flow updatingImprovementSuggestion post {[ self.complaint.qualityImprovementFlagged ]}
-    flow lmMerge post {[ not self.complaint.qualityImprovementFlagged ]}
-  }
-
-  activity updatingImprovementSuggestion {
-    name "Updating as improvement suggestion"
-    type task
-    lane LabManager
-    post {[ self.complaint.qualityImprovementFlagged ]}
-    flow lmMerge
-  }
-
-  gateway lmMerge {
-    lane LabManager
-    type xor
-    flow examDone
-  }
-
-  gateway examDone {
-    lane FieldMan
-    type xor
-    flow updatingArtifacts
-  }
-
-  activity compensationSuggestion {
-    name "Compensation suggestion"
-    type task
-    lane FieldMan
-    pre {[ not self.complaint.needsMoreExamination ]}
-    post {[ self.complaint.compensationSuggested ]}
-    flow refund
-  }
-
-  gateway refund {
-    lane FieldMan
-    type xor
-    flow updatingTheComplaint post {[ not self.complaint.refundRequested ]}
-    flow amount post {[ self.complaint.refundRequested ]}
-  }
-
-  gateway amount {
-    lane FieldMan
-    type xor
-    flow suggestionExaminationCm post {[ self.complaint.refundAmount < self.customerManager.approvalCeilingAmount ]}
-    flow suggestionExaminationCfo post {[ self.complaint.refundAmount >= self.customerManager.approvalCeilingAmount ]}
-  }
-
-  activity suggestionExaminationCm {
-    name "Suggestion examination and updating"
-    type task
-    lane CustomerManager
-    pre {[ self.complaint.refundAmount < self.customerManager.approvalCeilingAmount ]}
-    flow cmApprove
-  }
-
-  gateway cmApprove {
-    lane CustomerManager
-    type xor
-    flow refundMerge post {[ self.complaint.cmApproval = ApprovalOutcome::Approved ]}
-    flow compensationSuggestion post {[ self.complaint.cmApproval = ApprovalOutcome::Rejected ]}
-  }
-
-  activity suggestionExaminationCfo {
-    name "Suggestion examination and updating"
-    type task
-    lane Cfo
-    pre {[ self.complaint.refundAmount >= self.customerManager.approvalCeilingAmount ]}
-    flow cfoApprove
-  }
-
-  gateway cfoApprove {
-    lane Cfo
-    type xor
-    flow cfoComplex post {[ self.complaint.cfoApproval = ApprovalOutcome::Approved ]}
-    flow updCompleteMerge post {[ self.complaint.cfoApproval = ApprovalOutcome::Rejected ]}
-  }
-
-  gateway cfoComplex {
-    lane Cfo
-    type xor
-    flow complaintExaminationCeo post {[ self.complaint.complex ]}
-    flow refundMerge post {[ not self.complaint.complex ]}
-  }
-
-  activity complaintExaminationCeo {
-    name "Complaint examination and updating"
-    type task
-    lane Ceo
-    pre {[ self.complaint.complex ]}
-    flow ceoApprove
-  }
-
-  gateway ceoApprove {
-    lane Ceo
-    type xor
-    flow refundMerge post {[ self.complaint.ceoApproval = ApprovalOutcome::Approved ]}
-    flow updCompleteMerge post {[ self.complaint.ceoApproval = ApprovalOutcome::Rejected ]}
-  }
-
-  gateway refundMerge {
-    lane Accountment
-    type xor
-    flow updatingRefundInSystem
-  }
-
-  activity updatingRefundInSystem {
-    name "Updating refund in the system"
+  activity recordRefund {
+    name "Record refund"
     type task
     lane Accountment
-    post {[ self.complaint.refundUpdatedInSystem ]}
-    flow updCompleteMerge
-  }
 
-  gateway updCompleteMerge {
-    lane FieldMan
-    type xor
-    flow updatingTheComplaint
-  }
+    pre {[
+      self.phase = ComplaintPhase::REFUND_APPROVED
+    ]}
 
-  activity updatingTheComplaint {
-    name "Updating the complaint"
-    type task
-    lane FieldMan
-    post {[ self.complaint.closed ]}
+    post {[
+      self.phase = ComplaintPhase::REFUND_RECORDED
+    ]}
+
     flow complaintClosed
   }
 
   end complaintClosed {
-    lane FieldMan
+    name "Complaint closed"
+    lane Accountment
     trigger none
   }
 }

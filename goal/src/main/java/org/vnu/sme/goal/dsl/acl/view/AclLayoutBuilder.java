@@ -37,6 +37,14 @@ public final class AclLayoutBuilder {
                 id(model, value.source().type()), id(model, value.target().type()),
                 AclEdgeKind.valueOf(value.kind().name()), endLabel(value.source()),
                 endLabel(value.target()), value.name(), false, false)));
+        // A declaration nested in an OrgCtx is M1 classifier containment. Show
+        // it as UML composition without multiplicities: it does not prescribe
+        // how many runtime instances of the contained classifier must exist.
+        model.orgContexts().forEach(context -> context.members().forEach(member ->
+                edges.add(AclEdge.of(groupId(context.name()), id(model, member.type()),
+                        AclEdgeKind.COMPOSITION, null, null,
+                        AclContainment.relationName(context.name(), member.type()),
+                        false, false))));
         model.owners().stream()
                 .filter(value -> model.findOrgContext(value.sourceGroup()).isEmpty())
                 .forEach(value -> edges.add(AclEdge.of(

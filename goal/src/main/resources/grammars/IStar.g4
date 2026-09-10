@@ -104,7 +104,7 @@ actorAssociationStmt
     ;
 
 goalType : ':' goalTypeName ;
-goalTypeName : 'Achieve' | 'Maintain' | 'Sustain' ;
+goalTypeName : 'Achieve' | 'Maintain' | 'Sustain' | 'None' ;
 
 descProperty : 'description' stringLit ;
 

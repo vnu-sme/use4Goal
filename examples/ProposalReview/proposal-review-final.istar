@@ -1,0 +1,140 @@
+// ProposalReview intentional model.
+//
+// OCL context convention used by this case study:
+//   self : Proposal
+// for all condition/pre/post expressions, including those declared
+// inside the Customer iStar role.
+//
+// NOTE: this model uses the user-approved temporal type `None`.
+// The current public IStar.g4 must therefore include `None` in goalTypeName.
+
+istar ProposalReviewGoals {
+
+  agent Proposal {
+
+    goal ProposalCompleted : Achieve
+
+    goal ProposalFinalizedAndSent : Achieve
+      > ProposalCompleted
+
+    goal ProposalReadyForFinalization : Sustain
+      > ProposalCompleted
+
+    goal CurrentProposalPreparedAndValidated : None
+      > ProposalReadyForFinalization
+
+    goal CustomerReviewReceived : None
+      > ProposalReadyForFinalization
+
+    goal CustomerFeedbackResolved : None
+      > ProposalReadyForFinalization
+
+    goal ProposalPrepared : Achieve
+      > CurrentProposalPreparedAndValidated
+    condition {[
+      self.state = ProposalState::PREPARED
+    ]}
+
+    goal ProposalValidated : None
+      > CurrentProposalPreparedAndValidated
+    condition {[
+      self.ProposalRevision->notEmpty()
+      and
+      self.ProposalRevision->forAll(r |
+        r.validations->notEmpty()
+        and
+        r.validations->forAll(v |
+          v.valid = true
+        )
+      )
+    ]}
+
+    goal ProposalAcceptedWithoutChanges : Achieve
+      > or CustomerFeedbackResolved
+    condition {[
+      self.ProposalRevision->notEmpty()
+      and
+      let maxNo = self.ProposalRevision.revisionNo->max() in
+      let current = self.ProposalRevision->any(r |
+        r.revisionNo = maxNo
+      ) in
+      current.reviews->notEmpty()
+      and
+      current.reviews->forAll(rv |
+        rv.decision = ReviewDecision::ACCEPTED
+      )
+    ]}
+
+    goal RequestedChangesIncorporated : None
+      > or CustomerFeedbackResolved
+
+    task UpdateProposal
+      > or RequestedChangesIncorporated
+    pre {[
+      self.ProposalRevision->notEmpty()
+      and
+      let maxNo = self.ProposalRevision.revisionNo->max() in
+      let current = self.ProposalRevision->any(r |
+        r.revisionNo = maxNo
+      ) in
+      current.reviews->exists(rv |
+        rv.decision = ReviewDecision::CHANGES_REQUESTED
+      )
+    ]}
+    post {[
+      let oldMax =
+        self.ProposalRevision@pre
+          ->collect(r | r.revisionNo)
+          ->max()
+      in
+      self.ProposalRevision
+        ->collect(r | r.revisionNo)
+        ->max()
+      =
+      oldMax + 1
+    ]}
+
+    task FinalizeProposal
+      > ProposalFinalizedAndSent
+    pre {[
+      self.state = ProposalState::UNDER_REVIEW
+    ]}
+    post {[
+      self.state = ProposalState::FINALIZED
+    ]}
+
+    task SendProposal
+      > ProposalFinalizedAndSent
+    pre {[
+      self.state = ProposalState::FINALIZED
+    ]}
+    post {[
+      self.state = ProposalState::SENT
+    ]}
+  }
+
+  role Customer {
+
+    task ReviewProposal
+    pre {[
+      self.ProposalRevision->exists(r |
+        r.reviews->isEmpty()
+      )
+      and
+      self.ProposalRevision.validations->forAll(v |
+        v.valid = true
+      )
+    ]}
+    post {[
+      self.ProposalRevision->exists(r |
+        r.reviews@pre->isEmpty()
+        and
+        r.reviews->notEmpty()
+      )
+    ]}
+  }
+
+  depend Proposal.CustomerReviewReceived
+    -> goal ProposalReviewedByCustomer
+    -> Customer.ReviewProposal
+}

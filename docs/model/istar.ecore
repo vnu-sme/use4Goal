@@ -28,8 +28,6 @@
         upperBound="-1" eType="#//Actor" containment="true" eOpposite="#//Actor/model"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="dependencies" upperBound="-1"
         eType="#//Dependency" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="actorAssociations" upperBound="-1"
-        eType="#//ActorAssociation" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Actor" abstract="true">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -40,8 +38,6 @@
         eOpposite="#//GoalModel/actors"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="elements" upperBound="-1"
         eType="#//IntentionalElement" containment="true" eOpposite="#//IntentionalElement/owner"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="relations" upperBound="-1"
-        eType="#//IntentionalRelation" containment="true" eOpposite="#//IntentionalRelation/owner"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Agent" eSuperTypes="#//Actor">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -68,11 +64,15 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="description" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="owner" eType="#//Actor"
         eOpposite="#//Actor/elements"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="source" lowerBound="1"
+        eType="#//Contribution"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Quality" eSuperTypes="#//IntentionalElement">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
       <details key="documentation" value="A quality target of contribution links and source of qualification links."/>
     </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="quality" lowerBound="1"
+        eType="#//Qualification"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ConcreteIntentionalElement" abstract="true"
       eSuperTypes="#//IntentionalElement">
@@ -84,6 +84,8 @@
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
       <details key="documentation" value="An intentional element that may participate in a refinement and carry OCL contracts."/>
     </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parent" lowerBound="1"
+        eType="#//Refinement"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Goal" eSuperTypes="#//GoalTaskElement">
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
@@ -93,13 +95,12 @@
       <details key="RootGoalHasActivationSource" value="not activation.oclIsUndefined() or AndRefinement.allInstances()->exists(r | r.children->includes(self)) or OrRefinement.allInstances()->exists(r | r.children->includes(self)) or ParameterRefinement.allInstances()->exists(r | r.child = self) or Dependency.allInstances()->exists(d | not d.dependerElement.oclIsUndefined() and d.dependerElement.oclIsKindOf(Goal) and d.dependeeElement = self)"/>
       <details key="InheritedActivationIsNotRedeclared" value="activation.oclIsUndefined() or (not AndRefinement.allInstances()->exists(r | r.children->includes(self)) and not ForRefinement.allInstances()->exists(r | r.child = self) and not Dependency.allInstances()->exists(d | not d.dependerElement.oclIsUndefined() and d.dependerElement.oclIsKindOf(Goal) and d.dependeeElement = self))"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="goalType" eType="#//GoalType"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="condition" eType="#//Condition"
-        containment="true"/>
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
       <details key="documentation" value="`activation` is the OCL trigger that makes a ROOT goal (one that is not a refinement child and not the dependee element of a goal dependency) become relevant. A non-root goal inherits its activation from its parent and must not redeclare one (InheritedActivationIsNotRedeclared)."/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="activation" eType="#//Condition"
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="goalType" eType="#//GoalType"
+        defaultValueLiteral="NONE"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="condition" eType="#//Condition"
         containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Task" eSuperTypes="#//GoalTaskElement">
@@ -123,14 +124,7 @@
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="condLang" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="IntentionalRelation" abstract="true">
-    <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-      <details key="documentation" value="Abstract relationship owned by one actor boundary."/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="owner" lowerBound="1" eType="#//Actor"
-        eOpposite="#//Actor/relations"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Refinement" abstract="true" eSuperTypes="#//IntentionalRelation">
+  <eClassifiers xsi:type="ecore:EClass" name="Refinement" abstract="true">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
       <details key="documentation" value="Abstract child-to-parent refinement. Every endpoint must be owned by the relation owner."/>
     </eAnnotations>
@@ -140,8 +134,6 @@
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
       <details key="ParentOwnedByRelationActor" value="parent.owner = owner"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="parent" lowerBound="1"
-        eType="#//GoalTaskElement"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="AndRefinement" eSuperTypes="#//Refinement">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -183,7 +175,7 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ParameterRefinement" eSuperTypes="#//Refinement">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-      <details key="documentation" value="Parameterised OR: the parent is satisfied by PICKing one instance of `parameter` (an Actor role/agent) whose `child` element holds. Concrete syntax: `&gt; pick &lt;Parameter&gt; &lt;Child&gt;`."/>
+      <details key="documentation" value="Parameterised OR: the parent is satisfied by PICKing one instance of `parameter` (an Actor role/agent) whose `child` element holds. Concrete syntax: `> pick &lt;Parameter> &lt;Child>`."/>
     </eAnnotations>
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
       <details key="constraints" value="ChildOwnedByRelationActor ParentIsNotChild RefinementIsAcyclic"/>
@@ -193,14 +185,13 @@
       <details key="ParentIsNotChild" value="child &lt;> parent"/>
       <details key="RefinementIsAcyclic" value="Set{child}->closure(c | AndRefinement.allInstances()->select(r | r.parent = c)->collect(children)->flatten()->union(OrRefinement.allInstances()->select(r | r.parent = c)->collect(children)->flatten())->union(ParameterRefinement.allInstances()->select(r | r.parent = c)->collect(child))->union(ForRefinement.allInstances()->select(r | r.parent = c)->collect(child)))->excludes(parent)"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="child" lowerBound="1"
-        eType="#//GoalTaskElement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="child" lowerBound="1" eType="#//GoalTaskElement"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="parameter" lowerBound="1"
         eType="#//Actor"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ForRefinement" eSuperTypes="#//Refinement">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-      <details key="documentation" value="Parameterised AND: the parent holds only when `child` holds for ALL instances of `parameter` (an Actor role/agent). Concrete syntax: `&gt; forall &lt;Parameter&gt; &lt;Child&gt;`."/>
+      <details key="documentation" value="Parameterised AND: the parent holds only when `child` holds for ALL instances of `parameter` (an Actor role/agent). Concrete syntax: `> forall &lt;Parameter> &lt;Child>`."/>
     </eAnnotations>
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
       <details key="constraints" value="ChildOwnedByRelationActor ParentIsNotChild RefinementIsAcyclic"/>
@@ -210,12 +201,11 @@
       <details key="ParentIsNotChild" value="child &lt;> parent"/>
       <details key="RefinementIsAcyclic" value="Set{child}->closure(c | AndRefinement.allInstances()->select(r | r.parent = c)->collect(children)->flatten()->union(OrRefinement.allInstances()->select(r | r.parent = c)->collect(children)->flatten())->union(ParameterRefinement.allInstances()->select(r | r.parent = c)->collect(child))->union(ForRefinement.allInstances()->select(r | r.parent = c)->collect(child)))->excludes(parent)"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="child" lowerBound="1"
-        eType="#//GoalTaskElement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="child" lowerBound="1" eType="#//GoalTaskElement"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="parameter" lowerBound="1"
         eType="#//Actor"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Contribution" eSuperTypes="#//IntentionalRelation">
+  <eClassifiers xsi:type="ecore:EClass" name="Contribution">
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
       <details key="constraints" value="EndpointsOwnedByRelationActor NoSelfContribution"/>
     </eAnnotations>
@@ -224,24 +214,20 @@
       <details key="NoSelfContribution" value="source &lt;> quality"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" lowerBound="1" eType="#//ContributionType"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="source" lowerBound="1"
-        eType="#//IntentionalElement"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="quality" lowerBound="1"
         eType="#//Quality"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Qualification" eSuperTypes="#//IntentionalRelation">
+  <eClassifiers xsi:type="ecore:EClass" name="Qualification">
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
       <details key="constraints" value="EndpointsOwnedByRelationActor"/>
     </eAnnotations>
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
       <details key="EndpointsOwnedByRelationActor" value="quality.owner = owner and element.owner = owner"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="quality" lowerBound="1"
-        eType="#//Quality"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="element" lowerBound="1"
         eType="#//ConcreteIntentionalElement"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="NeededBy" eSuperTypes="#//IntentionalRelation">
+  <eClassifiers xsi:type="ecore:EClass" name="NeededBy">
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
       <details key="constraints" value="EndpointsOwnedByRelationActor"/>
     </eAnnotations>
@@ -296,6 +282,7 @@
     <eLiterals name="ACHIEVE" literal="Achieve"/>
     <eLiterals name="MAINTAIN" value="1" literal="Maintain"/>
     <eLiterals name="SUSTAIN" value="2" literal="Sustain"/>
+    <eLiterals name="NONE" value="3" literal="None"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="ContributionType">
     <eLiterals name="MAKE" literal="Make"/>
