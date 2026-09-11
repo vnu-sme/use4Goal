@@ -34,7 +34,7 @@ import javax.swing.table.DefaultTableModel;
 
 import javax.swing.JComboBox;
 import org.tzi.use.gui.main.MainWindow;
-import org.vnu.sme.goal.dsl.aol.parser.AolCompiler;
+import org.vnu.sme.goal.dsl.aol.state.AclSystemStateCompiler;
 import org.vnu.sme.goal.dsl.aol.view.AolView;
 import org.vnu.sme.goal.verify.aclstate.AclStateEvaluationSession;
 import org.vnu.sme.goal.verify.aclstate.AclStateEvaluationSession.ConstraintResult;
@@ -410,7 +410,7 @@ public final class AclStateEvaluatorForm extends JDialog {
 
     private void updateSelectedCounterexampleState(int stateIndex) {
         if (currentCounterexampleStates.isEmpty()) {
-            aolView.setModel(null);
+            aolView.setState(null, "");
             oclGoalModel.setRowCount(0);
             stateStepInfoLabel.setText("State 0 / 0");
             statePrevButton.setEnabled(false);
@@ -444,17 +444,14 @@ public final class AclStateEvaluatorForm extends JDialog {
         Path aclPath = aclField.getText().isBlank() ? null : Path.of(aclField.getText().trim());
         if (aclPath != null && java.nio.file.Files.exists(aclPath)) {
             try {
-                AolCompiler.Result compiled = AolCompiler.compileContent(aolText, aclPath);
-                if (compiled.ok() && compiled.model() != null) {
-                    aolView.setModel(compiled.model());
-                } else {
-                    aolView.setModel(null);
-                }
+                var compiled = AclSystemStateCompiler.compileContent(
+                        aolText, aclPath, evaluation.aclModel());
+                aolView.setState(compiled.state(), aolText);
             } catch (Exception ignored) {
-                aolView.setModel(null);
+                aolView.setState(null, aolText);
             }
         } else {
-            aolView.setModel(null);
+            aolView.setState(null, aolText);
         }
 
         // Update OCL & iStar Goal/Task Table for selected state (2 columns: Goal/Task, Status)

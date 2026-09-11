@@ -74,10 +74,11 @@ public final class AolDiagramEdge extends EdgeBase {
         if (edge.label() == null) return;
         g.setFont(LABEL_FONT);
         g.setColor(isSelected() ? fOpt.getEDGE_SELECTED_COLOR() : edgeColor());
-        double x = (start.getX() + end.getX()) / 2.0;
+        double centerX = (start.getX() + end.getX()) / 2.0;
         double y = (start.getY() + end.getY()) / 2.0 - 5.0;
         FontMetrics metrics = g.getFontMetrics();
         int width = metrics.stringWidth(edge.label());
+        double x = centerX - width / 2.0;
         g.setColor(new Color(255, 255, 255, 235));
         g.fillRoundRect((int) x - 3, (int) y - metrics.getAscent() - 2, width + 6, metrics.getHeight() + 3, 5, 5);
         g.setColor(isSelected() ? fOpt.getEDGE_SELECTED_COLOR() : edgeColor());

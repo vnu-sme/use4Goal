@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -28,6 +29,7 @@ import org.tzi.use.gui.main.MainWindow;
 import org.tzi.use.main.Session;
 import org.vnu.sme.goal.dsl.aol.mm.AolModel;
 import org.vnu.sme.goal.dsl.aol.parser.AolCompiler;
+import org.vnu.sme.goal.dsl.aol.state.AclSystemStateCompiler;
 import org.vnu.sme.goal.dsl.aol.view.AolView;
 
 @SuppressWarnings("serial")
@@ -116,14 +118,30 @@ public final class AolForm extends JDialog {
             return;
         }
         try {
-            AolCompiler.Result result = AolCompiler.compile(Path.of(path));
+            Path source = Path.of(path);
+            AolCompiler.Result result = AolCompiler.compile(source);
             if (!result.ok()) {
+                if (result.ast() != null && !result.ast().roles().isEmpty()
+                        && result.acl() != null && result.aclFile() != null) {
+                    var formal = AclSystemStateCompiler.compile(source, result.aclFile(), result.acl());
+                    if (formal.state() != null) {
+                        String text = Files.readString(source);
+                        if (target == OpenTarget.POPUP_WINDOW) {
+                            AolView.openPopupWindow(mainWindow, formal.state(), text, source);
+                        } else {
+                            AolView.openUseDesktop(mainWindow, formal.state(), text, source);
+                        }
+                        PREFS.put(PREF_AOL, path);
+                        status("Opened " + source.getFileName(), C_OK);
+                        dispose();
+                        return;
+                    }
+                }
                 showErrors(result.errors());
                 status("Load failed.", C_ERR);
                 return;
             }
             AolModel model = result.model();
-            Path source = Path.of(path);
             if (target == OpenTarget.POPUP_WINDOW) {
                 AolView.openPopupWindow(mainWindow, model, source);
             } else {

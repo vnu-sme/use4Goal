@@ -23,6 +23,7 @@ import org.tzi.use.gui.main.ViewFrame;
 import org.tzi.use.gui.views.PrintableView;
 import org.tzi.use.gui.views.View;
 import org.vnu.sme.goal.dsl.aol.mm.AolModel;
+import org.vnu.sme.goal.dsl.aol.state.AclSystemState;
 import org.vnu.sme.goal.gui.DiagramModelBrowser;
 
 @SuppressWarnings("serial")
@@ -34,6 +35,8 @@ public final class AolView extends JPanel implements View, PrintableView {
     private final JTextArea specArea = new JTextArea();
     private Path sourceFile;
     private AolModel model;
+    private AclSystemState state;
+    private String stateText;
 
     private AolView(MainWindow mainWindow, Placement placement) {
         super(new BorderLayout());
@@ -74,6 +77,22 @@ public final class AolView extends JPanel implements View, PrintableView {
         view.showInPopupWindow();
     }
 
+    public static void openUseDesktop(MainWindow mainWindow, AclSystemState state,
+                                      String aolText, Path sourceFile) {
+        AolView view = new AolView(mainWindow, Placement.USE_DESKTOP);
+        view.setSourceFile(sourceFile);
+        view.setState(state, aolText);
+        view.showInUseDesktop();
+    }
+
+    public static void openPopupWindow(MainWindow mainWindow, AclSystemState state,
+                                       String aolText, Path sourceFile) {
+        AolView view = new AolView(mainWindow, Placement.POPUP_WINDOW);
+        view.setSourceFile(sourceFile);
+        view.setState(state, aolText);
+        view.showInPopupWindow();
+    }
+
     public void setSourceFile(Path sourceFile) {
         this.sourceFile = sourceFile;
         diagram.setSourceFile(sourceFile);
@@ -81,6 +100,8 @@ public final class AolView extends JPanel implements View, PrintableView {
 
     public void setModel(AolModel model) {
         this.model = model;
+        this.state = null;
+        this.stateText = null;
         diagram.setModel(model);
         diagramContent.removeAll();
         if (model == null) {
@@ -96,6 +117,19 @@ public final class AolView extends JPanel implements View, PrintableView {
         diagramContent.revalidate();
         diagramContent.repaint();
         specArea.setText(model == null ? "" : AolSpecText.render(model));
+        specArea.setCaretPosition(0);
+    }
+
+    public void setState(AclSystemState state, String aolText) {
+        this.model = null;
+        this.state = state;
+        this.stateText = aolText;
+        diagram.setState(state);
+        diagramContent.removeAll();
+        diagramContent.add(new JScrollPane(diagram), BorderLayout.CENTER);
+        diagramContent.revalidate();
+        diagramContent.repaint();
+        specArea.setText(aolText == null ? "" : aolText);
         specArea.setCaretPosition(0);
     }
 
@@ -126,12 +160,26 @@ public final class AolView extends JPanel implements View, PrintableView {
     }
 
     private void switchToPopupWindow() {
-        openPopupWindow(mainWindow, model, sourceFile);
+        if (state == null) {
+            openPopupWindow(mainWindow, model, sourceFile);
+        } else {
+            AolView view = new AolView(mainWindow, Placement.POPUP_WINDOW);
+            view.setSourceFile(sourceFile);
+            view.setState(state, stateText);
+            view.showInPopupWindow();
+        }
         disposeOwner();
     }
 
     private void switchToUseDesktop() {
-        openUseDesktop(mainWindow, model, sourceFile);
+        if (state == null) {
+            openUseDesktop(mainWindow, model, sourceFile);
+        } else {
+            AolView view = new AolView(mainWindow, Placement.USE_DESKTOP);
+            view.setSourceFile(sourceFile);
+            view.setState(state, stateText);
+            view.showInUseDesktop();
+        }
         disposeOwner();
     }
 

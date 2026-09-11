@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.vnu.sme.goal.dsl.acl.mm.AclAttribute;
+import org.vnu.sme.goal.dsl.acl.mm.AclContainment;
 import org.vnu.sme.goal.dsl.acl.mm.AclDataType;
 import org.vnu.sme.goal.dsl.acl.mm.AclEndpoint;
 import org.vnu.sme.goal.dsl.acl.mm.AclEntity;
@@ -960,94 +961,13 @@ final class AclKodkodSymbolicModel {
         List<ObjectAtom> present = objects.stream().filter(object -> contains(instance, frame.exists(object.concreteType()),
                 object.atom())).toList();
 
-        List<ObjectAtom> groups = present.stream().filter(o -> o.kind() == Kind.GROUP).toList();
-        List<ObjectAtom> entities = present.stream().filter(o -> o.kind() == Kind.ENTITY).toList();
-
-        Map<String, String> roleToAgent = new LinkedHashMap<>();
-        Set<String> agentIds = new LinkedHashSet<>();
         TupleSet plays = instance.tuples(frame.play());
-        if (plays != null) {
-            for (Tuple tuple : plays) {
-                ObjectAtom source = objectByAtom.get(String.valueOf(tuple.atom(0)));
-                ObjectAtom target = objectByAtom.get(String.valueOf(tuple.atom(1)));
-                if (source != null && target != null) {
-                    roleToAgent.put(target.id(), source.id());
-                    if (source.kind() != Kind.ROLE) {
-                        agentIds.add(source.id());
-                    }
-                }
-            }
-        }
-
-        if (!agentIds.isEmpty()) {
-            for (String agentId : agentIds) {
-                result.append("  agent ").append(agentId).append(";\n");
-            }
-        }
-
-        Map<String, List<ObjectAtom>> contextMembers = new LinkedHashMap<>();
-        Set<ObjectAtom> containedObjects = new LinkedHashSet<>();
-
-        for (var entry : frame.memberships.entrySet()) {
-            TupleSet tuples = instance.tuples(entry.getValue());
-            if (tuples != null) {
-                for (Tuple tuple : tuples) {
-                    ObjectAtom contextObj = objectByAtom.get(String.valueOf(tuple.atom(0)));
-                    ObjectAtom memberObj = objectByAtom.get(String.valueOf(tuple.atom(1)));
-                    if (contextObj != null && memberObj != null) {
-                        contextMembers.computeIfAbsent(contextObj.id(), ignored -> new ArrayList<>()).add(memberObj);
-                        containedObjects.add(memberObj);
-                    }
-                }
-            }
-        }
-
-        for (ObjectAtom group : groups) {
-            result.append("\n  group ").append(group.concreteType()).append(" as ").append(group.id()).append(" {\n");
-            List<String> groupValues = getAttributeValues(instance, frame, group);
-            for (String val : groupValues) {
-                result.append("    ").append(val).append(";\n");
-            }
-            List<ObjectAtom> members = contextMembers.getOrDefault(group.id(), List.of());
-            for (ObjectAtom member : members) {
-                if (member.kind() == Kind.ROLE) {
-                    String agentId = roleToAgent.get(member.id());
-                    List<String> roleValues = getAttributeValues(instance, frame, member);
-                    if (agentId != null) {
-                        result.append("    play ").append(member.concreteType()).append(" as ").append(member.id())
-                                .append(" by ").append(agentId);
-                        if (!roleValues.isEmpty()) {
-                            result.append(" { ").append(String.join("; ", roleValues)).append(" }");
-                        }
-                        result.append(";\n");
-                    } else {
-                        result.append("    role ").append(member.concreteType()).append(" as ").append(member.id());
-                        if (!roleValues.isEmpty()) {
-                            result.append(" { ").append(String.join("; ", roleValues)).append(" }");
-                        }
-                        result.append(";\n");
-                    }
-                } else if (member.kind() == Kind.ENTITY) {
-                    List<String> entValues = getAttributeValues(instance, frame, member);
-                    result.append("    entity ").append(member.concreteType()).append(" as ").append(member.id());
-                    if (!entValues.isEmpty()) {
-                        result.append(" { ").append(String.join("; ", entValues)).append(" }");
-                    }
-                    result.append(";\n");
-                }
-            }
-            result.append("  }\n");
-        }
-
-        for (ObjectAtom entity : entities) {
-            if (!containedObjects.contains(entity)) {
-                List<String> entValues = getAttributeValues(instance, frame, entity);
-                result.append("  entity ").append(entity.concreteType()).append(" as ").append(entity.id());
-                if (!entValues.isEmpty()) {
-                    result.append(" { ").append(String.join("; ", entValues)).append(" }");
-                }
-                result.append(";\n");
-            }
+        for (ObjectAtom object : present) {
+            List<String> values = getAttributeValues(instance, frame, object);
+            result.append("  ").append(object.kind().name().toLowerCase())
+                    .append(' ').append(object.concreteType()).append(" as ").append(object.id());
+            if (values.isEmpty()) result.append(";\n");
+            else result.append(" { ").append(String.join("; ", values)).append("; }\n");
         }
 
         for (AclRelation definition : acl.relations()) {
@@ -1058,6 +978,21 @@ final class AclKodkodSymbolicModel {
                 ObjectAtom target = objectByAtom.get(String.valueOf(tuple.atom(1)));
                 if (source != null && target != null) {
                     result.append("  link ").append(definition.name()).append(": ")
+                            .append(source.id()).append(" -> ").append(target.id()).append(";\n");
+                }
+            }
+        }
+
+        for (var entry : frame.memberships.entrySet()) {
+            TupleSet tuples = instance.tuples(entry.getValue());
+            if (tuples == null) continue;
+            String relationName = AclContainment.relationName(
+                    entry.getKey().context(), entry.getKey().type());
+            for (Tuple tuple : tuples) {
+                ObjectAtom source = objectByAtom.get(String.valueOf(tuple.atom(0)));
+                ObjectAtom target = objectByAtom.get(String.valueOf(tuple.atom(1)));
+                if (source != null && target != null) {
+                    result.append("  link ").append(relationName).append(": ")
                             .append(source.id()).append(" -> ").append(target.id()).append(";\n");
                 }
             }

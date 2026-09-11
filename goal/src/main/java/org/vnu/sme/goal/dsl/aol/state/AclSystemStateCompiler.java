@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.antlr.v4.runtime.BaseErrorListener;
+import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
@@ -46,8 +47,22 @@ public final class AclSystemStateCompiler {
         Objects.requireNonNull(expectedAclFile, "expectedAclFile");
         Objects.requireNonNull(model, "model");
         Path source = file.toAbsolutePath().normalize();
+        return compile(CharStreams.fromPath(source), source, expectedAclFile, model, true);
+    }
+
+    public static Result compileContent(String content, Path expectedAclFile, AclModel model) {
+        Objects.requireNonNull(content, "content");
+        Objects.requireNonNull(expectedAclFile, "expectedAclFile");
+        Objects.requireNonNull(model, "model");
+        Path aclFile = expectedAclFile.toAbsolutePath().normalize();
+        return compile(CharStreams.fromString(content), aclFile.resolveSibling("counterexample.aol"),
+                aclFile, model, false);
+    }
+
+    private static Result compile(CharStream input, Path source, Path expectedAclFile,
+                                  AclModel model, boolean validateAclReference) {
         List<String> syntax = new ArrayList<>();
-        AOLLexer lexer = new AOLLexer(CharStreams.fromPath(source));
+        AOLLexer lexer = new AOLLexer(input);
         AOLParser parser = new AOLParser(new CommonTokenStream(lexer));
         BaseErrorListener listener = new BaseErrorListener() {
             @Override public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol,
@@ -61,11 +76,12 @@ public final class AclSystemStateCompiler {
         if (!syntax.isEmpty()) return new Result(null, null, syntax);
 
         AolModelCS ast = new AOLBuildingVisitor().visitModel(tree);
-        Path aclFile = source.getParent().resolve(ast.aclFile()).normalize();
-        if (!sameFile(expectedAclFile, aclFile)) {
-            return new Result(aclFile, null, List.of("AOL references '" + aclFile
+        Path referencedAclFile = source.getParent().resolve(ast.aclFile()).normalize();
+        if (validateAclReference && !sameFile(expectedAclFile, referencedAclFile)) {
+            return new Result(referencedAclFile, null, List.of("AOL references '" + referencedAclFile
                     + "', expected ACL specification '" + expectedAclFile + "'"));
         }
+        Path aclFile = validateAclReference ? referencedAclFile : expectedAclFile.toAbsolutePath().normalize();
         return new Builder(source, aclFile, ast, model).build();
     }
 
@@ -78,10 +94,12 @@ public final class AclSystemStateCompiler {
         private final Map<String, ObjectValue> objects = new LinkedHashMap<>();
         private final List<AssociationLink> associations = new ArrayList<>();
         private final List<PlayLink> plays = new ArrayList<>();
+        private final Map<String, AclRelation> relations;
         private int fatalErrors;
 
         Builder(Path source, Path aclFile, AolModelCS ast, AclModel model) {
             this.source = source; this.aclFile = aclFile; this.ast = ast; this.model = model;
+            this.relations = AclSystemState.relationIndex(model);
         }
 
         Result build() {
@@ -114,7 +132,8 @@ public final class AclSystemStateCompiler {
                 var type = model.findRole(role.roleType());
                 if (type.isEmpty()) fatal(role.location(), "unknown Role type '" + role.roleType() + "'");
                 else addObject(role.instanceId(), role.roleType(), Kind.ROLE,
-                        values(type.get().attributes(), role.attributeValues(), role.location()), role.location());
+                        values(attributesForRole(role.roleType()), role.attributeValues(), role.location()),
+                        role.location());
             }
             if (fatalErrors > 0) return new Result(aclFile, null, diagnostics);
 
@@ -135,11 +154,9 @@ public final class AclSystemStateCompiler {
         }
 
         private void buildAssociationLinks() {
-            Map<String, AclRelation> relationIndex = new LinkedHashMap<>();
-            model.relations().forEach(relation -> relationIndex.put(relation.name(), relation));
             Set<String> seen = new LinkedHashSet<>();
             for (var declaration : ast.links()) {
-                AclRelation relation = relationIndex.get(declaration.relationName());
+                AclRelation relation = relations.get(declaration.relationName());
                 if (relation == null) {
                     fatal(declaration.location(), "unknown Association '" + declaration.relationName() + "'");
                     continue;
@@ -200,6 +217,7 @@ public final class AclSystemStateCompiler {
         }
 
         private void validateRequiredPlayLinks() {
+            if (model.isRevisedCore()) return;
             for (ObjectValue child : objects.values()) {
                 if (child.kind() != Kind.ROLE) continue;
                 var role = model.findRole(child.type()).orElseThrow();
@@ -215,7 +233,7 @@ public final class AclSystemStateCompiler {
         }
 
         private void validateAssociationMultiplicities() {
-            for (AclRelation relation : model.relations()) {
+            for (AclRelation relation : relations.values()) {
                 List<ObjectValue> sources = objects.values().stream()
                         .filter(object -> conforms(object, relation.source().type())).toList();
                 List<ObjectValue> targets = objects.values().stream()
@@ -287,10 +305,18 @@ public final class AclSystemStateCompiler {
                     default -> {
                         AclEnum enumeration = model.enums().stream()
                                 .filter(value -> value.name().equals(attribute.type().sourceName()))
-                                .findFirst().orElseThrow();
-                        String literal = raw.replaceFirst("^.*::", "");
-                        if (!enumeration.literals().contains(literal)) throw new IllegalArgumentException();
-                        yield literal;
+                                .findFirst().orElse(null);
+                        if (enumeration != null) {
+                            String literal = raw.replaceFirst("^.*::", "");
+                            if (!enumeration.literals().contains(literal)) throw new IllegalArgumentException();
+                            yield literal;
+                        }
+                        if (model.namedDataTypes().stream()
+                                .noneMatch(type -> type.sourceName().equals(attribute.type().sourceName()))) {
+                            throw new IllegalArgumentException();
+                        }
+                        yield raw.length() >= 2 && raw.startsWith("\"") && raw.endsWith("\"")
+                                ? raw.substring(1, raw.length() - 1) : raw;
                     }
                 };
             } catch (RuntimeException ex) {
@@ -324,6 +350,19 @@ public final class AclSystemStateCompiler {
                 current = group.specializes().orElse(null);
             }
             return result;
+        }
+
+        private List<AclAttribute> attributesForRole(String type) {
+            Map<String, AclAttribute> result = new LinkedHashMap<>();
+            List<String> pending = new ArrayList<>(List.of(type));
+            Set<String> seen = new LinkedHashSet<>();
+            for (int i = 0; i < pending.size(); i++) {
+                var role = model.findRole(pending.get(i)).orElse(null);
+                if (role == null || !seen.add(role.name())) continue;
+                role.attributes().forEach(attribute -> result.putIfAbsent(attribute.name(), attribute));
+                pending.addAll(role.parentRoles());
+            }
+            return List.copyOf(result.values());
         }
 
         private boolean conforms(ObjectValue object, String expected) {

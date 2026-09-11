@@ -25,6 +25,7 @@ import org.tzi.use.gui.views.diagrams.event.ActionLoadLayout;
 import org.tzi.use.gui.views.diagrams.event.ActionSaveLayout;
 import org.tzi.use.gui.views.diagrams.event.DiagramInputHandling;
 import org.vnu.sme.goal.dsl.aol.mm.AolModel;
+import org.vnu.sme.goal.dsl.aol.state.AclSystemState;
 import org.w3c.dom.Element;
 
 @SuppressWarnings("serial")
@@ -32,6 +33,7 @@ public final class AolDiagram extends DiagramView {
     private final Map<String, AolDiagramNode> nodeMap = new LinkedHashMap<>();
     private final DiagramInputHandling inputHandling;
     private AolModel model;
+    private AclSystemState state;
     private Path sourceFile;
     private String switchActionLabel;
     private Runnable switchAction;
@@ -69,17 +71,24 @@ public final class AolDiagram extends DiagramView {
 
     public void setModel(AolModel model) {
         this.model = model;
+        this.state = null;
+        rebuild();
+    }
+
+    public void setState(AclSystemState state) {
+        this.model = null;
+        this.state = state;
         rebuild();
     }
 
     private void rebuild() {
         nodeMap.clear();
         fGraph = new DiagramGraph();
-        if (model == null) {
+        if (model == null && state == null) {
             repaint();
             return;
         }
-        AolLayout layout = AolLayoutBuilder.build(model);
+        AolLayout layout = state == null ? AolLayoutBuilder.build(model) : AolLayoutBuilder.build(state);
         setPreferredSize(new Dimension(layout.width, layout.height));
         Font font = Font.getFont("use.gui.view.objectdiagram", getFont());
         for (AolNode item : layout.nodes.values()) {
@@ -190,7 +199,8 @@ public final class AolDiagram extends DiagramView {
 
     @Override
     public void resetLayout() {
-        setModel(model);
+        if (state == null) setModel(model);
+        else setState(state);
     }
 
     @Override

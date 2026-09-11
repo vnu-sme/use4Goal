@@ -1,15 +1,20 @@
 package org.vnu.sme.goal.dsl.aol.view;
 
 import java.util.ArrayList;
+import java.util.ArrayDeque;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.vnu.sme.goal.dsl.aol.mm.AolEntityInstance;
 import org.vnu.sme.goal.dsl.aol.mm.AolGroupInstance;
 import org.vnu.sme.goal.dsl.aol.mm.AolLink;
 import org.vnu.sme.goal.dsl.aol.mm.AolModel;
 import org.vnu.sme.goal.dsl.aol.mm.AolPlay;
+import org.vnu.sme.goal.dsl.aol.state.AclSystemState;
 
 /**
  * Recursive tree layout: unlike ACL's type-level layout (roles/entities live in one shared
@@ -96,6 +101,102 @@ public final class AolLayoutBuilder {
         int maxRight = nodes.values().stream().mapToInt(n -> n.x + n.w).max().orElse(900);
         int maxBottom = nodes.values().stream().mapToInt(n -> n.y + n.h).max().orElse(600);
         return new AolLayout(nodes, edges, Math.max(maxRight + MARGIN, 700), Math.max(maxBottom + MARGIN, 500));
+    }
+
+    public static AolLayout build(AclSystemState state) {
+        Map<String, AolNode> nodes = new LinkedHashMap<>();
+        List<AolEdge> edges = new ArrayList<>();
+        if (state == null) return new AolLayout(nodes, edges, 900, 600);
+
+        for (var object : state.objects().values().stream()
+                .sorted(Comparator.comparing(AclSystemState.ObjectValue::id)).toList()) {
+            List<String> details = object.attributes().entrySet().stream()
+                    .map(entry -> entry.getKey() + " = " + entry.getValue()).toList();
+            AolNodeKind kind = switch (object.kind()) {
+                case GROUP -> AolNodeKind.GROUP_INSTANCE;
+                case ROLE -> AolNodeKind.PLAY;
+                case ENTITY -> AolNodeKind.ENTITY_INSTANCE;
+            };
+            AolNode item = node(stateId(object.id()), object.type() + " (" + object.id() + ")",
+                    kind, object.kind().name().toLowerCase() + " object", details);
+            nodes.put(item.id, item);
+        }
+        state.associationLinks().forEach(link -> edges.add(AolEdge.link(
+                stateId(link.sourceId()), stateId(link.targetId()), link.relationName())));
+        state.playLinks().forEach(link -> edges.add(AolEdge.link(
+                stateId(link.parentRoleId()), stateId(link.childRoleId()), "play")));
+
+        int[] size = placeStateNodes(nodes, edges);
+        return new AolLayout(nodes, edges, size[0], size[1]);
+    }
+
+    private static int[] placeStateNodes(Map<String, AolNode> nodes, List<AolEdge> edges) {
+        Map<String, Integer> indegree = new LinkedHashMap<>();
+        Map<String, List<String>> outgoing = new LinkedHashMap<>();
+        Set<String> linked = new LinkedHashSet<>();
+        for (AolEdge edge : edges) {
+            if (!nodes.containsKey(edge.fromId()) || !nodes.containsKey(edge.toId())) continue;
+            linked.add(edge.fromId());
+            linked.add(edge.toId());
+            indegree.merge(edge.toId(), 1, Integer::sum);
+            indegree.putIfAbsent(edge.fromId(), 0);
+            outgoing.computeIfAbsent(edge.fromId(), ignored -> new ArrayList<>()).add(edge.toId());
+        }
+
+        Map<String, Integer> level = new LinkedHashMap<>();
+        ArrayDeque<String> pending = new ArrayDeque<>();
+        linked.stream().filter(id -> indegree.getOrDefault(id, 0) == 0).sorted().forEach(id -> {
+            level.put(id, 0);
+            pending.add(id);
+        });
+        while (!pending.isEmpty()) {
+            String source = pending.remove();
+            for (String target : outgoing.getOrDefault(source, List.of())) {
+                level.merge(target, level.get(source) + 1, Math::max);
+                int remaining = indegree.merge(target, -1, Integer::sum);
+                if (remaining == 0) pending.add(target);
+            }
+        }
+        int cycleLevel = level.values().stream().mapToInt(Integer::intValue).max().orElse(-1) + 1;
+        linked.stream().filter(id -> !level.containsKey(id)).sorted()
+                .forEach(id -> level.put(id, cycleLevel));
+
+        Map<Integer, List<AolNode>> rowsByLevel = new LinkedHashMap<>();
+        level.entrySet().stream().sorted(Map.Entry.comparingByValue()).forEach(entry ->
+                rowsByLevel.computeIfAbsent(entry.getValue(), ignored -> new ArrayList<>())
+                        .add(nodes.get(entry.getKey())));
+        List<List<AolNode>> rows = new ArrayList<>(rowsByLevel.values());
+
+        List<AolNode> isolated = nodes.values().stream().filter(node -> !linked.contains(node.id)).toList();
+        List<AolNode> row = new ArrayList<>();
+        int rowWidth = 0;
+        for (AolNode node : isolated) {
+            int nextWidth = rowWidth + (row.isEmpty() ? 0 : NODE_GAP) + node.w;
+            if (!row.isEmpty() && nextWidth > 900 - 2 * MARGIN) {
+                rows.add(row);
+                row = new ArrayList<>();
+                rowWidth = 0;
+            }
+            row.add(node);
+            rowWidth += (rowWidth == 0 ? 0 : NODE_GAP) + node.w;
+        }
+        if (!row.isEmpty()) rows.add(row);
+
+        int contentWidth = rows.stream().mapToInt(AolLayoutBuilder::rowWidth).max().orElse(0);
+        int y = MARGIN;
+        int maxRight = 0;
+        for (List<AolNode> stateRow : rows) {
+            int x = MARGIN + (contentWidth - rowWidth(stateRow)) / 2;
+            int rowHeight = stateRow.stream().mapToInt(node -> node.h).max().orElse(0);
+            for (AolNode node : stateRow) {
+                node.x = x;
+                node.y = y;
+                maxRight = Math.max(maxRight, x + node.w);
+                x += node.w + NODE_GAP;
+            }
+            y += rowHeight + ROW_GAP;
+        }
+        return new int[] { Math.max(maxRight + MARGIN, 700), Math.max(y, 500) };
     }
 
     private static final class GroupSubtree {
@@ -206,4 +307,5 @@ public final class AolLayoutBuilder {
     private static String playId(String groupPath, String id) { return "play::" + groupPath + "/" + id; }
     private static String entityId(String groupPath, String id) { return "entity::" + groupPath + "/" + id; }
     private static String topLevelEntityId(String id) { return "entity::top/" + id; }
+    private static String stateId(String id) { return "state::" + id; }
 }

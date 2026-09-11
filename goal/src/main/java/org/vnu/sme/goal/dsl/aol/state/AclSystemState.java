@@ -5,9 +5,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
+import org.vnu.sme.goal.dsl.acl.mm.AclCardinality;
+import org.vnu.sme.goal.dsl.acl.mm.AclContainment;
+import org.vnu.sme.goal.dsl.acl.mm.AclEndpoint;
 import org.vnu.sme.goal.dsl.acl.mm.AclModel;
 import org.vnu.sme.goal.dsl.acl.mm.AclRelation;
+import org.vnu.sme.goal.dsl.acl.mm.RelationKind;
 import org.vnu.sme.goal.dsl.acl.ocl.AclOclState;
 
 /**
@@ -44,12 +49,25 @@ public final class AclSystemState implements AclOclState {
         this.objects = Map.copyOf(objects);
         this.associationLinks = List.copyOf(associationLinks);
         this.playLinks = List.copyOf(playLinks);
-        Map<String, AclRelation> relationIndex = new LinkedHashMap<>();
-        model.relations().forEach(relation -> relationIndex.put(relation.name(), relation));
-        this.relations = Map.copyOf(relationIndex);
+        this.relations = Map.copyOf(relationIndex(model));
+    }
+
+    static Map<String, AclRelation> relationIndex(AclModel model) {
+        Map<String, AclRelation> result = new LinkedHashMap<>();
+        model.relations().forEach(relation -> result.put(relation.name(), relation));
+        model.orgContexts().forEach(context -> context.members().forEach(member -> {
+            String name = AclContainment.relationName(context.name(), member.type());
+            result.putIfAbsent(name, new AclRelation(RelationKind.COMPOSITION, name,
+                    new AclEndpoint(context.name(), AclCardinality.bounded(1, 1),
+                            Optional.of(AclContainment.wholeRoleName())),
+                    new AclEndpoint(member.type(), member.multiplicity(),
+                            Optional.of(AclContainment.partRoleName(member.type())))));
+        }));
+        return result;
     }
 
     public AclModel model() { return model; }
+    public Map<String, ObjectValue> objects() { return objects; }
     public ObjectValue object(String id) { return objects.get(id); }
     public int objectCount() { return objects.size(); }
     public int associationLinkCount() { return associationLinks.size(); }
