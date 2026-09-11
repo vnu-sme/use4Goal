@@ -3,10 +3,15 @@ acl-bpmn-boundary v1.0 CustomerComplaintBound {
   loop-bound 1;
   integer -1..4;
 
+  objects ComplaintParticipant 1;
+  objects Examiner 1;
+  objects FinancialApprover 1;
   objects ComplaintCase 1;
   objects FieldMan 1;
-  objects Examiner 1;
+  objects Nutritionist 1;
+  objects LabManager 1;
   objects CustomerManager 1;
+  objects Cfo 1;
   objects Accountment 1;
   objects ExaminationRecord 1;
   objects RefundDecision 1;

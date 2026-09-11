@@ -32,7 +32,7 @@ class ProposalReviewWholeConsistencyTest {
         assertEquals(1, result.goalAchievingExecutions(), result::summary);
         assertEquals(1, result.nonGoalAchievingExecutions(), result::summary);
         assertEquals(1, result.riskyExecutions(), result::summary);
-        assertEquals(java.util.List.of("ProposalManager.ProposalCompleted"), result.rootGoals());
+        assertEquals(java.util.List.of("ProposalManager.ProposalSuccessfullyCompleted", "Customer.ProposalReceived"), result.rootGoals());
         assertTrue(result.processes().get(0).counterexample().stream()
                 .anyMatch(flow -> flow.contains("updateProposal")));
         assertTrue(result.processes().get(0).failureCheckpoint() > 0);
@@ -42,10 +42,10 @@ class ProposalReviewWholeConsistencyTest {
                 .anyMatch(state -> state.contains("currentRevision=2")
                         && state.contains("validationRevision=1")));
         assertTrue(result.processes().get(0).counterexampleGoals().stream()
-                .anyMatch(goal -> goal.goal().endsWith("CurrentProposalPreparedAndValidated")
+                .anyMatch(goal -> goal.goal().endsWith("CurrentRevisionValidated")
                         && goal.status() == GoalStatus.VIOLATED));
         assertTrue(result.processes().get(0).repairHints().stream()
-                .anyMatch(hint -> hint.contains("CurrentProposalPreparedAndValidated")
+                .anyMatch(hint -> hint.contains("CurrentRevisionValidated")
                         && hint.contains("Validate proposal")),
                 result.processes().get(0).repairHints()::toString);
         assertTrue(result.mappings().stream().anyMatch(mapping ->

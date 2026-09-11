@@ -3,13 +3,19 @@ acl-bpmn-boundary v1.0 MeetingSchedulerBound {
   loop-bound 1;
   integer -1..4;
 
+  objects MeetingParty 1;
   objects MeetingUnit 1;
   objects Initiator 1;
   objects Organizer 1;
   objects Secretary 1;
   objects Participant 2;
   objects TimetableResponse 2;
+  objects PhoneContact 1;
+  objects MeetingNotification 1;
 
   links UnitTimetables 2;
   links ParticipantTimetable 2;
+  links SecretaryContacts 1;
+  links ContactForParticipant 1;
+  links UnitNotifications 1;
 }

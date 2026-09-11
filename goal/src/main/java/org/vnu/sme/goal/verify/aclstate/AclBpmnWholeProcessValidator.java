@@ -186,13 +186,6 @@ public final class AclBpmnWholeProcessValidator {
             return result(runtime, null, Verdict.INCONCLUSIVE, 0, 0, 0, 0, 0, 0, 0,
                     List.of(), List.of(), message(error));
         }
-        final AclIStarSymbolicSemantics goals;
-        try {
-            goals = goalModel == null ? null : new AclIStarSymbolicSemantics(symbolic, goalModel);
-        } catch (RuntimeException error) {
-            return result(runtime, null, Verdict.INCONCLUSIVE, 0, 0, 0, 0, 0, 0, 0,
-                    List.of(), List.of(), message(error));
-        }
         List<ObjectAtom> selfCandidates = symbolic.processSelfCandidates(runtime.process().groupClass());
         AclBpmnBoundary.Scope selfScope = boundary.objectScopes().get(runtime.process().groupClass());
         if (selfCandidates.isEmpty() || selfScope == null || selfScope.lower() < 1) {
@@ -203,6 +196,13 @@ public final class AclBpmnWholeProcessValidator {
         // Potential object atoms of one classifier are symmetric. Fixing the first mandatory
         // representative breaks symmetry without losing a process-instance behavior.
         ObjectAtom self = selfCandidates.get(0);
+        final AclIStarSymbolicSemantics goals;
+        try {
+            goals = goalModel == null ? null : new AclIStarSymbolicSemantics(symbolic, goalModel, self);
+        } catch (RuntimeException error) {
+            return result(runtime, null, Verdict.INCONCLUSIVE, 0, 0, 0, 0, 0, 0, 0,
+                    List.of(), List.of(), message(error));
+        }
         String preflight = preflight(symbolic, self);
         if (preflight != null) {
             return result(runtime, self.id(), Verdict.INCONCLUSIVE, 0, 0, 0, 0, 0, 0, 1,

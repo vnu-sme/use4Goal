@@ -1,15 +1,13 @@
-// ProposalReview process reconstructed from the BPMN diagram. Both XOR
-// branches reach the End Event; the changes-requested branch does not
-// revalidate the updated proposal.
+// AS-IS ProposalReview process. Both branches reach End, but the
+// changes-requested branch does not revalidate the updated revision.
 model ProposalReviewProcess {
   pool ProposalReview for ProposalReviewCase {
-    name "Proposal review process"
-    lane ProposalManager name "Proposal Manager";
-    lane Customer name "Customer";
+    name "Proposal review — AS-IS missing re-validation"
+    lane ProposalManager;
+    lane Customer;
   }
 
   start reviewRequested {
-    name "Start"
     lane ProposalManager
     trigger none
     pre {[
@@ -97,10 +95,9 @@ model ProposalReviewProcess {
   }
 
   gateway changesRequested {
-    name "Changes requested?"
     lane Customer
     type xor
-    flow updateProposal label "Yes" post {[
+    flow updateProposal post {[
       self.customer.reviewCompleted =
         self.customer.reviewCompleted@pre
       and self.customer.reviewCompleted
@@ -118,7 +115,7 @@ model ProposalReviewProcess {
       and self.proposal.sent = self.proposal.sent@pre
       and self.proposal.sentRevision = self.proposal.sentRevision@pre
     ]}
-    flow feedbackMerge label "No" post {[
+    flow feedbackMerge post {[
       self.customer.reviewCompleted =
         self.customer.reviewCompleted@pre
       and self.customer.reviewCompleted
@@ -168,7 +165,6 @@ model ProposalReviewProcess {
   }
 
   gateway feedbackMerge {
-    name "Merge"
     lane ProposalManager
     type xor
     flow finalizeProposal post {[
@@ -243,11 +239,10 @@ model ProposalReviewProcess {
       and self.customer.requestedChangeCount =
         self.customer.requestedChangeCount@pre
     ]}
-    flow proposalSent
+    flow proposalCompleted
   }
 
-  end proposalSent {
-    name "Proposal sent"
+  end proposalCompleted {
     lane ProposalManager
     trigger none
   }

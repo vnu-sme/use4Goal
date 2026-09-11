@@ -1,58 +1,46 @@
-// Intentional view reconstructed from the ProposalReview iStar diagram.
-// The diagram labels the main boundary "Proposal"; ProposalManager is used
-// as the executable actor identifier because it is the ACL Role responsible
-// for the corresponding BPMN lane.
+// Intentional view of ProposalReview. Parent goals are propagated from their
+// refinements; leaf conditions observe Role and Entity state in the OrgContext.
 istar ProposalReviewGoals {
   role ProposalManager {
-    goal ProposalCompleted : Achieve
+    goal ProposalSuccessfullyCompleted : Achieve
 
-    goal ProposalReadyForFinalization : Achieve
-      > ProposalCompleted
+    goal ReadyForFinalization : Achieve
+      > ProposalSuccessfullyCompleted
 
-    goal ProposalFinalizedAndSent : Achieve
-      > ProposalCompleted
-
-    // A Sustain condition records that validation was once established and
-    // detects when Update proposal advances the current revision without
-    // validating that new revision.
-    goal CurrentProposalPreparedAndValidated : Sustain
-      > ProposalReadyForFinalization
+    goal ProposalPrepared : Achieve
+      > ReadyForFinalization
     condition {[
       self.orgContext.proposal.prepared
-      and self.orgContext.proposal.validationRevision > 0
+      and self.orgContext.proposal.currentRevision > 0
+    ]}
+
+    goal ManagerAuthorized : Achieve
+      > ReadyForFinalization
+    condition {[
+      self.authorityLevel >=
+        self.orgContext.proposal.requiredAuthorityLevel
+    ]}
+
+    // Sustain detects the update that advances currentRevision while leaving
+    // validationRevision unchanged.
+    goal CurrentRevisionValidated : Sustain
+      > ReadyForFinalization
+    condition {[
+      self.orgContext.proposal.validationRevision > 0
       and self.orgContext.proposal.validationRevision =
         self.orgContext.proposal.currentRevision
     ]}
 
     goal CustomerReviewReceived : Achieve
-      > ProposalReadyForFinalization
+      > ReadyForFinalization
     condition {[
       self.orgContext.customer.reviewCompleted
     ]}
 
     goal CustomerFeedbackResolved : Achieve
-      > ProposalReadyForFinalization
+      > ProposalSuccessfullyCompleted
 
-    task PrepareProposal
-      > CurrentProposalPreparedAndValidated
-    post {[
-      self.orgContext.proposal.prepared
-      and self.orgContext.proposal.currentRevision > 0
-    ]}
-
-    task ValidateProposal
-      > CurrentProposalPreparedAndValidated
-    pre {[
-      self.orgContext.proposal.prepared
-      and self.authorityLevel >=
-        self.orgContext.proposal.requiredAuthorityLevel
-    ]}
-    post {[
-      self.orgContext.proposal.validationRevision =
-        self.orgContext.proposal.currentRevision
-    ]}
-
-    goal ProposalAcceptedWithoutChanges : Achieve
+    goal AcceptedWithoutChanges : Achieve
       > or CustomerFeedbackResolved
     condition {[
       self.orgContext.customer.reviewCompleted
@@ -68,21 +56,54 @@ istar ProposalReviewGoals {
         self.orgContext.customer.requestedChangeCount
     ]}
 
+    goal ProposalFinalizedAndSent : Achieve
+      > ProposalSuccessfullyCompleted
+
+    goal ProposalFinalized : Achieve
+      > ProposalFinalizedAndSent
+    condition {[
+      self.orgContext.proposal.finalized
+    ]}
+
+    goal ProposalSent : Achieve
+      > ProposalFinalizedAndSent
+    condition {[
+      self.orgContext.proposal.sent
+      and self.orgContext.proposal.sentRevision =
+        self.orgContext.proposal.currentRevision
+    ]}
+
+    // Operational Tasks support explanatory BPMN--i* mapping but do not
+    // participate directly in the root-goal verdict.
+    task PrepareProposal
+    post {[
+      self.orgContext.proposal.prepared
+      and self.orgContext.proposal.currentRevision = 1
+    ]}
+
+    task ValidateProposal
+    pre {[
+      self.orgContext.proposal.prepared
+      and self.authorityLevel >=
+        self.orgContext.proposal.requiredAuthorityLevel
+    ]}
+    post {[
+      self.orgContext.proposal.validationRevision =
+        self.orgContext.proposal.currentRevision
+    ]}
+
     task UpdateProposal
-      > or RequestedChangesIncorporated
     pre {[
       self.orgContext.customer.reviewCompleted
       and self.orgContext.customer.requestedChangeCount > 0
     ]}
     post {[
-      self.orgContext.proposal.currentRevision >
-        self.orgContext.proposal.validationRevision
+      self.orgContext.proposal.currentRevision > 1
       and self.orgContext.proposal.incorporatedChangeCount =
         self.orgContext.customer.requestedChangeCount
     ]}
 
     task FinalizeProposal
-      > ProposalFinalizedAndSent
     pre {[
       self.authorityLevel >=
         self.orgContext.proposal.requiredAuthorityLevel
@@ -92,10 +113,6 @@ istar ProposalReviewGoals {
     ]}
 
     task SendProposal
-      > ProposalFinalizedAndSent
-    pre {[
-      self.orgContext.proposal.finalized
-    ]}
     post {[
       self.orgContext.proposal.sent
       and self.orgContext.proposal.sentRevision =
@@ -104,10 +121,14 @@ istar ProposalReviewGoals {
   }
 
   role Customer {
+    goal ProposalReceived : Achieve
+    condition {[
+      self.orgContext.proposal.sent
+    ]}
+
     task ReviewProposal
     pre {[
-      self.orgContext.proposal.prepared
-      and self.orgContext.proposal.validationRevision =
+      self.orgContext.proposal.validationRevision =
         self.orgContext.proposal.currentRevision
     ]}
     post {[
@@ -115,8 +136,4 @@ istar ProposalReviewGoals {
       and self.requestedChangeCount >= 0
     ]}
   }
-
-  depend ProposalManager.CustomerReviewReceived
-    -> goal ProposalReviewedByCustomer
-    -> Customer.ReviewProposal
 }

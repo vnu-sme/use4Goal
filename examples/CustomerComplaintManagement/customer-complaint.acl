@@ -1,4 +1,4 @@
-acl v4.0 CustomerComplaint {
+acl v1.0 CustomerComplaint {
 
     datatype DateTime;
 
@@ -81,11 +81,11 @@ acl v4.0 CustomerComplaint {
     }
 
     context ComplaintCase inv UniqueExaminationDates:
-        self.ExaminationRecord->isUnique(examDate);
+        self.examinations->forAll(e1 | self.examinations->forAll(e2 | e1 = e2 or e1.examDate <> e2.examDate));
 
     context ComplaintCase inv ExaminersBelongToComplaint:
-        self.ExaminationRecord->forAll(e |
-            self.Nutritionist->includes(e.examiner) or
-            self.LabManager->includes(e.examiner)
+        self.examinations->forAll(e |
+            self.nutritionist->includes(e.examiner) or
+            self.labManager->includes(e.examiner)
         );
 }

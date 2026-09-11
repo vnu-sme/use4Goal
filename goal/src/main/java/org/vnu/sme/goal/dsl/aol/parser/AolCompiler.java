@@ -74,6 +74,52 @@ public final class AolCompiler {
         return new Result(ast, aclResult.model(), aclFile, factory.model(), errors);
     }
 
+    public static Result compileContent(String aolContent, Path aclFile) {
+        Objects.requireNonNull(aolContent, "aolContent");
+        Objects.requireNonNull(aclFile, "aclFile");
+        List<String> errors = new ArrayList<>();
+        CharStream input = CharStreams.fromString(aolContent);
+        String sourceName = "counterexample.aol";
+
+        AOLLexer lexer = new AOLLexer(input);
+        AOLParser parser = new AOLParser(new CommonTokenStream(lexer));
+        lexer.removeErrorListeners();
+        parser.removeErrorListeners();
+        ANTLRErrorListener listener = new BaseErrorListener() {
+            @Override
+            public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int column,
+                                    String message, RecognitionException exception) {
+                errors.add(format(sourceName, line, column, "syntax", message));
+            }
+        };
+        lexer.addErrorListener(listener);
+        parser.addErrorListener(listener);
+
+        AOLParser.ModelContext tree = parser.model();
+        if (!errors.isEmpty()) return new Result(null, null, aclFile, null, errors);
+
+        AolModelCS ast = new AOLBuildingVisitor().visitModel(tree);
+
+        AclCompiler.Result aclResult;
+        try {
+            aclResult = AclCompiler.compile(aclFile);
+        } catch (IOException ex) {
+            errors.add("cannot read ACL file '" + aclFile + "': " + ex.getMessage());
+            return new Result(ast, null, aclFile, null, errors);
+        }
+        if (!aclResult.ok()) {
+            errors.add("errors in referenced ACL specification '" + aclFile + "':");
+            errors.addAll(aclResult.errors());
+            return new Result(ast, aclResult.model(), aclFile, null, errors);
+        }
+
+        AolModelFactory.Result factory = AolModelFactory.create(ast, aclResult.model());
+        for (AolModelFactory.SemanticError error : factory.errors()) {
+            errors.add(format(sourceName, error.location().line(), error.location().column(), "semantic", error.message()));
+        }
+        return new Result(ast, aclResult.model(), aclFile, factory.model(), errors);
+    }
+
     private static String format(String sourceName, int line, int column, String phase, String message) {
         return sourceName + ":" + line + ":" + column + ": " + phase + ": " + message;
     }

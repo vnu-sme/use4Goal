@@ -41,14 +41,20 @@ final class AclIStarSymbolicSemantics {
 
     private final AclKodkodSymbolicModel symbolic;
     private final GoalModel model;
+    private final ObjectAtom targetSelf;
     private final Map<String, Actor> owner = new LinkedHashMap<>();
     private final Map<String, List<String>> children = new LinkedHashMap<>();
     private final Map<String, Boolean> andRefinement = new LinkedHashMap<>();
     private final Set<String> childIds = new LinkedHashSet<>();
 
     AclIStarSymbolicSemantics(AclKodkodSymbolicModel symbolic, GoalModel model) {
+        this(symbolic, model, null);
+    }
+
+    AclIStarSymbolicSemantics(AclKodkodSymbolicModel symbolic, GoalModel model, ObjectAtom targetSelf) {
         this.symbolic = symbolic;
         this.model = model;
+        this.targetSelf = targetSelf;
         index();
         validateActors();
     }
@@ -72,15 +78,22 @@ final class AclIStarSymbolicSemantics {
         Evaluator evaluator = new Evaluator(solution.instance());
         List<GoalEvaluation> result = new ArrayList<>();
         for (Actor actor : model.getActors()) {
-            for (Goal goal : actor.elements().stream().filter(Goal.class::isInstance)
-                    .map(Goal.class::cast).toList()) {
-                LabelledFormula value = formula(actor, goal, usedFrames);
+            for (GoalTaskElement element : actor.elements().stream()
+                    .filter(GoalTaskElement.class::isInstance)
+                    .map(GoalTaskElement.class::cast).toList()) {
+                LabelledFormula value = formula(actor, element, usedFrames);
                 MarkingValue marking = evaluator.evaluate(value.satisfied())
                         ? MarkingValue.SATISFIED
                         : evaluator.evaluate(value.violated())
                                 ? MarkingValue.VIOLATED : MarkingValue.UNKNOWN;
-                result.add(new GoalEvaluation(value.label(), !childIds.contains(goal.id()),
-                        marking, goal.oclSource()));
+                String cond = element.oclSource();
+                if (element instanceof Task task && cond == null) {
+                    String preStr = task.preconditions().isEmpty() ? null : task.preconditions().get(0).oclBody();
+                    String postStr = task.postconditions().isEmpty() ? null : task.postconditions().get(0).oclBody();
+                    cond = (preStr == null ? "" : "pre: " + preStr + " ") + (postStr == null ? "" : "post: " + postStr);
+                }
+                result.add(new GoalEvaluation(value.label(), !childIds.contains(element.id()),
+                        marking, cond));
             }
         }
         return List.copyOf(result);
@@ -149,25 +162,40 @@ final class AclIStarSymbolicSemantics {
     }
 
     private MarkingFormula leafTask(Task task, ObjectAtom self, int usedFrames) {
-        if (task.postconditions().isEmpty()) {
+        if (task.postconditions().isEmpty() && task.preconditions().isEmpty()) {
             return new MarkingFormula(Formula.FALSE, Formula.FALSE);
         }
         String pre = task.preconditions().isEmpty() ? null : task.preconditions().get(0).oclBody();
-        String post = task.postconditions().get(0).oclBody();
-        Formula result = Formula.FALSE;
+        String post = task.postconditions().isEmpty() ? null : task.postconditions().get(0).oclBody();
+
+        Formula activatedAny = pre == null ? Formula.TRUE : Formula.FALSE;
+        Formula satisfied = Formula.FALSE;
+
         for (int start = 0; start < usedFrames; start++) {
             var startFrame = symbolic.frame(start);
-            Formula activated = pre == null ? Formula.TRUE
+            Formula preTrue = pre == null ? Formula.TRUE
                     : symbolic.expression(pre, startFrame,
                             symbolic.frame(Math.max(0, start - 1)), self);
-            for (int finish = start; finish < usedFrames; finish++) {
-                var finishFrame = symbolic.frame(finish);
-                Formula fulfilled = symbolic.expression(post, finishFrame,
-                        symbolic.frame(Math.max(0, finish - 1)), self);
-                result = result.or(activated.and(fulfilled));
+            if (pre != null) {
+                activatedAny = activatedAny.or(preTrue);
+            }
+
+            if (post == null) {
+                satisfied = satisfied.or(preTrue);
+            } else {
+                Formula postTrueAfterPre = Formula.FALSE;
+                for (int finish = start; finish < usedFrames; finish++) {
+                    var finishFrame = symbolic.frame(finish);
+                    Formula postTrue = symbolic.expression(post, finishFrame,
+                            symbolic.frame(Math.max(0, finish - 1)), self);
+                    postTrueAfterPre = postTrueAfterPre.or(postTrue);
+                }
+                satisfied = satisfied.or(preTrue.and(postTrueAfterPre));
             }
         }
-        return new MarkingFormula(result, Formula.FALSE);
+
+        Formula violated = activatedAny.and(satisfied.not());
+        return new MarkingFormula(satisfied, violated);
     }
 
     /** False* True+: the first achievement must be preserved through the final frame. */
@@ -210,18 +238,27 @@ final class AclIStarSymbolicSemantics {
         return List.copyOf(result);
     }
 
-    private LabelledFormula formula(Actor actor, Goal goal, int usedFrames) {
+    private LabelledFormula formula(Actor actor, GoalTaskElement element, int usedFrames) {
         Formula population = Formula.FALSE;
         Formula satisfied = Formula.TRUE;
         Formula violated = Formula.FALSE;
-        for (ObjectAtom instance : symbolic.actorCandidates(actor.name())) {
+        List<ObjectAtom> candidates = targetSelf != null && actor.name().equals(targetSelf.concreteType())
+                ? List.of(targetSelf)
+                : symbolic.actorCandidates(actor.name());
+        for (ObjectAtom instance : candidates) {
             Formula present = symbolic.exists(symbolic.frame(usedFrames - 1), instance);
+            if (targetSelf != null && !actor.name().equals(targetSelf.concreteType())) {
+                var rel = symbolic.frame(usedFrames - 1).membership(targetSelf.concreteType(), actor.name());
+                if (rel != null) {
+                    present = present.and(targetSelf.singleton().product(instance.singleton()).in(rel));
+                }
+            }
             population = population.or(present);
-            MarkingFormula value = marking(goal, instance, usedFrames, new LinkedHashSet<>());
+            MarkingFormula value = marking(element, instance, usedFrames, new LinkedHashSet<>());
             satisfied = satisfied.and(present.implies(value.satisfied()));
             violated = violated.or(present.and(value.violated()));
         }
-        return new LabelledFormula(actor.name() + "." + goal.id(),
+        return new LabelledFormula(actor.name() + "." + element.id(),
                 population.and(satisfied), violated);
     }
 

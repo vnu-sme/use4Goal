@@ -1,4 +1,4 @@
-acl v4.0 SalesForecast {
+acl v1.0 SalesForecast {
 
     datatype DateTime;
 
@@ -92,14 +92,14 @@ acl v4.0 SalesForecast {
     }
 
     context Deal inv UniqueRevisionNumbers:
-        self.ProposalRevision->isUnique(revisionNo);
+        self.revisions->forAll(r1 | self.revisions->forAll(r2 | r1 = r2 or r1.revisionNo <> r2.revisionNo));
 
     context Deal inv ApproversBelongToDeal:
-        self.ProposalRevision.decisions->forAll(d |
-            self.DeptManager->includes(d.approver) or
-            self.SectorManager->includes(d.approver) or
-            self.BusinessVp->includes(d.approver) or
-            self.FinancialControl->includes(d.approver) or
-            self.CreditControl->includes(d.approver)
+        self.revisions.decisions->forAll(d |
+            self.deptManager->includes(d.approver) or
+            self.sectorManager->includes(d.approver) or
+            self.businessVp->includes(d.approver) or
+            self.financialControl->includes(d.approver) or
+            self.creditControl->includes(d.approver)
         );
 }

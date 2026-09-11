@@ -1,127 +1,62 @@
-// ACL core v4 — ProposalReview as a UML-oriented structural/state model.
-// OrgCtx owns classifier declarations; object counts belong to an M0 scope.
-// No Agent class, play relation, operations or process ordering at M1.
+// Shared organizational and domain state for ProposalReview.
+acl v3.0 ProposalReviewState {
 
-acl v4.0 ProposalReviewState {
+  // The OrgContext is structural and therefore has no attributes of its own.
   orgContext ProposalReviewCase {
-    caseNumber : Integer;
-    // A policy of this organizational context, not a Proposal attribute.
-    requiredAuthorityLevel : Integer default 1;
-
     role ProposalManager {
-      // State of the manager's role instance, not of its underlying player.
+      // Organizational authority required by Validate and Finalize proposal.
       authorityLevel : Integer default 1;
     }
 
-    // A role definition may have no local attributes. Review data belongs
-    // to a Review entity, linked to the Customer role instance below.
-    role Customer;
+    role Customer {
+      // Observable result produced when the Customer performs the review.
+      reviewCompleted : Boolean mutable default false;
+      requestedChangeCount : Integer mutable default 0;
+    }
 
-    // The stable business document and its delivery state.
     entity Proposal {
-      proposalNumber : String;
-      title : String;
+      requiredAuthorityLevel : Integer default 1;
+
+      prepared : Boolean mutable default false;
+      currentRevision : Integer mutable default 0;
+      validationRevision : Integer mutable default 0;
+
+      incorporatedChangeCount : Integer mutable default 0;
       finalized : Boolean mutable default false;
       sent : Boolean mutable default false;
-    }
-
-    // A real version object; updating creates another version, not an enum.
-    entity ProposalRevision {
-      revisionNo : Integer;
-      incorporatedChangeCount : Integer default 0;
-    }
-
-    // The existence of a record means validation/review has taken place.
-    // Its associations identify exactly which revision and role instance.
-    entity Validation {
-      successful : Boolean;
-    }
-
-    entity Review {
-      requestedChangeCount : Integer default 0;
+      sentRevision : Integer mutable default 0;
     }
   }
 
-  // Generic relationships are model-level, and each contains an Entity.
-  // The first end of a composition denotes the whole.
-  composition caseProposal {
-    ProposalReviewCase [1] role reviewCase;
-    Proposal [1] role proposal;
-  }
-
-  composition proposalRevisions {
-    Proposal [1] role proposal;
-    ProposalRevision [0..*] role revisions;
-  }
-
-  // Multiplicity is read at the destination end: one Proposal has 0..1
-  // currentRevision, and one revision is current for at most one Proposal.
-  // Before Prepare, the proposal may have no version yet.
-  association currentProposalRevision {
-    Proposal [0..1] role currentFor;
-    ProposalRevision [0..1] role currentRevision;
-  }
-
-  composition revisionValidations {
-    ProposalRevision [1] role validatedRevision;
-    Validation [0..*] role validations;
-  }
-
-  association validationManager {
-    ProposalManager [1] role validator;
-    Validation [0..*] role validations;
-  }
-
-  composition revisionReviews {
-    ProposalRevision [1] role reviewedRevision;
-    Review [0..*] role reviews;
-  }
-
-  association reviewCustomer {
-    Customer [1] role reviewer;
-    Review [0..*] role reviews;
-  }
-
-  // Domain-state invariants; the M2 rules are declared separately in Ecore.
-  context ProposalReviewCase inv PositiveCaseNumber:
-    self.caseNumber > 0;
-
-  context ProposalReviewCase inv NonNegativeRequiredAuthority:
-    self.requiredAuthorityLevel >= 0;
-
+  // ACL states only structural and lifecycle facts. Equality between the
+  // current and validated revisions remains an i* requirement, so BPMN can
+  // still produce the conflicting state currentRevision=2 and
+  // validationRevision=1.
   context ProposalManager inv NonNegativeAuthority:
     self.authorityLevel >= 0;
 
-  // A successful validation must respect the authority policy of the
-  // proposal's organizational context.
-  context Validation inv AuthorizedValidation:
-    self.successful implies self.validator.authorityLevel >=
-      self.validatedRevision.proposal.reviewCase.requiredAuthorityLevel;
-
-  context ProposalRevision inv PositiveRevisionNumber:
-    self.revisionNo > 0;
-
-  context ProposalRevision inv NonNegativeIncorporatedChanges:
-    self.incorporatedChangeCount >= 0;
-
-  context Review inv NonNegativeRequestedChanges:
+  context Customer inv NonNegativeRequestedChanges:
     self.requestedChangeCount >= 0;
 
-  context Proposal inv UniqueRevisionNumbers:
-    self.revisions->isUnique(r | r.revisionNo);
+  context Customer inv NoRequestBeforeReview:
+    not self.reviewCompleted implies self.requestedChangeCount = 0;
 
-  context Proposal inv CurrentRevisionBelongsToProposal:
-    self.currentRevision.oclIsUndefined()
-    or self.revisions->includes(self.currentRevision);
+  context Proposal inv NonNegativeProposalState:
+    self.requiredAuthorityLevel >= 0 and
+    self.currentRevision >= 0 and
+    self.validationRevision >= 0 and
+    self.incorporatedChangeCount >= 0 and
+    self.sentRevision >= 0;
 
-  context Proposal inv FinalizationHasARevision:
-    self.finalized implies not self.currentRevision.oclIsUndefined();
+  context Proposal inv PreparationMatchesRevision:
+    self.prepared = (self.currentRevision > 0);
+
+  context Proposal inv ValidationReferencesExistingRevision:
+    self.validationRevision <= self.currentRevision;
 
   context Proposal inv SendingRequiresFinalization:
     self.sent implies self.finalized;
 
-  // Deliberately NOT an invariant:
-  //   currentRevision has a successful Validation.
-  // It is an iStar intention. Validate establishes it for r1; Update can
-  // select r2 while the existing Validation stays attached to r1.
+  context Proposal inv SentRevisionIsCurrent:
+    self.sent implies self.sentRevision = self.currentRevision;
 }

@@ -66,7 +66,7 @@ acl v4.0 ProposalReview {
     }
 
     context Proposal inv UniqueRevisionNumbers:
-        self.ProposalRevision->isUnique(revisionNo);
+        self.ProposalRevision->forAll(r1 | self.ProposalRevision->forAll(r2 | r1 = r2 or r1.revisionNo <> r2.revisionNo));
 
     context Proposal inv ValidatorsBelongToProposal:
         self.ProposalRevision.validations->forAll(v |

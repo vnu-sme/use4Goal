@@ -32,7 +32,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import javax.swing.JComboBox;
 import org.tzi.use.gui.main.MainWindow;
+import org.vnu.sme.goal.dsl.aol.parser.AolCompiler;
+import org.vnu.sme.goal.dsl.aol.view.AolView;
 import org.vnu.sme.goal.verify.aclstate.AclStateEvaluationSession;
 import org.vnu.sme.goal.verify.aclstate.AclStateEvaluationSession.ConstraintResult;
 import org.vnu.sme.goal.verify.aclstate.AclStateEvaluationSession.StateResult;
@@ -42,6 +45,8 @@ import org.vnu.sme.goal.verify.aclstate.AclBpmnStateTraceEvaluator.StepAlternati
 import org.vnu.sme.goal.verify.aclstate.AclBpmnStateTraceEvaluator.StepResult;
 import org.vnu.sme.goal.verify.aclstate.AclBpmnStateTraceEvaluator.TraceResult;
 import org.vnu.sme.goal.verify.aclstate.AclBpmnWholeProcessValidator;
+import org.vnu.sme.goal.verify.aclstate.AclBpmnWholeProcessValidator.GoalEvidence;
+import org.vnu.sme.goal.verify.aclstate.AclBpmnWholeProcessValidator.GoalStatus;
 import org.vnu.sme.goal.verify.aclstate.AclBpmnWholeProcessValidator.MappingEntry;
 import org.vnu.sme.goal.verify.aclstate.AclBpmnWholeProcessValidator.ProcessResult;
 import org.vnu.sme.goal.verify.aclstate.AclBpmnWholeProcessValidator.ValidationResult;
@@ -111,12 +116,40 @@ public final class AclStateEvaluatorForm extends JDialog {
     private final JTextArea bpmnDetail = new JTextArea();
     private final JTextArea wholeProcessDetail = new JTextArea();
 
+    private final JTextArea counterexampleTraceArea = new JTextArea(4, 50);
+    private final JTextArea aolModelArea = new JTextArea(10, 30);
+    private final JTextArea oclStatusArea = new JTextArea(10, 30);
+    private final JLabel conformanceResultLabel = new JLabel("NOT_EVALUATED", SwingConstants.CENTER);
+    private final JLabel riskResultLabel = new JLabel("NOT_EVALUATED", SwingConstants.CENTER);
+
+    private final JComboBox<String> stateSelectorCombo = new JComboBox<>();
+    private final JButton statePrevButton = new JButton("< State trước");
+    private final JButton stateNextButton = new JButton("State sau >");
+    private final JButton jumpCheckpointButton = new JButton("Tới Checkpoint Lỗi");
+    private final JLabel stateStepInfoLabel = new JLabel("State 0 / 0");
+
+    private final AolView aolView;
+    private final DefaultTableModel oclGoalModel = readOnlyModel(
+            "Mục tiêu / Task", "Trạng thái");
+    private final JTable oclGoalTable = new JTable(oclGoalModel);
+    private final JTextArea repairHintArea = new JTextArea(3, 40);
+
+    private final List<String> currentCounterexampleStates = new java.util.ArrayList<>();
+    private final List<GoalEvidence> currentCounterexampleGoals = new java.util.ArrayList<>();
+    private final List<String> currentRepairHints = new java.util.ArrayList<>();
+    private final List<String> currentCounterexampleTrace = new java.util.ArrayList<>();
+    private int currentFailureCheckpoint = -1;
+    private String currentInvalidatingStep = "-";
+    private int selectedStateIndex = 0;
+    private boolean updatingStateComboInternal = false;
+
     private AclStateEvaluationSession evaluation;
     private TraceResult bpmnTrace;
     private ValidationResult wholeProcessValidation;
 
     public AclStateEvaluatorForm(MainWindow owner) {
         super(owner, "Goal–Process Conformance", false);
+        this.aolView = AolView.embedded(owner);
         buildUi();
         aclField.setText(PREFS.get(PREF_ACL, ""));
         bpmnField.setText(PREFS.get(PREF_BPMN, ""));
@@ -202,7 +235,90 @@ public final class AclStateEvaluatorForm extends JDialog {
         return inputs;
     }
 
+    private JPanel buildConformanceAolPanel() {
+        JPanel mainPanel = new JPanel(new BorderLayout(5, 5));
+        mainPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+        // 1. Chuỗi kịch bản lỗi & Navigation bar đổi state
+        JPanel topPanel = new JPanel(new BorderLayout(3, 3));
+        topPanel.setBorder(BorderFactory.createTitledBorder("Chuỗi kịch bản lỗi (Counterexample Trace) & Điều hướng State"));
+        counterexampleTraceArea.setEditable(false);
+        counterexampleTraceArea.setLineWrap(true);
+        counterexampleTraceArea.setWrapStyleWord(true);
+        counterexampleTraceArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+
+        JPanel navBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 3));
+        navBar.add(new JLabel("Chuyển State:"));
+        navBar.add(stateSelectorCombo);
+        navBar.add(statePrevButton);
+        navBar.add(stateNextButton);
+        navBar.add(jumpCheckpointButton);
+        navBar.add(stateStepInfoLabel);
+
+        statePrevButton.addActionListener(e -> navigateStateStep(-1));
+        stateNextButton.addActionListener(e -> navigateStateStep(1));
+        jumpCheckpointButton.addActionListener(e -> {
+            if (currentFailureCheckpoint >= 0 && currentFailureCheckpoint < currentCounterexampleStates.size()) {
+                updateSelectedCounterexampleState(currentFailureCheckpoint);
+            }
+        });
+        stateSelectorCombo.addActionListener(e -> {
+            if (!updatingStateComboInternal) {
+                int index = stateSelectorCombo.getSelectedIndex();
+                if (index >= 0 && index < currentCounterexampleStates.size()) {
+                    updateSelectedCounterexampleState(index);
+                }
+            }
+        });
+
+        topPanel.add(new JScrollPane(counterexampleTraceArea), BorderLayout.CENTER);
+        topPanel.add(navBar, BorderLayout.SOUTH);
+        topPanel.setPreferredSize(new Dimension(800, 140));
+
+        // 2. Biểu đồ AOL (AOL Diagram Viewer) | Bảng trạng thái Goals & Tasks tại State
+        JPanel middlePanel = new JPanel(new java.awt.GridLayout(1, 2, 5, 5));
+
+        JPanel leftAolPanel = new JPanel(new BorderLayout(3, 3));
+        leftAolPanel.setBorder(BorderFactory.createTitledBorder("Biểu đồ đồ họa AOL (AOL Diagram Viewer)"));
+        leftAolPanel.add(aolView, BorderLayout.CENTER);
+
+        JPanel rightOclPanel = new JPanel(new BorderLayout(3, 3));
+        rightOclPanel.setBorder(BorderFactory.createTitledBorder("Trạng thái Mục tiêu (Goals) & Tác vụ (Tasks) tại State"));
+        rightOclPanel.add(new JScrollPane(oclGoalTable), BorderLayout.CENTER);
+
+        middlePanel.add(leftAolPanel);
+        middlePanel.add(rightOclPanel);
+
+        // 3. kết quả conformance | risk or not
+        JPanel bottomPanel = new JPanel(new java.awt.GridLayout(1, 2, 5, 5));
+
+        JPanel leftConfPanel = new JPanel(new BorderLayout(3, 3));
+        leftConfPanel.setBorder(BorderFactory.createTitledBorder("kết quả conformance"));
+        conformanceResultLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 15));
+        leftConfPanel.add(conformanceResultLabel, BorderLayout.CENTER);
+
+        JPanel rightRiskPanel = new JPanel(new BorderLayout(3, 3));
+        rightRiskPanel.setBorder(BorderFactory.createTitledBorder("risk or not"));
+        riskResultLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 15));
+        rightRiskPanel.add(riskResultLabel, BorderLayout.CENTER);
+
+        bottomPanel.add(leftConfPanel);
+        bottomPanel.add(rightRiskPanel);
+        bottomPanel.setPreferredSize(new Dimension(800, 60));
+
+        mainPanel.add(topPanel, BorderLayout.NORTH);
+        mainPanel.add(middlePanel, BorderLayout.CENTER);
+        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
+
+        return mainPanel;
+    }
+
     private Component buildContent() {
+        configureTables();
+        javax.swing.JTabbedPane tabs = new javax.swing.JTabbedPane();
+
+        tabs.addTab("Conformance & AOL View", buildConformanceAolPanel());
+
         reportTable.setAutoCreateRowSorter(true);
         reportTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         int[] widths = {120, 130, 260, 260, 190, 680};
@@ -213,7 +329,22 @@ public final class AclStateEvaluatorForm extends JDialog {
         JPanel report = new JPanel(new BorderLayout(0, 4));
         report.setBorder(BorderFactory.createTitledBorder("Integrated conformance report"));
         report.add(new JScrollPane(reportTable), BorderLayout.CENTER);
-        return report;
+        tabs.addTab("Integrated Report", report);
+
+        JPanel mappingsPanel = new JPanel(new BorderLayout(0, 4));
+        mappingsPanel.setBorder(BorderFactory.createTitledBorder("Inferred BPMN - iStar Mappings"));
+        mappingsPanel.add(new JScrollPane(mappingTable), BorderLayout.CENTER);
+        tabs.addTab("Goal-Process Mappings", mappingsPanel);
+
+        JPanel wholePanel = new JPanel(new BorderLayout(0, 4));
+        wholePanel.setBorder(BorderFactory.createTitledBorder("Process Execution Verification Details"));
+        javax.swing.JSplitPane split = new javax.swing.JSplitPane(javax.swing.JSplitPane.VERTICAL_SPLIT,
+                new JScrollPane(wholeProcessTable), new JScrollPane(wholeProcessDetail));
+        split.setDividerLocation(160);
+        wholePanel.add(split, BorderLayout.CENTER);
+        tabs.addTab("Process Exploration Details", wholePanel);
+
+        return tabs;
     }
 
     private void configureTables() {
@@ -262,6 +393,81 @@ public final class AclStateEvaluatorForm extends JDialog {
         int[] mappingWidths = {120, 190, 220, 100, 110, 90, 210, 70, 330};
         for (int i = 0; i < mappingWidths.length; i++) {
             mappingTable.getColumnModel().getColumn(i).setPreferredWidth(mappingWidths[i]);
+        }
+
+        oclGoalTable.setAutoCreateRowSorter(true);
+        oclGoalTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        oclGoalTable.getColumnModel().getColumn(0).setPreferredWidth(480);
+        oclGoalTable.getColumnModel().getColumn(1).setPreferredWidth(140);
+        oclGoalTable.getColumnModel().getColumn(1).setCellRenderer(new StatusRenderer());
+    }
+
+    private void navigateStateStep(int delta) {
+        if (currentCounterexampleStates.isEmpty()) return;
+        int target = Math.max(0, Math.min(currentCounterexampleStates.size() - 1, selectedStateIndex + delta));
+        updateSelectedCounterexampleState(target);
+    }
+
+    private void updateSelectedCounterexampleState(int stateIndex) {
+        if (currentCounterexampleStates.isEmpty()) {
+            aolView.setModel(null);
+            oclGoalModel.setRowCount(0);
+            stateStepInfoLabel.setText("State 0 / 0");
+            statePrevButton.setEnabled(false);
+            stateNextButton.setEnabled(false);
+            jumpCheckpointButton.setEnabled(false);
+            return;
+        }
+
+        selectedStateIndex = Math.max(0, Math.min(currentCounterexampleStates.size() - 1, stateIndex));
+
+        updatingStateComboInternal = true;
+        try {
+            if (stateSelectorCombo.getSelectedIndex() != selectedStateIndex) {
+                stateSelectorCombo.setSelectedIndex(selectedStateIndex);
+            }
+        } finally {
+            updatingStateComboInternal = false;
+        }
+
+        statePrevButton.setEnabled(selectedStateIndex > 0);
+        stateNextButton.setEnabled(selectedStateIndex < currentCounterexampleStates.size() - 1);
+        jumpCheckpointButton.setEnabled(currentFailureCheckpoint >= 0);
+
+        boolean isCheckpoint = selectedStateIndex == currentFailureCheckpoint;
+        String stepInfo = "State " + selectedStateIndex + " / " + (currentCounterexampleStates.size() - 1)
+                + (isCheckpoint ? " [CHECKPOINT LỖI: " + currentInvalidatingStep + "]" : "");
+        stateStepInfoLabel.setText(stepInfo);
+
+        // Update AOL Snapshot & Graphical View for selected state
+        String aolText = currentCounterexampleStates.get(selectedStateIndex);
+        Path aclPath = aclField.getText().isBlank() ? null : Path.of(aclField.getText().trim());
+        if (aclPath != null && java.nio.file.Files.exists(aclPath)) {
+            try {
+                AolCompiler.Result compiled = AolCompiler.compileContent(aolText, aclPath);
+                if (compiled.ok() && compiled.model() != null) {
+                    aolView.setModel(compiled.model());
+                } else {
+                    aolView.setModel(null);
+                }
+            } catch (Exception ignored) {
+                aolView.setModel(null);
+            }
+        } else {
+            aolView.setModel(null);
+        }
+
+        // Update OCL & iStar Goal/Task Table for selected state (2 columns: Goal/Task, Status)
+        oclGoalModel.setRowCount(0);
+        for (GoalEvidence goal : currentCounterexampleGoals) {
+            String status = goal.status().toString();
+            if (selectedStateIndex < currentFailureCheckpoint && goal.status() == GoalStatus.VIOLATED) {
+                status = "UNKNOWN";
+            }
+            oclGoalModel.addRow(new Object[] {
+                    goal.goal(),
+                    status
+            });
         }
     }
 
@@ -718,6 +924,70 @@ public final class AclStateEvaluatorForm extends JDialog {
             reportModel.addRow(new Object[] {row.type(), row.process(), row.bpmnElement(),
                     row.iStarElement(), row.status(), row.evidenceOrAction()});
         }
+
+        currentCounterexampleStates.clear();
+        currentCounterexampleGoals.clear();
+        currentRepairHints.clear();
+        currentCounterexampleTrace.clear();
+        currentFailureCheckpoint = -1;
+        currentInvalidatingStep = "-";
+
+        if (!wholeProcessValidation.processes().isEmpty()) {
+            ProcessResult process = wholeProcessValidation.processes().get(0);
+            boolean isInconclusive = wholeProcessValidation.consistency() == AclBpmnWholeProcessValidator.ConsistencyVerdict.INCONCLUSIVE
+                    || process.verdict() == AclBpmnWholeProcessValidator.Verdict.INCONCLUSIVE;
+
+            if (!process.counterexample().isEmpty()) {
+                currentCounterexampleTrace.addAll(process.counterexample());
+                counterexampleTraceArea.setText(String.join("\n  -> ", process.counterexample()));
+            } else if (isInconclusive) {
+                counterexampleTraceArea.setText("Kiểm chứng không thể đưa ra kết luận (INCONCLUSIVE):\n" + process.detail());
+            } else {
+                counterexampleTraceArea.setText("Không phát hiện kịch bản lỗi (Mọi tuyến BPMN đều thỏa mãn mục tiêu iStar và bất biến OCL).");
+            }
+
+            currentCounterexampleStates.addAll(process.counterexampleStates());
+            currentCounterexampleGoals.addAll(process.counterexampleGoals());
+            currentRepairHints.addAll(process.repairHints());
+            currentFailureCheckpoint = process.failureCheckpoint();
+            currentInvalidatingStep = process.invalidatingStep();
+
+            updatingStateComboInternal = true;
+            try {
+                stateSelectorCombo.removeAllItems();
+                if (!currentCounterexampleStates.isEmpty()) {
+                    for (int i = 0; i < currentCounterexampleStates.size(); i++) {
+                        String label = "State " + i;
+                        if (i == 0) label += " (Ban đầu)";
+                        else if (i - 1 < currentCounterexampleTrace.size()) {
+                            label += " (Sau: " + currentCounterexampleTrace.get(i - 1) + ")";
+                        }
+                        if (i == currentFailureCheckpoint) {
+                            label += " [CHECKPOINT LỖI]";
+                        }
+                        stateSelectorCombo.addItem(label);
+                    }
+                }
+            } finally {
+                updatingStateComboInternal = false;
+            }
+
+            int initialIndex = currentFailureCheckpoint >= 0 && currentFailureCheckpoint < currentCounterexampleStates.size()
+                    ? currentFailureCheckpoint : 0;
+            updateSelectedCounterexampleState(initialIndex);
+
+            conformanceResultLabel.setText(wholeProcessValidation.consistency().toString());
+            conformanceResultLabel.setForeground(
+                wholeProcessValidation.consistency() == AclBpmnWholeProcessValidator.ConsistencyVerdict.CONSISTENT ? GREEN :
+                wholeProcessValidation.consistency() == AclBpmnWholeProcessValidator.ConsistencyVerdict.WEAKLY_CONSISTENT ? AMBER : RED
+            );
+
+            riskResultLabel.setText(wholeProcessValidation.risk().toString());
+            riskResultLabel.setForeground(
+                wholeProcessValidation.risk() == AclBpmnWholeProcessValidator.RiskVerdict.RISK_FREE ? GREEN : RED
+            );
+        }
+
         summaryLabel.setText(wholeProcessValidation.consistency() + " / "
                 + wholeProcessValidation.risk());
         if (wholeProcessModel.getRowCount() > 0) {
@@ -871,13 +1141,13 @@ public final class AclStateEvaluatorForm extends JDialog {
                 String status = String.valueOf(value);
                 Color color = status.contains("INVALIDATING") || status.contains("INCONSISTENT")
                         || status.contains("RISK_PRONE") || status.equals("FALSE")
-                        || status.equals("INVALID") || status.equals("ERROR") ? RED
+                        || status.equals("INVALID") || status.equals("ERROR") || status.equals("VIOLATED") ? RED
                         : status.contains("WEAKLY") || status.contains("INCONCLUSIVE")
                                 || status.contains("CANDIDATE") || status.contains("UNMAPPED")
-                                || status.equals("UNDEFINED") || status.equals("AMBIGUOUS") ? AMBER
+                                || status.equals("UNDEFINED") || status.equals("AMBIGUOUS") || status.equals("UNKNOWN") ? AMBER
                         : status.contains("MAPPED") || status.contains("CONSISTENT")
                                 || status.contains("RISK_FREE") || status.equals("TRUE")
-                                || status.equals("VALID") || status.equals("CONFORMANT") ? GREEN
+                                || status.equals("VALID") || status.equals("CONFORMANT") || status.equals("SATISFIED") ? GREEN
                         : GRAY;
                 setForeground(color);
                 setFont(getFont().deriveFont(Font.BOLD));

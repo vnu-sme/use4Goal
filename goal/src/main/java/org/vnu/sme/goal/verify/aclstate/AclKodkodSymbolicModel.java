@@ -26,6 +26,7 @@ import org.vnu.sme.goal.verify.aclstate.AclOclFormulaParser.AtPre;
 import org.vnu.sme.goal.verify.aclstate.AclOclFormulaParser.Binary;
 import org.vnu.sme.goal.verify.aclstate.AclOclFormulaParser.Call;
 import org.vnu.sme.goal.verify.aclstate.AclOclFormulaParser.Literal;
+import org.vnu.sme.goal.verify.aclstate.AclOclFormulaParser.Let;
 import org.vnu.sme.goal.verify.aclstate.AclOclFormulaParser.Name;
 import org.vnu.sme.goal.verify.aclstate.AclOclFormulaParser.Node;
 import org.vnu.sme.goal.verify.aclstate.AclOclFormulaParser.Property;
@@ -48,6 +49,7 @@ final class AclKodkodSymbolicModel {
     record ObjectAtom(String atom, String id, String concreteType, Kind kind, Relation singleton) {}
     record ScalarAtom(String atom, String type, Object value, Relation singleton) {}
     record AttributeSlot(String ownerType, AclAttribute attribute) {}
+    private record ContextMember(String context, String type) {}
 
     final class Frame {
         private final int index;
@@ -55,6 +57,7 @@ final class AclKodkodSymbolicModel {
         private final Map<AttributeSlot, Relation> attributes = new LinkedHashMap<>();
         private final Map<String, Relation> associations = new LinkedHashMap<>();
         private Relation play;
+        private final Map<ContextMember, Relation> memberships = new LinkedHashMap<>();
 
         Frame(int index) { this.index = index; }
         int index() { return index; }
@@ -62,15 +65,24 @@ final class AclKodkodSymbolicModel {
         Relation attribute(AttributeSlot slot) { return attributes.get(slot); }
         Relation association(String name) { return associations.get(name); }
         Relation play() { return play; }
+        Relation membership(String contextType, String memberType) {
+            return memberships.get(new ContextMember(contextType, memberType));
+        }
     }
 
-    private sealed interface Value permits BoolValue, ScalarValue, ObjectsValue, TypeValue {}
-    private record BoolValue(Formula formula) implements Value {}
+    private sealed interface Value permits BoolValue, ScalarValue, ObjectsValue, TypeValue, ScalarCollectionValue {}
+    private record BoolValue(Formula formula, Formula defined) implements Value {
+        BoolValue(Formula formula) { this(formula, Formula.TRUE); }
+    }
+    private record ScalarEntry(ScalarAtom scalar, Formula member) {}
+    /** A bag: two distinct objects may contribute the same scalar value. */
+    private record ScalarCollectionValue(List<ScalarEntry> entries) implements Value {}
     private record ScalarValue(Map<ScalarAtom, Formula> choices) implements Value {
         ScalarValue { choices = Map.copyOf(choices); }
     }
-    private record ObjectsValue(Map<ObjectAtom, Formula> members) implements Value {
-        ObjectsValue { members = Map.copyOf(members); }
+    private record ObjectsValue(Map<ObjectAtom, Formula> members, boolean collection, Formula defined) implements Value {
+        ObjectsValue(Map<ObjectAtom, Formula> members) { this(members, true, Formula.TRUE); }
+        ObjectsValue { members = java.util.Collections.unmodifiableMap(new LinkedHashMap<>(members)); }
     }
     private record TypeValue(String name) implements Value {}
     private record Environment(Frame current, Frame previous, Map<String, Value> variables) {
@@ -101,9 +113,13 @@ final class AclKodkodSymbolicModel {
      * FOL2Bool translator for realistic multi-snapshot models.
      */
     private final List<Formula> structuralFormulas = new ArrayList<>();
+    private record ExpressionKey(String source, int current, int previous, String self) {}
+    private final Map<ExpressionKey, Formula> expressionCache = new HashMap<>();
+    private int choiceCount;
 
     AclKodkodSymbolicModel(AclModel acl, AclBpmnBoundary boundary) {
-        acl.requireLegacyRuntime();
+        for (AclRelation relation : acl.relations())
+            require(relation.endpoints().size() == 2, "symbolic backend currently requires binary associations: " + relation.name());
         this.acl = Objects.requireNonNull(acl, "acl");
         this.boundary = Objects.requireNonNull(boundary, "boundary");
         createObjectAtoms();
@@ -143,9 +159,12 @@ final class AclKodkodSymbolicModel {
     Formula expression(String source, Frame current, Frame previous, ObjectAtom self) {
         Map<String, Value> variables = new LinkedHashMap<>();
         if (self != null) variables.put("self", singleton(self));
-        Value value = compile(AclOclFormulaParser.parse(source),
-                new Environment(current, previous, Map.copyOf(variables)));
-        return bool(value);
+        ExpressionKey key = new ExpressionKey(source, current.index(), previous.index(), self == null ? "" : self.id());
+        return expressionCache.computeIfAbsent(key, ignored -> {
+            Value value = compile(AclOclFormulaParser.parse(source),
+                    new Environment(current, previous, Map.copyOf(variables)));
+            return bool(value).and(defined(value));
+        });
     }
 
     /** Frame condition for a BPMN step that declares no state-changing postcondition. */
@@ -159,12 +178,37 @@ final class AclKodkodSymbolicModel {
      */
     Formula frameCondition(Frame left, Frame right, Set<String> changedProperties) {
         List<Formula> clauses = new ArrayList<>();
+        Set<String> creatable = new LinkedHashSet<>();
+        if (acl.isRevisedCore()) {
+            for (ContextMember member : left.memberships.keySet())
+                if (changedProperties.contains(member.type())) creatable.add(member.type());
+            for (AclRelation relation : acl.relations()) {
+                if (relation.target().roleName().stream().anyMatch(changedProperties::contains))
+                    creatable.add(relation.target().type());
+                if (relation.source().roleName().stream().anyMatch(changedProperties::contains))
+                    creatable.add(relation.source().type());
+            }
+        }
         for (String type : left.exists.keySet()) {
-            clauses.add(left.exists(type).eq(right.exists(type)));
+            boolean creates = kind(type) == Kind.ENTITY && creatable.stream().anyMatch(t ->
+                    typeConforms(type, t, Kind.ENTITY));
+            clauses.add(creates ? left.exists(type).in(right.exists(type))
+                    : left.exists(type).eq(right.exists(type)));
         }
         for (AttributeSlot slot : left.attributes.keySet()) {
-            if (!changedProperties.contains(slot.attribute().name())) {
-                clauses.add(left.attribute(slot).eq(right.attribute(slot)));
+            if (!changedProperties.contains(slot.attribute().name())
+                    || acl.isRevisedCore() && !slot.attribute().mutable()) {
+                for (ObjectAtom object : attributeDomain(slot))
+                    clauses.add(exists(left, object).implies(object.singleton().join(left.attribute(slot))
+                            .eq(object.singleton().join(right.attribute(slot)))));
+            }
+            if (acl.isRevisedCore() && slot.attribute().defaultValue().isPresent()) {
+                String expected = normalizedDefault(slot.attribute().defaultValue().orElseThrow());
+                ScalarAtom scalar = scalarsFor(slot.attribute().type()).stream()
+                        .filter(v -> normalizedDefault(String.valueOf(v.value())).equals(expected)).findFirst().orElseThrow();
+                for (ObjectAtom object : attributeDomain(slot)) clauses.add(
+                        exists(right, object).and(exists(left, object).not()).implies(
+                                object.singleton().join(right.attribute(slot)).eq(scalar.singleton())));
             }
         }
         for (AclRelation definition : acl.relations()) {
@@ -172,9 +216,18 @@ final class AclKodkodSymbolicModel {
                     || definition.source().roleName().stream().anyMatch(changedProperties::contains)
                     || definition.target().roleName().stream().anyMatch(changedProperties::contains);
             if (!changed) {
+                Expression oldPairs = typeExpression(left, definition.source().type())
+                        .product(typeExpression(left, definition.target().type()));
                 clauses.add(left.association(definition.name())
-                        .eq(right.association(definition.name())));
+                        .eq(right.association(definition.name()).intersection(oldPairs)));
             }
+        }
+        for (var entry : left.memberships.entrySet()) {
+            // Existing objects keep their owning process context and identity.
+            Relation next = right.memberships.get(entry.getKey());
+            clauses.add(entry.getValue().in(next));
+            if (!changedProperties.contains(entry.getKey().type()))
+                clauses.add(entry.getValue().eq(next));
         }
         clauses.add(left.play().eq(right.play()));
         return and(clauses);
@@ -224,6 +277,12 @@ final class AclKodkodSymbolicModel {
             if (slot.attribute().type() == AclPrimitiveType.STRING) stringValues.add(unquote(raw));
             if (slot.attribute().type() == AclPrimitiveType.REAL) realValues.add(raw);
         }));
+        // Uninterpreted data types have opaque atoms, not invented date/time arithmetic.
+        for (var type : acl.namedDataTypes()) {
+            int capacity = Math.max(1, objects.size());
+            for (int n = 0; n < capacity; n++)
+                addScalar(type.sourceName(), type.sourceName() + "_" + n, "scalar_opaque_" + safe(type.sourceName()) + "_" + n);
+        }
         int index = 0;
         for (String value : stringValues) addScalar("String", value, "scalar_string_" + index++);
         index = 0;
@@ -287,7 +346,7 @@ final class AclKodkodSymbolicModel {
             for (ObjectAtom object : domain) {
                 Formula present = exists(frame, object);
                 Expression values = object.singleton().join(relation);
-                addStructural(present.implies(values.one()));
+                addStructural(present.implies(slot.attribute().optional() ? values.lone() : values.one()));
                 addStructural(present.not().implies(values.no()));
             }
         }
@@ -303,7 +362,7 @@ final class AclKodkodSymbolicModel {
 
         frame.play = Relation.binary("sigma_Play_s" + index);
         TupleSet playUpper = factory.noneOf(2);
-        for (AclRole childType : acl.roles()) {
+        for (AclRole childType : acl.isRevisedCore() ? List.<AclRole>of() : acl.roles()) {
             for (String parentType : childType.parentRoles()) {
                 playUpper.addAll(unaryAtoms(objectsByConcreteType.getOrDefault(parentType, List.of()))
                         .product(unaryAtoms(objectsByConcreteType.getOrDefault(childType.name(), List.of()))));
@@ -311,6 +370,22 @@ final class AclKodkodSymbolicModel {
         }
         bounds.bound(frame.play, playUpper);
         addPlayFormula(frame);
+        if (acl.isRevisedCore()) createContextMemberships(frame);
+    }
+
+    /** Runtime process membership; it does not alter the declaration-only M1 model. */
+    private void createContextMemberships(Frame frame) {
+        for (AclGroup context : acl.orgContexts()) {
+            for (var declaration : context.members()) {
+                ContextMember key = new ContextMember(context.name(), declaration.type());
+                Relation relation = Relation.binary("context_" + safe(key.context()) + "_" + safe(key.type()) + "_s" + frame.index());
+                frame.memberships.put(key, relation);
+                bounds.bound(relation, unaryAtoms(objectsForType(key.context())).product(unaryAtoms(objectsForType(key.type()))));
+                addStructural(relation.in(typeExpression(frame, key.context()).product(typeExpression(frame, key.type()))));
+                for (ObjectAtom member : objectsForType(key.type()))
+                    addStructural(exists(frame, member).implies(relation.join(member.singleton()).one()));
+            }
+        }
     }
 
     private void addInitialDefaults() {
@@ -365,7 +440,7 @@ final class AclKodkodSymbolicModel {
     }
 
     private void addPlayFormula(Frame frame) {
-        for (AclRole childType : acl.roles()) {
+        for (AclRole childType : acl.isRevisedCore() ? List.<AclRole>of() : acl.roles()) {
             for (String parentType : childType.parentRoles()) {
                 for (ObjectAtom parent : objectsByConcreteType.getOrDefault(parentType, List.of())) {
                     for (ObjectAtom child : objectsByConcreteType.getOrDefault(childType.name(), List.of())) {
@@ -410,10 +485,13 @@ final class AclKodkodSymbolicModel {
             if (isClassifier(name.value())) return new TypeValue(name.value());
             return literal(name.value());
         }
+        if (node instanceof Let let) return compile(let.body(),
+                environment.with(let.variable(), compile(let.value(), environment)));
         if (node instanceof AtPre atPre) return compile(atPre.expression(), environment.atPre());
         if (node instanceof Unary unary) {
             if (!unary.operator().equals("not")) throw unsupported("unary operator " + unary.operator());
-            return new BoolValue(bool(compile(unary.operand(), environment)).not());
+            Value operand = compile(unary.operand(), environment);
+            return new BoolValue(bool(operand).not(), defined(operand));
         }
         if (node instanceof Binary binary) return binary(binary, environment);
         if (node instanceof Property property) {
@@ -430,13 +508,17 @@ final class AclKodkodSymbolicModel {
     private Value binary(Binary binary, Environment environment) {
         Value left = compile(binary.left(), environment);
         Value right = compile(binary.right(), environment);
+        Formula valid = defined(left).and(defined(right));
         return switch (binary.operator()) {
-            case "and" -> new BoolValue(bool(left).and(bool(right)));
-            case "or" -> new BoolValue(bool(left).or(bool(right)));
-            case "implies" -> new BoolValue(bool(left).implies(bool(right)));
-            case "=" -> new BoolValue(equal(left, right));
-            case "<>" -> new BoolValue(equal(left, right).not());
-            case "<", "<=", ">", ">=" -> new BoolValue(compare(left, right, binary.operator()));
+            case "and" -> new BoolValue(bool(left).and(bool(right)), valid
+                    .or(defined(left).and(bool(left).not())).or(defined(right).and(bool(right).not())));
+            case "or" -> new BoolValue(bool(left).or(bool(right)), valid
+                    .or(defined(left).and(bool(left))).or(defined(right).and(bool(right))));
+            case "implies" -> new BoolValue(bool(left).implies(bool(right)), valid
+                    .or(defined(left).and(bool(left).not())).or(defined(right).and(bool(right))));
+            case "=" -> new BoolValue(equal(left, right), valid);
+            case "<>" -> new BoolValue(equal(left, right).not(), valid);
+            case "<", "<=", ">", ">=" -> new BoolValue(compare(left, right, binary.operator()), valid);
             case "+" -> add(left, right);
             default -> throw unsupported("binary operator " + binary.operator());
         };
@@ -447,6 +529,23 @@ final class AclKodkodSymbolicModel {
         if (call.operation().equals("allInstances") && source instanceof TypeValue type) {
             require(call.arguments().isEmpty(), "allInstances() takes no arguments");
             return allInstances(type.name(), environment.current());
+        }
+        if (source instanceof ScalarCollectionValue bag) {
+            require(call.arguments().isEmpty(), call.operation() + " takes no arguments");
+            if (call.operation().equals("max")) {
+                Map<ScalarAtom, List<Formula>> maxima = new LinkedHashMap<>();
+                for (ScalarEntry entry : bag.entries()) {
+                    require(entry.scalar().value() instanceof Number, "max() requires numeric elements");
+                    Formula maximum = entry.member();
+                    for (ScalarEntry other : bag.entries()) {
+                        if (compareScalar(other.scalar().value(), entry.scalar().value(), ">"))
+                            maximum = maximum.and(other.member().not());
+                    }
+                    maxima.computeIfAbsent(entry.scalar(), ignored -> new ArrayList<>()).add(maximum);
+                }
+                return new ScalarValue(combine(maxima));
+            }
+            throw unsupported("scalar collection operation " + call.operation());
         }
         if (!(source instanceof ObjectsValue collection)) {
             throw unsupported("collection operation " + call.operation() + " on a non-object collection");
@@ -461,6 +560,34 @@ final class AclKodkodSymbolicModel {
                 yield new BoolValue(or(collection.members().values()));
             }
             case "forAll", "exists" -> quantify(call, collection, environment);
+            case "collect" -> {
+                require(call.variable() != null && call.arguments().size() == 1, "collect requires iterator | body");
+                List<ScalarEntry> entries = new ArrayList<>();
+                for (var member : collection.members().entrySet()) {
+                    Value value = compile(call.arguments().get(0), environment.with(call.variable(), singleton(member.getKey())));
+                    if (!(value instanceof ScalarValue scalar)) throw unsupported("collect currently requires a scalar body");
+                    scalar.choices().forEach((atom, condition) -> entries.add(new ScalarEntry(atom, member.getValue().and(condition))));
+                }
+                yield new ScalarCollectionValue(List.copyOf(entries));
+            }
+            case "any" -> {
+                require(call.variable() != null && call.arguments().size() == 1, "any requires iterator | body");
+                Relation choice = Relation.unary("ocl_any_" + choiceCount++);
+                bounds.bound(choice, unaryAtoms(collection.members().keySet()));
+                Map<ObjectAtom, Formula> selected = new LinkedHashMap<>();
+                List<Formula> matches = new ArrayList<>();
+                for (var member : collection.members().entrySet()) {
+                    Value predicate = compile(call.arguments().get(0), environment.with(call.variable(), singleton(member.getKey())));
+                    Formula match = member.getValue().and(bool(predicate)).and(defined(predicate));
+                    Formula chosen = member.getKey().singleton().in(choice);
+                    addStructural(chosen.implies(match));
+                    matches.add(match);
+                    selected.put(member.getKey(), chosen);
+                }
+                Formula some = or(matches);
+                addStructural(some.implies(choice.one()).and(some.not().implies(choice.no())));
+                yield new ObjectsValue(selected, false, some);
+            }
             case "includes" -> {
                 require(call.arguments().size() == 1, "includes takes one argument");
                 Value item = compile(call.arguments().get(0), environment);
@@ -472,7 +599,16 @@ final class AclKodkodSymbolicModel {
                 });
                 yield new BoolValue(or(matches));
             }
-            case "size" -> throw unsupported("size() in symbolic OCL; use isEmpty/notEmpty or multiplicity");
+            case "size" -> {
+                require(call.arguments().isEmpty(), "size() takes no arguments");
+                kodkod.ast.IntExpression count = IntConstant.constant(0);
+                for (Formula member : collection.members().values())
+                    count = count.plus(member.thenElse(IntConstant.constant(1), IntConstant.constant(0)));
+                Map<ScalarAtom, Formula> sizes = new LinkedHashMap<>();
+                for (int n = 0; n <= collection.members().size(); n++)
+                    sizes.put(new ScalarAtom("size:" + n, "Integer", (long) n, null), count.eq(IntConstant.constant(n)));
+                yield new ScalarValue(sizes);
+            }
             default -> throw unsupported("collection operation " + call.operation());
         };
     }
@@ -481,21 +617,25 @@ final class AclKodkodSymbolicModel {
         require(call.variable() != null && call.arguments().size() == 1,
                 call.operation() + " requires iterator | body");
         List<Formula> formulas = new ArrayList<>();
+        List<Formula> valid = new ArrayList<>();
         for (ObjectAtom object : objects) {
             Formula membership = collection.members().get(object);
             if (membership == null) continue;
             Value body = compile(call.arguments().get(0),
                     environment.with(call.variable(), singleton(object)));
+            valid.add(membership.implies(defined(body)));
             formulas.add(call.operation().equals("forAll")
                     ? membership.implies(bool(body)) : membership.and(bool(body)));
         }
-        return new BoolValue(call.operation().equals("forAll") ? and(formulas) : or(formulas));
+        return new BoolValue(call.operation().equals("forAll") ? and(formulas) : or(formulas), and(valid));
     }
 
     private Value property(ObjectsValue source, String property, Frame frame, Set<String> visiting) {
         List<Formula> trueConditions = new ArrayList<>();
         Map<ScalarAtom, List<Formula>> scalarConditions = new LinkedHashMap<>();
         Map<ObjectAtom, List<Formula>> objectConditions = new LinkedHashMap<>();
+        List<ScalarEntry> collected = new ArrayList<>();
+        boolean navigationCollection = source.collection();
         boolean foundAttribute = false;
         boolean foundNavigation = false;
 
@@ -511,7 +651,10 @@ final class AclKodkodSymbolicModel {
                     Formula selected = baseMember.and(base.singleton().product(scalar.singleton()).in(relation));
                     if (slot.get().attribute().type() == AclPrimitiveType.BOOLEAN) {
                         if (Boolean.TRUE.equals(scalar.value())) trueConditions.add(selected);
-                    } else scalarConditions.computeIfAbsent(scalar, ignored -> new ArrayList<>()).add(selected);
+                    } else {
+                        scalarConditions.computeIfAbsent(scalar, ignored -> new ArrayList<>()).add(selected);
+                        collected.add(new ScalarEntry(scalar, selected));
+                    }
                 }
                 continue;
             }
@@ -524,12 +667,49 @@ final class AclKodkodSymbolicModel {
                             baseMember.and(parent.singleton().product(base.singleton()).in(frame.play())));
                 }
             }
+            for (var entry : frame.memberships.entrySet()) {
+                ContextMember key = entry.getKey();
+                if (conforms(base, key.context()) && property.equals(key.type())) {
+                    foundNavigation = true;
+                    baseNavigation = true;
+                    navigationCollection = true;
+                    for (ObjectAtom member : objectsForType(key.type())) objectConditions
+                            .computeIfAbsent(member, ignored -> new ArrayList<>()).add(baseMember.and(
+                                    base.singleton().product(member.singleton()).in(entry.getValue())));
+                }
+                if (conforms(base, key.type())) {
+                    if (property.equals(key.context())) {
+                        foundNavigation = true;
+                        baseNavigation = true;
+                        for (ObjectAtom ctxObj : objectsForType(key.context())) {
+                            objectConditions.computeIfAbsent(ctxObj, ignored -> new ArrayList<>()).add(
+                                    baseMember.and(ctxObj.singleton().product(base.singleton()).in(entry.getValue())));
+                        }
+                    }
+                    for (var entry2 : frame.memberships.entrySet()) {
+                        ContextMember key2 = entry2.getKey();
+                        if (key2.context().equals(key.context()) && property.equals(key2.type())) {
+                            foundNavigation = true;
+                            baseNavigation = true;
+                            navigationCollection = true;
+                            for (ObjectAtom ctxObj : objectsForType(key.context())) {
+                                Formula isMember = baseMember.and(ctxObj.singleton().product(base.singleton()).in(entry.getValue()));
+                                for (ObjectAtom targetObj : objectsForType(key2.type())) {
+                                    objectConditions.computeIfAbsent(targetObj, ignored -> new ArrayList<>()).add(
+                                            isMember.and(ctxObj.singleton().product(targetObj.singleton()).in(entry2.getValue())));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             for (AclRelation definition : acl.relations()) {
                 Relation relation = frame.association(definition.name());
                 if (conforms(base, definition.source().type())
                         && navigatesBy(property, definition, true)) {
                     foundNavigation = true;
                     baseNavigation = true;
+                    navigationCollection |= definition.target().multiplicity().max().orElse(-1) != 1;
                     for (ObjectAtom target : objectsForType(definition.target().type())) {
                         objectConditions.computeIfAbsent(target, ignored -> new ArrayList<>()).add(
                                 baseMember.and(base.singleton().product(target.singleton()).in(relation)));
@@ -539,13 +719,14 @@ final class AclKodkodSymbolicModel {
                         && navigatesBy(property, definition, false)) {
                     foundNavigation = true;
                     baseNavigation = true;
+                    navigationCollection |= definition.source().multiplicity().max().orElse(-1) != 1;
                     for (ObjectAtom sourceObject : objectsForType(definition.source().type())) {
                         objectConditions.computeIfAbsent(sourceObject, ignored -> new ArrayList<>()).add(
                                 baseMember.and(sourceObject.singleton().product(base.singleton()).in(relation)));
                     }
                 }
             }
-            if (!baseNavigation && base.kind() == Kind.ROLE
+            if (!acl.isRevisedCore() && !baseNavigation && base.kind() == Kind.ROLE
                     && !role(base.concreteType()).parentRoles().isEmpty()) {
                 String key = base.concreteType() + "." + property;
                 if (!visiting.add(key)) throw unsupported("cyclic inherited Role property " + property);
@@ -568,17 +749,18 @@ final class AclKodkodSymbolicModel {
         }
 
         if (foundAttribute) {
-            if (!trueConditions.isEmpty() || scalarConditions.isEmpty()) return new BoolValue(or(trueConditions));
+            if (!trueConditions.isEmpty() || scalarConditions.isEmpty()) return new BoolValue(or(trueConditions), source.defined());
+            if (source.collection()) return new ScalarCollectionValue(List.copyOf(collected));
             return new ScalarValue(combine(scalarConditions));
         }
-        if (foundNavigation) return new ObjectsValue(combine(objectConditions));
+        if (foundNavigation) return new ObjectsValue(combine(objectConditions), navigationCollection, source.defined());
         throw unsupported("unknown property '" + property + "'");
     }
 
     private Optional<AttributeSlot> attributeSlot(ObjectAtom object, String property) {
         for (AttributeSlot slot : slotsByProperty.getOrDefault(property, List.of())) {
             if (slot.ownerType().equals(object.concreteType())) return Optional.of(slot);
-            if (object.kind() != Kind.ROLE && typeConforms(object.concreteType(), slot.ownerType(), object.kind())) {
+            if ((acl.isRevisedCore() || object.kind() != Kind.ROLE) && typeConforms(object.concreteType(), slot.ownerType(), object.kind())) {
                 return Optional.of(slot);
             }
         }
@@ -601,12 +783,12 @@ final class AclKodkodSymbolicModel {
             return or(matches);
         }
         if (left instanceof ObjectsValue a && right instanceof ObjectsValue b) {
+            Set<ObjectAtom> keys = new LinkedHashSet<>(a.members().keySet());
+            keys.addAll(b.members().keySet());
             List<Formula> matches = new ArrayList<>();
-            a.members().forEach((object, leftCondition) -> {
-                Formula rightCondition = b.members().get(object);
-                if (rightCondition != null) matches.add(leftCondition.and(rightCondition));
-            });
-            return or(matches);
+            for (ObjectAtom object : keys) matches.add(a.members().getOrDefault(object, Formula.FALSE)
+                    .iff(b.members().getOrDefault(object, Formula.FALSE)));
+            return and(matches);
         }
         throw unsupported("equality between incompatible values");
     }
@@ -659,8 +841,17 @@ final class AclKodkodSymbolicModel {
         if (literal instanceof Number number && scalar.value() instanceof Number value) {
             return Double.compare(number.doubleValue(), value.doubleValue()) == 0;
         }
-        String expected = String.valueOf(literal).replaceFirst("^.*::", "");
+        String raw = String.valueOf(literal);
+        if (raw.contains("::") && !raw.substring(0, raw.indexOf("::")).equals(scalar.type())) return false;
+        String expected = raw.replaceFirst("^.*::", "");
         return expected.equals(String.valueOf(scalar.value()).replaceFirst("^.*::", ""));
+    }
+
+    private Formula defined(Value value) {
+        if (value instanceof BoolValue b) return b.defined();
+        if (value instanceof ScalarValue s) return or(s.choices().values());
+        if (value instanceof ObjectsValue o) return o.defined();
+        return Formula.TRUE;
     }
 
     private Formula bool(Value value) {
@@ -669,7 +860,7 @@ final class AclKodkodSymbolicModel {
     }
 
     private ObjectsValue singleton(ObjectAtom object) {
-        return new ObjectsValue(Map.of(object, Formula.TRUE));
+        return new ObjectsValue(Map.of(object, Formula.TRUE), false, Formula.TRUE);
     }
 
     private List<ObjectAtom> objectsForType(String type) {
@@ -677,7 +868,7 @@ final class AclKodkodSymbolicModel {
         Kind expectedKind = kind(type);
         for (ObjectAtom object : objects) {
             if (object.concreteType().equals(type)
-                    || expectedKind != Kind.ROLE && object.kind() == expectedKind
+                    || (acl.isRevisedCore() || expectedKind != Kind.ROLE) && object.kind() == expectedKind
                     && typeConforms(object.concreteType(), type, expectedKind)) result.add(object);
         }
         return List.copyOf(result);
@@ -692,7 +883,7 @@ final class AclKodkodSymbolicModel {
 
     private List<ObjectAtom> attributeDomain(AttributeSlot slot) {
         Kind ownerKind = kind(slot.ownerType());
-        if (ownerKind == Kind.ROLE) return objectsByConcreteType.getOrDefault(slot.ownerType(), List.of());
+        if (ownerKind == Kind.ROLE && !acl.isRevisedCore()) return objectsByConcreteType.getOrDefault(slot.ownerType(), List.of());
         return objectsForType(slot.ownerType());
     }
 
@@ -717,7 +908,7 @@ final class AclKodkodSymbolicModel {
 
     private boolean conforms(ObjectAtom object, String expected) {
         return object.concreteType().equals(expected)
-                || object.kind() != Kind.ROLE && kind(expected) == object.kind()
+                || (acl.isRevisedCore() || object.kind() != Kind.ROLE) && kind(expected) == object.kind()
                 && typeConforms(object.concreteType(), expected, object.kind());
     }
 
@@ -730,6 +921,8 @@ final class AclKodkodSymbolicModel {
                     .flatMap(AclEntity::specializes).orElse(null);
             else if (kind == Kind.GROUP) current = acl.findGroup(current)
                     .flatMap(AclGroup::specializes).orElse(null);
+            else if (kind == Kind.ROLE && acl.isRevisedCore()) current = acl.findRole(current)
+                    .flatMap(r -> r.parentRoles().stream().findFirst()).orElse(null);
             else return false;
             if (current == null) return false;
         }
@@ -759,36 +952,141 @@ final class AclKodkodSymbolicModel {
     }
 
     private String decodeFrame(Instance instance, Frame frame) {
-        StringBuilder result = new StringBuilder("state ").append(frame.index()).append(':');
+        String aclFileName = acl.name() != null && !acl.name().isBlank() ? acl.name() + ".acl" : "model.acl";
+        StringBuilder result = new StringBuilder("aol v2.0 State_")
+                .append(frame.index())
+                .append(" for \"").append(aclFileName).append("\" {\n");
+
         List<ObjectAtom> present = objects.stream().filter(object -> contains(instance, frame.exists(object.concreteType()),
                 object.atom())).toList();
-        for (ObjectAtom object : present) {
-            result.append("\n  ").append(object.kind().name().toLowerCase()).append(' ')
-                    .append(object.concreteType()).append(" as ").append(object.id());
-            List<String> values = new ArrayList<>();
-            for (var entry : frame.attributes.entrySet()) {
-                if (!attributeDomain(entry.getKey()).contains(object)) continue;
-                ScalarAtom scalar = selectedScalar(instance, entry.getValue(), object);
-                if (scalar != null) values.add(entry.getKey().attribute().name() + "=" + display(scalar));
+
+        List<ObjectAtom> groups = present.stream().filter(o -> o.kind() == Kind.GROUP).toList();
+        List<ObjectAtom> entities = present.stream().filter(o -> o.kind() == Kind.ENTITY).toList();
+
+        Map<String, String> roleToAgent = new LinkedHashMap<>();
+        Set<String> agentIds = new LinkedHashSet<>();
+        TupleSet plays = instance.tuples(frame.play());
+        if (plays != null) {
+            for (Tuple tuple : plays) {
+                ObjectAtom source = objectByAtom.get(String.valueOf(tuple.atom(0)));
+                ObjectAtom target = objectByAtom.get(String.valueOf(tuple.atom(1)));
+                if (source != null && target != null) {
+                    roleToAgent.put(target.id(), source.id());
+                    if (source.kind() != Kind.ROLE) {
+                        agentIds.add(source.id());
+                    }
+                }
             }
-            if (!values.isEmpty()) result.append(" { ").append(String.join("; ", values)).append(" }");
         }
+
+        if (!agentIds.isEmpty()) {
+            for (String agentId : agentIds) {
+                result.append("  agent ").append(agentId).append(";\n");
+            }
+        }
+
+        Map<String, List<ObjectAtom>> contextMembers = new LinkedHashMap<>();
+        Set<ObjectAtom> containedObjects = new LinkedHashSet<>();
+
+        for (var entry : frame.memberships.entrySet()) {
+            TupleSet tuples = instance.tuples(entry.getValue());
+            if (tuples != null) {
+                for (Tuple tuple : tuples) {
+                    ObjectAtom contextObj = objectByAtom.get(String.valueOf(tuple.atom(0)));
+                    ObjectAtom memberObj = objectByAtom.get(String.valueOf(tuple.atom(1)));
+                    if (contextObj != null && memberObj != null) {
+                        contextMembers.computeIfAbsent(contextObj.id(), ignored -> new ArrayList<>()).add(memberObj);
+                        containedObjects.add(memberObj);
+                    }
+                }
+            }
+        }
+
+        for (ObjectAtom group : groups) {
+            result.append("\n  group ").append(group.concreteType()).append(" as ").append(group.id()).append(" {\n");
+            List<String> groupValues = getAttributeValues(instance, frame, group);
+            for (String val : groupValues) {
+                result.append("    ").append(val).append(";\n");
+            }
+            List<ObjectAtom> members = contextMembers.getOrDefault(group.id(), List.of());
+            for (ObjectAtom member : members) {
+                if (member.kind() == Kind.ROLE) {
+                    String agentId = roleToAgent.get(member.id());
+                    List<String> roleValues = getAttributeValues(instance, frame, member);
+                    if (agentId != null) {
+                        result.append("    play ").append(member.concreteType()).append(" as ").append(member.id())
+                                .append(" by ").append(agentId);
+                        if (!roleValues.isEmpty()) {
+                            result.append(" { ").append(String.join("; ", roleValues)).append(" }");
+                        }
+                        result.append(";\n");
+                    } else {
+                        result.append("    role ").append(member.concreteType()).append(" as ").append(member.id());
+                        if (!roleValues.isEmpty()) {
+                            result.append(" { ").append(String.join("; ", roleValues)).append(" }");
+                        }
+                        result.append(";\n");
+                    }
+                } else if (member.kind() == Kind.ENTITY) {
+                    List<String> entValues = getAttributeValues(instance, frame, member);
+                    result.append("    entity ").append(member.concreteType()).append(" as ").append(member.id());
+                    if (!entValues.isEmpty()) {
+                        result.append(" { ").append(String.join("; ", entValues)).append(" }");
+                    }
+                    result.append(";\n");
+                }
+            }
+            result.append("  }\n");
+        }
+
+        for (ObjectAtom entity : entities) {
+            if (!containedObjects.contains(entity)) {
+                List<String> entValues = getAttributeValues(instance, frame, entity);
+                result.append("  entity ").append(entity.concreteType()).append(" as ").append(entity.id());
+                if (!entValues.isEmpty()) {
+                    result.append(" { ").append(String.join("; ", entValues)).append(" }");
+                }
+                result.append(";\n");
+            }
+        }
+
         for (AclRelation definition : acl.relations()) {
             TupleSet tuples = instance.tuples(frame.association(definition.name()));
             if (tuples == null) continue;
             for (Tuple tuple : tuples) {
                 ObjectAtom source = objectByAtom.get(String.valueOf(tuple.atom(0)));
                 ObjectAtom target = objectByAtom.get(String.valueOf(tuple.atom(1)));
-                result.append("\n  link ").append(definition.name()).append(": ")
-                        .append(source.id()).append(" -> ").append(target.id());
+                if (source != null && target != null) {
+                    result.append("  link ").append(definition.name()).append(": ")
+                            .append(source.id()).append(" -> ").append(target.id()).append(";\n");
+                }
             }
         }
-        TupleSet plays = instance.tuples(frame.play());
-        if (plays != null) for (Tuple tuple : plays) {
-            result.append("\n  play ").append(objectByAtom.get(String.valueOf(tuple.atom(0))).id())
-                    .append(" -> ").append(objectByAtom.get(String.valueOf(tuple.atom(1))).id());
+
+        if (plays != null) {
+            for (Tuple tuple : plays) {
+                ObjectAtom source = objectByAtom.get(String.valueOf(tuple.atom(0)));
+                ObjectAtom target = objectByAtom.get(String.valueOf(tuple.atom(1)));
+                if (source != null && target != null && source.kind() == Kind.ROLE && target.kind() == Kind.ROLE) {
+                    result.append("  play ").append(source.id()).append(" -> ").append(target.id()).append(";\n");
+                }
+            }
         }
+
+        result.append("}");
         return result.toString();
+    }
+
+    private List<String> getAttributeValues(Instance instance, Frame frame, ObjectAtom object) {
+        List<String> values = new ArrayList<>();
+        for (var entry : frame.attributes.entrySet()) {
+            if (!attributeDomain(entry.getKey()).contains(object)) continue;
+            ScalarAtom scalar = selectedScalar(instance, entry.getValue(), object);
+            if (scalar != null) {
+                values.add(entry.getKey().attribute().name() + " = " + display(scalar));
+            }
+        }
+        return values;
     }
 
     private ScalarAtom selectedScalar(Instance instance, Relation relation, ObjectAtom object) {
@@ -818,7 +1116,7 @@ final class AclKodkodSymbolicModel {
         if (left.value() instanceof Number a && right.value() instanceof Number b) {
             return Double.compare(a.doubleValue(), b.doubleValue()) == 0;
         }
-        return Objects.equals(left.value(), right.value());
+        return left.type().equals(right.type()) && Objects.equals(left.value(), right.value());
     }
 
     private static boolean compareScalar(Object left, Object right, String operator) {

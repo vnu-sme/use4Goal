@@ -4,11 +4,23 @@ acl-bpmn-boundary v1.0 SalesForecastBound {
   integer -1..4;
 
   objects Deal 1;
+  objects DealParticipant 4;
+  objects Approver 2;
   objects CustomerManager 1;
-  objects Approver 1;
-  objects ProposalRevision 2;
+  objects PresaleEngineer 1;
+  objects Customer 1;
+  objects DeptManager 1;
+  objects SectorManager 0..1;
+  objects BusinessVp 0..1;
+  objects FinancialControl 0..1;
+  objects CreditControl 0..1;
+  objects ProposalRevision 0..2;
+  objects ApprovalDecision 0..2;
+  objects TechnicalPackage 0..1;
 
-  links Deal_contains_ProposalRevision 2;
-  links CustomerManagerSubmits 2;
-  links ApproverDecisions 2;
+  links DealRevisions 0..2;
+  links CustomerManagerSubmits 0..2;
+  links ApproverDecisions 0..2;
+  links RevisionDecisions 0..2;
+  links DealTechPackages 0..1;
 }

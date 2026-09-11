@@ -5,7 +5,7 @@ import java.util.List;
 
 /** Parser for the executable ACL/OCL Boolean fragment used by Kodkod. */
 final class AclOclFormulaParser {
-    sealed interface Node permits Literal, Name, Unary, Binary, Property, Call, AtPre {}
+    sealed interface Node permits Literal, Name, Unary, Binary, Property, Call, AtPre, Let {}
     record Literal(Object value) implements Node {}
     record Name(String value) implements Node {}
     record Unary(String operator, Node operand) implements Node {}
@@ -15,10 +15,11 @@ final class AclOclFormulaParser {
         Call { arguments = List.copyOf(arguments); }
     }
     record AtPre(Node expression) implements Node {}
+    record Let(String variable, Node value, Node body) implements Node {}
 
     private enum Kind { ID, STRING, NUMBER, TRUE, FALSE, AND, OR, NOT, IMPLIES,
                         EQ, NE, LT, LE, GT, GE, PLUS, DOT, ARROW, LP, RP, BAR, COMMA,
-                        HASH, COLON2, AT_PRE, EOF }
+                        HASH, COLON2, AT_PRE, LET, IN, EOF }
     private record Token(Kind kind, String text, int column) {}
 
     private final List<Token> tokens;
@@ -83,6 +84,13 @@ final class AclOclFormulaParser {
     }
 
     private Node primary() {
+        if (accept(Kind.LET)) {
+            String variable = expect(Kind.ID).text();
+            expect(Kind.EQ);
+            Node value = implies();
+            expect(Kind.IN);
+            return new Let(variable, value, implies());
+        }
         if (accept(Kind.TRUE)) return new Literal(Boolean.TRUE);
         if (accept(Kind.FALSE)) return new Literal(Boolean.FALSE);
         if (peek(Kind.STRING)) return new Literal(take().text());
@@ -121,7 +129,8 @@ final class AclOclFormulaParser {
             String variable = null;
             List<Node> arguments = new ArrayList<>();
             if (!peek(Kind.RP)) {
-                if ((operation.equals("forAll") || operation.equals("exists"))
+                if ((operation.equals("forAll") || operation.equals("exists")
+                        || operation.equals("collect") || operation.equals("any"))
                         && peek(Kind.ID) && peek(1, Kind.BAR)) {
                     variable = take().text();
                     take();
@@ -192,6 +201,8 @@ final class AclOclFormulaParser {
                     case "or" -> Kind.OR;
                     case "not" -> Kind.NOT;
                     case "implies" -> Kind.IMPLIES;
+                    case "let" -> Kind.LET;
+                    case "in" -> Kind.IN;
                     default -> Kind.ID;
                 };
                 result.add(new Token(kind, word, column));
