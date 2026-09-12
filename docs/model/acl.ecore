@@ -27,17 +27,11 @@
       <details key="LocalGeneralizationAndCompatibility" value="allObjects()->forAll(o | if o.oclIsKindOf(Entity) then o.oclAsType(Entity).generalization->forAll(p | allObjects()->includes(p)) else if o.oclIsKindOf(Role) then o.oclAsType(Role).roleGeneralization->forAll(p | allObjects()->includes(p)) and o.oclAsType(Role).compatibility->forAll(r | allObjects()->includes(r)) else true endif endif)"/>
       <details key="LocalInvariantContexts" value="invariants->forAll(i | allObjects()->includes(i.contextType))"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" lowerBound="1"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="version" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" lowerBound="1" defaultValueLiteral="v4.0"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="objects" eType="#//Object" upperBound="-1" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="dataTypes" eType="#//DataType" upperBound="-1" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="associations" eType="#//Association" upperBound="-1" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="invariants" eType="#//Invariant" upperBound="-1" containment="true"/>
-    <eOperations name="allObjects" upperBound="-1" ordered="false" eType="#//Object">
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
-      <details key="body" value="objects->asSet()->union(objects->closure(o | if o.oclIsKindOf(OrgCtx) then let c : OrgCtx = o.oclAsType(OrgCtx) in c.entities->collect(e | e.oclAsType(Object))->asSet()->union(c.roles->collect(r | r.oclAsType(Object))->asSet())->union(c.orgctx->collect(n | n.oclAsType(Object))->asSet()) else Set{} endif)->asSet())"/>
-    </eAnnotations>
-    </eOperations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="objects" upperBound="-1"
+        eType="#//Object" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dataTypes" upperBound="-1"
+        eType="#//DataType" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Object" abstract="true">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -50,8 +44,9 @@
       <details key="NonEmptyName" value="name.size() > 0"/>
       <details key="UniqueAttributeNames" value="attributes->isUnique(name)"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" lowerBound="1"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="attributes" eType="#//Attribute" upperBound="-1" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributes" upperBound="-1"
+        eType="#//Attribute" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Entity" eSuperTypes="#//Object">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -80,7 +75,8 @@
       <details key="SymmetricCompatibility" value="compatibility->forAll(r | r.compatibility->includes(self))"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="roleGeneralization" eType="#//Role"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="compatibility" eType="#//Role" upperBound="-1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="compatibility" upperBound="-1"
+        eType="#//Role"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="OrgCtx" eSuperTypes="#//Object">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -93,11 +89,14 @@
       <details key="UniqueMemberNames" value="entities->collect(e | e.oclAsType(Object))->asSet()->union(roles->collect(r | r.oclAsType(Object))->asSet())->union(orgctx->collect(c | c.oclAsType(Object))->asSet())->isUnique(name)"/>
       <details key="AcyclicContextNesting" value="orgctx->closure(c | c.orgctx)->excludes(self)"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="entities" eType="#//Entity" upperBound="-1" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="roles" eType="#//Role" upperBound="-1" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="orgctx" eType="#//OrgCtx" upperBound="-1" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="entities" upperBound="-1"
+        eType="#//Entity" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="roles" upperBound="-1"
+        eType="#//Role" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="orgctx" upperBound="-1"
+        eType="#//OrgCtx" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Association">
+  <eClassifiers xsi:type="ecore:EClass" name="Association" eSuperTypes="#//Object">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
       <details key="documentation" value="UML-style association with ordered ends. At most one end is not an Entity. For aggregation/composition the first end denotes the whole. Role-typed ends link role instances, including subtype instances, not underlying agents."/>
     </eAnnotations>
@@ -111,9 +110,8 @@
       <details key="BinaryAggregation" value="kind &lt;> AssociationRelKind::PLAIN implies ends->size() = 2"/>
       <details key="SingleCompositeOwner" value="kind = AssociationRelKind::COMPOSITION implies ends->first().upper = 1"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" lowerBound="1"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="ends" eType="#//AssociationEnd" lowerBound="2" upperBound="-1" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1" eType="#//AssociationRelKind" defaultValueLiteral="PLAIN"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="ends" lowerBound="2" upperBound="-1"
+        eType="#//AssociationEnd" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="AssociationEnd">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -127,9 +125,11 @@
       <details key="ValidMultiplicity" value="lower >= 0 and (upper = -1 or upper >= lower)"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="role" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="lower" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt" lowerBound="1" defaultValueLiteral="1"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="upper" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt" lowerBound="1" defaultValueLiteral="1"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="#//Object" lowerBound="1"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="lower" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"
+        defaultValueLiteral="1"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="upper" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"
+        defaultValueLiteral="1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" lowerBound="1" eType="#//Object"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Attribute">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -141,11 +141,13 @@
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
       <details key="NonEmptyName" value="name.size() > 0"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" lowerBound="1"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="optional" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" lowerBound="1" defaultValueLiteral="false"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="mutable" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" lowerBound="1" defaultValueLiteral="false"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="optional" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" defaultValueLiteral="false"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="mutable" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" defaultValueLiteral="false"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="defaultValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="#//DataType" lowerBound="1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" lowerBound="1" eType="#//DataType"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="DataType">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -157,7 +159,7 @@
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/LPG">
       <details key="NonEmptyName" value="name.size() > 0"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" lowerBound="1"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Enumeration" eSuperTypes="#//DataType">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -170,7 +172,8 @@
       <details key="UniqueLiterals" value="literals->isUnique(l | l)"/>
       <details key="NonEmptyLiterals" value="literals->forAll(l | l.size() > 0)"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="literals" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" lowerBound="1" upperBound="-1"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="literals" lowerBound="1"
+        upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Invariant">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -183,9 +186,11 @@
       <details key="NonEmptyName" value="name.size() > 0"/>
       <details key="NonEmptyOclBody" value="oclBody.size() > 0"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" lowerBound="1"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="contextType" eType="#//Object" lowerBound="1"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="oclBody" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" lowerBound="1"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="contextType" lowerBound="1"
+        eType="#//Object"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="oclBody" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="AssociationRelKind">
     <eLiterals name="PLAIN"/>

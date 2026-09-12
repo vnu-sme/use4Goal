@@ -24,7 +24,7 @@ public final class AclDiagramNode extends CompartmentNode implements ToolTipProv
     private static final int ROLE_HEADER = 40;
     private static final int ENTITY_HEADER = 48;
     private static final int GROUP_HEADER = 38;
-    private static final int ENUM_HEADER = 48;
+    private static final int ENUM_HEADER = 38;
     private static final int GROUP_TAB_WIDTH = 30;
     private static final int GROUP_TAB_HEIGHT = 11;
 
@@ -39,10 +39,10 @@ public final class AclDiagramNode extends CompartmentNode implements ToolTipProv
         setFrameColor(opt.getNODE_FRAME_COLOR());
         setTextColor(opt.getNODE_LABEL_COLOR());
         setFont(font);
-        setMinWidth(Math.max(90, node.w));
-        setMinHeight(Math.max(42, node.h));
-        setRequiredWidth(node.id, Math.max(90, node.w));
-        setRequiredHeight(node.id, Math.max(42, node.h));
+        setMinWidth(60);
+        setMinHeight(38);
+        setRequiredWidth(node.id, 60);
+        setRequiredHeight(node.id, 38);
     }
 
     public AclNode node() {
@@ -147,12 +147,9 @@ public final class AclDiagramNode extends CompartmentNode implements ToolTipProv
 
     private void drawEnum(Graphics2D g) {
         g.setColor(getTextColor());
-        g.setFont(getFont().deriveFont(Font.PLAIN, 10f));
-        g.drawString("«enumeration»", (float) getX() + H_PAD,
-                (float) getY() + V_PAD + g.getFontMetrics().getAscent());
         g.setFont(getFont().deriveFont(Font.BOLD, DiagramVisualStyle.FONT_NODE_NAME));
         drawCentered(g, node.label, new Rectangle2D.Double(
-                getX() + H_PAD, getY() + 16, getWidth() - H_PAD * 2, 26));
+                getX() + H_PAD, getY() + V_PAD, getWidth() - H_PAD * 2, ENUM_HEADER - V_PAD * 2));
         g.setColor(getFrameColor());
         g.draw(new Line2D.Double(getX(), getY() + ENUM_HEADER,
                 getX() + getWidth(), getY() + ENUM_HEADER));
@@ -176,10 +173,11 @@ public final class AclDiagramNode extends CompartmentNode implements ToolTipProv
     protected void doCalculateSize(Graphics2D g) {
         FontMetrics nameMetrics = g.getFontMetrics(getFont().deriveFont(Font.BOLD, DiagramVisualStyle.FONT_NODE_NAME));
         FontMetrics detailMetrics = g.getFontMetrics(getFont().deriveFont(Font.PLAIN, DiagramVisualStyle.FONT_DETAIL));
-        int width = nameMetrics.stringWidth(node.label) + H_PAD * 4;
+        int width = nameMetrics.stringWidth(node.label) + H_PAD * 2 + 8;
         for (String detail : node.details) {
-            width = Math.max(width, detailMetrics.stringWidth(detail) + H_PAD * 4);
+            width = Math.max(width, detailMetrics.stringWidth(detail) + H_PAD * 2 + 8);
         }
+        width = Math.max(60, width);
         int visibleAttributeCount = opt.isShowAttributes() ? node.details.size() : 0;
         int height = switch (node.kind) {
             case ROLE -> ROLE_HEADER + (visibleAttributeCount == 0 ? 0 : visibleAttributeCount * detailMetrics.getHeight() + 10);
@@ -188,7 +186,7 @@ public final class AclDiagramNode extends CompartmentNode implements ToolTipProv
             case ENTITY -> ENTITY_HEADER + (visibleAttributeCount == 0 ? 10 : visibleAttributeCount * detailMetrics.getHeight() + 10);
             case ENUM -> ENUM_HEADER + Math.max(1, node.details.size()) * detailMetrics.getHeight() + 10;
         };
-        setCalculatedBounds(Math.max(node.w, width), Math.max(node.h, height));
+        setCalculatedBounds(width, Math.max(node.h, height));
     }
 
     @Override

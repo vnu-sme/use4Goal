@@ -45,7 +45,8 @@ public final class AolSpecText {
                 .append(k).append(" = ").append(v).append(";\n"));
         for (AolPlay play : group.plays()) {
             out.append(INDENT.repeat(depth + 1)).append("play ").append(play.roleType())
-                    .append(" as ").append(play.instanceId()).append(" by ").append(play.agentId());
+                    .append(" as ").append(play.instanceId());
+            if (play.agentId() != null) out.append(" by ").append(play.agentId());
             renderValues(out, play.attributeValues(), depth + 2);
         }
         for (AolEntityInstance entity : group.entities()) {

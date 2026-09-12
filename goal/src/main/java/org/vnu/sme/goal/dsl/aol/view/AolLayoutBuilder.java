@@ -70,7 +70,7 @@ public final class AolLayoutBuilder {
         for (AolGroupInstance root : model.groupInstances()) {
             GroupSubtree subtree = buildSubtree(root, "", userIdIndex);
             place(subtree, cursorX, treeTop, nodes, edges, null);
-            playedByEdges(subtree, edges);
+            playedByEdges(subtree, edges, userIdIndex, nodes);
             cursorX += subtree.width + SUBTREE_GAP;
         }
 
@@ -94,7 +94,17 @@ public final class AolLayoutBuilder {
             if (fromId == null) continue;
             for (String targetId : link.targetInstanceIds()) {
                 String toId = userIdIndex.get(targetId);
-                if (toId != null) edges.add(AolEdge.link(fromId, toId, link.relationName()));
+                if (toId != null) {
+                    if ("play".equals(link.relationName())) {
+                        edges.add(new AolEdge(fromId, toId, AolEdgeKind.PLAYED_BY, "play"));
+                    } else if ("specializes".equals(link.relationName())) {
+                        edges.add(AolEdge.generalization(toId, fromId));
+                    } else if (link.relationName().contains("_contains_")) {
+                        edges.add(AolEdge.play(toId, fromId));
+                    } else {
+                        edges.add(AolEdge.link(fromId, toId, link.relationName()));
+                    }
+                }
             }
         }
 
@@ -116,6 +126,7 @@ public final class AolLayoutBuilder {
                 case GROUP -> AolNodeKind.GROUP_INSTANCE;
                 case ROLE -> AolNodeKind.PLAY;
                 case ENTITY -> AolNodeKind.ENTITY_INSTANCE;
+                case AGENT -> AolNodeKind.AGENT;
             };
             AolNode item = node(stateId(object.id()), object.type() + " (" + object.id() + ")",
                     kind, object.kind().name().toLowerCase() + " object", details);
@@ -123,8 +134,8 @@ public final class AolLayoutBuilder {
         }
         state.associationLinks().forEach(link -> edges.add(AolEdge.link(
                 stateId(link.sourceId()), stateId(link.targetId()), link.relationName())));
-        state.playLinks().forEach(link -> edges.add(AolEdge.link(
-                stateId(link.parentRoleId()), stateId(link.childRoleId()), "play")));
+        state.playLinks().forEach(link -> edges.add(AolEdge.generalization(
+                stateId(link.childRoleId()), stateId(link.parentRoleId()))));
 
         int[] size = placeStateNodes(nodes, edges);
         return new AolLayout(nodes, edges, size[0], size[1]);
@@ -275,9 +286,26 @@ public final class AolLayoutBuilder {
         }
     }
 
-    private static void playedByEdges(GroupSubtree subtree, List<AolEdge> edges) {
-        subtree.playAgents.forEach((playNodeId, agent) -> edges.add(AolEdge.playedBy(playNodeId, agentId(agent))));
-        subtree.subgroups.forEach(sub -> playedByEdges(sub, edges));
+    private static void playedByEdges(GroupSubtree subtree, List<AolEdge> edges,
+                                      Map<String, String> userIdIndex, Map<String, AolNode> nodes) {
+        subtree.playAgents.forEach((playNodeId, agent) -> {
+            String targetAgentId = userIdIndex.get(agent);
+            if (targetAgentId == null) {
+                String defaultAgentId = agentId(agent);
+                if (nodes.containsKey(defaultAgentId)) {
+                    targetAgentId = defaultAgentId;
+                } else {
+                    AolNode agentNode = node(defaultAgentId, agent, AolNodeKind.AGENT, "agent", List.of());
+                    agentNode.x = MARGIN;
+                    agentNode.y = MARGIN;
+                    nodes.put(defaultAgentId, agentNode);
+                    userIdIndex.put(agent, defaultAgentId);
+                    targetAgentId = defaultAgentId;
+                }
+            }
+            edges.add(AolEdge.playedBy(playNodeId, targetAgentId));
+        });
+        subtree.subgroups.forEach(sub -> playedByEdges(sub, edges, userIdIndex, nodes));
     }
 
     private static int rowWidth(List<AolNode> row) {

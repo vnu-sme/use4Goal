@@ -65,8 +65,6 @@ public final class AclModelFactory {
                     g.roleEntityRelations(),g.cardinalityConstraints(),g.isOrganizationalContext())).toList();
             Map<String,AclGroup> groupMap=indexGroup(groups);
             List<AclRelation> relations=new ArrayList<>();
-            // OrgCtx owns M1 definitions. In v4 it does not generate M0
-            // composition links or force one instance of each member.
             if (!ast.version().startsWith("v4."))
             for(var source:ast.groups()) for(var member:source.members()) {
                 if (roleMap.containsKey(member.type()) || groupMap.containsKey(member.type())

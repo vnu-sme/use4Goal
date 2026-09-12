@@ -31,7 +31,7 @@ public final class AclDiagramOptions extends ClassDiagramOptions {
         registerTypeColor(ENTITY_FILL, new Color(238, 248, 255), new Color(240, 240, 240));
         registerTypeColor(ROLE_FILL, Color.WHITE, new Color(240, 240, 240));
         registerTypeColor(GROUP_FILL, Color.WHITE, new Color(240, 240, 240));
-        registerTypeColor(ENUM_FILL, new Color(255, 249, 218), new Color(240, 240, 240));
+        registerTypeColor(ENUM_FILL, new Color(255, 246, 210), new Color(240, 240, 240));
         registerTypeColor(MOISE_EDGE_COLOR, Color.BLACK, Color.BLACK);
     }
 

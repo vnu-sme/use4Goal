@@ -9,6 +9,8 @@ public enum AolEdgeKind {
     ENTITY_AGGREGATION,
     /** play -> the agent that plays it (dashed, "played by" -- the agent is the persistent identity). */
     PLAYED_BY,
+    /** role instance -> parent role instance (Role generalization/specialization). */
+    ROLE_GENERALIZATION,
     /** instantiates an ACL relation (association/aggregation/composition) between any two
      *  instances -- independent of Group nesting, e.g. a play "knows" a free-standing entity. */
     LINK;

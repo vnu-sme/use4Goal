@@ -106,9 +106,8 @@ public final class AclSystemStateCompiler {
             if (!ast.version().equals("v2.0")) {
                 fatal(ast.location(), "AOL formal system states require version v2.0");
             }
-            if (!ast.agents().isEmpty()) {
-                fatal(ast.agents().get(0).location(),
-                        "Agent is not part of Class = Entity union Role union Group; declare Role objects instead");
+            for (var agent : ast.agents()) {
+                addObject(agent.name(), "Agent", Kind.AGENT, Map.of(), agent.location());
             }
             for (var group : ast.groupInstances()) {
                 if (!group.subgroups().isEmpty() || !group.plays().isEmpty() || !group.entities().isEmpty()) {
@@ -196,11 +195,22 @@ public final class AclSystemStateCompiler {
                 ObjectValue parent = objects.get(declaration.parentInstanceId());
                 ObjectValue child = objects.get(declaration.childInstanceId());
                 if (parent == null || child == null) {
-                    fatal(declaration.location(), "sigma_Play endpoints must reference existing Role objects");
+                    fatal(declaration.location(), "play endpoints must reference existing Agent or Role objects");
+                    continue;
+                }
+                if (parent.kind() == Kind.AGENT) {
+                    if (child.kind() != Kind.ROLE) {
+                        fatal(declaration.location(), "Agent can only play Role objects");
+                        continue;
+                    }
+                    String key = parent.id() + "\0" + child.id();
+                    if (!seen.add(key)) fatal(declaration.location(), "duplicate play link from '"
+                            + parent.id() + "' to '" + child.id() + "'");
+                    else plays.add(new PlayLink(parent.id(), child.id()));
                     continue;
                 }
                 if (parent.kind() != Kind.ROLE || child.kind() != Kind.ROLE) {
-                    fatal(declaration.location(), "sigma_Play endpoints must both be Role objects");
+                    fatal(declaration.location(), "play endpoints between roles must both be Role objects");
                     continue;
                 }
                 var childType = model.findRole(child.type()).orElseThrow();
@@ -210,7 +220,7 @@ public final class AclSystemStateCompiler {
                     continue;
                 }
                 String key = parent.id() + "\0" + child.id();
-                if (!seen.add(key)) fatal(declaration.location(), "duplicate sigma_Play link from '"
+                if (!seen.add(key)) fatal(declaration.location(), "duplicate play link from '"
                         + parent.id() + "' to '" + child.id() + "'");
                 else plays.add(new PlayLink(parent.id(), child.id()));
             }

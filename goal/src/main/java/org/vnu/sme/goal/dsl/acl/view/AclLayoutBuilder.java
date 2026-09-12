@@ -12,7 +12,8 @@ public final class AclLayoutBuilder {
     private static final int MARGIN = 42;
     private static final int COLUMN_GAP = 64;
     private static final int ROW_GAP = 32;
-    private static final int MIN_WIDTH = 165;
+    private static final int MIN_WIDTH = 60;
+    private static final int MIN_COLUMN_WIDTH = 140;
     private static final int DETAIL_HEIGHT = 15;
 
     private AclLayoutBuilder() {}
@@ -68,7 +69,7 @@ public final class AclLayoutBuilder {
             node.x = x; node.y = y; nodes.put(node.id, node);
             y += node.h + ROW_GAP; right = Math.max(right, node.x + node.w);
         }
-        return Math.max(right, x + MIN_WIDTH);
+        return Math.max(right, x + MIN_COLUMN_WIDTH);
     }
 
     private static int layoutRoles(AclModel model, Map<String, AclNode> nodes, int x) {
@@ -79,7 +80,7 @@ public final class AclLayoutBuilder {
             node.x = x; node.y = y; nodes.put(node.id, node);
             y += node.h + ROW_GAP; right = Math.max(right, node.x + node.w);
         }
-        return Math.max(right, x + MIN_WIDTH);
+        return Math.max(right, x + MIN_COLUMN_WIDTH);
     }
 
     private static int layoutGroups(AclModel model, Map<String, AclNode> nodes, int x) {
@@ -93,7 +94,7 @@ public final class AclLayoutBuilder {
             node.x = x; node.y = y; nodes.put(node.id, node);
             y += node.h + ROW_GAP; right = Math.max(right, node.x + node.w);
         }
-        return Math.max(right, x + MIN_WIDTH);
+        return Math.max(right, x + MIN_COLUMN_WIDTH);
     }
 
     private static int layoutEnums(AclModel model, Map<String, AclNode> nodes, int x) {
@@ -104,14 +105,14 @@ public final class AclLayoutBuilder {
             node.x = x; node.y = y; nodes.put(node.id, node);
             y += node.h + ROW_GAP; right = Math.max(right, node.x + node.w);
         }
-        return Math.max(right, x + MIN_WIDTH);
+        return Math.max(right, x + MIN_COLUMN_WIDTH);
     }
 
     private static AclNode node(String id, String label, AclNodeKind kind, String subtitle, List<String> details) {
         AclNode node = new AclNode(id, label, kind, subtitle, details);
         int longest = Math.max(label.length(), details.stream().mapToInt(String::length).max().orElse(0));
-        node.w = Math.max(MIN_WIDTH, Math.min(340, longest * 7 + 34));
-        node.h = 44 + (details.isEmpty() ? 14 : details.size() * DETAIL_HEIGHT + 10);
+        node.w = Math.max(MIN_WIDTH, Math.min(340, longest * 7 + 28));
+        node.h = 40 + (details.isEmpty() ? 10 : details.size() * DETAIL_HEIGHT + 10);
         return node;
     }
 

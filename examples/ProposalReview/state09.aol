@@ -1,0 +1,54 @@
+aol v2.0 State_9 for "proposal-review-final.acl" {
+
+  // --- 1. Atomic Agents (no attributes) ---
+  agent agent1;
+  agent agent2;
+  agent agent3;
+  agent agent4;
+
+  // --- 2. Roles ---
+  role ProposalParticipant as ProposalParticipant_1 { email = "alice@example.com"; }
+  role ProposalParticipant as ProposalParticipant_2 { email = "bob@example.com"; }
+  role ProposalParticipant as ProposalParticipant_3 { email = "carol@example.com"; }
+  role ProposalParticipant as ProposalParticipant_4 { email = "dave@example.com"; }
+
+  role ProposalManager as ProposalManager_1;
+  role ProposalManager as ProposalManager_2;
+  role Customer as Customer_1;
+  role Customer as Customer_2;
+
+  // --- 3. Entities ---
+  entity Validation as Validation_3 { valid = true; validatedAt = DateTime_21; }
+  entity Review as Review_2 { decision = ACCEPTED; reviewedAt = DateTime_21; }
+  entity ProposalRevision as ProposalRevision_1 { revisionNo = 1; createdAt = DateTime_21; }
+  entity ProposalRevision as ProposalRevision_4 { revisionNo = 4; createdAt = DateTime_21; }
+
+  // --- 4. OrgCtxs ---
+  group Proposal as Proposal_1 { proposalId = 4; title = "Proposal 1"; state = SENT; }
+  group Proposal as Proposal_2 { proposalId = 3; title = "Proposal 2"; state = SENT; }
+
+  // --- 5. Play Relations (Agent -> Parent Role -> Child Role) ---
+  play agent1 -> ProposalParticipant_1;
+  play agent2 -> ProposalParticipant_2;
+  play agent3 -> ProposalParticipant_3;
+  play agent4 -> ProposalParticipant_4;
+
+  play ProposalParticipant_1 -> ProposalManager_1;
+  play ProposalParticipant_2 -> ProposalManager_2;
+  play ProposalParticipant_3 -> Customer_2;
+  play ProposalParticipant_4 -> Customer_1;
+
+  // --- 6. Containment Composition Links ---
+  link Proposal_contains_ProposalManager: Proposal_1 -> ProposalManager_1;
+  link Proposal_contains_ProposalManager: Proposal_1 -> ProposalManager_2;
+  link Proposal_contains_Customer: Proposal_1 -> Customer_2;
+  link Proposal_contains_Customer: Proposal_2 -> Customer_1;
+  link Proposal_contains_ProposalRevision: Proposal_1 -> ProposalRevision_1;
+  link Proposal_contains_ProposalRevision: Proposal_1 -> ProposalRevision_4;
+
+  // --- 7. Association Links ---
+  link RevisionValidations: ProposalRevision_1 -> Validation_3;
+  link RevisionReviews: ProposalRevision_4 -> Review_2;
+  link ProposalManagerValidates: ProposalManager_2 -> Validation_3;
+  link CustomerProvidesReview: Customer_2 -> Review_2;
+}

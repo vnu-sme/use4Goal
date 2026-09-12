@@ -20,10 +20,10 @@ import org.tzi.use.gui.views.diagrams.elements.PlaceableNode;
 public final class AolDiagramNode extends PlaceableNode implements ToolTipProvider {
     private static final int H_PAD = 10;
     private static final int V_PAD = 5;
-    private static final int PLAY_HEADER = 36;
+    private static final int PLAY_HEADER = 40;
     private static final int ENTITY_HEADER = 40;
-    private static final int AGENT_HEADER = 32;
-    private static final int GROUP_HEADER = 30;
+    private static final int AGENT_HEADER = 34;
+    private static final int GROUP_HEADER = 40;
     private static final int GROUP_TAB_WIDTH = 30;
     private static final int GROUP_TAB_HEIGHT = 11;
 
@@ -95,35 +95,49 @@ public final class AolDiagramNode extends PlaceableNode implements ToolTipProvid
         drawCentered(g, node.label, new Rectangle2D.Double(
                 getX() + H_PAD, getY() + 14, getWidth() - H_PAD * 2, AGENT_HEADER - 14));
         if (node.details.isEmpty()) return;
-        // Extra horizontal padding here (vs. drawDetails' usual H_PAD) keeps left-aligned
-        // detail text clear of the ellipse's curved edge instead of visually spilling past it.
         drawDetails(g, AGENT_HEADER, H_PAD * 2);
     }
 
     private void drawGroup(Graphics2D g) {
         g.setColor(getTextColor());
-        g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
+        g.setFont(getFont().deriveFont(Font.PLAIN, 10f));
+        g.drawString("«orgContext»", (float) getX() + H_PAD, (float) getY() + GROUP_TAB_HEIGHT + 1 + g.getFontMetrics().getAscent());
+        g.setFont(getFont().deriveFont(Font.BOLD, 13f));
         drawCentered(g, node.label, new Rectangle2D.Double(
-                getX() + H_PAD, getY() + GROUP_TAB_HEIGHT,
-                getWidth() - H_PAD * 2, GROUP_HEADER - GROUP_TAB_HEIGHT));
+                getX() + H_PAD, getY() + GROUP_TAB_HEIGHT + 13,
+                getWidth() - H_PAD * 2, GROUP_HEADER - GROUP_TAB_HEIGHT - 13));
         if (node.details.isEmpty()) return;
         g.setColor(getFrameColor());
-        g.draw(new Line2D.Double(getX() + H_PAD, getY() + GROUP_HEADER,
-                getX() + getWidth() - H_PAD, getY() + GROUP_HEADER));
+        g.draw(new Line2D.Double(getX(), getY() + GROUP_HEADER,
+                getX() + getWidth(), getY() + GROUP_HEADER));
         drawDetails(g, GROUP_HEADER, H_PAD);
     }
 
     private void drawPlay(Graphics2D g) {
+        drawRoleIcon(g);
         g.setColor(getTextColor());
+        g.setFont(getFont().deriveFont(Font.PLAIN, 10f));
+        g.drawString("«role»", (float) getX() + 24, (float) getY() + V_PAD + g.getFontMetrics().getAscent());
         g.setFont(getFont().deriveFont(Font.BOLD, 13f));
         drawCentered(g, node.label, new Rectangle2D.Double(
-                getX() + H_PAD, getY() + V_PAD, getWidth() - H_PAD * 2, PLAY_HEADER - V_PAD * 2));
+                getX() + 24, getY() + 14, getWidth() - 40, PLAY_HEADER - 14));
 
         if (node.details.isEmpty()) return;
         g.setColor(getFrameColor());
         g.draw(new Line2D.Double(getX() + H_PAD, getY() + PLAY_HEADER,
                 getX() + getWidth() - H_PAD, getY() + PLAY_HEADER));
         drawDetails(g, PLAY_HEADER, H_PAD);
+    }
+
+    private void drawRoleIcon(Graphics2D g) {
+        double x = getX() + 12, y = getY() + 8;
+        g.setColor(getFrameColor());
+        g.setStroke(new BasicStroke(1.3f));
+        g.draw(new Ellipse2D.Double(x - 3, y, 6, 6));
+        g.draw(new Line2D.Double(x, y + 6, x, y + 16));
+        g.draw(new Line2D.Double(x - 5, y + 10, x + 5, y + 10));
+        g.draw(new Line2D.Double(x, y + 16, x - 4, y + 22));
+        g.draw(new Line2D.Double(x, y + 16, x + 4, y + 22));
     }
 
     private void drawEntity(Graphics2D g) {

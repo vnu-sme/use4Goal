@@ -7,14 +7,15 @@
   <foreignModel>acl.ecore</foreignModel>
   <genPackages prefix="Acl" basePackage="org.vnu.sme.goal.dsl.acl.ecore" disposableProviderFactory="true"
       ecorePackage="acl.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="acl.ecore#//AssociationRelKind">
+      <genEnumLiterals ecoreEnumLiteral="acl.ecore#//AssociationRelKind/PLAIN"/>
+      <genEnumLiterals ecoreEnumLiteral="acl.ecore#//AssociationRelKind/AGGREGATION"/>
+      <genEnumLiterals ecoreEnumLiteral="acl.ecore#//AssociationRelKind/COMPOSITION"/>
+    </genEnums>
     <genClasses ecoreClass="acl.ecore#//AclModel">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//AclModel/name"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//AclModel/version"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//AclModel/objects"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//AclModel/dataTypes"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//AclModel/associations"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//AclModel/invariants"/>
-      <genOperations ecoreOperation="acl.ecore#//AclModel/allObjects"/>
     </genClasses>
     <genClasses image="false" ecoreClass="acl.ecore#//Object">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//Object/name"/>
@@ -33,9 +34,7 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//OrgCtx/orgctx"/>
     </genClasses>
     <genClasses ecoreClass="acl.ecore#//Association">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//Association/name"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//Association/ends"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//Association/kind"/>
     </genClasses>
     <genClasses ecoreClass="acl.ecore#//AssociationEnd">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//AssociationEnd/role"/>
@@ -61,10 +60,5 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EReference acl.ecore#//Invariant/contextType"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//Invariant/oclBody"/>
     </genClasses>
-    <genEnums typeSafeEnumCompatible="false" ecoreEnum="acl.ecore#//AssociationRelKind">
-      <genEnumLiterals ecoreEnumLiteral="acl.ecore#//AssociationRelKind/PLAIN"/>
-      <genEnumLiterals ecoreEnumLiteral="acl.ecore#//AssociationRelKind/AGGREGATION"/>
-      <genEnumLiterals ecoreEnumLiteral="acl.ecore#//AssociationRelKind/COMPOSITION"/>
-    </genEnums>
   </genPackages>
 </genmodel:GenModel>

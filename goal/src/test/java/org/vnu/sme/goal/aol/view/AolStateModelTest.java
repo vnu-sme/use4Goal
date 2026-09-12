@@ -12,7 +12,7 @@ import org.vnu.sme.goal.dsl.aol.mm.AolPlay;
 import org.vnu.sme.goal.verify.conformance.AolBpmnTraceRunner;
 
 class AolStateModelTest {
-    private static final Path BASE = Path.of("src/main/resources/examples/mtg");
+    private static final Path BASE = Path.of("src/main/resources/examples/incident_response_bridge");
 
     @Test
     void initialFrameReconstructsTheAolPopulationThatSeededIt() {

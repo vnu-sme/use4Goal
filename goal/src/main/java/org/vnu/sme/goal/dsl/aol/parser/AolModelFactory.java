@@ -13,6 +13,7 @@ import org.vnu.sme.goal.dsl.acl.mm.AclAttribute;
 import org.vnu.sme.goal.dsl.acl.mm.AclCardinality;
 import org.vnu.sme.goal.dsl.acl.mm.AclCardinalityConstraint;
 import org.vnu.sme.goal.dsl.acl.mm.AclCompatibility;
+import org.vnu.sme.goal.dsl.acl.mm.AclContainment;
 import org.vnu.sme.goal.dsl.acl.mm.AclCompatibilityType;
 import org.vnu.sme.goal.dsl.acl.mm.AclDataType;
 import org.vnu.sme.goal.dsl.acl.mm.AclEndpoint;
@@ -21,10 +22,12 @@ import org.vnu.sme.goal.dsl.acl.mm.AclEntityMembership;
 import org.vnu.sme.goal.dsl.acl.mm.AclEnum;
 import org.vnu.sme.goal.dsl.acl.mm.AclGroup;
 import org.vnu.sme.goal.dsl.acl.mm.AclModel;
+import org.vnu.sme.goal.dsl.acl.mm.AclNamedDataType;
 import org.vnu.sme.goal.dsl.acl.mm.AclOwner;
 import org.vnu.sme.goal.dsl.acl.mm.AclPrimitiveType;
 import org.vnu.sme.goal.dsl.acl.mm.AclRelation;
 import org.vnu.sme.goal.dsl.acl.mm.AclRole;
+import org.vnu.sme.goal.dsl.acl.mm.RelationKind;
 import org.vnu.sme.goal.dsl.acl.mm.AclRoleMembership;
 import org.vnu.sme.goal.dsl.acl.mm.AclSubgroupMembership;
 import org.vnu.sme.goal.dsl.aol.ast.AolAttributeValueCS;
@@ -87,18 +90,15 @@ public final class AolModelFactory {
         Result run() {
             for (AolAgentCS a : ast.agents()) {
                 if (!agentNames.add(a.name())) error(a.location(), "duplicate agent '" + a.name() + "'");
+                registerInstance(a.location(), a.name(), InstanceKind.AGENT, a.profileRole() != null ? a.profileRole() : "Agent");
                 if (a.profileRole() == null) {
                     agentValues.put(a.name(), Map.of());
                     continue;
                 }
                 acl.findRole(a.profileRole()).ifPresentOrElse(profile -> {
-                    if (!profile.isAbstract()) {
-                        error(a.location(), "agent profile role '" + a.profileRole() + "' must be abstract");
-                    }
                     agentProfiles.put(a.name(), a.profileRole());
                     agentValues.put(a.name(), attributeValues(a.attributeValues(), effectiveRoleAttributes(profile.name()),
                             a.location(), "agent '" + a.name() + "' with profile '" + profile.name() + "'"));
-                    registerInstance(a.location(), a.name(), InstanceKind.AGENT, profile.name());
                 }, () -> error(a.location(), "unknown agent profile role '" + a.profileRole() + "'"));
             }
 
@@ -124,10 +124,32 @@ public final class AolModelFactory {
                 roots.add(buildGroupInstance(g, actualRoot, List.of(actualRoot),
                         List.of(g.instanceId())));
             }
+            for (var r : ast.roles()) {
+                registerInstance(r.location(), r.instanceId(), InstanceKind.PLAY, r.roleType());
+                if (agentNames.add(r.instanceId())) {
+                    AclRole role = acl.findRole(r.roleType()).orElse(null);
+                    List<AclAttribute> attrs = role != null ? effectiveRoleAttributes(role.name()) : List.of();
+                    agentValues.put(r.instanceId(), attributeValues(r.attributeValues(), attrs, r.location(), "role '" + r.roleType() + "'"));
+                }
+            }
+
             checkAgentProfiles();
             checkInheritedRoleContexts();
             checkCompatibility();
-            List<AolLink> links = checkLinks();
+            List<AolLink> links = new ArrayList<>(checkLinks());
+            for (var pl : ast.playLinks()) {
+                InstanceRef parent = instanceIndex.get(pl.parentInstanceId());
+                if (parent == null) {
+                    error(pl.location(), "unknown parent role instance '" + pl.parentInstanceId() + "' in play link");
+                    continue;
+                }
+                InstanceRef child = instanceIndex.get(pl.childInstanceId());
+                if (child == null) {
+                    error(pl.location(), "unknown child role instance '" + pl.childInstanceId() + "' in play link");
+                    continue;
+                }
+                links.add(new AolLink("play", pl.parentInstanceId(), List.of(pl.childInstanceId())));
+            }
             if (!errors.isEmpty()) return new Result(null, errors);
             List<String> agents = List.copyOf(agentNames);
             return new Result(new AolModel(ast.version(), ast.name(), ast.aclFile(), agents, agentProfiles,
@@ -242,7 +264,7 @@ public final class AolModelFactory {
                         error(p.location(), "abstract role '" + p.roleType() + "' cannot be played directly");
                         return;
                     }
-                    if (!agentNames.contains(p.agentId())) {
+                    if (p.agentId() != null && !agentNames.contains(p.agentId())) {
                         error(p.location(), "unknown agent '" + p.agentId() + "' playing '" + p.roleType() + "'");
                     }
                     Map<String, String> values = attributeValues(p.attributeValues(), role.attributes(), p.location(),
@@ -250,7 +272,7 @@ public final class AolModelFactory {
                     plays.add(new AolPlay(p.roleType(), p.instanceId(), p.agentId(), values));
                     roleCounts.merge(p.roleType(), 1, Integer::sum);
                     if (uniqueLocally) registerInstance(p.location(), p.instanceId(), InstanceKind.PLAY, p.roleType());
-                    if (agentNames.contains(p.agentId())) {
+                    if (p.agentId() != null && agentNames.contains(p.agentId())) {
                         occurrences.add(new Occurrence(p.instanceId(), p.agentId(), p.roleType(), typePath, instancePath));
                     }
                 }, () -> error(p.location(), "unknown role type '" + p.roleType() + "'"));
@@ -401,6 +423,7 @@ public final class AolModelFactory {
 
         private boolean validValue(AclDataType type, String value) {
             if (type instanceof AclEnum e) return e.literals().contains(value);
+            if (type instanceof AclNamedDataType) return true;
             if (!(type instanceof AclPrimitiveType primitive)) return false;
             String raw = value.length() >= 2 && value.startsWith("\"") && value.endsWith("\"")
                     ? value.substring(1, value.length() - 1) : value;
@@ -548,6 +571,9 @@ public final class AolModelFactory {
                 AclRelation relation = acl.relations().stream()
                         .filter(r -> r.name().equals(link.relationName())).findFirst().orElse(null);
                 if (relation == null) {
+                    relation = findOrgCtxContainmentRelation(link.relationName());
+                }
+                if (relation == null) {
                     error(link.location(), "unknown relation '" + link.relationName() + "'");
                     continue;
                 }
@@ -594,5 +620,18 @@ public final class AolModelFactory {
 
         private void error(AclSourceLocationCS loc, String message) { errors.add(new SemanticError(loc, message)); }
         private void errorNoLocation(String message) { errors.add(new SemanticError(new AclSourceLocationCS(1, 0), message)); }
+        private AclRelation findOrgCtxContainmentRelation(String relationName) {
+            for (AclGroup context : acl.groups()) {
+                for (var member : context.members()) {
+                    String name = AclContainment.relationName(context.name(), member.type());
+                    if (name.equals(relationName)) {
+                        return new AclRelation(RelationKind.COMPOSITION, name,
+                                new AclEndpoint(context.name(), AclCardinality.bounded(1, 1), java.util.Optional.of("orgContext")),
+                                new AclEndpoint(member.type(), member.multiplicity(), java.util.Optional.of(member.type())));
+                    }
+                }
+            }
+            return null;
+        }
     }
 }

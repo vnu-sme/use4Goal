@@ -13,7 +13,7 @@ class AclUseViewModelTest {
     @Test
     void opensNestedOrgContextSyntaxAndBuildsContainmentView() throws Exception {
         var acl = AclCompiler.compile(Path.of(
-                "src/main/resources/examples/sales_forecast/proposal_review_whole/proposal_review.acl"));
+                "src/main/resources/examples/sales_forecast/tool/proposal_review.acl"));
         assertTrue(acl.ok(), () -> String.join("\n", acl.errors()));
 
         var context = acl.model().findOrgContext("ProposalReviewCase").orElseThrow();
@@ -80,5 +80,30 @@ class AclUseViewModelTest {
         AclUseViewModel adapted = AclUseViewModel.build(acl.model());
         assertTrue(adapted.associations.containsKey("departmentBudget"));
         assertTrue(adapted.associations.containsKey("auditDocuments"));
+    }
+
+    @Test
+    void orgCtxWidthAndEnumColorAndHeader() {
+        var acl = AclCompiler.compile("""
+                acl v4.0 LayoutTest {
+                  enum Status { DRAFT, ACTIVE }
+                  orgContext SmallCtx {
+                    id : String;
+                  }
+                }
+                """);
+        assertTrue(acl.ok(), () -> String.join("\n", acl.errors()));
+
+        AclLayout layout = AclLayoutBuilder.build(acl.model());
+        var ctxNode = layout.nodes.get("group::SmallCtx");
+        assertTrue(ctxNode.w < 165, "OrgCtx width should shrink based on attribute length, got " + ctxNode.w);
+
+        var options = new AclDiagramOptions();
+        java.awt.Color enumFill = options.getColor(AclDiagramOptions.ENUM_FILL);
+        assertEquals(new java.awt.Color(255, 246, 210), enumFill);
+
+        var font = new java.awt.Font("Dialog", java.awt.Font.PLAIN, 12);
+        var enumNode = new AclDiagramNode(layout.nodes.get("enum::Status"), options, font);
+        assertEquals(60.0, enumNode.getMinWidth());
     }
 }

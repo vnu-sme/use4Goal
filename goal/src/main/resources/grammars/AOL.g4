@@ -43,6 +43,7 @@ groupInstanceDecl
 groupItemDecl
     : groupInstanceDecl
     | playDecl
+    | roleInstanceDecl
     | entityInstanceDecl
     | attributeValue
     ;

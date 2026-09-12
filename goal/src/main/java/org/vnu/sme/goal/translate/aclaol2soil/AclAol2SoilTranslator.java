@@ -57,8 +57,8 @@ public final class AclAol2SoilTranslator {
                     agentProfileAttributes(acl, aol.agentProfileRoles().get(agentId)),
                     aol.agentAttributeValues().getOrDefault(agentId, Map.of()));
             String profile = aol.agentProfileRoles().get(agentId);
-            if (profile != null) registerInstance(instances,
-                    new InstanceRef(InstanceKind.AGENT, profile, agentId, objectName));
+            registerInstance(instances,
+                    new InstanceRef(InstanceKind.AGENT, profile != null ? profile : agentClass, agentId, objectName));
         }
 
         for (AolGroupInstance group : aol.groupInstances()) {

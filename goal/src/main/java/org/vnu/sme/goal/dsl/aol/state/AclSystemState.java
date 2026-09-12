@@ -23,7 +23,7 @@ import org.vnu.sme.goal.dsl.acl.ocl.AclOclState;
  * inclusion in this representation.</p>
  */
 public final class AclSystemState implements AclOclState {
-    public enum Kind { ENTITY, ROLE, GROUP }
+    public enum Kind { ENTITY, ROLE, GROUP, AGENT }
 
     public record ObjectValue(String id, String type, Kind kind, Map<String, Object> attributes) {
         public ObjectValue {

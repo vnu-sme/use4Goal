@@ -66,10 +66,17 @@ public final class AOLBuildingVisitor extends AOLBaseVisitor<AolModelCS> {
         for (AOLParser.GroupItemDeclContext item : ctx.groupItemDecl()) {
             if (item.groupInstanceDecl() != null) subgroups.add(buildGroupInstance(item.groupInstanceDecl()));
             else if (item.playDecl() != null) plays.add(buildPlay(item.playDecl()));
+            else if (item.roleInstanceDecl() != null) plays.add(buildRolePlay(item.roleInstanceDecl()));
             else if (item.entityInstanceDecl() != null) entities.add(buildEntityInstance(item.entityInstanceDecl()));
             else if (item.attributeValue() != null) values.add(buildAttributeValue(item.attributeValue()));
         }
         return new AolGroupInstanceCS(typeName, instanceId, subgroups, plays, entities, values, location(ctx));
+    }
+
+    private static AolPlayCS buildRolePlay(AOLParser.RoleInstanceDeclContext ctx) {
+        List<TerminalNode> ids = ctx.IDENT();
+        return new AolPlayCS(ids.get(0).getText(), ids.get(1).getText(), null,
+                attributeValues(ctx.attributeValueBlock()), location(ctx));
     }
 
     private static AolPlayCS buildPlay(AOLParser.PlayDeclContext ctx) {

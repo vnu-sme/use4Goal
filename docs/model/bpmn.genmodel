@@ -12,6 +12,20 @@
       <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//GatewayKind/AND"/>
       <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//GatewayKind/OR"/>
     </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="bpmn.ecore#//EventTrigger">
+      <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//EventTrigger/none"/>
+      <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//EventTrigger/message"/>
+      <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//EventTrigger/timer"/>
+      <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//EventTrigger/error"/>
+      <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//EventTrigger/signal"/>
+      <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//EventTrigger/terminate"/>
+      <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//EventTrigger/compensation"/>
+      <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//EventTrigger/conditional"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="bpmn.ecore#//EventDirection">
+      <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//EventDirection/catching"/>
+      <genEnumLiterals ecoreEnumLiteral="bpmn.ecore#//EventDirection/throwing"/>
+    </genEnums>
     <genClasses ecoreClass="bpmn.ecore#//BpmnModel">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute bpmn.ecore#//BpmnModel/name"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference bpmn.ecore#//BpmnModel/processes"/>

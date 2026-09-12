@@ -121,8 +121,6 @@
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
       <details key="documentation" value="Common base of Start/End/Intermediate events. `trigger` records which BPMN event definition fires the event; `none` is a plain (unspecified) trigger."/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="trigger" lowerBound="1"
-        eType="#//EventTrigger" defaultValueLiteral="none"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="StartEvent" eSuperTypes="#//Event">
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
@@ -211,7 +209,6 @@
     <eLiterals name="XOR"/>
     <eLiterals name="AND" value="1"/>
     <eLiterals name="OR" value="2"/>
-    <eLiterals name="EVENT_BASED" value="3"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="EventTrigger">
     <eLiterals name="none"/>

@@ -1002,7 +1002,7 @@ final class AclKodkodSymbolicModel {
             for (Tuple tuple : plays) {
                 ObjectAtom source = objectByAtom.get(String.valueOf(tuple.atom(0)));
                 ObjectAtom target = objectByAtom.get(String.valueOf(tuple.atom(1)));
-                if (source != null && target != null && source.kind() == Kind.ROLE && target.kind() == Kind.ROLE) {
+                if (source != null && target != null && (source.kind() == Kind.ROLE || source.kind() == Kind.AGENT) && target.kind() == Kind.ROLE) {
                     result.append("  play ").append(source.id()).append(" -> ").append(target.id()).append(";\n");
                 }
             }

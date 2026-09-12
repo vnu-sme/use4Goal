@@ -25,6 +25,10 @@ public record AolEdge(String fromId, String toId, AolEdgeKind kind, String label
         return new AolEdge(playId, agentId, AolEdgeKind.PLAYED_BY, "played by");
     }
 
+    public static AolEdge generalization(String childRoleId, String parentRoleId) {
+        return new AolEdge(childRoleId, parentRoleId, AolEdgeKind.ROLE_GENERALIZATION, "specializes");
+    }
+
     public static AolEdge link(String fromId, String toId, String relationName) {
         return new AolEdge(fromId, toId, AolEdgeKind.LINK, relationName);
     }

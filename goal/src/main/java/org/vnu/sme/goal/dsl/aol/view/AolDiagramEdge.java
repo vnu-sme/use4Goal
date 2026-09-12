@@ -61,17 +61,23 @@ public final class AolDiagramEdge extends EdgeBase {
         g.dispose();
     }
 
+    private enum Marker { FILLED_DIAMOND, OPEN_DIAMOND, OPEN_TRIANGLE, OPEN_ARROW, NONE }
+
     private void paintEndMarker(Graphics2D g, Point2D inside, Point2D endpoint) {
         Marker marker = switch (edge.kind()) {
             case SUBGROUP_COMPOSITION, PLAY_COMPOSITION -> Marker.FILLED_DIAMOND;
             case ENTITY_AGGREGATION -> Marker.OPEN_DIAMOND;
-            case PLAYED_BY, LINK -> Marker.OPEN_ARROW;
+            case ROLE_GENERALIZATION -> Marker.OPEN_TRIANGLE;
+            case PLAYED_BY -> Marker.OPEN_ARROW;
+            case LINK -> Marker.NONE;
         };
-        drawMarker(g, inside, endpoint, marker);
+        if (marker != Marker.NONE) {
+            drawMarker(g, inside, endpoint, marker);
+        }
     }
 
     private void paintLabel(Graphics2D g, Point2D start, Point2D end) {
-        if (edge.label() == null) return;
+        if (edge.label() == null || edge.label().isBlank()) return;
         g.setFont(LABEL_FONT);
         g.setColor(isSelected() ? fOpt.getEDGE_SELECTED_COLOR() : edgeColor());
         double centerX = (start.getX() + end.getX()) / 2.0;
@@ -103,6 +109,20 @@ public final class AolDiagramEdge extends EdgeBase {
             path.moveTo(baseX + px * MARKER_HALF_WIDTH, baseY + py * MARKER_HALF_WIDTH);
             path.lineTo(endpoint.getX(), endpoint.getY());
             path.lineTo(baseX - px * MARKER_HALF_WIDTH, baseY - py * MARKER_HALF_WIDTH);
+            g.draw(path);
+            return;
+        }
+
+        if (marker == Marker.OPEN_TRIANGLE) {
+            Path2D path = new Path2D.Double();
+            path.moveTo(endpoint.getX(), endpoint.getY());
+            path.lineTo(baseX + px * MARKER_HALF_WIDTH, baseY + py * MARKER_HALF_WIDTH);
+            path.lineTo(baseX - px * MARKER_HALF_WIDTH, baseY - py * MARKER_HALF_WIDTH);
+            path.closePath();
+            Color lineColor = g.getColor();
+            g.setColor(Color.WHITE);
+            g.fill(path);
+            g.setColor(lineColor);
             g.draw(path);
             return;
         }
@@ -157,11 +177,5 @@ public final class AolDiagramEdge extends EdgeBase {
                     10f, new float[] {2f, 5f}, 0f);
         }
         return new BasicStroke(1.4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-    }
-
-    private enum Marker {
-        OPEN_ARROW,
-        OPEN_DIAMOND,
-        FILLED_DIAMOND
     }
 }
