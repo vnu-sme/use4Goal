@@ -1,0 +1,88 @@
+// Operationalized goals grounded in Appendix 3; see evaluation/AUDIT.md.
+istar StudentRegistrationGoals {
+  role AcademicAdvisor {
+    goal StudentCommitment : Achieve description "Ensuring student commitment"
+    condition {[ self.orgContext.curriculum and self.orgContext.paid ]}
+    task candidateWaiting description "A new candidate is waiting"
+    task candidateReport description "Generate candidates report"
+    task examineKit description "Candidate ticket examination and update"
+    task updateExceptional description "Update exceptional candidates list"
+    task coordinateTest description "Coordinating internal or external test"
+    task coordinateInterview description "Coordinating interview"
+    task conductInterview description "Conducting interview"
+    task rejectAdvisorTicket description "Update ticket and change to rejected"
+    task transferCenter description "Update ticket and transfer to academic center"
+    post {[ self.orgContext.accepted ]}
+    task examineRegistration description "Registration kit required examination"
+    task paymentReport description "Generate payment status report"
+    task prepareCurriculum description "Preparation of an academic curriculum"
+    post {[ self.orgContext.curriculum ]}
+  }
+  role AcademicCenter {
+    goal ApprovedEnrollment : Maintain description "Getting kit approvals"
+    condition {[ not self.orgContext.enrolled or self.orgContext.kitApproved ]}
+    task pendingKit description "Pending registration kit"
+    task prepareSignature description "Prepare registration kit for signature"
+    task pendingStatus description "Update pending registration kit status"
+    task transferApproval description "Transfer registration kit for approval"
+    task acceptedStatus description "Status update to accepted"
+    post {[ self.orgContext.enrolled ]}
+    task paymentVoucher description "Payment voucher or arrangement required"
+    task printAcceptance description "Print and send acceptance letter"
+  }
+  role AcademicVP {
+    goal IntegrityAndCompleteness : Maintain description "Only integrity and complete kit can be approved"
+    condition {[ not self.orgContext.kitApproved or self.orgContext.kitComplete ]}
+    task checkIntegrity description "Check registration kit integrity"
+    task signKit description "Signing and approving registration kit"
+    post {[ self.orgContext.kitApproved ]}
+  }
+  role CRMHead {
+    task headPending description "Activity should be handled"
+    task exceptionalCandidate description "Checking exceptional candidate"
+    task updateHeadTicket description "Update candidate ticket"
+  }
+  role InformationCenter {
+    goal AcceptanceTerms : Maintain description "Register only candidates meeting acceptance terms"
+    condition {[ not self.orgContext.enrolled or self.orgContext.termsChecked ]}
+    task contact description "Contact a candidate"
+    task createTicket description "Create a candidate ticket"
+    task checkTerms description "Checking acceptance terms"
+    post {[ self.orgContext.termsChecked ]}
+    task rejectTicket description "Update candidate ticket - threshold rejection"
+    task clarifyTerms description "Clarification of acceptance terms"
+    task pendingClarification description "Pending activity update"
+    task updateTermsFile description "Update acceptance terms file"
+    task rejectStatus description "Change status to rejected"
+    task updateTicket description "Update candidate ticket"
+    task pendingUpdate description "Pending activity update"
+  }
+  role RegistrationCoordinator {
+    goal CompleteKits : Maintain description "Only complete kits can be transferred"
+    condition {[ not self.orgContext.accepted or self.orgContext.kitComplete ]}
+    task openKit description "A ticket must be opened"
+    task feeReport description "Generate registration fee payment report"
+    task createStudent description "Creating a student ticket"
+    task completeKit description "Registration kit completion"
+    post {[ self.orgContext.kitComplete ]}
+    task updateStudent description "Updating a student ticket"
+    task transferFaculty description "Update status - transferred to faculty"
+    task transferException description "Update status - transferred as an exception"
+    task updateFaculty description "Relevant faculty update"
+    task rejectedStatistics description "Rejected candidate statistics"
+    task registrationReport description "Generating registration status report"
+    task suggestAlternative description "Suggest alternative program"
+    task closeRejected description "Update and status change"
+    task changeProgram description "Program update and status change"
+    task updateAlternativeFaculty description "Relevant faculty update"
+  }
+  role TuitionDepartment {
+    task updateFee description "Update registration fee"
+    task paymentPending description "Payment arrangement pending"
+    task updatePayment description "Update or approve payment and direct debit"
+    post {[ self.orgContext.paid ]}
+    task printVoucher description "Print a direct debit voucher"
+    task checkPayment description "Checking payment status"
+    task paymentStatus description "Update payment status"
+  }
+}

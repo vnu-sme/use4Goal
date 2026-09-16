@@ -1,0 +1,19 @@
+// Operational state abstraction; see evaluation/AUDIT.md.
+csl v3.0 StudentRegistrationState {
+  orgContext StudentRegistrationCase {
+    role AcademicAdvisor;
+    role AcademicCenter;
+    role AcademicVP;
+    role CRMHead;
+    role InformationCenter;
+    role RegistrationCoordinator;
+    role TuitionDepartment;
+    termsChecked : Boolean mutable default false;
+    kitComplete : Boolean mutable default false;
+    accepted : Boolean mutable default false;
+    kitApproved : Boolean mutable default false;
+    enrolled : Boolean mutable default false;
+    paid : Boolean mutable default false;
+    curriculum : Boolean mutable default false;
+  }
+}

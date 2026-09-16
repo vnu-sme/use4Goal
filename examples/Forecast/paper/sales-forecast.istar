@@ -1,0 +1,64 @@
+// Operationalized goals grounded in Appendix 3; see evaluation/AUDIT.md.
+istar SalesForecastGoals {
+  role BusinessVP {
+    task Act_vp_pending description "Pending approval"
+    task Act_vp_exam description "Profitability examination"
+  }
+  role CreditControl {
+    goal CreditExamined : Maintain description "Deal credit examination"
+    condition {[ not self.orgContext.ordered or self.orgContext.creditChecked ]}
+    task Act_cc_pending description "Pending approval"
+    task Act_cc_exam description "Deal credit examination"
+    post {[ self.orgContext.creditChecked ]}
+  }
+  role CustomerManager {
+    goal CustomerManagerObjectives : None
+    goal PurchaseOrderCreated : Achieve description "Purchase order creation"
+      > CustomerManagerObjectives
+    condition {[ self.orgContext.ordered ]}
+    goal CompleteKit : Maintain description "Getting BoM and HLD"
+      > CustomerManagerObjectives
+    condition {[ not self.orgContext.ordered or self.orgContext.technicalReady ]}
+    task Act_updcust description "Updating customer details"
+    task Act_ticket description "Creating Customer Ticket"
+    task Act_insertdeal description "Inserting and updating deal details"
+    task Act_bomupdate description "Updating BOM and HLD"
+    post {[ self.orgContext.technicalReady ]}
+    task Act_bommanual description "Creating a BOM manually"
+    post {[ self.orgContext.technicalReady ]}
+    task Act_pnsprice description "Updating PNs Price"
+    task Act_creatingpns description "Creating PNs"
+    task Act_svcpct description "Updating percentages for service contract"
+    task Act_updprofit description "Updating deal profitability and closure percentages"
+    post {[ self.orgContext.profitabilityChecked ]}
+    task Act_dealapproved description "Deal approved"
+    task Act_kitcomplete description "Completion of kit components"
+    task Act_transfer description "Transferring to order operator"
+    task Act_createpo description "Creating PO in CRM System"
+    post {[ self.orgContext.ordered ]}
+  }
+  role DepartmentManager {
+    goal ProfitabilityExamined : Maintain description "Deal profitability examination"
+    condition {[ not self.orgContext.ordered or self.orgContext.profitabilityChecked ]}
+    task Act_dm_pending description "Pending approval"
+    task Act_dm_exam description "Profitability examination"
+  }
+  role FinancialControl {
+    task Act_fc_pending description "Pending approval"
+    task Act_fc_exam description "Deal financial examination"
+  }
+  role PresaleEngineer {
+    task Act_ps_bom description "Creating BOM"
+    task Act_ps_hld description "Writing HLD Document"
+    post {[ self.orgContext.technicalReady ]}
+    task Act_ps_send description "Sending HLD to Customer Manager"
+  }
+  role SectorManager {
+    task Act_sm_pending description "Pending approval"
+    task Act_sm_exam description "Profitability examination"
+  }
+  role ServiceAgreements {
+    task Act_sa_pending description "Pending approval"
+    task Act_sa_review description "Contract review and approval"
+  }
+}

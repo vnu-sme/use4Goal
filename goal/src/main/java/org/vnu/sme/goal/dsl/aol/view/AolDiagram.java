@@ -44,8 +44,8 @@ public final class AolDiagram extends DiagramView {
         addMouseListener(inputHandling);
         addKeyListener(inputHandling);
         setFocusable(true);
-        fActionSaveLayout = new ActionSaveLayout("USE AOL layout", "dlt", this);
-        fActionLoadLayout = new ActionLoadLayout("USE AOL layout", "dlt", this);
+        fActionSaveLayout = new ActionSaveLayout("USE state layout", "dlt", this);
+        fActionLoadLayout = new ActionLoadLayout("USE state layout", "dlt", this);
         getOptions().setDoAntiAliasing(true);
     }
 
@@ -63,8 +63,8 @@ public final class AolDiagram extends DiagramView {
         this.sourceFile = sourceFile;
         if (sourceFile != null) {
             fOpt = new AolDiagramOptions(sourceFile);
-            fActionSaveLayout = new ActionSaveLayout("USE AOL layout", "dlt", this);
-            fActionLoadLayout = new ActionLoadLayout("USE AOL layout", "dlt", this);
+            fActionSaveLayout = new ActionSaveLayout("USE state layout", "dlt", this);
+            fActionLoadLayout = new ActionLoadLayout("USE state layout", "dlt", this);
             getOptions().setDoAntiAliasing(true);
         }
     }
@@ -121,6 +121,13 @@ public final class AolDiagram extends DiagramView {
         popupMenu.add(getMenuItemAntiAliasing());
         popupMenu.add(getMenuItemShowGrid());
         popupMenu.add(getMenuItemGrayscale());
+        javax.swing.JCheckBoxMenuItem assocNamesItem = new javax.swing.JCheckBoxMenuItem(
+                "Assoc. names", getOptions().isShowAssociationNames());
+        assocNamesItem.addActionListener(e -> {
+            getOptions().setShowAssociationNames(assocNamesItem.isSelected());
+            repaint();
+        });
+        popupMenu.add(assocNamesItem);
         if (switchAction != null && switchActionLabel != null) {
             popupMenu.addSeparator();
             popupMenu.add(new AbstractAction(switchActionLabel) {
@@ -176,7 +183,7 @@ public final class AolDiagram extends DiagramView {
 
     @Override
     public void hideAll() {
-        throw new UnsupportedOperationException("AOL diagram does not support hiding all nodes.");
+        throw new UnsupportedOperationException("The state diagram does not support hiding all nodes.");
     }
 
     @Override

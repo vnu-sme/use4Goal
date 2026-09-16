@@ -154,6 +154,7 @@ final class AclKodkodSymbolicModel {
     }
 
     Formula exists(Frame frame, ObjectAtom object) {
+        if (object.kind() == Kind.AGENT) return Formula.TRUE;
         return object.singleton().in(frame.exists(object.concreteType()));
     }
 
@@ -242,13 +243,35 @@ final class AclKodkodSymbolicModel {
     }
 
     private void createObjectAtoms() {
+        addObjects("Agent", Kind.AGENT);
         acl.entities().forEach(value -> addObjects(value.name(), Kind.ENTITY));
         acl.roles().forEach(value -> addObjects(value.name(), Kind.ROLE));
         acl.groups().forEach(value -> addObjects(value.name(), Kind.GROUP));
     }
 
     private void addObjects(String type, Kind kind) {
-        int upper = boundary.objectScopes().get(type).upper();
+        var scope = boundary.objectScopes().get(type);
+        int upper;
+        if (scope != null) {
+            upper = scope.upper();
+        } else if (kind == Kind.AGENT) {
+            // Minimum agents = max(2, maxOrgCtxRoles, roles/2+1).
+            // The orgCtx separation constraint forbids any agent from playing two different
+            // roles in the same orgCtx instance, so we need at least as many agents as the
+            // maximum number of role members in any single orgCtx.
+            Set<String> roleNames = acl.roles().stream()
+                    .map(AclRole::name)
+                    .collect(java.util.stream.Collectors.toSet());
+            int maxOrgCtxRoles = acl.orgContexts().stream()
+                    .mapToInt(ctx -> (int) ctx.members().stream()
+                            .filter(m -> roleNames.contains(memberType(m)))
+                            .count())
+                    .max()
+                    .orElse(0);
+            upper = Math.max(2, Math.max(maxOrgCtxRoles, acl.roles().size() / 2 + 1));
+        } else {
+            upper = 2;
+        }
         List<ObjectAtom> typed = new ArrayList<>();
         for (int index = 1; index <= upper; index++) {
             String atom = "obj:" + type + ":" + index;
@@ -328,13 +351,16 @@ final class AclKodkodSymbolicModel {
         Frame frame = new Frame(index);
         frames.add(frame);
         for (var entry : objectsByConcreteType.entrySet()) {
+            if (entry.getValue().isEmpty() || entry.getValue().get(0).kind() == Kind.AGENT) continue;
             Relation relation = Relation.unary("exists_" + safe(entry.getKey()) + "_s" + index);
             frame.exists.put(entry.getKey(), relation);
             TupleSet upper = unary(entry.getValue().stream().map(ObjectAtom::atom).toList());
             bounds.bound(relation, upper);
             AclBpmnBoundary.Scope scope = boundary.objectScopes().get(entry.getKey());
-            addStructural(relation.count().gte(IntConstant.constant(scope.lower())));
-            addStructural(relation.count().lte(IntConstant.constant(scope.upper())));
+            if (scope != null) {
+                addStructural(relation.count().gte(IntConstant.constant(scope.lower())));
+                addStructural(relation.count().lte(IntConstant.constant(scope.upper())));
+            }
         }
 
         for (AttributeSlot slot : allAttributes()) {
@@ -363,14 +389,21 @@ final class AclKodkodSymbolicModel {
 
         frame.play = Relation.binary("sigma_Play_s" + index);
         TupleSet playUpper = factory.noneOf(2);
-        for (AclRole childType : acl.isRevisedCore() ? List.<AclRole>of() : acl.roles()) {
-            for (String parentType : childType.parentRoles()) {
-                playUpper.addAll(unaryAtoms(objectsByConcreteType.getOrDefault(parentType, List.of()))
-                        .product(unaryAtoms(objectsByConcreteType.getOrDefault(childType.name(), List.of()))));
+        List<ObjectAtom> agents = objectsByConcreteType.getOrDefault("Agent", List.of());
+        for (AclRole role : acl.roles()) {
+            List<ObjectAtom> roleObjects = objectsByConcreteType.getOrDefault(role.name(), List.of());
+            if (role.parentRoles().isEmpty()) {
+                playUpper.addAll(unaryAtoms(agents).product(unaryAtoms(roleObjects)));
+            } else {
+                for (String parentType : role.parentRoles()) {
+                    playUpper.addAll(unaryAtoms(objectsByConcreteType.getOrDefault(parentType, List.of()))
+                            .product(unaryAtoms(roleObjects)));
+                }
             }
         }
         bounds.bound(frame.play, playUpper);
         addPlayFormula(frame);
+        addOrgCtxAgentSeparationConstraint(frame);
         if (acl.isRevisedCore()) createContextMemberships(frame);
     }
 
@@ -441,25 +474,141 @@ final class AclKodkodSymbolicModel {
     }
 
     private void addPlayFormula(Frame frame) {
-        for (AclRole childType : acl.isRevisedCore() ? List.<AclRole>of() : acl.roles()) {
-            for (String parentType : childType.parentRoles()) {
-                for (ObjectAtom parent : objectsByConcreteType.getOrDefault(parentType, List.of())) {
-                    for (ObjectAtom child : objectsByConcreteType.getOrDefault(childType.name(), List.of())) {
-                        Formula linked = parent.singleton().product(child.singleton()).in(frame.play());
-                        addStructural(linked.implies(
-                                exists(frame, parent).and(exists(frame, child))));
+        for (AclRole childType : acl.roles()) {
+            List<ObjectAtom> childInstances = objectsByConcreteType
+                    .getOrDefault(childType.name(), List.of());
+            for (ObjectAtom child : childInstances) {
+                Formula childExists = exists(frame, child);
+                List<Formula> players = new ArrayList<>();
+                if (childType.parentRoles().isEmpty()) {
+                    for (ObjectAtom agent : objectsByConcreteType.getOrDefault("Agent", List.of())) {
+                        Formula linked = agent.singleton().product(child.singleton()).in(frame.play());
+                        addStructural(linked.implies(childExists));
+                        players.add(linked);
+                    }
+                } else {
+                    for (String parentType : childType.parentRoles()) {
+                        for (ObjectAtom parent : objectsByConcreteType.getOrDefault(parentType, List.of())) {
+                            Formula linked = parent.singleton().product(child.singleton()).in(frame.play());
+                            addStructural(linked.implies(exists(frame, parent).and(childExists)));
+                            players.add(linked);
+                        }
+                    }
+                }
+                if (!players.isEmpty()) {
+                    addStructural(childExists.implies(or(players)));
+                }
+            }
+        }
+    }
+
+    /**
+     * ACL default semantics: within the same orgCtx (group) instance, two distinct
+     * role-member instances must be played by different ultimate agents.
+     *
+     * <p>For each group type G with role members R1 and R2 (R1 ≠ R2), for each pair
+     * of instances (r1:R1, r2:R2) that belong to the same G instance, the sets of
+     * agents that <em>transitively</em> play r1 and r2 (via the play-closure) must
+     * be disjoint.</p>
+     *
+     * <p>This is less restrictive than same-type injectivity: an agent may play
+     * ProposalManager in Proposal_1 <em>and</em> Customer in Proposal_2, but not
+     * both roles within the <em>same</em> Proposal instance.</p>
+     */
+    private void addOrgCtxAgentSeparationConstraint(Frame frame) {
+        List<ObjectAtom> agentAtoms = objectsByConcreteType.getOrDefault("Agent", List.of());
+        if (agentAtoms.isEmpty()) return;
+
+        // Intermediate (top-level) role types: played directly by agents, can relay to sub-roles.
+        List<AclRole> topLevelRoles = acl.roles().stream()
+                .filter(r -> r.parentRoles().isEmpty())
+                .toList();
+
+        for (AclGroup ctx : acl.orgContexts()) {
+            List<?> members = ctx.members();
+            for (int i = 0; i < members.size(); i++) {
+                for (int j = i + 1; j < members.size(); j++) {
+                    String typeI = memberType(members.get(i));
+                    String typeJ = memberType(members.get(j));
+                    if (typeI.equals(typeJ)) continue;
+
+                    // Resolve the containment relation that links a ctx GROUP instance to
+                    // its role member instance.  There are three possible sources:
+                    //  1. frame.associations  – explicit ACL association (e.g. proposal_review_whole)
+                    //  2. frame.membership()  – revised-core membership relation
+                    //  3. null → fall back to Formula.TRUE (safe when there is only 1 ctx instance)
+                    Relation assocRI = frame.associations.get(ctx.name() + "_contains_" + typeI);
+                    if (assocRI == null) assocRI = frame.membership(ctx.name(), typeI);
+                    Relation assocRJ = frame.associations.get(ctx.name() + "_contains_" + typeJ);
+                    if (assocRJ == null) assocRJ = frame.membership(ctx.name(), typeJ);
+
+                    List<ObjectAtom> instancesI = objectsByConcreteType.getOrDefault(typeI, List.of());
+                    List<ObjectAtom> instancesJ = objectsByConcreteType.getOrDefault(typeJ, List.of());
+                    List<ObjectAtom> ctxInstances = objectsByConcreteType.getOrDefault(ctx.name(), List.of());
+
+                    for (ObjectAtom rI : instancesI) {
+                        for (ObjectAtom rJ : instancesJ) {
+                            // Determine whether rI and rJ belong to the same orgCtx instance.
+                            Formula sameCtx;
+                            if (assocRI != null && assocRJ != null) {
+                                // Both containment relations known → exact same-ctx test.
+                                Expression ctxOfRI = rI.singleton().join(assocRI.transpose());
+                                Expression ctxOfRJ = rJ.singleton().join(assocRJ.transpose());
+                                sameCtx = ctxOfRI.intersection(ctxOfRJ).some();
+                            } else if (ctxInstances.size() <= 1) {
+                                // No containment relation, but at most 1 orgCtx instance exists
+                                // → if both rI and rJ exist they are automatically in the same ctx.
+                                sameCtx = Formula.TRUE;
+                            } else {
+                                // Cannot determine same-ctx without the relation; skip conservatively.
+                                continue;
+                            }
+                            Formula bothExist = exists(frame, rI).and(exists(frame, rJ));
+
+                            // ACL default semantics: no single agent may play two different
+                            // roles within the same orgCtx instance — for each candidate agent,
+                            // forbid it from transitively playing both rI and rJ simultaneously.
+                            for (ObjectAtom a : agentAtoms) {
+                                Formula playsRI = agentTransitivelyPlays(frame, a, rI, topLevelRoles);
+                                Formula playsRJ = agentTransitivelyPlays(frame, a, rJ, topLevelRoles);
+                                addStructural(bothExist.and(sameCtx)
+                                        .implies(playsRI.and(playsRJ).not()));
+                            }
+                        }
                     }
                 }
             }
-            for (ObjectAtom child : objectsByConcreteType.getOrDefault(childType.name(), List.of())) {
-                Formula childExists = exists(frame, child);
-                for (String parentType : childType.parentRoles()) {
-                    Expression parents = frame.play().join(child.singleton())
-                            .intersection(typeExpression(frame, parentType));
-                    addStructural(childExists.implies(parents.one()));
-                    addStructural(childExists.not().implies(parents.no()));
-                }
+        }
+    }
+
+    /**
+     * Returns a formula that is TRUE when agent {@code a} transitively plays {@code role}
+     * in {@code frame} — either directly or via exactly one top-level intermediate role.
+     */
+    private Formula agentTransitivelyPlays(Frame frame, ObjectAtom a, ObjectAtom role,
+                                           List<AclRole> topLevelRoles) {
+        // Direct: (a, role) ∈ play
+        Formula direct = a.singleton().product(role.singleton()).in(frame.play());
+        // Via one intermediate: ∃ pp (top-level) such that (a, pp) ∈ play AND (pp, role) ∈ play
+        Formula indirect = Formula.FALSE;
+        for (AclRole topType : topLevelRoles) {
+            for (ObjectAtom pp : objectsByConcreteType.getOrDefault(topType.name(), List.of())) {
+                Formula agentPlaysPP  = a.singleton().product(pp.singleton()).in(frame.play());
+                Formula ppPlaysRole   = pp.singleton().product(role.singleton()).in(frame.play());
+                indirect = indirect.or(agentPlaysPP.and(ppPlaysRole));
             }
+        }
+        return direct.or(indirect);
+    }
+
+    /** Extract the role-type name from a group-member declaration (erased generic). */
+    @SuppressWarnings("unchecked")
+    private static String memberType(Object declaration) {
+        // GroupMemberDeclaration is a record/class with a .type() accessor.
+        try {
+            return (String) declaration.getClass().getMethod("type").invoke(declaration);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Cannot read member type from " + declaration, e);
         }
     }
 
@@ -884,7 +1033,7 @@ final class AclKodkodSymbolicModel {
 
     private List<ObjectAtom> attributeDomain(AttributeSlot slot) {
         Kind ownerKind = kind(slot.ownerType());
-        if (ownerKind == Kind.ROLE && !acl.isRevisedCore()) return objectsByConcreteType.getOrDefault(slot.ownerType(), List.of());
+        if (ownerKind == Kind.ROLE) return objectsByConcreteType.getOrDefault(slot.ownerType(), List.of());
         return objectsForType(slot.ownerType());
     }
 
@@ -904,7 +1053,7 @@ final class AclKodkodSymbolicModel {
         if (acl.findEntity(type).isPresent()) return Kind.ENTITY;
         if (acl.findRole(type).isPresent()) return Kind.ROLE;
         if (acl.findGroup(type).isPresent()) return Kind.GROUP;
-        throw new IllegalArgumentException("unknown ACL classifier " + type);
+        throw new IllegalArgumentException("unknown CSL classifier " + type);
     }
 
     private boolean conforms(ObjectAtom object, String expected) {
@@ -953,16 +1102,19 @@ final class AclKodkodSymbolicModel {
     }
 
     private String decodeFrame(Instance instance, Frame frame) {
-        String aclFileName = acl.name() != null && !acl.name().isBlank() ? acl.name() + ".acl" : "model.acl";
+        String aclFileName = acl.name() != null && !acl.name().isBlank() ? acl.name() + ".csl" : "model.csl";
         StringBuilder result = new StringBuilder("aol v2.0 State_")
                 .append(frame.index())
                 .append(" for \"").append(aclFileName).append("\" {\n");
 
-        List<ObjectAtom> present = objects.stream().filter(object -> contains(instance, frame.exists(object.concreteType()),
-                object.atom())).toList();
+        List<ObjectAtom> present = objects.stream().filter(object -> objectIsPresent(instance, frame, object)).toList();
 
         TupleSet plays = instance.tuples(frame.play());
         for (ObjectAtom object : present) {
+            if (object.kind() == Kind.AGENT) {
+                result.append("  agent ").append(object.id()).append(";\n");
+                continue;
+            }
             List<String> values = getAttributeValues(instance, frame, object);
             result.append("  ").append(object.kind().name().toLowerCase())
                     .append(' ').append(object.concreteType()).append(" as ").append(object.id());
@@ -1002,7 +1154,9 @@ final class AclKodkodSymbolicModel {
             for (Tuple tuple : plays) {
                 ObjectAtom source = objectByAtom.get(String.valueOf(tuple.atom(0)));
                 ObjectAtom target = objectByAtom.get(String.valueOf(tuple.atom(1)));
-                if (source != null && target != null && (source.kind() == Kind.ROLE || source.kind() == Kind.AGENT) && target.kind() == Kind.ROLE) {
+                if (source != null && target != null
+                        && objectIsPresent(instance, frame, source)
+                        && objectIsPresent(instance, frame, target)) {
                     result.append("  play ").append(source.id()).append(" -> ").append(target.id()).append(";\n");
                 }
             }
@@ -1012,13 +1166,20 @@ final class AclKodkodSymbolicModel {
         return result.toString();
     }
 
+    private boolean objectIsPresent(Instance instance, Frame frame, ObjectAtom object) {
+        if (object == null) return false;
+        if (object.kind() == Kind.AGENT) return true;
+        Relation relation = frame.exists(object.concreteType());
+        return relation != null && contains(instance, relation, object.atom());
+    }
+
     private List<String> getAttributeValues(Instance instance, Frame frame, ObjectAtom object) {
         List<String> values = new ArrayList<>();
         for (var entry : frame.attributes.entrySet()) {
             if (!attributeDomain(entry.getKey()).contains(object)) continue;
             ScalarAtom scalar = selectedScalar(instance, entry.getValue(), object);
             if (scalar != null) {
-                values.add(entry.getKey().attribute().name() + " = " + display(scalar));
+                values.add(entry.getKey().attribute().name() + "=" + display(scalar));
             }
         }
         return values;
@@ -1086,7 +1247,7 @@ final class AclKodkodSymbolicModel {
     }
 
     private static IllegalArgumentException unsupported(String message) {
-        return new IllegalArgumentException("Unsupported symbolic ACL/OCL: " + message);
+        return new IllegalArgumentException("Unsupported symbolic CSL/OCL: " + message);
     }
 
     private static String safe(String value) { return value.replaceAll("[^A-Za-z0-9_]", "_"); }

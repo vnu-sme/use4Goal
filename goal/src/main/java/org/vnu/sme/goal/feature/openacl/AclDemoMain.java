@@ -11,7 +11,7 @@ public final class AclDemoMain {
 
     public static void main(String[] args) throws Exception {
         if (args.length != 1) {
-            System.err.println("usage: AclDemoMain input.acl");
+            System.err.println("usage: AclDemoMain input.csl");
             System.exit(2);
         }
         AclCompiler.Result result = AclCompiler.compile(Path.of(args[0]));

@@ -1,0 +1,22 @@
+csl-bpmn-boundary v1.0 SalesForecastBound {
+  snapshots 45;
+  loop-bound 1;
+  integer 0..1;
+  objects SalesForecastCase 1;
+  objects BusinessVP 1;
+  objects CreditControl 1;
+  objects CustomerManager 1;
+  objects DepartmentManager 1;
+  objects FinancialControl 1;
+  objects PresaleEngineer 1;
+  objects SectorManager 1;
+  objects ServiceAgreements 1;
+  links SalesForecastCase_contains_BusinessVP 1;
+  links SalesForecastCase_contains_CreditControl 1;
+  links SalesForecastCase_contains_CustomerManager 1;
+  links SalesForecastCase_contains_DepartmentManager 1;
+  links SalesForecastCase_contains_FinancialControl 1;
+  links SalesForecastCase_contains_PresaleEngineer 1;
+  links SalesForecastCase_contains_SectorManager 1;
+  links SalesForecastCase_contains_ServiceAgreements 1;
+}

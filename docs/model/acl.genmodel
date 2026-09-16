@@ -12,10 +12,10 @@
       <genEnumLiterals ecoreEnumLiteral="acl.ecore#//AssociationRelKind/AGGREGATION"/>
       <genEnumLiterals ecoreEnumLiteral="acl.ecore#//AssociationRelKind/COMPOSITION"/>
     </genEnums>
-    <genClasses ecoreClass="acl.ecore#//AclModel">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//AclModel/name"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//AclModel/objects"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//AclModel/dataTypes"/>
+    <genClasses ecoreClass="acl.ecore#//CslModel">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//CslModel/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//CslModel/objects"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference acl.ecore#//CslModel/dataTypes"/>
     </genClasses>
     <genClasses image="false" ecoreClass="acl.ecore#//Object">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute acl.ecore#//Object/name"/>

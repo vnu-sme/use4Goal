@@ -1,172 +1,122 @@
-// Focused prescribed approval route reconstructed from the validated Sales
-// Forecast BPMN in the 2026 online appendix.  The observed workaround is NOT
-// a branch of this process; see sales_forecast_workaround.bpmn2.
+// Executable abstraction of Process 1: Sales Forecast.
 model SalesForecastProcess {
-  pool ProposalApproval for SalesCase {
-    name "Price proposal approval and response"
+  pool SalesForecastHandling for SalesCase {
+    name "Sales Forecast Management"
     lane CustomerManager;
     lane Approver;
   }
 
-  start proposalReceived {
+  start salesCaseStarted {
     lane CustomerManager
     trigger none
     pre {[
-      not self.proposalPrepared
-      and not self.proposalSent
+      not self.proposal.created
+      and not self.proposal.sent
     ]}
     flow prepareProposal
   }
 
   activity prepareProposal {
-    name "Prepare price proposal"
+    name "Preparing sales proposal"
     type task
     lane CustomerManager
     post {[
-      self.proposalPrepared
-      and self.approvalStatus = #draft
+      self.proposal.created
     ]}
-    flow submitForApproval
+    flow requestApproval
   }
 
-  activity submitForApproval {
-    name "Submit proposal for approval"
+  activity requestApproval {
+    name "Requesting proposal approval"
     type task
     lane CustomerManager
     pre {[
-      self.proposalPrepared
-      and self.approvalStatus = #draft
+      self.proposal.created
     ]}
     post {[
-      self.approvalRequested
-      and self.approvalStatus = #requested
+      self.proposal.approvalRequested
     ]}
-    flow reviewTiming
+    flow reviewDecision
   }
 
-  gateway reviewTiming {
+  gateway reviewDecision {
     lane Approver
     type xor
-    pre {[
-      self.approvalRequested
-      and self.approvalStatus = #requested
+    flow reviewProposal post {[
+      self.proposal.reviewCompleted
     ]}
-    flow reviewProposalLate when {[
-      self.approvalDelayed
+    flow directSendWorkaround post {[
+      not self.proposal.reviewCompleted
+      and not self.proposal.approved
     ]}
-    flow reviewProposalOnTime default
   }
 
-  activity reviewProposalOnTime {
-    name "Review price proposal within response window"
+  activity reviewProposal {
+    name "Reviewing proposal and assessing profitability"
     type task
     lane Approver
     pre {[
-      self.approvalRequested
-      and self.approvalStatus = #requested
+      self.proposal.approvalRequested
     ]}
     post {[
-      self.reviewCompleted
-      and self.approvalStatus = #reviewed
-      and self.responseWindowOpen
+      self.proposal.reviewCompleted
+      and self.proposal.approved
     ]}
-    flow approvalDecision
+    flow responseWindowCheck
   }
 
-  activity reviewProposalLate {
-    name "Review price proposal after response window expires"
+  activity directSendWorkaround {
+    name "Bypassing formal approval workaround"
     type task
-    lane Approver
-    pre {[
-      self.approvalRequested
-      and self.approvalStatus = #requested
-    ]}
+    lane CustomerManager
     post {[
-      self.reviewCompleted
-      and self.approvalStatus = #reviewed
-      and not self.responseWindowOpen
+      self.proposal.sent
     ]}
-    flow approvalDecision
+    flow forecastCompleted
   }
 
-  gateway approvalDecision {
-    lane Approver
+  gateway responseWindowCheck {
+    lane CustomerManager
     type xor
-    pre {[
-      self.reviewCompleted
+    flow sendOnTime post {[
+      self.proposal.sentWithinWindow
+      and self.proposal.responseWindowOpen
     ]}
-    flow approveProposal when {[
-      self.approvalAccepted
+    flow sendDelayed post {[
+      not self.proposal.sentWithinWindow
+      and not self.proposal.responseWindowOpen
     ]}
-    flow rejectProposal default
   }
 
-  activity approveProposal {
-    name "Approve price proposal"
-    type task
-    lane Approver
-    pre {[
-      self.reviewCompleted
-      and self.approvalAccepted
-    ]}
-    post {[
-      self.approvalStatus = #approved
-      and self.approvedRevision = self.currentRevision
-    ]}
-    flow sendApprovedProposal
-  }
-
-  activity rejectProposal {
-    name "Reject price proposal"
-    type task
-    lane Approver
-    pre {[
-      self.reviewCompleted
-      and not self.approvalAccepted
-    ]}
-    post {[
-      self.approvalStatus = #rejected
-    ]}
-    flow reviseProposal
-  }
-
-  activity reviseProposal {
-    name "Revise rejected proposal"
+  activity sendOnTime {
+    name "Sending proposal to customer on time"
     type task
     lane CustomerManager
     pre {[
-      self.approvalStatus = #rejected
+      self.proposal.approved
     ]}
     post {[
-      self.currentRevision = #r2
-      and not self.approvalRequested
-      and not self.reviewCompleted
-      and self.approvalAccepted
-      and self.approvalStatus = #draft
+      self.proposal.sent
+      and self.proposal.sentWithinWindow
     ]}
-    flow submitForApproval
+    flow forecastCompleted
   }
 
-  activity sendApprovedProposal {
-    name "Send approved proposal to customer"
+  activity sendDelayed {
+    name "Sending proposal after response window expired"
     type task
     lane CustomerManager
     pre {[
-      self.approvalStatus = #approved
-      and self.approvedRevision = self.currentRevision
+      self.proposal.approved
     ]}
     post {[
-      self.proposalSent
-      and self.sentRevision = self.currentRevision
-      and self.approvalStatus = #approved
-      and self.approvedRevision = self.currentRevision
-      and self.sentWithinWindow = self.responseWindowOpen
-      and self.processCompleted
+      self.proposal.sent
+      and not self.proposal.sentWithinWindow
     ]}
-    flow proposalHandled
+    flow forecastCompleted
   }
 
-  end proposalHandled {
+  end forecastCompleted {
     lane CustomerManager
     trigger none
   }

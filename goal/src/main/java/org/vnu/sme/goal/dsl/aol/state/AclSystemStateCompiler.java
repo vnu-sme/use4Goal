@@ -78,8 +78,8 @@ public final class AclSystemStateCompiler {
         AolModelCS ast = new AOLBuildingVisitor().visitModel(tree);
         Path referencedAclFile = source.getParent().resolve(ast.aclFile()).normalize();
         if (validateAclReference && !sameFile(expectedAclFile, referencedAclFile)) {
-            return new Result(referencedAclFile, null, List.of("AOL references '" + referencedAclFile
-                    + "', expected ACL specification '" + expectedAclFile + "'"));
+            return new Result(referencedAclFile, null, List.of("State snapshot references '" + referencedAclFile
+                    + "', expected CSL specification '" + expectedAclFile + "'"));
         }
         Path aclFile = validateAclReference ? referencedAclFile : expectedAclFile.toAbsolutePath().normalize();
         return new Builder(source, aclFile, ast, model).build();
@@ -104,14 +104,14 @@ public final class AclSystemStateCompiler {
 
         Result build() {
             if (!ast.version().equals("v2.0")) {
-                fatal(ast.location(), "AOL formal system states require version v2.0");
+                fatal(ast.location(), "Formal state snapshots require version v2.0");
             }
             for (var agent : ast.agents()) {
                 addObject(agent.name(), "Agent", Kind.AGENT, Map.of(), agent.location());
             }
             for (var group : ast.groupInstances()) {
                 if (!group.subgroups().isEmpty() || !group.plays().isEmpty() || !group.entities().isEmpty()) {
-                    fatal(group.location(), "AOL v2 Group blocks contain attributes only; represent containment"
+                    fatal(group.location(), "State snapshot Group blocks contain attributes only; represent containment"
                             + " with an explicit composition link");
                 }
                 var type = model.findGroup(group.typeName());
@@ -363,16 +363,8 @@ public final class AclSystemStateCompiler {
         }
 
         private List<AclAttribute> attributesForRole(String type) {
-            Map<String, AclAttribute> result = new LinkedHashMap<>();
-            List<String> pending = new ArrayList<>(List.of(type));
-            Set<String> seen = new LinkedHashSet<>();
-            for (int i = 0; i < pending.size(); i++) {
-                var role = model.findRole(pending.get(i)).orElse(null);
-                if (role == null || !seen.add(role.name())) continue;
-                role.attributes().forEach(attribute -> result.putIfAbsent(attribute.name(), attribute));
-                pending.addAll(role.parentRoles());
-            }
-            return List.copyOf(result.values());
+            var role = model.findRole(type).orElse(null);
+            return role == null ? List.of() : List.copyOf(role.attributes());
         }
 
         private boolean conforms(ObjectValue object, String expected) {

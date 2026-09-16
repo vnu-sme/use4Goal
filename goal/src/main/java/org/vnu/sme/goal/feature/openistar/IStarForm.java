@@ -25,6 +25,7 @@ import org.tzi.use.main.Session;
 import org.vnu.sme.goal.dsl.istar.mm.GoalModel;
 import org.vnu.sme.goal.dsl.istar.parser.IStarCompiler;
 import org.vnu.sme.goal.dsl.istar.view.IStarView;
+import org.vnu.sme.goal.gui.OfficialExamples;
 
 @SuppressWarnings("serial")
 public final class IStarForm extends JDialog {
@@ -41,7 +42,7 @@ public final class IStarForm extends JDialog {
     private JButton openMenuButton;
 
     public IStarForm(Session session, MainWindow mainWindow) {
-        super(mainWindow, "Open iStar", false);
+        super(mainWindow, "Goal View Model", false);
         this.session = session;
         this.mainWindow = mainWindow;
         buildUI();
@@ -98,7 +99,7 @@ public final class IStarForm extends JDialog {
     }
 
     private void chooseFile() {
-        JFileChooser fc = new JFileChooser();
+        JFileChooser fc = OfficialExamples.chooser(pathField.getText().trim());
         fc.setFileFilter(new FileNameExtensionFilter("iStar files (*.istar)", "istar"));
         String cur = pathField.getText().trim();
         if (!cur.isEmpty()) {

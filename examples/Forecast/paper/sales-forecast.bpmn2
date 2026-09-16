@@ -1,0 +1,345 @@
+// Source-preserving control flow with explicit bounded state annotations.
+model SalesForecastProcess {
+  pool SalesForecastHandling for SalesForecastCase {
+    name "SalesForecast"
+    lane BusinessVP;
+    lane CreditControl;
+    lane CustomerManager;
+    lane DepartmentManager;
+    lane FinancialControl;
+    lane PresaleEngineer;
+    lane SectorManager;
+    lane ServiceAgreements;
+  }
+  start Start_1 {
+    name "Deal opportunity"
+    lane CustomerManager
+    trigger none
+    pre {[ not self.technicalReady and not self.profitabilityChecked and not self.creditChecked and not self.ordered ]}
+    flow Gw_newcust
+  }
+  gateway Gw_newcust {
+    name "New customer?"
+    lane CustomerManager
+    type xor
+    flow Act_updcust label "No"
+    flow Act_ticket label "Yes"
+  }
+  activity Act_updcust {
+    name "Updating customer details"
+    type task
+    lane CustomerManager
+    flow Gw_cust_m
+  }
+  activity Act_ticket {
+    name "Creating Customer Ticket"
+    type task
+    lane CustomerManager
+    flow Gw_cust_m
+  }
+  gateway Gw_cust_m {
+    name "Gw_cust_m"
+    lane CustomerManager
+    type xor
+    flow Act_insertdeal
+  }
+  activity Act_insertdeal {
+    name "Inserting and updating deal details"
+    type task
+    lane CustomerManager
+    flow Gw_presale
+  }
+  gateway Gw_presale {
+    name "Required Presale Engineer?"
+    lane CustomerManager
+    type xor
+    flow Act_ps_bom label "Yes"
+    flow Gw_vendorbom label "No"
+  }
+  gateway Gw_vendorbom {
+    name "There is vendor BOM?"
+    lane CustomerManager
+    type xor
+    flow Act_bommanual label "No"
+    flow Act_bomupdate label "Yes"
+  }
+  activity Act_bomupdate {
+    name "Updating BOM and HLD"
+    type task
+    lane CustomerManager
+    post {[ self.technicalReady ]}
+    flow Gw_bom_m
+  }
+  activity Act_bommanual {
+    name "Creating a BOM manually"
+    type task
+    lane CustomerManager
+    post {[ self.technicalReady ]}
+    flow Gw_bom_m
+  }
+  gateway Gw_bom_m {
+    name "Gw_bom_m"
+    lane CustomerManager
+    type xor
+    flow Gw_missingpn
+  }
+  gateway Gw_missingpn {
+    name "Missing PN?"
+    lane CustomerManager
+    type xor
+    flow Act_pnsprice label "No"
+    flow Act_creatingpns label "Yes"
+  }
+  activity Act_pnsprice {
+    name "Updating PNs Price"
+    type task
+    lane CustomerManager
+    flow Act_svcpct
+  }
+  activity Act_creatingpns {
+    name "Creating PNs"
+    type task
+    lane CustomerManager
+    flow Act_pnsprice
+  }
+  activity Act_svcpct {
+    name "Updating percentages for service contract"
+    type task
+    lane CustomerManager
+    flow Gw_svcfee
+  }
+  gateway Gw_svcfee {
+    name "Service fee"
+    lane CustomerManager
+    type xor
+    flow Act_sa_pending label "> 7%"
+    flow Gw_svc_m label "< 7%"
+  }
+  gateway Gw_svc_m {
+    name "Gw_svc_m"
+    lane CustomerManager
+    type xor
+    flow Act_updprofit
+  }
+  activity Act_ps_bom {
+    name "Creating BOM"
+    type task
+    lane PresaleEngineer
+    flow Act_ps_hld
+  }
+  activity Act_ps_hld {
+    name "Writing HLD Document"
+    type task
+    lane PresaleEngineer
+    post {[ self.technicalReady ]}
+    flow Act_ps_send
+  }
+  activity Act_ps_send {
+    name "Sending HLD to Customer Manager"
+    type task
+    lane PresaleEngineer
+    flow End_ps
+  }
+  end End_ps {
+    name "HLD sent"
+    lane PresaleEngineer
+    trigger none
+  }
+  activity Act_sa_pending {
+    name "Pending approval"
+    type task
+    lane ServiceAgreements
+    flow Act_sa_review
+  }
+  activity Act_sa_review {
+    name "Contract review and approval"
+    type task
+    lane ServiceAgreements
+    flow Gw_sa_appr
+  }
+  gateway Gw_sa_appr {
+    name "Approved?"
+    lane ServiceAgreements
+    type xor
+    flow Act_svcpct label "No"
+    flow Gw_svc_m label "Yes"
+  }
+  activity Act_updprofit {
+    name "Updating deal profitability and closure percentages"
+    type task
+    lane CustomerManager
+    post {[ self.profitabilityChecked ]}
+    flow Gw_profit
+  }
+  gateway Gw_loop_m {
+    name "Gw_loop_m"
+    lane CustomerManager
+    type or
+    flow Act_updprofit
+  }
+  gateway Gw_profit {
+    name "Profitability"
+    lane CustomerManager
+    type xor
+    flow Gw_appr_m label "> 12%"
+    flow Act_dm_pending label "< 12%"
+  }
+  activity Act_dm_pending {
+    name "Pending approval"
+    type task
+    lane DepartmentManager
+    flow Act_dm_exam
+  }
+  activity Act_dm_exam {
+    name "Profitability examination"
+    type task
+    lane DepartmentManager
+    flow Gw_dm_appr
+  }
+  gateway Gw_dm_appr {
+    name "Approved?"
+    lane DepartmentManager
+    type xor
+    flow Gw_loop_m label "No"
+    flow Gw_kit_m label "> 10% Profitability"
+    flow Act_sm_pending label "< 10% Profitability"
+  }
+  activity Act_sm_pending {
+    name "Pending approval"
+    type task
+    lane SectorManager
+    flow Act_sm_exam
+  }
+  activity Act_sm_exam {
+    name "Profitability examination"
+    type task
+    lane SectorManager
+    flow Gw_sm_lvl
+  }
+  gateway Gw_sm_lvl {
+    name "Approved?"
+    lane SectorManager
+    type xor
+    flow Gw_loop_m label "No"
+    flow Act_vp_pending label "< 5% Profitability"
+    flow Gw_kit_m label "> 5% Profitability"
+  }
+  activity Act_vp_pending {
+    name "Pending approval"
+    type task
+    lane BusinessVP
+    flow Act_vp_exam
+  }
+  activity Act_vp_exam {
+    name "Profitability examination"
+    type task
+    lane BusinessVP
+    flow Gw_vp_appr
+  }
+  gateway Gw_vp_appr {
+    name "Approved?"
+    lane BusinessVP
+    type xor
+    flow Gw_loop_m label "No"
+    flow Gw_kit_m label "Yes"
+  }
+  gateway Gw_kit_m {
+    name "Gw_kit_m"
+    lane CustomerManager
+    type xor
+    flow Gw_appr_m
+  }
+  gateway Gw_appr_m {
+    name "Gw_appr_m"
+    lane CustomerManager
+    type xor
+    flow Gw_250k
+  }
+  gateway Gw_250k {
+    name ">250,000 NIS?"
+    lane CustomerManager
+    type xor
+    flow Gateway_0rt5rll label "No"
+    flow Act_fc_pending
+  }
+  activity Act_dealapproved {
+    name "Deal approved"
+    type task
+    lane CustomerManager
+    flow Act_kitcomplete
+  }
+  activity Act_kitcomplete {
+    name "Completion of kit components"
+    type task
+    lane CustomerManager
+    flow Act_transfer
+  }
+  activity Act_transfer {
+    name "Transferring to order operator"
+    type task
+    lane CustomerManager
+    flow Act_createpo
+  }
+  activity Act_createpo {
+    name "Creating PO in CRM System"
+    type task
+    lane CustomerManager
+    post {[ self.ordered ]}
+    flow End_done
+  }
+  end End_done {
+    name "PO created"
+    lane CustomerManager
+    trigger none
+  }
+  activity Act_fc_pending {
+    name "Pending approval"
+    type task
+    lane FinancialControl
+    flow Act_fc_exam
+  }
+  activity Act_fc_exam {
+    name "Deal financial examination"
+    type task
+    lane FinancialControl
+    flow Gw_fc_appr
+  }
+  gateway Gw_fc_appr {
+    name "Approved?"
+    lane FinancialControl
+    type xor
+    flow Act_insertdeal label "No"
+    flow Gateway_0rt5rll label "Yes"
+  }
+  activity Act_cc_pending {
+    name "Pending approval"
+    type task
+    lane CreditControl
+    flow Act_cc_exam
+  }
+  activity Act_cc_exam {
+    name "Deal credit examination"
+    type task
+    lane CreditControl
+    post {[ self.creditChecked ]}
+    flow Gw_cc_appr
+  }
+  gateway Gw_cc_appr {
+    name "Approved?"
+    lane CreditControl
+    type xor
+    flow Act_dealapproved label "Yes"
+    flow End_reject label "No"
+  }
+  end End_reject {
+    name "Deal rejected"
+    lane CreditControl
+    trigger none
+  }
+  gateway Gateway_0rt5rll {
+    name "Gateway_0rt5rll"
+    lane CustomerManager
+    type xor
+    flow Act_cc_pending
+  }
+}

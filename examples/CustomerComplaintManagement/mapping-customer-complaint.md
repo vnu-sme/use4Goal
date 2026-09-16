@@ -90,7 +90,7 @@ Theo lựa chọn của bạn: OCL được nhúng dạng text tham khảo, khô
 
 ## ACL redesign (structural pass)
 
-`customer-complaint.acl` was reworked into a structural model:
+`customer-complaint.csl` was reworked into a structural model:
 
 - **Seven participants as first-class `role`s with state**; the two
   refund-approval levels are a specialization hierarchy

@@ -1,0 +1,603 @@
+// Source-preserving control flow with explicit bounded state annotations.
+model StudentRegistrationProcess {
+  pool StudentRegistrationHandling for StudentRegistrationCase {
+    name "StudentRegistration"
+    lane AcademicAdvisor;
+    lane AcademicCenter;
+    lane AcademicVP;
+    lane CRMHead;
+    lane InformationCenter;
+    lane RegistrationCoordinator;
+    lane TuitionDepartment;
+  }
+  start caseStarted {
+    name "Candidate contact"
+    lane InformationCenter
+    trigger none
+    pre {[ not self.termsChecked and not self.kitComplete and not self.accepted and not self.kitApproved and not self.enrolled and not self.paid and not self.curriculum ]}
+    flow contact
+  }
+  activity contact {
+    name "Contact a candidate"
+    type task
+    lane InformationCenter
+    flow createTicket
+  }
+  activity createTicket {
+    name "Create a candidate ticket"
+    type task
+    lane InformationCenter
+    flow checkTerms
+  }
+  activity checkTerms {
+    name "Checking acceptance terms"
+    type task
+    lane InformationCenter
+    post {[ self.termsChecked ]}
+    flow threshold
+  }
+  gateway threshold {
+    name "Meets threshold conditions?"
+    lane InformationCenter
+    type xor
+    flow further label "Yes"
+    flow rejectTicket label "No"
+  }
+  activity rejectTicket {
+    name "Update candidate ticket - threshold rejection"
+    type task
+    lane InformationCenter
+    flow endThreshold
+  }
+  end endThreshold {
+    name "Candidate does not meet threshold"
+    lane InformationCenter
+    trigger none
+  }
+  gateway further {
+    name "Requires further examination?"
+    lane InformationCenter
+    type xor
+    flow clarifyTerms label "Yes"
+    flow updateTicket label "No"
+  }
+  activity clarifyTerms {
+    name "Clarification of acceptance terms"
+    type task
+    lane InformationCenter
+    flow pendingClarification
+  }
+  activity pendingClarification {
+    name "Pending activity update"
+    type task
+    lane InformationCenter
+    flow headPending
+  }
+  activity headPending {
+    name "Activity should be handled"
+    type task
+    lane CRMHead
+    flow exceptionalCandidate
+  }
+  activity exceptionalCandidate {
+    name "Checking exceptional candidate"
+    type task
+    lane CRMHead
+    flow updateHeadTicket
+  }
+  activity updateHeadTicket {
+    name "Update candidate ticket"
+    type task
+    lane CRMHead
+    flow updateTermsFile
+  }
+  activity updateTermsFile {
+    name "Update acceptance terms file"
+    type task
+    lane InformationCenter
+    flow suitable
+  }
+  gateway suitable {
+    name "Found suitable?"
+    lane InformationCenter
+    type xor
+    flow updateTicket label "Yes"
+    flow rejectStatus label "No"
+  }
+  activity rejectStatus {
+    name "Change status to rejected"
+    type task
+    lane InformationCenter
+    flow endRejected
+  }
+  end endRejected {
+    name "Candidate rejected after examination"
+    lane InformationCenter
+    trigger none
+  }
+  activity updateTicket {
+    name "Update candidate ticket"
+    type task
+    lane InformationCenter
+    flow pendingUpdate
+  }
+  activity pendingUpdate {
+    name "Pending activity update"
+    type task
+    lane InformationCenter
+    flow feeFork
+  }
+  gateway feeFork {
+    name "Registration and fee update routing"
+    lane InformationCenter
+    type xor
+    flow openMerge
+    flow feeMerge
+  }
+  gateway openMerge {
+    name "Registration ticket merge"
+    lane RegistrationCoordinator
+    type xor
+    flow openKit
+  }
+  activity openKit {
+    name "A ticket must be opened"
+    type task
+    lane RegistrationCoordinator
+    flow feeCheckMerge
+  }
+  event feeTimer {
+    name "Every two days"
+    lane RegistrationCoordinator
+    trigger timer
+    direction catching
+    flow feeReport
+  }
+  activity feeReport {
+    name "Generate registration fee payment report"
+    type task
+    lane RegistrationCoordinator
+    flow feeCheckMerge
+  }
+  gateway feeCheckMerge {
+    name "Fee examination merge"
+    lane RegistrationCoordinator
+    type xor
+    flow feePaid
+  }
+  gateway feePaid {
+    name "Registration fee paid?"
+    lane RegistrationCoordinator
+    type xor
+    flow createStudent label "Yes"
+    flow feeWait label "No"
+  }
+  gateway feeWait {
+    name "Waiting for registration fee"
+    lane RegistrationCoordinator
+    type xor
+    flow feeTimer
+    flow feeMerge
+  }
+  gateway feeMerge {
+    name "Registration fee update merge"
+    lane TuitionDepartment
+    type xor
+    flow updateFee
+  }
+  activity updateFee {
+    name "Update registration fee"
+    type task
+    lane TuitionDepartment
+    flow endFee
+  }
+  end endFee {
+    name "Registration fee updated"
+    lane TuitionDepartment
+    trigger none
+  }
+  activity createStudent {
+    name "Creating a student ticket"
+    type task
+    lane RegistrationCoordinator
+    flow completeKit
+  }
+  activity completeKit {
+    name "Registration kit completion"
+    type task
+    lane RegistrationCoordinator
+    post {[ self.kitComplete ]}
+    flow updateStudent
+  }
+  activity updateStudent {
+    name "Updating a student ticket"
+    type task
+    lane RegistrationCoordinator
+    flow facultyRoute
+  }
+  gateway facultyRoute {
+    name "Faculty transfer route"
+    lane RegistrationCoordinator
+    type xor
+    flow transferFaculty
+    flow transferException
+  }
+  activity transferFaculty {
+    name "Update status - transferred to faculty"
+    type task
+    lane RegistrationCoordinator
+    flow facultyMerge
+  }
+  activity transferException {
+    name "Update status - transferred as an exception"
+    type task
+    lane RegistrationCoordinator
+    flow facultyMerge
+  }
+  gateway facultyMerge {
+    name "Faculty transfer merge"
+    lane RegistrationCoordinator
+    type xor
+    flow updateFaculty
+  }
+  activity updateFaculty {
+    name "Relevant faculty update"
+    type task
+    lane RegistrationCoordinator
+    flow advisorMerge
+  }
+  gateway advisorMerge {
+    name "Candidate examination merge"
+    lane AcademicAdvisor
+    type xor
+    flow candidateWaiting
+  }
+  activity candidateWaiting {
+    name "A new candidate is waiting"
+    type task
+    lane AcademicAdvisor
+    flow examMerge
+  }
+  gateway examMerge {
+    name "Examination and report routing"
+    lane AcademicAdvisor
+    type xor
+    flow examineKit
+    flow weeklyTimer
+  }
+  event weeklyTimer {
+    name "Every week"
+    lane AcademicAdvisor
+    trigger timer
+    direction catching
+    flow candidateReport
+  }
+  activity candidateReport {
+    name "Generate candidates report"
+    type task
+    lane AcademicAdvisor
+    flow examineKit
+  }
+  activity examineKit {
+    name "Candidate ticket examination and update"
+    type task
+    lane AcademicAdvisor
+    flow exceptional
+  }
+  gateway exceptional {
+    name "Exceptional candidate?"
+    lane AcademicAdvisor
+    type xor
+    flow updateExceptional label "Yes"
+    flow acceptanceTest label "No"
+  }
+  activity updateExceptional {
+    name "Update exceptional candidates list"
+    type task
+    lane AcademicAdvisor
+    flow exceptionTimer
+  }
+  event exceptionTimer {
+    name "Month before start of academic year"
+    lane AcademicAdvisor
+    trigger timer
+    direction catching
+    flow examineKit
+  }
+  gateway acceptanceTest {
+    name "Requires acceptance test?"
+    lane AcademicAdvisor
+    type xor
+    flow coordinateTest label "Yes"
+    flow coordinateInterview label "No"
+  }
+  activity coordinateTest {
+    name "Coordinating internal or external test"
+    type task
+    lane AcademicAdvisor
+    flow passedTest
+  }
+  gateway passedTest {
+    name "Passed the test?"
+    lane AcademicAdvisor
+    type xor
+    flow conductInterview label "Yes"
+    flow accepted label "No"
+  }
+  activity coordinateInterview {
+    name "Coordinating interview"
+    type task
+    lane AcademicAdvisor
+    flow conductInterview
+  }
+  activity conductInterview {
+    name "Conducting interview"
+    type task
+    lane AcademicAdvisor
+    flow accepted
+  }
+  gateway accepted {
+    name "Candidate accepted?"
+    lane AcademicAdvisor
+    type xor
+    flow transferCenter label "Yes"
+    flow rejectAdvisorTicket label "No"
+  }
+  activity rejectAdvisorTicket {
+    name "Update ticket and change to rejected"
+    type task
+    lane AcademicAdvisor
+    flow rejectedMerge
+  }
+  gateway rejectedMerge {
+    name "Rejected candidate reporting"
+    lane RegistrationCoordinator
+    type xor
+    flow registrationReport
+    flow rejectedTimer
+  }
+  event rejectedTimer {
+    name "Every week"
+    lane RegistrationCoordinator
+    trigger timer
+    direction catching
+    flow rejectedStatistics
+  }
+  activity rejectedStatistics {
+    name "Rejected candidate statistics"
+    type task
+    lane RegistrationCoordinator
+    flow registrationReport
+  }
+  activity registrationReport {
+    name "Generating registration status report"
+    type task
+    lane RegistrationCoordinator
+    flow suggestAlternative
+  }
+  activity suggestAlternative {
+    name "Suggest alternative program"
+    type task
+    lane RegistrationCoordinator
+    flow alternative
+  }
+  gateway alternative {
+    name "Suitable alternative program?"
+    lane RegistrationCoordinator
+    type xor
+    flow changeProgram label "Yes"
+    flow closeRejected label "No"
+  }
+  activity closeRejected {
+    name "Update and status change"
+    type task
+    lane RegistrationCoordinator
+    flow endNoAlternative
+  }
+  end endNoAlternative {
+    name "No alternative program"
+    lane RegistrationCoordinator
+    trigger none
+  }
+  activity changeProgram {
+    name "Program update and status change"
+    type task
+    lane RegistrationCoordinator
+    flow updateAlternativeFaculty
+  }
+  activity updateAlternativeFaculty {
+    name "Relevant faculty update"
+    type task
+    lane RegistrationCoordinator
+    flow advisorMerge
+  }
+  activity transferCenter {
+    name "Update ticket and transfer to academic center"
+    type task
+    lane AcademicAdvisor
+    post {[ self.accepted ]}
+    flow examineRegistration
+  }
+  activity examineRegistration {
+    name "Registration kit required examination"
+    type task
+    lane AcademicAdvisor
+    flow pendingKit
+  }
+  activity pendingKit {
+    name "Pending registration kit"
+    type task
+    lane AcademicCenter
+    flow signatureMerge
+  }
+  gateway signatureMerge {
+    name "Signature routing"
+    lane AcademicCenter
+    type xor
+    flow prepareSignature
+  }
+  activity prepareSignature {
+    name "Prepare registration kit for signature"
+    type task
+    lane AcademicCenter
+    flow pendingStatus
+  }
+  activity pendingStatus {
+    name "Update pending registration kit status"
+    type task
+    lane AcademicCenter
+    flow transferApproval
+  }
+  activity transferApproval {
+    name "Transfer registration kit for approval"
+    type task
+    lane AcademicCenter
+    flow checkIntegrity
+  }
+  activity checkIntegrity {
+    name "Check registration kit integrity"
+    type task
+    lane AcademicVP
+    flow kitApproved
+  }
+  gateway kitApproved {
+    name "Approved?"
+    lane AcademicVP
+    type xor
+    flow signKit label "Yes"
+    flow signatureMerge label "No"
+  }
+  activity signKit {
+    name "Signing and approving registration kit"
+    type task
+    lane AcademicVP
+    post {[ self.kitApproved ]}
+    flow acceptedStatus
+  }
+  activity acceptedStatus {
+    name "Status update to accepted"
+    type task
+    lane AcademicCenter
+    post {[ self.enrolled ]}
+    flow paymentVoucher
+  }
+  activity paymentVoucher {
+    name "Payment voucher or arrangement required"
+    type task
+    lane AcademicCenter
+    flow paymentPending
+  }
+  activity paymentPending {
+    name "Payment arrangement pending"
+    type task
+    lane TuitionDepartment
+    flow updatePayment
+  }
+  activity updatePayment {
+    name "Update or approve payment and direct debit"
+    type task
+    lane TuitionDepartment
+    post {[ self.paid ]}
+    flow paymentFork
+  }
+  gateway paymentFork {
+    name "Payment document and status routing"
+    lane TuitionDepartment
+    type xor
+    flow printVoucher
+    flow checkPayment
+  }
+  activity printVoucher {
+    name "Print a direct debit voucher"
+    type task
+    lane TuitionDepartment
+    flow printAcceptance
+  }
+  activity printAcceptance {
+    name "Print and send acceptance letter"
+    type task
+    lane AcademicCenter
+    flow acceptanceFork
+  }
+  gateway acceptanceFork {
+    name "Acceptance letter routing"
+    lane AcademicCenter
+    type xor
+    flow endAcceptance
+    flow paymentReportMerge
+  }
+  end endAcceptance {
+    name "Acceptance letter sent"
+    lane AcademicCenter
+    trigger none
+  }
+  gateway paymentReportMerge {
+    name "Payment report merge"
+    lane AcademicAdvisor
+    type xor
+    flow paymentReport
+  }
+  activity paymentReport {
+    name "Generate payment status report"
+    type task
+    lane AcademicAdvisor
+    flow arranged
+  }
+  gateway arranged {
+    name "Academic payment arranged?"
+    lane AcademicAdvisor
+    type xor
+    flow prepareCurriculum label "Yes"
+    flow twoWeekTimer label "No"
+  }
+  event twoWeekTimer {
+    name "Two weeks"
+    lane AcademicAdvisor
+    trigger timer
+    direction catching
+    flow paymentReportMerge
+  }
+  activity prepareCurriculum {
+    name "Preparation of an academic curriculum"
+    type task
+    lane AcademicAdvisor
+    post {[ self.curriculum ]}
+    flow endCurriculum
+  }
+  end endCurriculum {
+    name "Academic curriculum prepared"
+    lane AcademicAdvisor
+    trigger none
+  }
+  activity checkPayment {
+    name "Checking payment status"
+    type task
+    lane TuitionDepartment
+    flow paymentMade
+  }
+  gateway paymentMade {
+    name "Payment required or made?"
+    lane TuitionDepartment
+    type xor
+    flow paymentStatus label "Yes"
+    flow dailyTimer label "No"
+  }
+  event dailyTimer {
+    name "Every day"
+    lane TuitionDepartment
+    trigger timer
+    direction catching
+    flow checkPayment
+  }
+  activity paymentStatus {
+    name "Update payment status"
+    type task
+    lane TuitionDepartment
+    flow endPayment
+  }
+  end endPayment {
+    name "Payment recorded"
+    lane TuitionDepartment
+    trigger none
+  }
+}

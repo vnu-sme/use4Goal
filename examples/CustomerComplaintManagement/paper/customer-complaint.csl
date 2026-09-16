@@ -1,0 +1,18 @@
+// Operational state abstraction; see evaluation/AUDIT.md.
+csl v3.0 CustomerComplaintState {
+  orgContext CustomerComplaintCase {
+    role Accountment;
+    role CEO;
+    role CFO;
+    role CustomerManager;
+    role FieldMan;
+    role LabManager;
+    role Nutritionist;
+    created : Boolean mutable default false;
+    examined : Boolean mutable default false;
+    suggested : Boolean mutable default false;
+    refundRecorded : Boolean mutable default false;
+    closed : Boolean mutable default false;
+    qualityChecked : Boolean mutable default false;
+  }
+}

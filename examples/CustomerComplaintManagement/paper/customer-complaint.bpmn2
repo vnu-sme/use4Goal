@@ -1,0 +1,213 @@
+// Source-preserving control flow with explicit bounded state annotations.
+model CustomerComplaintProcess {
+  pool CustomerComplaintHandling for CustomerComplaintCase {
+    name "CustomerComplaint"
+    lane Accountment;
+    lane CEO;
+    lane CFO;
+    lane CustomerManager;
+    lane FieldMan;
+    lane LabManager;
+    lane Nutritionist;
+  }
+  start StartEvent_1 {
+    name "Complaint received"
+    lane FieldMan
+    trigger none
+    pre {[ not self.created and not self.examined and not self.suggested and not self.refundRecorded and not self.closed and not self.qualityChecked ]}
+    flow Act_create
+  }
+  activity Act_create {
+    name "Creating complaint"
+    type task
+    lane FieldMan
+    post {[ self.created ]}
+    flow Act_updartifacts
+  }
+  activity Act_updartifacts {
+    name "Updating artifacts"
+    type task
+    lane FieldMan
+    flow Gw_reqexam
+  }
+  gateway Gw_examdone {
+    name "Gw_examdone"
+    lane FieldMan
+    type or
+    flow Act_updartifacts
+  }
+  activity Act_cm_exam {
+    name "Examining the artifacts and updating"
+    type task
+    lane CustomerManager
+    post {[ self.examined ]}
+    flow Gw_cm_req
+  }
+  gateway Gw_cm_req {
+    name "Require additional examination?"
+    lane CustomerManager
+    type xor
+    flow Act_nu_exam label "Yes"
+    flow Gw_examdone label "No"
+  }
+  activity Act_nu_exam {
+    name "Examining the artifacts and updating"
+    type task
+    lane Nutritionist
+    post {[ self.examined ]}
+    flow Gw_nu_req
+  }
+  gateway Gw_reqexam {
+    name "Required additional examination?"
+    lane FieldMan
+    type xor
+    flow Act_comp label "No"
+    flow Gw_route label "Yes"
+  }
+  gateway Gw_route {
+    name "Gw_route"
+    lane FieldMan
+    type xor
+    flow Act_nu_exam
+    flow Act_lm_exam
+    flow Act_cm_exam
+  }
+  gateway Gw_nu_req {
+    name "Require additional examination?"
+    lane Nutritionist
+    type xor
+    flow Act_lm_exam label "Yes"
+    flow Gw_examdone label "No"
+  }
+  activity Act_lm_exam {
+    name "Examining the artifacts and updating"
+    type task
+    lane LabManager
+    post {[ self.examined ]}
+    flow Act_lm_check
+  }
+  activity Act_lm_check {
+    name "Checking in proactive tests"
+    type task
+    lane LabManager
+    post {[ self.qualityChecked ]}
+    flow Gw_lm_qio
+  }
+  gateway Gw_lm_qio {
+    name "Quality improvement opportunity?"
+    lane LabManager
+    type xor
+    flow Act_lm_improve label "Yes"
+    flow Gw_lm_merge label "No"
+  }
+  activity Act_lm_improve {
+    name "Updating as improvement suggestion"
+    type task
+    lane LabManager
+    flow Gw_lm_merge
+  }
+  gateway Gw_lm_merge {
+    name "Gw_lm_merge"
+    lane LabManager
+    type xor
+    flow Gw_examdone
+  }
+  activity Act_comp {
+    name "Compensation suggestion"
+    type task
+    lane FieldMan
+    post {[ self.suggested ]}
+    flow Gw_refund
+  }
+  gateway Gw_refund {
+    name "Refund?"
+    lane FieldMan
+    type xor
+    flow Act_updcompl label "No"
+    flow Gw_amount label "Yes"
+  }
+  gateway Gw_amount {
+    name "Gw_amount"
+    lane FieldMan
+    type xor
+    flow Act_cm_sugg label "<5000 NIS"
+    flow Act_cfo_sugg label ">5000 NIS"
+  }
+  activity Act_cm_sugg {
+    name "Suggestion examination and updating"
+    type task
+    lane CustomerManager
+    flow Gw_cm_appr
+  }
+  gateway Gw_cm_appr {
+    name "Approve?"
+    lane CustomerManager
+    type xor
+    flow Act_comp label "No"
+    flow Gw_refund_merge label "Yes"
+  }
+  gateway Gw_updcompl {
+    name "Gw_updcompl"
+    lane FieldMan
+    type or
+    flow Act_updcompl
+  }
+  activity Act_updcompl {
+    name "Updating the complaint"
+    type task
+    lane FieldMan
+    post {[ self.closed ]}
+    flow EndEvent_1
+  }
+  end EndEvent_1 {
+    name "Complaint closed"
+    lane FieldMan
+    trigger none
+  }
+  activity Act_cfo_sugg {
+    name "Suggestion examination and updating"
+    type task
+    lane CFO
+    flow Gw_cfo_appr
+  }
+  gateway Gw_cfo_appr {
+    name "Approve?"
+    lane CFO
+    type xor
+    flow Gw_updcompl label "No"
+    flow Gw_cfo_complex label "Yes"
+  }
+  gateway Gw_cfo_complex {
+    name "Complex complaint?"
+    lane CFO
+    type xor
+    flow Gw_refund_merge label "No"
+    flow Act_ceo_exam label "Yes"
+  }
+  activity Act_ceo_exam {
+    name "Complaint examination and updating"
+    type task
+    lane CEO
+    flow Gw_ceo_appr
+  }
+  gateway Gw_ceo_appr {
+    name "Approve?"
+    lane CEO
+    type xor
+    flow Gw_updcompl label "No"
+    flow Gw_refund_merge label "Yes"
+  }
+  gateway Gw_refund_merge {
+    name "Gw_refund_merge"
+    lane Accountment
+    type or
+    flow Act_acc_update
+  }
+  activity Act_acc_update {
+    name "Updating refund in the system"
+    type task
+    lane Accountment
+    post {[ self.refundRecorded ]}
+    flow Gw_updcompl
+  }
+}

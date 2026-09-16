@@ -89,7 +89,7 @@ public final class AolBpmnTraceRunner {
         try {
             acl = AclCompiler.compile(aclFile);
         } catch (Exception ex) {
-            return failed(errors, "ACL compiler crashed: " + message(ex));
+            return failed(errors, "CSL compiler crashed: " + message(ex));
         }
         if (!acl.ok()) return failed(errors, acl.errors());
 
@@ -97,16 +97,16 @@ public final class AolBpmnTraceRunner {
         try {
             aol = AolCompiler.compile(aolFile);
         } catch (Exception ex) {
-            return failed(errors, "AOL compiler crashed: " + message(ex));
+            return failed(errors, "State snapshot compiler crashed: " + message(ex));
         }
         if (!aol.ok()) return failed(errors, aol.errors());
         try {
             if (!Files.isSameFile(aclFile, aol.aclFile())) {
-                return failed(errors, "AOL references a different ACL: " + aol.aclFile()
+                return failed(errors, "The state snapshot references a different CSL model: " + aol.aclFile()
                         + " (selected: " + aclFile + ")");
             }
         } catch (Exception ex) {
-            return failed(errors, "Cannot compare ACL references: " + message(ex));
+            return failed(errors, "Cannot compare CSL references: " + message(ex));
         }
 
         BpmnCompiler.Result bpmn;
@@ -122,7 +122,7 @@ public final class AolBpmnTraceRunner {
         try {
             String useText = Acl2UseTranslator.translate(acl.model());
             StringWriter useErr = new StringWriter();
-            useModel = USECompiler.compileSpecification(useText, "acl-generated.use",
+            useModel = USECompiler.compileSpecification(useText, "csl-generated.use",
                     new PrintWriter(useErr), new ModelFactory());
             if (useModel == null) return failed(errors, "errors compiling generated .use: " + useErr);
             system = new MSystem(useModel);
@@ -130,7 +130,7 @@ public final class AolBpmnTraceRunner {
             executeInitialSoil(system, useModel, initialSoil, errors);
             if (!errors.isEmpty()) return new Result(useModel, acl.model(), List.of(), errors);
         } catch (Exception ex) {
-            return failed(errors, "Cannot build initial state from ACL+AOL: " + message(ex));
+            return failed(errors, "Cannot build the initial state from CSL and the snapshot: " + message(ex));
         }
 
         List<InstanceTrace> traces = new ArrayList<>();
@@ -141,12 +141,12 @@ public final class AolBpmnTraceRunner {
             }
             MClass selfClass = useModel.getClass(process.groupClass());
             if (selfClass == null) {
-                errors.add("Unknown ACL group class '" + process.groupClass() + "' named by pool " + process.id());
+                errors.add("Unknown CSL organizational context '" + process.groupClass() + "' named by pool " + process.id());
                 continue;
             }
             List<MObject> instances = new ArrayList<>(system.state().objectsOfClass(selfClass));
             if (instances.isEmpty()) {
-                errors.add("AOL population has no '" + process.groupClass() + "' instance for pool " + process.id());
+                errors.add("The initial state has no '" + process.groupClass() + "' instance for pool " + process.id());
                 continue;
             }
             for (MObject self : instances) {
@@ -275,7 +275,7 @@ public final class AolBpmnTraceRunner {
     private static void requireValidState(MSystemState state, String phase) {
         StringWriter report = new StringWriter();
         if (!state.check(new PrintWriter(report), false, true, true, List.of())) {
-            throw new IllegalStateException(phase + " failed ACL/USE constraints:\n" + report.toString().strip());
+            throw new IllegalStateException(phase + " failed CSL/USE constraints:\n" + report.toString().strip());
         }
     }
 

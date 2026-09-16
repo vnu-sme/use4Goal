@@ -70,7 +70,7 @@ public final class DiagramModelBrowser extends JPanel {
     }
 
     public static DiagramModelBrowser forAcl(AclModel model) {
-        DefaultMutableTreeNode root = node("ACL: " + model.name(), "ACL structural specification",
+        DefaultMutableTreeNode root = node("CSL: " + model.name(), "CSL state specification",
                 "Version", model.version(),
                 model.rootGroup().isOrganizationalContext() ? "Root organizational context" : "Root group",
                 model.rootGroup().name());
@@ -96,7 +96,7 @@ public final class DiagramModelBrowser extends JPanel {
 
     public static DiagramModelBrowser forAol(org.vnu.sme.goal.dsl.aol.mm.AolModel model) {
         DefaultMutableTreeNode root = node("AOL: " + model.name(), "AOL object snapshot",
-                "Version", model.version(), "ACL file", model.aclFile());
+                "Version", model.version(), "CSL file", model.aclFile());
         DefaultMutableTreeNode agents = group(root, "Agents", model.agents().size());
         model.agents().forEach(a -> agents.add(node(a, "Agent identity",
                 "Profile role", model.agentProfileRoles().get(a),
@@ -153,7 +153,7 @@ public final class DiagramModelBrowser extends JPanel {
                 : (rootGroup ? "Root group: " : "Subgroup: ");
         DefaultMutableTreeNode result = node(prefix + value.name(),
                 value.isOrganizationalContext()
-                        ? "ACL organizational context" : "ACL group specification");
+                        ? "CSL organizational context" : "CSL group specification");
         DefaultMutableTreeNode roles = group(result, "Role memberships", value.roles().size());
         value.roles().forEach(v -> roles.add(node(v.roleName() + " " + cardinality(v.cardinality()), "Role membership")));
         DefaultMutableTreeNode entities = group(result, "Entity memberships", value.entities().size());

@@ -1,8 +1,8 @@
-grammar ACL;
+grammar CSL;
 
 @header { package org.vnu.sme.goal.dsl.acl.parser; }
 
-// ACL core v4 — structure and state, following ACL-semantics-core-revised.md.
+// CSL core v4 — shared organizational structure and state.
 // Object has exactly three concrete kinds: Entity, Role and OrgCtx.
 // OrgCtx owns declarations, NOT a fixed population of runtime instances.
 // Role specialization is UML-style inheritance of the SAME role instance.
@@ -17,7 +17,8 @@ grammar ACL;
 // Grammar itself enforces containment, attribute modifiers and association arity.
 // No Group, membership counts, canPlay or process operations in the new core.
 
-model : 'acl' VERSION IDENT '{' topLevelDecl* '}' EOF ;
+// "acl" remains accepted as a migration alias for existing saved models.
+model : ('csl' | 'acl') VERSION IDENT '{' topLevelDecl* '}' EOF ;
 
 topLevelDecl
     : enumDecl

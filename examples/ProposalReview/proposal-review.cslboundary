@@ -1,0 +1,21 @@
+// Bounded-verification scope for the ProposalReview case study
+// (proposal-review-final.csl / .istar / .bpmn2).
+csl-bpmn-boundary v1.0 ProposalReviewBound {
+  snapshots 16;
+  loop-bound 1;
+  integer -1..4;
+
+  objects ProposalParticipant 2;
+  objects Proposal 1;
+  objects ProposalManager 1;
+  objects Customer 1;
+  // Entities and their links are created during execution; these are per-state bounds.
+  objects ProposalRevision 0..2;
+  objects Validation 0..2;
+  objects Review 0..2;
+
+  links RevisionValidations 0..2;
+  links RevisionReviews 0..2;
+  links ProposalManagerValidates 0..2;
+  links CustomerProvidesReview 0..2;
+}

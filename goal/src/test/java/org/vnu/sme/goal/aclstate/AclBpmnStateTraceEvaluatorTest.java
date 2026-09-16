@@ -139,9 +139,9 @@ class AclBpmnStateTraceEvaluatorTest {
                         activity good { type task lane Worker post {[ self.done ]} flow closed }
                         activity bad { type task lane Worker post {[ not self.done ]} flow closed }
                         """);
-        assertEquals(AclBpmnWholeProcessValidator.ConsistencyVerdict.WEAKLY_CONSISTENT,
+        assertEquals(AclBpmnWholeProcessValidator.ConsistencyVerdict.WEAK_CONFORMANCE,
                 weak.consistency());
-        assertEquals(AclBpmnWholeProcessValidator.RiskVerdict.RISK_FREE, weak.risk(),
+        assertEquals(AclBpmnWholeProcessValidator.RiskVerdict.NON_RISKY, weak.risk(),
                 "a never-achieved Sustain Goal remains unknown rather than violated");
         assertEquals(AclBpmnWholeProcessValidator.ConsistencyVerdict.INCONSISTENT,
                 integrated(temp, acl, istar, boundary, "missing", """
@@ -154,7 +154,7 @@ class AclBpmnStateTraceEvaluatorTest {
                 """);
         assertEquals(AclBpmnWholeProcessValidator.ConsistencyVerdict.INCONSISTENT,
                 risk.consistency());
-        assertEquals(AclBpmnWholeProcessValidator.RiskVerdict.RISK_PRONE, risk.risk());
+        assertEquals(AclBpmnWholeProcessValidator.RiskVerdict.RISKY, risk.risk());
         assertEquals(1, risk.riskyExecutions());
 
         var recovered = integrated(temp, acl, istar, boundary, "recovered", """
@@ -164,7 +164,7 @@ class AclBpmnStateTraceEvaluatorTest {
                 """);
         assertEquals(AclBpmnWholeProcessValidator.ConsistencyVerdict.INCONSISTENT,
                 recovered.consistency(), "Sustain violations must persist after re-establishment");
-        assertEquals(AclBpmnWholeProcessValidator.RiskVerdict.RISK_PRONE, recovered.risk());
+        assertEquals(AclBpmnWholeProcessValidator.RiskVerdict.RISKY, recovered.risk());
     }
 
     private static AclBpmnWholeProcessValidator.ValidationResult integrated(

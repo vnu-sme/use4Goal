@@ -1,0 +1,20 @@
+csl-bpmn-boundary v1.0 CustomerComplaintBound {
+  snapshots 36;
+  loop-bound 2;
+  integer 0..1;
+  objects CustomerComplaintCase 1;
+  objects Accountment 1;
+  objects CEO 1;
+  objects CFO 1;
+  objects CustomerManager 1;
+  objects FieldMan 1;
+  objects LabManager 1;
+  objects Nutritionist 1;
+  links CustomerComplaintCase_contains_Accountment 1;
+  links CustomerComplaintCase_contains_CEO 1;
+  links CustomerComplaintCase_contains_CFO 1;
+  links CustomerComplaintCase_contains_CustomerManager 1;
+  links CustomerComplaintCase_contains_FieldMan 1;
+  links CustomerComplaintCase_contains_LabManager 1;
+  links CustomerComplaintCase_contains_Nutritionist 1;
+}

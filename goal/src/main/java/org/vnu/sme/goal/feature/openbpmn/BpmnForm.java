@@ -25,6 +25,7 @@ import org.tzi.use.main.Session;
 import org.vnu.sme.goal.dsl.bpmn.mm.BpmnModel;
 import org.vnu.sme.goal.dsl.bpmn.parser.BpmnCompiler;
 import org.vnu.sme.goal.dsl.bpmn.view.BpmnView;
+import org.vnu.sme.goal.gui.OfficialExamples;
 
 @SuppressWarnings("serial")
 public final class BpmnForm extends JDialog {
@@ -41,7 +42,7 @@ public final class BpmnForm extends JDialog {
     private JButton openMenuButton;
 
     public BpmnForm(Session session, MainWindow mainWindow) {
-        super(mainWindow, "Open BPMN", false);
+        super(mainWindow, "Process View Model", false);
         this.session = session;
         this.mainWindow = mainWindow;
         buildUI();
@@ -98,7 +99,7 @@ public final class BpmnForm extends JDialog {
     }
 
     private void chooseFile() {
-        JFileChooser fc = new JFileChooser();
+        JFileChooser fc = OfficialExamples.chooser(pathField.getText().trim());
         fc.setFileFilter(new FileNameExtensionFilter("BPMN files (*.bpmn2)", "bpmn2"));
         String cur = pathField.getText().trim();
         if (!cur.isEmpty()) {

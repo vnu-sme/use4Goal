@@ -28,9 +28,9 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.vnu.sme.goal.dsl.acl.ast.*;
 
-public final class AclBuildingVisitor extends ACLBaseVisitor<AclModelCS> {
+public final class AclBuildingVisitor extends CSLBaseVisitor<AclModelCS> {
 
-    @Override public AclModelCS visitModel(ACLParser.ModelContext ctx) {
+    @Override public AclModelCS visitModel(CSLParser.ModelContext ctx) {
         List<AclEnumCS> enums = new ArrayList<>(); List<AclDataTypeCS> dataTypes = new ArrayList<>();
         List<AclEntityCS> entities = new ArrayList<>();
         List<AclRoleCS> roles = new ArrayList<>(); List<AclRelationCS> relations = new ArrayList<>();
@@ -54,36 +54,36 @@ public final class AclBuildingVisitor extends ACLBaseVisitor<AclModelCS> {
                 roles, relations, groups, compatibilities, invariants, location(ctx));
     }
 
-    private static AclInvariantCS invariant(ACLParser.InvariantDeclContext c) {
+    private static AclInvariantCS invariant(CSLParser.InvariantDeclContext c) {
         return new AclInvariantCS(c.IDENT(0).getText(), c.IDENT(1).getText(),
                 c.oclExpression().oclToken().stream().map(ParserRuleContext::getText)
                         .collect(java.util.stream.Collectors.joining(" ")), location(c));
     }
 
-    private static AclEnumCS enumValue(ACLParser.EnumDeclContext c) {
+    private static AclEnumCS enumValue(CSLParser.EnumDeclContext c) {
         List<String> ids = c.IDENT().stream().map(TerminalNode::getText).toList();
         return new AclEnumCS(ids.get(0), ids.subList(1, ids.size()), location(c));
     }
-    private static AclEntityCS entity(ACLParser.EntityDeclContext c) {
+    private static AclEntityCS entity(CSLParser.EntityDeclContext c) {
         return new AclEntityCS(c.IDENT().getText(), parent(c.specializesClause()), attrs(c.attributeBlock()), location(c));
     }
-    private static AclRoleCS role(ACLParser.RoleDeclContext c) {
+    private static AclRoleCS role(CSLParser.RoleDeclContext c) {
         return new AclRoleCS(c.IDENT().getText(), parent(c.specializesClause()).stream().toList(),
                 attrs(c.attributeBlock()), location(c));
     }
-    private static AclRelationCS relation(ACLParser.EntityRelationDeclContext c) {
+    private static AclRelationCS relation(CSLParser.EntityRelationDeclContext c) {
         List<AclEndpointCS> ends = c.endpointDecl().stream().map(e -> new AclEndpointCS(
                 e.IDENT(0).getText(), cardinality(e.cardinality()),
                 e.IDENT().size() > 1 ? Optional.of(e.IDENT(1).getText()) : Optional.empty(), location(e))).toList();
         return new AclRelationCS(c.relationKind() == null ? "association" : c.relationKind().getText(),
                 c.IDENT().getText(), ends, location(c));
     }
-    private static AclCompatibilityCS compatibility(ACLParser.CompatibilityDeclContext c, String groupName) {
+    private static AclCompatibilityCS compatibility(CSLParser.CompatibilityDeclContext c, String groupName) {
         return new AclCompatibilityCS(c.IDENT(0).getText(), c.IDENT(1).getText(), true,
                 groupName, List.of(), location(c));
     }
 
-    private static void orgContext(ACLParser.OrgContextDeclContext context,
+    private static void orgContext(CSLParser.OrgContextDeclContext context,
                                    List<AclEntityCS> entities,
                                    List<AclRoleCS> roles,
                                    List<AclGroupCS> groups,
@@ -91,7 +91,7 @@ public final class AclBuildingVisitor extends ACLBaseVisitor<AclModelCS> {
         String name = context.IDENT().getText();
         List<AclAttributeCS> attributes = new ArrayList<>();
         List<AclGroupMemberCS> members = new ArrayList<>();
-        List<ACLParser.OrgContextDeclContext> nested = new ArrayList<>();
+        List<CSLParser.OrgContextDeclContext> nested = new ArrayList<>();
         for (var item : context.orgContextItem()) {
             if (item.attributeDecl() != null) {
                 attributes.add(attribute(item.attributeDecl()));
@@ -122,8 +122,8 @@ public final class AclBuildingVisitor extends ACLBaseVisitor<AclModelCS> {
         return new AclGroupMemberCS(type,
                 new AclCardinalityCS("1", Optional.of("1"), loc), loc);
     }
-    private static List<AclAttributeCS> attrs(ACLParser.AttributeBlockContext b) { return b==null?List.of():b.attributeDecl().stream().map(AclBuildingVisitor::attribute).toList(); }
-    private static AclAttributeCS attribute(ACLParser.AttributeDeclContext c) {
+    private static List<AclAttributeCS> attrs(CSLParser.AttributeBlockContext b) { return b==null?List.of():b.attributeDecl().stream().map(AclBuildingVisitor::attribute).toList(); }
+    private static AclAttributeCS attribute(CSLParser.AttributeDeclContext c) {
         String modifiers = c.attributeModifier() == null ? "" : c.attributeModifier().getText();
         boolean optional = modifiers.contains("optional");
         boolean required = modifiers.contains("required");
@@ -131,8 +131,8 @@ public final class AclBuildingVisitor extends ACLBaseVisitor<AclModelCS> {
         Optional<String> def=c.defaultClause()==null?Optional.empty():Optional.of(c.defaultClause().defaultValue().getText());
         return new AclAttributeCS(c.IDENT(0).getText(),c.IDENT(1).getText(),optional,required,mut,def,location(c));
     }
-    private static Optional<String> parent(ACLParser.SpecializesClauseContext c) { return c==null?Optional.empty():Optional.of(c.IDENT().getText()); }
-    private static AclCardinalityCS cardinality(ACLParser.CardinalityContext c) {
+    private static Optional<String> parent(CSLParser.SpecializesClauseContext c) { return c==null?Optional.empty():Optional.of(c.IDENT().getText()); }
+    private static AclCardinalityCS cardinality(CSLParser.CardinalityContext c) {
         if(c.getText().equals("[*]")) return new AclCardinalityCS("0",Optional.empty(),location(c));
         List<TerminalNode> ints=c.INT(); String min=ints.get(0).getText();
         if(!c.getText().contains("..")) return new AclCardinalityCS(min,Optional.of(min),location(c));

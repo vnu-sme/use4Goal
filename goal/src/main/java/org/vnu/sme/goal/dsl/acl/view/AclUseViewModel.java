@@ -13,7 +13,7 @@ import org.tzi.use.uml.mm.ModelFactory;
 import org.vnu.sme.goal.dsl.acl.mm.*;
 
 /**
- * Presentation adapter from ACL semantics to USE's UML metamodel.
+ * Presentation adapter from CSL semantics to USE's UML metamodel.
  *
  * <p>This is deliberately the only layer that knows both metamodels. Views consume
  * real {@link MClass}/{@link MAssociation} objects and therefore reuse USE's class
@@ -88,7 +88,7 @@ final class AclUseViewModel {
         } catch (UseApiException exception) {
             String detail = exception.getCause() != null ? exception.getCause().getMessage() : exception.getMessage();
             throw new IllegalArgumentException(
-                    "Cannot adapt ACL model to USE diagram metamodel: " + detail, exception);
+                    "Cannot adapt CSL model to USE diagram metamodel: " + detail, exception);
         }
     }
 
@@ -97,7 +97,7 @@ final class AclUseViewModel {
             try {
                 api.createAttribute(owner, attribute.name(), attribute.type().sourceName());
             } catch (UseApiException exception) {
-                throw new IllegalArgumentException("Invalid ACL attribute '" + owner + "." + attribute.name() + "'", exception);
+                throw new IllegalArgumentException("Invalid CSL attribute '" + owner + "." + attribute.name() + "'", exception);
             }
         }
     }

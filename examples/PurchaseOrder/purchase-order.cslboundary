@@ -1,0 +1,28 @@
+// Bounded verification scope for Purchase Order case study.
+// 1 bypass + 2 quote options × 2 approval tiers = 5 execution paths.
+// snapshots=48 ensures all 5 paths complete within the bounded model.
+// Expected result: WEAK_CONFORMANCE (4 conformant, 1 non-conformant), RISKY.
+csl-bpmn-boundary v1.0 PurchaseOrderBound {
+  snapshots 48;
+  loop-bound 1;
+  integer 0..12;
+
+  objects PurchaseOrderCase 1;
+  objects PurchaseInitiator 1;
+  objects PurchaseManager 1;
+  objects DepartmentManager 1;
+  objects Director 1;
+  objects CFO 1;
+  objects CEO 1;
+  objects PurchaseCommittee 1;
+  objects Order 1;
+
+  links PurchaseOrderCase_contains_PurchaseInitiator 1;
+  links PurchaseOrderCase_contains_PurchaseManager 1;
+  links PurchaseOrderCase_contains_DepartmentManager 1;
+  links PurchaseOrderCase_contains_Director 1;
+  links PurchaseOrderCase_contains_CFO 1;
+  links PurchaseOrderCase_contains_CEO 1;
+  links PurchaseOrderCase_contains_PurchaseCommittee 1;
+  links PurchaseOrderCase_contains_Order 1;
+}

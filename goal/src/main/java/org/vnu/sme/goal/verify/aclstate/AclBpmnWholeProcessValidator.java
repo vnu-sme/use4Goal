@@ -45,9 +45,9 @@ public final class AclBpmnWholeProcessValidator {
 
     public enum Verdict { VALID, INVALID, INCONCLUSIVE }
     public enum ConsistencyVerdict {
-        BPMN_ONLY, CONSISTENT, WEAKLY_CONSISTENT, INCONSISTENT, INCONCLUSIVE
+        BPMN_ONLY, CONSISTENT, WEAK_CONFORMANCE, INCONSISTENT, INCONCLUSIVE
     }
-    public enum RiskVerdict { NOT_EVALUATED, RISK_FREE, RISK_PRONE, INCONCLUSIVE }
+    public enum RiskVerdict { NOT_EVALUATED, NON_RISKY, RISKY, INCONCLUSIVE }
     public enum GoalStatus { SATISFIED, UNKNOWN, VIOLATED }
 
     public record GoalEvidence(String goal, boolean root, GoalStatus status, String condition) {
@@ -131,38 +131,38 @@ public final class AclBpmnWholeProcessValidator {
                         : realizable == 0 ? ConsistencyVerdict.INCONCLUSIVE
                         : nonAchieved == 0 ? ConsistencyVerdict.CONSISTENT
                         : achieved == 0 ? ConsistencyVerdict.INCONSISTENT
-                        : ConsistencyVerdict.WEAKLY_CONSISTENT;
+                        : ConsistencyVerdict.WEAK_CONFORMANCE;
         RiskVerdict risk = goalModel == null ? RiskVerdict.NOT_EVALUATED
                 : consistency == ConsistencyVerdict.INCONCLUSIVE ? RiskVerdict.INCONCLUSIVE
-                : risky > 0 ? RiskVerdict.RISK_PRONE : RiskVerdict.RISK_FREE;
+                : risky > 0 ? RiskVerdict.RISKY : RiskVerdict.NON_RISKY;
         List<String> roots = goalModel == null ? List.of() : rootGoalLabels(goalModel);
         List<MappingEntry> mappings = goalModel == null ? List.of()
                 : inferMappings(evaluator, goalModel);
         String summary = goalModel == null ? switch (verdict) {
-            case VALID -> BACKEND + " generated ACL object diagrams for " + realizable
+            case VALID -> BACKEND + " generated CSL object diagrams for " + realizable
                     + " realizable route(s) among " + executions
                     + " maximal bounded BPMN route(s): loop-bound="
                     + boundary.loopBound() + ", snapshots=" + boundary.snapshots()
                     + " (" + calls + " solver call(s)).";
-            case INVALID -> BACKEND + " found no realizable complete ACL/BPMN execution"
+            case INVALID -> BACKEND + " found no realizable complete CSL/BPMN execution"
                     + " inside the selected boundary, or found a structural BPMN deadlock.";
             case INCONCLUSIVE -> "Whole validation is inconclusive because the symbolic OCL fragment"
                     + " or an exploration safety limit was exceeded.";
         } : switch (consistency) {
-            case CONSISTENT -> "CONSISTENT: every bounded ACL state path admitted by " + realizable
+            case CONSISTENT -> "CONSISTENT: every bounded CSL state path admitted by " + realizable
                     + " realizable BPMN execution(s) fulfills all root iStar goals. " + risk + ".";
-            case WEAKLY_CONSISTENT -> "WEAKLY_CONSISTENT: conforming and non-conforming ACL state paths"
+            case WEAK_CONFORMANCE -> "WEAK_CONFORMANCE: conforming and non-conforming CSL state paths"
                     + " are both realizable (" + achieved + " route(s) admit conformance; "
                     + nonAchieved + " admit non-conformance). " + risk + ".";
             case INCONSISTENT -> "INCONSISTENT: every realizable BPMN execution admits a non-conforming"
-                    + " ACL state path and none admits a conforming one. " + risk + ".";
-            case INCONCLUSIVE -> "Integrated ACL + BPMN + iStar validation is inconclusive because a symbolic"
+                    + " CSL state path and none admits a conforming one. " + risk + ".";
+            case INCONCLUSIVE -> "Integrated CSL + BPMN + iStar validation is inconclusive because a symbolic"
                     + " expression or exploration safety limit could not be decided.";
             case BPMN_ONLY -> throw new IllegalStateException();
         };
         Verdict integratedVerdict = goalModel == null ? verdict : switch (consistency) {
             case CONSISTENT -> Verdict.VALID;
-            case WEAKLY_CONSISTENT, INCONCLUSIVE -> Verdict.INCONCLUSIVE;
+            case WEAK_CONFORMANCE, INCONCLUSIVE -> Verdict.INCONCLUSIVE;
             case INCONSISTENT -> Verdict.INVALID;
             case BPMN_ONLY -> verdict;
         };
@@ -407,13 +407,13 @@ public final class AclBpmnWholeProcessValidator {
         String detail = goals == null
                 ? realizableExecutions == 0
                         ? BACKEND + " returned UNSATISFIABLE for every maximal bounded BPMN execution;"
-                                + " no ACL state path exists inside the boundary."
+                                + " no CSL state path exists inside the boundary."
                         : BACKEND + " synthesized " + realizableExecutions
-                                + " realizable formal ACL state path(s); no AOL scenario was loaded or used."
+                                + " realizable formal CSL state path(s); no manual scenario was loaded or used."
                 : BACKEND + " found " + goalAchievingExecutions + " goal-achieving path(s) among "
                         + realizableExecutions + " realizable bounded BPMN execution(s). Root targets: "
                         + String.join(", ", goals.rootGoalLabels())
-                        + ". iStar was evaluated over the generated ACL path, not an iStar state space.";
+                        + ". iStar was evaluated over the generated CSL path, not an iStar state space.";
         return result(runtime, self.id(), processVerdict, configurations, transitions, completed,
                 executions, loopCutoffs, snapshotCutoffs, solverCalls, realizableExecutions,
                 goalAchievingExecutions, nonGoalAchievingExecutions, riskyExecutions,
@@ -480,7 +480,7 @@ public final class AclBpmnWholeProcessValidator {
             Solution solution = solver.solve(formula, symbolic.bounds());
             boolean sat = solution.outcome() == Outcome.SATISFIABLE
                     || solution.outcome() == Outcome.TRIVIALLY_SATISFIABLE;
-            return sat ? null : "ACL invariants and boundary admit no symbolic system state ("
+            return sat ? null : "CSL invariants and boundary admit no symbolic system state ("
                     + solution.outcome() + "); BPMN was not judged.";
         } catch (RuntimeException | LinkageError error) {
             return "Cannot establish boundary consistency: " + message(error);
@@ -496,7 +496,7 @@ public final class AclBpmnWholeProcessValidator {
         String last = route.isEmpty() ? "initial state"
                 : runtime.contractDescription(route.get(route.size() - 1));
         String meaning = solved.verdict() == Verdict.INVALID
-                ? "no ACL object-diagram path exists inside the boundary"
+                ? "no CSL object-diagram path exists inside the boundary"
                 : "the symbolic encoder could not decide this bounded execution";
         return result(runtime, self.id(), solved.verdict(), configurations, transitions,
                 completed, executions, loopCutoffs, snapshotCutoffs, solverCalls,

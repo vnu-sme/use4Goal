@@ -1,0 +1,17 @@
+// Operational state abstraction; see evaluation/AUDIT.md.
+csl v3.0 SalesForecastState {
+  orgContext SalesForecastCase {
+    role BusinessVP;
+    role CreditControl;
+    role CustomerManager;
+    role DepartmentManager;
+    role FinancialControl;
+    role PresaleEngineer;
+    role SectorManager;
+    role ServiceAgreements;
+    technicalReady : Boolean mutable default false;
+    profitabilityChecked : Boolean mutable default false;
+    creditChecked : Boolean mutable default false;
+    ordered : Boolean mutable default false;
+  }
+}

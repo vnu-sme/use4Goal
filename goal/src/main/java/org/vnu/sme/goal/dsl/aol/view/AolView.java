@@ -51,11 +51,19 @@ public final class AolView extends JPanel implements View, PrintableView {
         specArea.setEditable(false);
         specArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 
-        JTabbedPane tabs = new JTabbedPane();
+        // Toolbar + diagram canvas shown directly (no tabs)
+        javax.swing.JPanel diagramToolbar = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 6, 2));
+        javax.swing.JCheckBox showAssocNamesChk = new javax.swing.JCheckBox("Assoc. names", true);
+        showAssocNamesChk.setFont(showAssocNamesChk.getFont().deriveFont(11f));
+        showAssocNamesChk.setToolTipText("Show / hide association name labels on diagram edges");
+        showAssocNamesChk.addActionListener(e -> {
+            diagram.getOptions().setShowAssociationNames(showAssocNamesChk.isSelected());
+            diagram.repaint();
+        });
+        diagramToolbar.add(showAssocNamesChk);
+        diagramContent.add(diagramToolbar, BorderLayout.NORTH);
         diagramContent.add(new JScrollPane(diagram), BorderLayout.CENTER);
-        tabs.addTab("Diagram", diagramContent);
-        tabs.addTab("Snapshot", new JScrollPane(specArea));
-        add(tabs, BorderLayout.CENTER);
+        add(diagramContent, BorderLayout.CENTER);
     }
 
     /** An AolView panel to embed directly in a caller's own dialog, not opened in its own window. */
@@ -134,7 +142,7 @@ public final class AolView extends JPanel implements View, PrintableView {
     }
 
     private String title() {
-        String version = model == null ? "AOL" : "AOL " + model.version();
+        String version = model == null ? "State Snapshot" : "State Snapshot " + model.version();
         return sourceFile == null ? version : version + " - " + sourceFile.getFileName();
     }
 

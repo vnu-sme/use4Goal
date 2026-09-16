@@ -158,7 +158,7 @@ final class AclOclFormulaParser {
     }
     private IllegalArgumentException error(String message) {
         int column = tokens.get(Math.min(at, tokens.size() - 1)).column();
-        return new IllegalArgumentException("symbolic ACL/OCL at column " + column + ": " + message);
+        return new IllegalArgumentException("symbolic CSL/OCL at column " + column + ": " + message);
     }
 
     private static List<Token> lex(String source) {
@@ -222,21 +222,21 @@ final class AclOclFormulaParser {
                     if (source.startsWith("pre", at)) {
                         at += 3;
                         result.add(new Token(Kind.AT_PRE, "@pre", column));
-                    } else throw new IllegalArgumentException("symbolic ACL/OCL at column " + column
+                    } else throw new IllegalArgumentException("symbolic CSL/OCL at column " + column
                             + ": expected @pre");
                 }
                 case ':' -> {
                     if (at < source.length() && source.charAt(at) == ':') {
                         at++;
                         result.add(new Token(Kind.COLON2, "::", column));
-                    } else throw new IllegalArgumentException("symbolic ACL/OCL at column " + column
+                    } else throw new IllegalArgumentException("symbolic CSL/OCL at column " + column
                             + ": unexpected ':'");
                 }
                 case '-' -> {
                     if (at < source.length() && source.charAt(at) == '>') {
                         at++;
                         result.add(new Token(Kind.ARROW, "->", column));
-                    } else throw new IllegalArgumentException("symbolic ACL/OCL at column " + column
+                    } else throw new IllegalArgumentException("symbolic CSL/OCL at column " + column
                             + ": unexpected '-'");
                 }
                 case '<' -> {
@@ -254,7 +254,7 @@ final class AclOclFormulaParser {
                         result.add(new Token(Kind.GE, ">=", column));
                     } else result.add(new Token(Kind.GT, ">", column));
                 }
-                default -> throw new IllegalArgumentException("symbolic ACL/OCL at column " + column
+                default -> throw new IllegalArgumentException("symbolic CSL/OCL at column " + column
                         + ": unexpected character '" + c + "'");
             }
         }

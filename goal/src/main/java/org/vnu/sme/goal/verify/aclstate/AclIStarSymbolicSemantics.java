@@ -116,6 +116,42 @@ final class AclIStarSymbolicSemantics {
             boolean hasDirectGoalCondition = element instanceof Goal goal
                     && goal.oclSource() != null && !goal.oclSource().isBlank();
             if (!refinementChildren.isEmpty()) {
+                // Sustain compound: apply sustainSatisfied/sustainViolated on per-frame
+                // instantaneous AND/OR of children. The Sustain type is only meaningful
+                // when children are evaluated tức-thời (instantaneously) at each frame;
+                // the parent detects when all children are SIMULTANEOUSLY true and
+                // whether that truth is subsequently maintained.
+                boolean isSustainCompound = element instanceof Goal g
+                        && g.goalType() == GoalType.SUSTAIN;
+                if (isSustainCompound) {
+                    boolean isAnd = andRefinement.getOrDefault(element.id(), true);
+                    List<Formula> perFrameValues = new ArrayList<>();
+                    for (int i = 0; i < usedFrames; i++) {
+                        Formula frameVal = isAnd ? Formula.TRUE : Formula.FALSE;
+                        for (String childId : refinementChildren) {
+                            GoalTaskElement child = model.findElement(childId)
+                                    .filter(GoalTaskElement.class::isInstance)
+                                    .map(GoalTaskElement.class::cast)
+                                    .orElseThrow(() -> new IllegalArgumentException(
+                                            "Unknown iStar refinement child '" + childId + "'"));
+                            Formula childInstant = instantAtFrame(child, self, i, usedFrames,
+                                    new LinkedHashSet<>(visiting));
+                            if (isAnd) frameVal = frameVal.and(childInstant);
+                            else       frameVal = frameVal.or(childInstant);
+                        }
+                        if (hasDirectGoalCondition) {
+                            var current  = symbolic.frame(i);
+                            var previous = symbolic.frame(Math.max(0, i - 1));
+                            Formula directCond = symbolic.expression(
+                                    ((Goal) element).oclSource(), current, previous, self);
+                            frameVal = frameVal.and(directCond);
+                        }
+                        perFrameValues.add(frameVal);
+                    }
+                    return new MarkingFormula(sustainSatisfied(perFrameValues),
+                            sustainViolated(perFrameValues));
+                }
+
                 List<MarkingFormula> values = new ArrayList<>();
                 for (String childId : refinementChildren) {
                     GoalTaskElement child = model.findElement(childId)
@@ -138,6 +174,115 @@ final class AclIStarSymbolicSemantics {
             }
             if (element instanceof Goal goal) return leafGoal(goal, self, usedFrames);
             return leafTask((Task) element, self, usedFrames);
+        } finally {
+            visiting.remove(element.id());
+        }
+    }
+
+    /**
+     * Instantaneous truth of {@code element} at a specific {@code frameIndex}.
+     *
+     * <ul>
+     *   <li><b>Achieve</b> goal / compound: latch – OR of truths from frame 0 to frameIndex.</li>
+     *   <li><b>None / Maintain</b> goal: condition evaluated exactly at frameIndex (no latch).</li>
+     *   <li><b>Sustain</b> goal (compound): per-frame AND/OR of children (recursive).</li>
+     *   <li><b>Task</b>: latch – done at some point up to frameIndex (pre observed, then post).</li>
+     * </ul>
+     */
+    private Formula instantAtFrame(GoalTaskElement element, ObjectAtom self,
+                                   int frameIndex, int usedFrames, Set<String> visiting) {
+        if (!visiting.add(element.id())) {
+            throw new IllegalArgumentException("Cyclic iStar refinement at '" + element.id() + "'");
+        }
+        try {
+            List<String> refinementChildren = children.getOrDefault(element.id(), List.of());
+            boolean isAnd = andRefinement.getOrDefault(element.id(), true);
+            GoalType type = element instanceof Goal g
+                    ? (g.goalType() == null ? GoalType.NONE : g.goalType())
+                    : GoalType.ACHIEVE; // tasks: latch semantics
+
+            if (!refinementChildren.isEmpty()) {
+                if (type == GoalType.ACHIEVE) {
+                    // Latch compound: was the compound AND/OR ever true up to frameIndex?
+                    Formula latched = Formula.FALSE;
+                    for (int j = 0; j <= frameIndex; j++) {
+                        Formula frameJ = isAnd ? Formula.TRUE : Formula.FALSE;
+                        for (String childId : refinementChildren) {
+                            GoalTaskElement child = model.findElement(childId)
+                                    .filter(GoalTaskElement.class::isInstance)
+                                    .map(GoalTaskElement.class::cast)
+                                    .orElseThrow(() -> new IllegalArgumentException(
+                                            "Unknown iStar child '" + childId + "'"));
+                            Formula childJ = instantAtFrame(child, self, j, usedFrames,
+                                    new LinkedHashSet<>(visiting));
+                            if (isAnd) frameJ = frameJ.and(childJ);
+                            else       frameJ = frameJ.or(childJ);
+                        }
+                        latched = latched.or(frameJ);
+                    }
+                    return latched;
+                } else {
+                    // None / Sustain / Maintain compound: instantaneous at frameIndex
+                    Formula frameVal = isAnd ? Formula.TRUE : Formula.FALSE;
+                    for (String childId : refinementChildren) {
+                        GoalTaskElement child = model.findElement(childId)
+                                .filter(GoalTaskElement.class::isInstance)
+                                .map(GoalTaskElement.class::cast)
+                                .orElseThrow(() -> new IllegalArgumentException(
+                                        "Unknown iStar child '" + childId + "'"));
+                        Formula childInstant = instantAtFrame(child, self, frameIndex, usedFrames, visiting);
+                        if (isAnd) frameVal = frameVal.and(childInstant);
+                        else       frameVal = frameVal.or(childInstant);
+                    }
+                    return frameVal;
+                }
+            }
+
+            // Leaf goal
+            if (element instanceof Goal goal) {
+                if (goal.oclSource() == null || goal.oclSource().isBlank()) return Formula.FALSE;
+                GoalType goalType = goal.goalType() == null ? GoalType.NONE : goal.goalType();
+                if (goalType == GoalType.ACHIEVE) {
+                    // Latch: OR of conditions from frame 0..frameIndex
+                    Formula latched = Formula.FALSE;
+                    for (int j = 0; j <= frameIndex; j++) {
+                        var c = symbolic.frame(j);
+                        var p = symbolic.frame(Math.max(0, j - 1));
+                        latched = latched.or(symbolic.expression(goal.oclSource(), c, p, self));
+                    }
+                    return latched;
+                } else {
+                    // NONE / MAINTAIN / SUSTAIN: instantaneous condition at frameIndex
+                    var current  = symbolic.frame(frameIndex);
+                    var previous = symbolic.frame(Math.max(0, frameIndex - 1));
+                    return symbolic.expression(goal.oclSource(), current, previous, self);
+                }
+            }
+
+            // Task: latch — completed at some point up to frameIndex
+            Task task = (Task) element;
+            String pre  = task.preconditions().isEmpty()  ? null : task.preconditions().get(0).oclBody();
+            String post = task.postconditions().isEmpty() ? null : task.postconditions().get(0).oclBody();
+            if (pre == null && post == null) return Formula.FALSE;
+            Formula done = Formula.FALSE;
+            for (int start = 0; start <= frameIndex; start++) {
+                var sf = symbolic.frame(start);
+                var sp = symbolic.frame(Math.max(0, start - 1));
+                Formula preTrue = pre == null ? Formula.TRUE
+                        : symbolic.expression(pre, sf, sp, self);
+                if (post == null) {
+                    done = done.or(preTrue);
+                } else {
+                    Formula postTrue = Formula.FALSE;
+                    for (int finish = start; finish <= frameIndex; finish++) {
+                        var ff = symbolic.frame(finish);
+                        var fp = symbolic.frame(Math.max(0, finish - 1));
+                        postTrue = postTrue.or(symbolic.expression(post, ff, fp, self));
+                    }
+                    done = done.or(preTrue.and(postTrue));
+                }
+            }
+            return done;
         } finally {
             visiting.remove(element.id());
         }
@@ -264,7 +409,7 @@ final class AclIStarSymbolicSemantics {
 
     private void validateFrames(int usedFrames) {
         if (usedFrames < 1 || usedFrames > symbolic.frameCount()) {
-            throw new IllegalArgumentException("Invalid iStar ACL path length " + usedFrames);
+            throw new IllegalArgumentException("Invalid iStar CSL path length " + usedFrames);
         }
     }
 
@@ -281,14 +426,36 @@ final class AclIStarSymbolicSemantics {
                 andRefinement.put(refinement.parent(), refinement instanceof AndRefinement);
             }
         }
+        // iStar 2.0 dependency semantics:
+        // When the dependee element satisfies its obligation, the depender element is also satisfied.
+        // Wire: dependerElmt --OR-> dependeeElmt (so that if dependee satisfies, depender is satisfied too)
+        for (var dep : model.getDependencies()) {
+            String dependerElmt = dep.dependerElmt();
+            String dependeeElmt = dep.dependeeElmt();
+            if (dependerElmt != null && dependeeElmt != null
+                    && model.findElement(dependerElmt).isPresent()
+                    && model.findElement(dependeeElmt).isPresent()) {
+                // Only add if dependerElmt doesn't already have AND-refinement children
+                // (i.e., it's currently a leaf — no explicit refinement defined by the author)
+                if (!children.containsKey(dependerElmt)) {
+                    children.computeIfAbsent(dependerElmt, ignored -> new ArrayList<>()).add(dependeeElmt);
+                    // OR-refinement: if dependee succeeds, depender is satisfied
+                    andRefinement.put(dependerElmt, false);
+                    // dependeeElmt is a child in this dependency-derived tree,
+                    // but it is NOT a structural iStar child (don't add to childIds)
+                    // so that it can still appear as a root in its own actor if applicable
+                }
+            }
+        }
         children.replaceAll((ignored, value) -> List.copyOf(value));
     }
+
 
     private void validateActors() {
         for (Actor actor : model.getActors()) {
             if (symbolic.actorCandidates(actor.name()).isEmpty()) {
                 throw new IllegalArgumentException("iStar actor '" + actor.name()
-                        + "' has no ACL classifier/object scope with the same name");
+                        + "' has no CSL classifier/object scope with the same name");
             }
         }
     }

@@ -15,8 +15,8 @@ import java.util.regex.Pattern;
  * snapshots and the loaded BPMN contracts.
  *
  * <pre>
- * acl-state-scenario v1.0 ClassroomRun {
- *   acl "classroom.acl";
+ * csl-state-scenario v1.0 ClassroomRun {
+ *   csl "classroom.csl";
  *   bpmn "classroom.bpmn2";
  *   state "state_00.aol";
  *   state "state_01.aol";
@@ -26,9 +26,9 @@ import java.util.regex.Pattern;
 public record AclStateScenario(String name, Path sourceFile, Path aclFile,
                                Path bpmnFile, List<Path> stateFiles) {
     private static final Pattern HEADER = Pattern.compile(
-            "^acl-state-scenario\\s+v1\\.0\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*\\{$");
+            "^(?:csl|acl)-state-scenario\\s+v1\\.0\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*\\{$");
     private static final Pattern STATEMENT = Pattern.compile(
-            "^(acl|bpmn|state)\\s+\"((?:\\\\.|[^\"\\\\])*)\"\\s*;$");
+            "^(csl|acl|bpmn|state)\\s+\"((?:\\\\.|[^\"\\\\])*)\"\\s*;$");
 
     public AclStateScenario {
         Objects.requireNonNull(name, "name");
@@ -37,7 +37,7 @@ public record AclStateScenario(String name, Path sourceFile, Path aclFile,
         Objects.requireNonNull(bpmnFile, "bpmnFile");
         stateFiles = List.copyOf(stateFiles);
         if (stateFiles.size() < 2) {
-            throw new IllegalArgumentException("an ACL state scenario requires at least two state snapshots");
+            throw new IllegalArgumentException("a CSL state scenario requires at least two state snapshots");
         }
     }
 
@@ -60,7 +60,7 @@ public record AclStateScenario(String name, Path sourceFile, Path aclFile,
                 Matcher header = HEADER.matcher(line);
                 if (!header.matches()) {
                     throw syntax(source, lineNumber,
-                            "expected 'acl-state-scenario v1.0 <Name> {'");
+                            "expected 'csl-state-scenario v1.0 <Name> {'");
                 }
                 name = header.group(1);
                 opened = true;
@@ -78,12 +78,12 @@ public record AclStateScenario(String name, Path sourceFile, Path aclFile,
             Matcher statement = STATEMENT.matcher(line);
             if (!statement.matches()) {
                 throw syntax(source, lineNumber,
-                        "expected acl, bpmn, or state followed by a quoted path and ';'");
+                        "expected csl, bpmn, or state followed by a quoted path and ';'");
             }
             String value = unescape(statement.group(2));
             switch (statement.group(1)) {
-                case "acl" -> {
-                    if (acl != null) throw syntax(source, lineNumber, "duplicate acl declaration");
+                case "csl", "acl" -> {
+                    if (acl != null) throw syntax(source, lineNumber, "duplicate csl declaration");
                     acl = value;
                 }
                 case "bpmn" -> {
@@ -95,7 +95,7 @@ public record AclStateScenario(String name, Path sourceFile, Path aclFile,
             }
         }
         if (!opened || !closed) throw syntax(source, lines.size(), "missing closing '}'");
-        if (acl == null) throw syntax(source, 0, "missing acl declaration");
+        if (acl == null) throw syntax(source, 0, "missing csl declaration");
         if (bpmn == null) throw syntax(source, 0, "missing bpmn declaration");
         if (states.size() < 2) throw syntax(source, 0, "at least two state declarations are required");
 

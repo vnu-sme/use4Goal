@@ -217,7 +217,7 @@ public final class BpmnAolTraceViewerForm extends JDialog {
         frameIndex = Math.max(0, Math.min(frameIndex, steps.size() - 1));
         Step step = steps.get(frameIndex);
 
-        String description = step.activityId() == null ? "initial state (from AOL)" : "after " + step.activityId()
+        String description = step.activityId() == null ? "initial state" : "after " + step.activityId()
                 + (step.delta().isEmpty() ? "" : " (" + step.delta().size() + " change(s))");
         stepLabel.setText("Step " + frameIndex + " / " + (steps.size() - 1) + " — " + description);
         prevButton.setEnabled(frameIndex > 0);

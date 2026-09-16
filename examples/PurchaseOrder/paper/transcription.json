@@ -1,0 +1,1117 @@
+{
+  "case": "PurchaseOrder",
+  "folder": "PurchaseOrder",
+  "stem": "purchase-order",
+  "source_pdf_pages": [
+    9,
+    13
+  ],
+  "notes": [
+    "Collapsed PN and committee subprocesses remain atomic; calendar waiting is untimed."
+  ],
+  "nodes": [
+    {
+      "kind": "start",
+      "id": "caseStarted",
+      "lane": "PurchaseInitiator",
+      "name": "Purchase request",
+      "edges": [
+        {
+          "to": "createRequisition",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "requisitionMerge",
+      "lane": "PurchaseInitiator",
+      "name": "Requisition revision merge",
+      "edges": [
+        {
+          "to": "createRequisition",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "createRequisition",
+      "lane": "PurchaseInitiator",
+      "name": "Create or update purchase requisition",
+      "edges": [
+        {
+          "to": "needPN",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "needPN",
+      "lane": "PurchaseInitiator",
+      "name": "Required to create PN?",
+      "edges": [
+        {
+          "to": "createPN",
+          "label": "Yes"
+        },
+        {
+          "to": "pnMerge",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "createPN",
+      "lane": "PurchaseInitiator",
+      "name": "PN creation",
+      "edges": [
+        {
+          "to": "pnMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "pnMerge",
+      "lane": "PurchaseInitiator",
+      "name": "PN merge",
+      "edges": [
+        {
+          "to": "updatePN",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "updatePN",
+      "lane": "PurchaseInitiator",
+      "name": "Enter or update PNs",
+      "edges": [
+        {
+          "to": "estimatedCost",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "estimatedCost",
+      "lane": "PurchaseInitiator",
+      "name": "Updating estimated cost and budget details",
+      "edges": [
+        {
+          "to": "cancel",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "cancel",
+      "lane": "PurchaseInitiator",
+      "name": "Reason to cancel?",
+      "edges": [
+        {
+          "to": "cancelPurchase",
+          "label": "Yes"
+        },
+        {
+          "to": "supplierStatus",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "cancelPurchase",
+      "lane": "PurchaseInitiator",
+      "name": "Abort purchase and change status",
+      "edges": [
+        {
+          "to": "endCancelled",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "end",
+      "id": "endCancelled",
+      "lane": "PurchaseInitiator",
+      "name": "Purchase cancelled",
+      "edges": [],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "supplierStatus",
+      "lane": "PurchaseInitiator",
+      "name": "Update supplier and change status",
+      "edges": [
+        {
+          "to": "informDepartment",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "informDepartment",
+      "lane": "PurchaseInitiator",
+      "name": "Inform department manager",
+      "edges": [
+        {
+          "to": "departmentPending",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "departmentPending",
+      "lane": "DepartmentManager",
+      "name": "Pending purchase requisition",
+      "edges": [
+        {
+          "to": "examineDetails",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "examineDetails",
+      "lane": "DepartmentManager",
+      "name": "Examining purchase details",
+      "edges": [
+        {
+          "to": "departmentBudget",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "departmentBudget",
+      "lane": "DepartmentManager",
+      "name": "Check departmental budget status",
+      "edges": [
+        {
+          "to": "departmentApproved",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "departmentApproved",
+      "lane": "DepartmentManager",
+      "name": "Approved?",
+      "edges": [
+        {
+          "to": "departmentApprove",
+          "label": "Yes"
+        },
+        {
+          "to": "requestChange",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "requestChange",
+      "lane": "DepartmentManager",
+      "name": "Request for changes and change status",
+      "edges": [
+        {
+          "to": "requisitionMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "departmentApprove",
+      "lane": "DepartmentManager",
+      "name": "Approve and change status",
+      "edges": [
+        {
+          "to": "informPurchaseManager",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "informPurchaseManager",
+      "lane": "DepartmentManager",
+      "name": "Inform purchase manager",
+      "edges": [
+        {
+          "to": "managerPending",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "managerPending",
+      "lane": "PurchaseManager",
+      "name": "Pending purchase requisition",
+      "edges": [
+        {
+          "to": "legality",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "legality",
+      "lane": "PurchaseManager",
+      "name": "Legality and total sum check",
+      "edges": [
+        {
+          "to": "approvedSupplier",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "approvedSupplier",
+      "lane": "PurchaseManager",
+      "name": "From approved suppliers?",
+      "edges": [
+        {
+          "to": "supplierMerge",
+          "label": "Yes"
+        },
+        {
+          "to": "amount",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "amount",
+      "lane": "PurchaseManager",
+      "name": "Sum of requisition",
+      "edges": [
+        {
+          "to": "createRFP",
+          "label": "over100000"
+        },
+        {
+          "to": "requestThree",
+          "label": "8001to99999"
+        },
+        {
+          "to": "requestTwo",
+          "label": "4001to8000"
+        },
+        {
+          "to": "quoteMerge",
+          "label": "under4000"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "createRFP",
+      "lane": "PurchaseManager",
+      "name": "Create draft RFP document",
+      "edges": [
+        {
+          "to": "committeeMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "requestThree",
+      "lane": "PurchaseManager",
+      "name": "Request more than three quotes",
+      "edges": [
+        {
+          "to": "checkQuotes",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "checkQuotes",
+      "lane": "PurchaseManager",
+      "name": "Quotation check",
+      "edges": [
+        {
+          "to": "committeeMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "requestTwo",
+      "lane": "PurchaseManager",
+      "name": "Request two quotes",
+      "edges": [
+        {
+          "to": "quoteMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "quoteMerge",
+      "lane": "PurchaseManager",
+      "name": "Quotation merge",
+      "edges": [
+        {
+          "to": "quotationCheck",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "quotationCheck",
+      "lane": "PurchaseManager",
+      "name": "Quotation check",
+      "edges": [
+        {
+          "to": "updateSupplier",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "updateSupplier",
+      "lane": "PurchaseManager",
+      "name": "Update supplier",
+      "edges": [
+        {
+          "to": "supplierMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "supplierMerge",
+      "lane": "PurchaseManager",
+      "name": "Approved supplier merge",
+      "edges": [
+        {
+          "to": "cfoMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "committeeMerge",
+      "lane": "PurchaseManager",
+      "name": "Purchase committee preparation merge",
+      "edges": [
+        {
+          "to": "prepareCommittee",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "prepareCommittee",
+      "lane": "PurchaseManager",
+      "name": "Prepare documents for purchase committee",
+      "edges": [
+        {
+          "to": "scheduleCommittee",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "scheduleCommittee",
+      "lane": "PurchaseManager",
+      "name": "Schedule purchase committee",
+      "edges": [
+        {
+          "to": "committeeTimer",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "event",
+      "id": "committeeTimer",
+      "lane": "PurchaseManager",
+      "name": "Every week",
+      "edges": [
+        {
+          "to": "committeeRecord",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "committeeRecord",
+      "lane": "PurchaseManager",
+      "name": "Purchase committee record",
+      "edges": [
+        {
+          "to": "needTender",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "needTender",
+      "lane": "PurchaseManager",
+      "name": "Need a tender?",
+      "edges": [
+        {
+          "to": "prepareTender",
+          "label": "Yes"
+        },
+        {
+          "to": "committeeApproved",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "prepareTender",
+      "lane": "PurchaseManager",
+      "name": "Prepare RFP document for approval",
+      "edges": [
+        {
+          "to": "scheduleTender",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "scheduleTender",
+      "lane": "PurchaseManager",
+      "name": "Schedule tender committee",
+      "edges": [
+        {
+          "to": "tenderTimer",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "event",
+      "id": "tenderTimer",
+      "lane": "PurchaseManager",
+      "name": "Every month or quarter",
+      "edges": [
+        {
+          "to": "tenderCommittee",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "tenderCommittee",
+      "lane": "PurchaseManager",
+      "name": "Tender committee",
+      "edges": [
+        {
+          "to": "tenderApproved",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "tenderApproved",
+      "lane": "PurchaseManager",
+      "name": "Approved?",
+      "edges": [
+        {
+          "to": "committeeMerge",
+          "label": "Yes"
+        },
+        {
+          "to": "endTender",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "end",
+      "id": "endTender",
+      "lane": "PurchaseManager",
+      "name": "Tender rejected",
+      "edges": [],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "committeeApproved",
+      "lane": "PurchaseManager",
+      "name": "Approved?",
+      "edges": [
+        {
+          "to": "cfoMerge",
+          "label": "Yes"
+        },
+        {
+          "to": "requireChanges",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "requireChanges",
+      "lane": "PurchaseManager",
+      "name": "Require changes?",
+      "edges": [
+        {
+          "to": "ceoMerge",
+          "label": "Yes"
+        },
+        {
+          "to": "endCommittee",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "end",
+      "id": "endCommittee",
+      "lane": "PurchaseManager",
+      "name": "Committee rejected",
+      "edges": [],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "cfoMerge",
+      "lane": "CFO",
+      "name": "Financial examination merge",
+      "edges": [
+        {
+          "to": "cfoStatus",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "cfoStatus",
+      "lane": "CFO",
+      "name": "Change status",
+      "edges": [
+        {
+          "to": "informFinance",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "informFinance",
+      "lane": "CFO",
+      "name": "Inform financial manager",
+      "edges": [
+        {
+          "to": "ceoPending",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "ceoMerge",
+      "lane": "CFO",
+      "name": "Rejected approval merge",
+      "edges": [
+        {
+          "to": "updateCfoDetails",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "updateCfoDetails",
+      "lane": "CFO",
+      "name": "Update details",
+      "edges": [
+        {
+          "to": "modificationDecision",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "modificationDecision",
+      "lane": "PurchaseManager",
+      "name": "Require initiator update?",
+      "edges": [
+        {
+          "to": "requisitionMerge",
+          "label": "Yes"
+        },
+        {
+          "to": "legality",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "ceoPending",
+      "lane": "CEO",
+      "name": "Pending purchase requisition",
+      "edges": [
+        {
+          "to": "ceoBudget",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "ceoBudget",
+      "lane": "CEO",
+      "name": "Legality and budget check",
+      "edges": [
+        {
+          "to": "ceoApproved",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "ceoApproved",
+      "lane": "CEO",
+      "name": "Approved?",
+      "edges": [
+        {
+          "to": "ceoApprove",
+          "label": "Yes"
+        },
+        {
+          "to": "cancelCeo",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "cancelCeo",
+      "lane": "CEO",
+      "name": "Cancel and change status",
+      "edges": [
+        {
+          "to": "ceoMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "ceoApprove",
+      "lane": "CEO",
+      "name": "Approve and change status",
+      "edges": [
+        {
+          "to": "informCFO",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "informCFO",
+      "lane": "CEO",
+      "name": "Inform the CFO",
+      "edges": [
+        {
+          "to": "directorPending",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "directorPending",
+      "lane": "Director",
+      "name": "Pending purchase requisition",
+      "edges": [
+        {
+          "to": "directorCheck",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "directorCheck",
+      "lane": "Director",
+      "name": "Check details",
+      "edges": [
+        {
+          "to": "directorApproved",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "directorApproved",
+      "lane": "Director",
+      "name": "Approved?",
+      "edges": [
+        {
+          "to": "directorAmount",
+          "label": "Yes"
+        },
+        {
+          "to": "cancelDirector",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "cancelDirector",
+      "lane": "Director",
+      "name": "Cancel and change status",
+      "edges": [
+        {
+          "to": "ceoMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "directorAmount",
+      "lane": "Director",
+      "name": "Requisition exceeds 20000 NIS?",
+      "edges": [
+        {
+          "to": "directorApprove",
+          "label": "Yes"
+        },
+        {
+          "to": "requestDirectorApproval",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "directorApprove",
+      "lane": "Director",
+      "name": "Change status to approved",
+      "edges": [
+        {
+          "to": "informManager",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "informManager",
+      "lane": "Director",
+      "name": "Inform purchase manager",
+      "edges": [
+        {
+          "to": "orderMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "requestDirectorApproval",
+      "lane": "Director",
+      "name": "Change status to director approval",
+      "edges": [
+        {
+          "to": "informDirector",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "informDirector",
+      "lane": "Director",
+      "name": "Inform the Director",
+      "edges": [
+        {
+          "to": "finalPending",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "finalPending",
+      "lane": "DepartmentManager",
+      "name": "Pending purchase requisition",
+      "edges": [
+        {
+          "to": "finalCheck",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "finalCheck",
+      "lane": "DepartmentManager",
+      "name": "Check details",
+      "edges": [
+        {
+          "to": "finalApproved",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "finalApproved",
+      "lane": "DepartmentManager",
+      "name": "Approved?",
+      "edges": [
+        {
+          "to": "finalApprove",
+          "label": "Yes"
+        },
+        {
+          "to": "cancelFinal",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "cancelFinal",
+      "lane": "DepartmentManager",
+      "name": "Cancel and change status",
+      "edges": [
+        {
+          "to": "ceoMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "finalApprove",
+      "lane": "DepartmentManager",
+      "name": "Approved and change status",
+      "edges": [
+        {
+          "to": "finalInform",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "finalInform",
+      "lane": "DepartmentManager",
+      "name": "Inform purchase manager",
+      "edges": [
+        {
+          "to": "orderMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "orderMerge",
+      "lane": "PurchaseManager",
+      "name": "Order operation merge",
+      "edges": [
+        {
+          "to": "orderPending",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "orderPending",
+      "lane": "PurchaseManager",
+      "name": "Pending purchase requisition",
+      "edges": [
+        {
+          "to": "createOrder",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "createOrder",
+      "lane": "PurchaseManager",
+      "name": "Create order according to purchase requisition",
+      "edges": [
+        {
+          "to": "orderClosure",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "orderClosure",
+      "lane": "PurchaseManager",
+      "name": "Order creation and purchase closure",
+      "edges": [
+        {
+          "to": "informInitiator",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "informInitiator",
+      "lane": "PurchaseManager",
+      "name": "Inform the initiator",
+      "edges": [
+        {
+          "to": "initiatorApproval",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "initiatorApproval",
+      "lane": "PurchaseInitiator",
+      "name": "Purchase requisition approval",
+      "edges": [
+        {
+          "to": "endOrder",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "end",
+      "id": "endOrder",
+      "lane": "PurchaseInitiator",
+      "name": "Purchase order completed",
+      "edges": [],
+      "gateway": "xor"
+    }
+  ],
+  "counts": {
+    "nodes": 81,
+    "sequence_flows": 93,
+    "split_gateways": 14,
+    "outgoing_split_branches": 30
+  }
+}

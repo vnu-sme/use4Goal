@@ -18,7 +18,7 @@ import org.vnu.sme.goal.dsl.acl.parser.AclCompiler;
 import org.vnu.sme.goal.dsl.aol.ast.AolModelCS;
 import org.vnu.sme.goal.dsl.aol.mm.AolModel;
 
-/** Compiles an .aol object snapshot against the .acl StructuralSpecification named in its 'for' clause. */
+/** Compiles an .aol object snapshot against the CSL model named in its {@code for} clause. */
 public final class AolCompiler {
 
     public record Result(AolModelCS ast, AclModel acl, Path aclFile, AolModel model, List<String> errors) {
@@ -58,11 +58,11 @@ public final class AolCompiler {
         try {
             aclResult = AclCompiler.compile(aclFile);
         } catch (IOException ex) {
-            errors.add("cannot read ACL file '" + aclFile + "': " + ex.getMessage());
+            errors.add("cannot read CSL file '" + aclFile + "': " + ex.getMessage());
             return new Result(ast, null, aclFile, null, errors);
         }
         if (!aclResult.ok()) {
-            errors.add("errors in referenced ACL specification '" + aclFile + "':");
+            errors.add("errors in referenced CSL specification '" + aclFile + "':");
             errors.addAll(aclResult.errors());
             return new Result(ast, aclResult.model(), aclFile, null, errors);
         }
@@ -104,11 +104,11 @@ public final class AolCompiler {
         try {
             aclResult = AclCompiler.compile(aclFile);
         } catch (IOException ex) {
-            errors.add("cannot read ACL file '" + aclFile + "': " + ex.getMessage());
+            errors.add("cannot read CSL file '" + aclFile + "': " + ex.getMessage());
             return new Result(ast, null, aclFile, null, errors);
         }
         if (!aclResult.ok()) {
-            errors.add("errors in referenced ACL specification '" + aclFile + "':");
+            errors.add("errors in referenced CSL specification '" + aclFile + "':");
             errors.addAll(aclResult.errors());
             return new Result(ast, aclResult.model(), aclFile, null, errors);
         }

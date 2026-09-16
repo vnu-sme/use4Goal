@@ -6,13 +6,13 @@ import java.util.Set;
 
 import org.vnu.sme.goal.dsl.acl.mm.*;
 
-/** Canonical concrete-syntax renderer for the ACL metamodel. */
+/** Canonical concrete-syntax renderer for the CSL metamodel. */
 public final class AclSpecText {
     private static final String INDENT = "    ";
     private AclSpecText() {}
 
     public static String render(AclModel model) {
-        StringBuilder out = new StringBuilder("acl ").append(model.version()).append(' ')
+        StringBuilder out = new StringBuilder("csl ").append(model.version()).append(' ')
                 .append(model.name()).append(" {\n");
         model.enums().forEach(value -> out.append('\n').append(INDENT).append("enum ")
                 .append(value.name()).append(" { ").append(String.join(", ", value.literals())).append(" }\n"));

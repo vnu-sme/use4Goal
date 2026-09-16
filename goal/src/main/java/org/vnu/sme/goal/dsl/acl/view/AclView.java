@@ -95,7 +95,7 @@ public final class AclView extends JPanel implements View, PrintableView {
     }
 
     private String title() {
-        String version = model == null ? "ACL" : "ACL " + model.version();
+        String version = model == null ? "CSL" : "CSL " + model.version();
         return sourceFile == null ? version : version + " - " + sourceFile.getFileName();
     }
 

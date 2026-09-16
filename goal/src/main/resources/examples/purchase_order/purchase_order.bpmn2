@@ -1,0 +1,207 @@
+// Enhanced executable BPMN for Process 4: Purchase Order (19 nodes).
+model PurchaseOrderProcess {
+  pool PurchaseOrderHandling for PurchaseOrderCase {
+    name "Purchase Order Management"
+    lane PurchaseInitiator;
+    lane PurchaseManager;
+    lane DepartmentManager;
+    lane Director;
+    lane CFO;
+    lane CEO;
+  }
+
+  start requisitionCreated {
+    lane PurchaseInitiator
+    trigger none
+    pre {[
+      not self.order.created
+      and not self.order.completed
+    ]}
+    flow createRequisition
+  }
+
+  activity createRequisition {
+    name "Creating purchase requisition"
+    type task
+    lane PurchaseInitiator
+    post {[
+      self.order.created
+      and self.purchaseInitiator.initiatedCount =
+        self.purchaseInitiator.initiatedCount@pre + 1
+    ]}
+    flow collectQuotations
+  }
+
+  activity collectQuotations {
+    name "Collecting quotations and technical specifications"
+    type task
+    lane PurchaseInitiator
+    pre {[
+      self.order.created
+    ]}
+    post {[
+      self.order.quotationCollected
+    ]}
+    flow bypassDecision
+  }
+
+  gateway bypassDecision {
+    lane PurchaseInitiator
+    type xor
+    flow standardProcurement post {[
+      not self.order.bypassedApproval
+    ]}
+    flow emergencyBypassRoute post {[
+      self.order.bypassedApproval
+    ]}
+  }
+
+  activity standardProcurement {
+    name "Standard procurement workflow initiation"
+    type task
+    lane PurchaseInitiator
+    post {[
+      not self.order.bypassedApproval
+    ]}
+    flow bypassMerge
+  }
+
+  activity emergencyBypassRoute {
+    name "Emergency direct procurement workaround"
+    type task
+    lane PurchaseInitiator
+    post {[
+      self.order.bypassedApproval
+    ]}
+    flow bypassMerge
+  }
+
+  gateway bypassMerge {
+    lane PurchaseInitiator
+    type xor
+    flow quoteComparisonDecision
+  }
+
+  gateway quoteComparisonDecision {
+    lane PurchaseManager
+    type xor
+    flow compareMultipleQuotes post {[
+      self.order.multipleQuotesCompared
+    ]}
+    flow singleSoleSource post {[
+      not self.order.multipleQuotesCompared
+    ]}
+  }
+
+  activity compareMultipleQuotes {
+    name "Comparing competitive vendor quotations"
+    type task
+    lane PurchaseManager
+    post {[
+      self.order.multipleQuotesCompared
+    ]}
+    flow quoteMerge
+  }
+
+  activity singleSoleSource {
+    name "Selecting sole-source vendor"
+    type task
+    lane PurchaseManager
+    post {[
+      not self.order.multipleQuotesCompared
+    ]}
+    flow quoteMerge
+  }
+
+  gateway quoteMerge {
+    lane PurchaseManager
+    type xor
+    flow departmentApproval
+  }
+
+  activity departmentApproval {
+    name "Department manager approval"
+    type task
+    lane DepartmentManager
+    post {[
+      self.order.departmentApproved
+    ]}
+    flow approvalHierarchyTier
+  }
+
+  gateway approvalHierarchyTier {
+    lane DepartmentManager
+    type xor
+    flow cfoApprovalPath post {[
+      self.order.cfoApproved
+      and not self.order.ceoApproved
+    ]}
+    flow directorCeoApprovalPath post {[
+      self.order.directorApproved
+      and self.order.ceoApproved
+    ]}
+  }
+
+  activity cfoApprovalPath {
+    name "CFO financial review and approval"
+    type task
+    lane CFO
+    post {[
+      self.order.cfoApproved
+      and self.order.departmentApproved = self.order.departmentApproved@pre
+    ]}
+    flow hierarchyMerge
+  }
+
+  activity directorCeoApprovalPath {
+    name "Director and CEO executive approval"
+    type task
+    lane CEO
+    post {[
+      self.order.directorApproved
+      and self.order.ceoApproved
+      and self.order.departmentApproved = self.order.departmentApproved@pre
+    ]}
+    flow hierarchyMerge
+  }
+
+  gateway hierarchyMerge {
+    lane PurchaseManager
+    type xor
+    flow placeOrder
+  }
+
+  activity placeOrder {
+    name "Issuing formal purchase order to vendor"
+    type task
+    lane PurchaseManager
+    post {[
+      self.order.orderPlaced
+      and self.order.departmentApproved = self.order.departmentApproved@pre
+      and self.order.cfoApproved = self.order.cfoApproved@pre
+      and self.order.ceoApproved = self.order.ceoApproved@pre
+      and self.purchaseManager.processedOrderCount =
+        self.purchaseManager.processedOrderCount@pre + 1
+    ]}
+    flow receiveGoods
+  }
+
+  activity receiveGoods {
+    name "Receiving goods and completing order"
+    type task
+    lane PurchaseInitiator
+    pre {[
+      self.order.orderPlaced
+    ]}
+    post {[
+      self.order.goodsReceived
+      and self.order.completed
+    ]}
+    flow orderCompleted
+  }
+
+  end orderCompleted {
+    lane PurchaseInitiator
+    trigger none
+  }
+}

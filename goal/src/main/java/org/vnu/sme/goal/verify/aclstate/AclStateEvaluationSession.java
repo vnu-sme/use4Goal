@@ -17,7 +17,7 @@ import org.vnu.sme.goal.dsl.istar.parser.IStarCompiler;
 import org.vnu.sme.goal.trace.istartrace.nativeacl.NativeOclEvaluator;
 
 /**
- * Evaluates OCL invariants directly over typed ACL/AOL states.
+ * Evaluates OCL invariants directly over typed CSL states and concrete snapshots.
  *
  * <p>This class deliberately has no dependency on USE's {@code MModel},
  * {@code MSystem}, SOIL, or the ACL-to-USE translator. Entity, Role and Group
@@ -84,7 +84,7 @@ public final class AclStateEvaluationSession {
         Path source = aclFile.toAbsolutePath().normalize();
         AclCompiler.Result acl = AclCompiler.compile(source);
         if (!acl.ok()) {
-            throw new IllegalArgumentException("ACL compilation failed:\n" + String.join("\n", acl.errors()));
+            throw new IllegalArgumentException("CSL compilation failed:\n" + String.join("\n", acl.errors()));
         }
         return new AclStateEvaluationSession(source, acl.model(), Files.readString(source));
     }
@@ -141,7 +141,7 @@ public final class AclStateEvaluationSession {
      */
     public AclBpmnWholeProcessValidator.ValidationResult validateWholeBpmnProcess() {
         if (bpmnEvaluator == null) throw new IllegalStateException("Load a BPMN specification first");
-        if (boundary == null) throw new IllegalStateException("Load an ACL/BPMN boundary first");
+        if (boundary == null) throw new IllegalStateException("Load a CSL/BPMN boundary first");
         if (goalModel == null) throw new IllegalStateException("Load an iStar requirement model first");
         return new AclBpmnWholeProcessValidator().validate(bpmnEvaluator, aclModel, boundary, goalModel);
     }
@@ -149,7 +149,7 @@ public final class AclStateEvaluationSession {
     /** Backward-compatible BPMN-only bounded validation used by focused BPMN clients. */
     public AclBpmnWholeProcessValidator.ValidationResult validateWholeBpmnOnly() {
         if (bpmnEvaluator == null) throw new IllegalStateException("Load a BPMN specification first");
-        if (boundary == null) throw new IllegalStateException("Load an ACL/BPMN boundary first");
+        if (boundary == null) throw new IllegalStateException("Load a CSL/BPMN boundary first");
         return new AclBpmnWholeProcessValidator().validate(bpmnEvaluator, aclModel, boundary);
     }
 
@@ -165,7 +165,7 @@ public final class AclStateEvaluationSession {
         AclSystemState snapshot = aol.state();
         List<ConstraintResult> constraints = evaluateConstraints(snapshot);
         boolean structureValid = aol.diagnostics().isEmpty();
-        String structureReport = structureValid ? "ACL structure valid"
+        String structureReport = structureValid ? "CSL structure valid"
                 : String.join("\n", aol.diagnostics());
         StateResult result = new StateResult(states.size(), source, snapshot,
                 structureValid, structureReport, aol.diagnostics(), constraints);

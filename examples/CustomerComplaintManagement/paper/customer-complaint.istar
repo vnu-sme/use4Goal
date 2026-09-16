@@ -1,0 +1,42 @@
+// Operationalized goals grounded in Appendix 3; see evaluation/AUDIT.md.
+istar CustomerComplaintGoals {
+  role Accountment {
+    task Act_acc_update description "Updating refund in the system"
+    post {[ self.orgContext.refundRecorded ]}
+  }
+  role CEO {
+    task Act_ceo_exam description "Complaint examination and updating"
+  }
+  role CFO {
+    task Act_cfo_sugg description "Suggestion examination and updating"
+  }
+  role CustomerManager {
+    task Act_cm_exam description "Examining the artifacts and updating"
+    post {[ self.orgContext.examined ]}
+    task Act_cm_sugg description "Suggestion examination and updating"
+  }
+  role FieldMan {
+    goal ComplaintHandled : Achieve description "Satisfy customers through complaint handling"
+    condition {[ self.orgContext.closed and self.orgContext.suggested ]}
+    task Act_create description "Creating complaint"
+    post {[ self.orgContext.created ]}
+    task Act_updartifacts description "Updating artifacts"
+    task Act_comp description "Compensation suggestion"
+    post {[ self.orgContext.suggested ]}
+    task Act_updcompl description "Updating the complaint"
+    post {[ self.orgContext.closed ]}
+  }
+  role LabManager {
+    goal ExamineBeforeClosure : Maintain description "Solve stuck complaints rather than close unhandled"
+    condition {[ not self.orgContext.closed or self.orgContext.examined ]}
+    task Act_lm_exam description "Examining the artifacts and updating"
+    post {[ self.orgContext.examined ]}
+    task Act_lm_check description "Checking in proactive tests"
+    post {[ self.orgContext.qualityChecked ]}
+    task Act_lm_improve description "Updating as improvement suggestion"
+  }
+  role Nutritionist {
+    task Act_nu_exam description "Examining the artifacts and updating"
+    post {[ self.orgContext.examined ]}
+  }
+}

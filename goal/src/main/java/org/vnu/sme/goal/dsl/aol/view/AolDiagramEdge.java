@@ -77,6 +77,7 @@ public final class AolDiagramEdge extends EdgeBase {
     }
 
     private void paintLabel(Graphics2D g, Point2D start, Point2D end) {
+        if (!opt.isShowAssociationNames()) return;
         if (edge.label() == null || edge.label().isBlank()) return;
         g.setFont(LABEL_FONT);
         g.setColor(isSelected() ? fOpt.getEDGE_SELECTED_COLOR() : edgeColor());

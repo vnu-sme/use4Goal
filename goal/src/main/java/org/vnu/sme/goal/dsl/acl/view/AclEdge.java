@@ -10,7 +10,7 @@ public record AclEdge(String fromId, String toId, AclEdgeKind kind,
         Objects.requireNonNull(toId, "toId");
         Objects.requireNonNull(kind, "kind");
         if (routeIndex < 0 || routeCount < 1 || routeIndex >= routeCount) {
-            throw new IllegalArgumentException("Invalid ACL edge route");
+            throw new IllegalArgumentException("Invalid CSL edge route");
         }
     }
 

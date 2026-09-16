@@ -89,23 +89,19 @@ public final class AolDiagramNode extends PlaceableNode implements ToolTipProvid
 
     private void drawAgent(Graphics2D g) {
         g.setColor(getTextColor());
-        g.setFont(getFont().deriveFont(Font.PLAIN, 10f));
-        g.drawString("«agent»", (float) getX() + H_PAD, (float) getY() + V_PAD + g.getFontMetrics().getAscent());
         g.setFont(getFont().deriveFont(Font.BOLD, 13f));
         drawCentered(g, node.label, new Rectangle2D.Double(
-                getX() + H_PAD, getY() + 14, getWidth() - H_PAD * 2, AGENT_HEADER - 14));
+                getX() + H_PAD, getY() + V_PAD, getWidth() - H_PAD * 2, AGENT_HEADER - V_PAD * 2));
         if (node.details.isEmpty()) return;
         drawDetails(g, AGENT_HEADER, H_PAD * 2);
     }
 
     private void drawGroup(Graphics2D g) {
         g.setColor(getTextColor());
-        g.setFont(getFont().deriveFont(Font.PLAIN, 10f));
-        g.drawString("«orgContext»", (float) getX() + H_PAD, (float) getY() + GROUP_TAB_HEIGHT + 1 + g.getFontMetrics().getAscent());
         g.setFont(getFont().deriveFont(Font.BOLD, 13f));
         drawCentered(g, node.label, new Rectangle2D.Double(
-                getX() + H_PAD, getY() + GROUP_TAB_HEIGHT + 13,
-                getWidth() - H_PAD * 2, GROUP_HEADER - GROUP_TAB_HEIGHT - 13));
+                getX() + H_PAD, getY() + GROUP_TAB_HEIGHT,
+                getWidth() - H_PAD * 2, GROUP_HEADER - GROUP_TAB_HEIGHT));
         if (node.details.isEmpty()) return;
         g.setColor(getFrameColor());
         g.draw(new Line2D.Double(getX(), getY() + GROUP_HEADER,
@@ -116,11 +112,9 @@ public final class AolDiagramNode extends PlaceableNode implements ToolTipProvid
     private void drawPlay(Graphics2D g) {
         drawRoleIcon(g);
         g.setColor(getTextColor());
-        g.setFont(getFont().deriveFont(Font.PLAIN, 10f));
-        g.drawString("«role»", (float) getX() + 24, (float) getY() + V_PAD + g.getFontMetrics().getAscent());
         g.setFont(getFont().deriveFont(Font.BOLD, 13f));
         drawCentered(g, node.label, new Rectangle2D.Double(
-                getX() + 24, getY() + 14, getWidth() - 40, PLAY_HEADER - 14));
+                getX() + 24, getY() + V_PAD, getWidth() - 40, PLAY_HEADER - V_PAD * 2));
 
         if (node.details.isEmpty()) return;
         g.setColor(getFrameColor());
@@ -142,12 +136,9 @@ public final class AolDiagramNode extends PlaceableNode implements ToolTipProvid
 
     private void drawEntity(Graphics2D g) {
         g.setColor(getTextColor());
-        g.setFont(getFont().deriveFont(Font.PLAIN, 10f));
-        g.drawString("«entity»", (float) getX() + H_PAD, (float) getY() + V_PAD + g.getFontMetrics().getAscent());
-
         g.setFont(getFont().deriveFont(Font.BOLD, 13f));
         drawCentered(g, node.label, new Rectangle2D.Double(
-                getX() + H_PAD, getY() + 14, getWidth() - H_PAD * 2, 22));
+                getX() + H_PAD, getY() + V_PAD, getWidth() - H_PAD * 2, ENTITY_HEADER - V_PAD * 2));
 
         g.setColor(getFrameColor());
         g.draw(new Line2D.Double(getX(), getY() + ENTITY_HEADER, getX() + getWidth(), getY() + ENTITY_HEADER));

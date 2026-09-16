@@ -17,7 +17,7 @@ import org.vnu.sme.goal.dsl.bpmn.mm.BpmnModel;
 import org.vnu.sme.goal.dsl.bpmn.parser.BpmnCompiler;
 import org.vnu.sme.goal.verify.aclstate.AclBpmnFlowRuntime.FlowStep;
 
-/** Checks an explicitly supplied ACL state path against formal BPMN flow steps. */
+/** Checks an explicitly supplied CSL state path against formal BPMN flow steps. */
 public final class AclBpmnStateTraceEvaluator {
     private static final int MAX_CANDIDATES = 4096;
 
@@ -88,7 +88,7 @@ public final class AclBpmnStateTraceEvaluator {
         for (org.vnu.sme.goal.dsl.bpmn.mm.Process process : compiled.model().processes()) {
             if (process.groupClass() != null && aclModel.findGroup(process.groupClass()).isEmpty()) {
                 throw new IllegalArgumentException("BPMN pool '" + process.id()
-                        + "' is scoped to unknown ACL Group '" + process.groupClass() + "'");
+                        + "' is scoped to unknown CSL organizational context '" + process.groupClass() + "'");
             }
         }
         return new AclBpmnStateTraceEvaluator(source, compiled.model(), Files.readString(source));
@@ -102,18 +102,18 @@ public final class AclBpmnStateTraceEvaluator {
     public TraceResult evaluate(List<AclStateEvaluationSession.StateResult> states) {
         Objects.requireNonNull(states, "states");
         if (states.size() < 2) {
-            return failure(List.of(), "At least two ACL states are required for one formal flow step.");
+            return failure(List.of(), "At least two CSL states are required for one formal flow step.");
         }
         for (AclStateEvaluationSession.StateResult state : states) {
             if (!invariantValid(state)) {
                 return failure(List.of(), "State s" + state.index()
-                        + " is not a valid ACL state: structure/invariant evaluation failed.");
+                        + " is not a valid CSL state: structure/invariant evaluation failed.");
             }
         }
 
         List<Candidate> candidates = initialCandidates(states.get(0).state());
         if (candidates.isEmpty()) {
-            return failure(List.of(), "No BPMN process instance can be bound to the first ACL state.");
+            return failure(List.of(), "No BPMN process instance can be bound to the first CSL state.");
         }
 
         List<StepResult> results = new ArrayList<>();
@@ -153,7 +153,7 @@ public final class AclBpmnStateTraceEvaluator {
             if (nextCandidates.isEmpty()) {
                 String detail = rejected.stream().distinct().limit(12)
                         .reduce((a, b) -> a + "; " + b)
-                        .orElse("No enabled formal BPMN flow matches this ACL state pair.");
+                        .orElse("No enabled formal BPMN flow matches this CSL state pair.");
                 results.add(new StepResult(index, before.aolFile(), after.aolFile(),
                         Verdict.NON_CONFORMANT, List.of(), detail));
                 return new TraceResult(Verdict.NON_CONFORMANT, results, 0, 0,
@@ -171,7 +171,7 @@ public final class AclBpmnStateTraceEvaluator {
         // later flow contract. The overall verdict depends on surviving full paths.
         boolean ambiguous = candidates.size() != 1;
         Verdict verdict = ambiguous ? Verdict.AMBIGUOUS : Verdict.CONFORMANT;
-        String summary = "The supplied ACL path is " + verdict
+        String summary = "The supplied CSL path is " + verdict
                 + " under the formal flow semantics; " + candidates.size()
                 + " execution path(s) survive and " + completed
                 + " have consumed all End flows.";

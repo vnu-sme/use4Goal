@@ -1,0 +1,219 @@
+// Redesigned BPMN for Purchase Order (19 nodes, true bypass route).
+//
+// Key structural change vs. the resources version:
+//   emergencyBypassRoute jumps DIRECTLY to approvalBypassMerge, completely
+//   skipping departmentApproval and the CFO/CEO hierarchy.
+//
+// Execution paths (5 total):
+//   Normal paths (4): proceedToComparison × {compare,sole} × {cfo,ceo} → approval chain
+//   Bypass path  (1): emergencyBypassRoute → approvalBypassMerge → placeOrder
+//
+// PurchaseApprovalIntegrity (Maintain) is satisfied in all 4 normal paths and
+// VIOLATED in the bypass path → WEAK_CONFORMANCE, RISKY.
+model PurchaseOrderProcess {
+  pool PurchaseOrderHandling for PurchaseOrderCase {
+    name "Purchase Order Management"
+    lane PurchaseInitiator;
+    lane PurchaseManager;
+    lane DepartmentManager;
+    lane CFO;
+    lane CEO;
+  }
+
+  start requisitionCreated {
+    lane PurchaseInitiator
+    trigger none
+    pre {[
+      not self.order.created
+      and not self.order.completed
+    ]}
+    flow createRequisition
+  }
+
+  activity createRequisition {
+    name "Creating purchase requisition"
+    type task
+    lane PurchaseInitiator
+    post {[
+      self.order.created
+      and self.purchaseInitiator.initiatedCount =
+        self.purchaseInitiator.initiatedCount@pre + 1
+    ]}
+    flow collectQuotations
+  }
+
+  activity collectQuotations {
+    name "Collecting quotations and technical specifications"
+    type task
+    lane PurchaseInitiator
+    pre {[
+      self.order.created
+    ]}
+    post {[
+      self.order.quotationCollected
+    ]}
+    flow bypassDecision
+  }
+
+  // Decision: emergency bypass (skip all approvals) vs. standard procurement
+  gateway bypassDecision {
+    lane PurchaseInitiator
+    type xor
+    flow emergencyBypassRoute post {[
+      self.order.bypassedApproval
+    ]}
+    flow proceedToComparison post {[
+      not self.order.bypassedApproval
+    ]}
+  }
+
+  // BYPASS path: no approval chain — goes directly to the merge before placeOrder.
+  // This leaves departmentApproved, cfoApproved, ceoApproved all FALSE,
+  // causing PurchaseApprovalIntegrity to be violated.
+  activity emergencyBypassRoute {
+    name "Emergency direct procurement (bypasses approval chain)"
+    type task
+    lane PurchaseInitiator
+    post {[
+      self.order.bypassedApproval
+    ]}
+    flow approvalBypassMerge
+  }
+
+  // NORMAL path: proceeds to vendor comparison, then full approval chain.
+  activity proceedToComparison {
+    name "Initiating standard procurement workflow"
+    type task
+    lane PurchaseInitiator
+    post {[
+      not self.order.bypassedApproval
+    ]}
+    flow quoteComparisonDecision
+  }
+
+  gateway quoteComparisonDecision {
+    lane PurchaseManager
+    type xor
+    flow compareMultipleQuotes post {[
+      self.order.multipleQuotesCompared
+    ]}
+    flow singleSoleSource post {[
+      not self.order.multipleQuotesCompared
+    ]}
+  }
+
+  activity compareMultipleQuotes {
+    name "Comparing competitive vendor quotations"
+    type task
+    lane PurchaseManager
+    post {[
+      self.order.multipleQuotesCompared
+    ]}
+    flow quoteMerge
+  }
+
+  activity singleSoleSource {
+    name "Selecting sole-source vendor"
+    type task
+    lane PurchaseManager
+    post {[
+      not self.order.multipleQuotesCompared
+    ]}
+    flow quoteMerge
+  }
+
+  gateway quoteMerge {
+    lane PurchaseManager
+    type xor
+    flow departmentApproval
+  }
+
+  activity departmentApproval {
+    name "Department manager approval"
+    type task
+    lane DepartmentManager
+    post {[
+      self.order.departmentApproved
+    ]}
+    flow approvalHierarchyTier
+  }
+
+  // Higher-tier approval: either CFO (small orders) or Director+CEO (large orders).
+  gateway approvalHierarchyTier {
+    lane DepartmentManager
+    type xor
+    flow cfoApprovalPath post {[
+      self.order.cfoApproved
+      and not self.order.ceoApproved
+    ]}
+    flow directorCeoApprovalPath post {[
+      self.order.ceoApproved
+      and not self.order.cfoApproved
+    ]}
+  }
+
+  activity cfoApprovalPath {
+    name "CFO financial review and approval"
+    type task
+    lane CFO
+    post {[
+      self.order.cfoApproved
+    ]}
+    flow hierarchyMerge
+  }
+
+  activity directorCeoApprovalPath {
+    name "Director and CEO executive approval"
+    type task
+    lane CEO
+    post {[
+      self.order.directorApproved
+      and self.order.ceoApproved
+    ]}
+    flow hierarchyMerge
+  }
+
+  gateway hierarchyMerge {
+    lane PurchaseManager
+    type xor
+    flow approvalBypassMerge
+  }
+
+  // Merge point: normal approval chain converges with emergency bypass here.
+  gateway approvalBypassMerge {
+    lane PurchaseManager
+    type xor
+    flow placeOrder
+  }
+
+  activity placeOrder {
+    name "Issuing formal purchase order to vendor"
+    type task
+    lane PurchaseManager
+    post {[
+      self.order.orderPlaced
+      and self.purchaseManager.processedOrderCount =
+        self.purchaseManager.processedOrderCount@pre + 1
+    ]}
+    flow receiveGoods
+  }
+
+  activity receiveGoods {
+    name "Receiving goods and completing order"
+    type task
+    lane PurchaseInitiator
+    pre {[
+      self.order.orderPlaced
+    ]}
+    post {[
+      self.order.goodsReceived
+      and self.order.completed
+    ]}
+    flow orderCompleted
+  }
+
+  end orderCompleted {
+    lane PurchaseInitiator
+    trigger none
+  }
+}

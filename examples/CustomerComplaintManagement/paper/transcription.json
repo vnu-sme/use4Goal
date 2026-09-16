@@ -1,0 +1,454 @@
+{
+  "case": "CustomerComplaint",
+  "folder": "CustomerComplaintManagement",
+  "stem": "customer-complaint",
+  "source_pdf_pages": [
+    7,
+    11,
+    16
+  ],
+  "notes": [
+    "No invented early-closure branch. The figure itself permits skipping examination."
+  ],
+  "nodes": [
+    {
+      "id": "StartEvent_1",
+      "kind": "start",
+      "lane": "FieldMan",
+      "name": "Complaint received",
+      "edges": [
+        {
+          "to": "Act_create",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_create",
+      "kind": "activity",
+      "lane": "FieldMan",
+      "name": "Creating complaint",
+      "edges": [
+        {
+          "to": "Act_updartifacts",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_updartifacts",
+      "kind": "activity",
+      "lane": "FieldMan",
+      "name": "Updating artifacts",
+      "edges": [
+        {
+          "to": "Gw_reqexam",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_examdone",
+      "kind": "gateway",
+      "lane": "FieldMan",
+      "name": "Gw_examdone",
+      "edges": [
+        {
+          "to": "Act_updartifacts",
+          "label": ""
+        }
+      ],
+      "gateway": "or"
+    },
+    {
+      "id": "Act_cm_exam",
+      "kind": "activity",
+      "lane": "CustomerManager",
+      "name": "Examining the artifacts and updating",
+      "edges": [
+        {
+          "to": "Gw_cm_req",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_cm_req",
+      "kind": "gateway",
+      "lane": "CustomerManager",
+      "name": "Require additional examination?",
+      "edges": [
+        {
+          "to": "Act_nu_exam",
+          "label": "Yes"
+        },
+        {
+          "to": "Gw_examdone",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_nu_exam",
+      "kind": "activity",
+      "lane": "Nutritionist",
+      "name": "Examining the artifacts and updating",
+      "edges": [
+        {
+          "to": "Gw_nu_req",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_reqexam",
+      "kind": "gateway",
+      "lane": "FieldMan",
+      "name": "Required additional examination?",
+      "edges": [
+        {
+          "to": "Act_comp",
+          "label": "No"
+        },
+        {
+          "to": "Gw_route",
+          "label": "Yes"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_route",
+      "kind": "gateway",
+      "lane": "FieldMan",
+      "name": "Gw_route",
+      "edges": [
+        {
+          "to": "Act_nu_exam",
+          "label": ""
+        },
+        {
+          "to": "Act_lm_exam",
+          "label": ""
+        },
+        {
+          "to": "Act_cm_exam",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_nu_req",
+      "kind": "gateway",
+      "lane": "Nutritionist",
+      "name": "Require additional examination?",
+      "edges": [
+        {
+          "to": "Act_lm_exam",
+          "label": "Yes"
+        },
+        {
+          "to": "Gw_examdone",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_lm_exam",
+      "kind": "activity",
+      "lane": "LabManager",
+      "name": "Examining the artifacts and updating",
+      "edges": [
+        {
+          "to": "Act_lm_check",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_lm_check",
+      "kind": "activity",
+      "lane": "LabManager",
+      "name": "Checking in proactive tests",
+      "edges": [
+        {
+          "to": "Gw_lm_qio",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_lm_qio",
+      "kind": "gateway",
+      "lane": "LabManager",
+      "name": "Quality improvement opportunity?",
+      "edges": [
+        {
+          "to": "Act_lm_improve",
+          "label": "Yes"
+        },
+        {
+          "to": "Gw_lm_merge",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_lm_improve",
+      "kind": "activity",
+      "lane": "LabManager",
+      "name": "Updating as improvement suggestion",
+      "edges": [
+        {
+          "to": "Gw_lm_merge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_lm_merge",
+      "kind": "gateway",
+      "lane": "LabManager",
+      "name": "Gw_lm_merge",
+      "edges": [
+        {
+          "to": "Gw_examdone",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_comp",
+      "kind": "activity",
+      "lane": "FieldMan",
+      "name": "Compensation suggestion",
+      "edges": [
+        {
+          "to": "Gw_refund",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_refund",
+      "kind": "gateway",
+      "lane": "FieldMan",
+      "name": "Refund?",
+      "edges": [
+        {
+          "to": "Act_updcompl",
+          "label": "No"
+        },
+        {
+          "to": "Gw_amount",
+          "label": "Yes"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_amount",
+      "kind": "gateway",
+      "lane": "FieldMan",
+      "name": "Gw_amount",
+      "edges": [
+        {
+          "to": "Act_cm_sugg",
+          "label": "<5000 NIS"
+        },
+        {
+          "to": "Act_cfo_sugg",
+          "label": ">5000 NIS"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_cm_sugg",
+      "kind": "activity",
+      "lane": "CustomerManager",
+      "name": "Suggestion examination and updating",
+      "edges": [
+        {
+          "to": "Gw_cm_appr",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_cm_appr",
+      "kind": "gateway",
+      "lane": "CustomerManager",
+      "name": "Approve?",
+      "edges": [
+        {
+          "to": "Act_comp",
+          "label": "No"
+        },
+        {
+          "to": "Gw_refund_merge",
+          "label": "Yes"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_updcompl",
+      "kind": "gateway",
+      "lane": "FieldMan",
+      "name": "Gw_updcompl",
+      "edges": [
+        {
+          "to": "Act_updcompl",
+          "label": ""
+        }
+      ],
+      "gateway": "or"
+    },
+    {
+      "id": "Act_updcompl",
+      "kind": "activity",
+      "lane": "FieldMan",
+      "name": "Updating the complaint",
+      "edges": [
+        {
+          "to": "EndEvent_1",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "EndEvent_1",
+      "kind": "end",
+      "lane": "FieldMan",
+      "name": "Complaint closed",
+      "edges": [],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_cfo_sugg",
+      "kind": "activity",
+      "lane": "CFO",
+      "name": "Suggestion examination and updating",
+      "edges": [
+        {
+          "to": "Gw_cfo_appr",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_cfo_appr",
+      "kind": "gateway",
+      "lane": "CFO",
+      "name": "Approve?",
+      "edges": [
+        {
+          "to": "Gw_updcompl",
+          "label": "No"
+        },
+        {
+          "to": "Gw_cfo_complex",
+          "label": "Yes"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_cfo_complex",
+      "kind": "gateway",
+      "lane": "CFO",
+      "name": "Complex complaint?",
+      "edges": [
+        {
+          "to": "Gw_refund_merge",
+          "label": "No"
+        },
+        {
+          "to": "Act_ceo_exam",
+          "label": "Yes"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_ceo_exam",
+      "kind": "activity",
+      "lane": "CEO",
+      "name": "Complaint examination and updating",
+      "edges": [
+        {
+          "to": "Gw_ceo_appr",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_ceo_appr",
+      "kind": "gateway",
+      "lane": "CEO",
+      "name": "Approve?",
+      "edges": [
+        {
+          "to": "Gw_updcompl",
+          "label": "No"
+        },
+        {
+          "to": "Gw_refund_merge",
+          "label": "Yes"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_refund_merge",
+      "kind": "gateway",
+      "lane": "Accountment",
+      "name": "Gw_refund_merge",
+      "edges": [
+        {
+          "to": "Act_acc_update",
+          "label": ""
+        }
+      ],
+      "gateway": "or"
+    },
+    {
+      "id": "Act_acc_update",
+      "kind": "activity",
+      "lane": "Accountment",
+      "name": "Updating refund in the system",
+      "edges": [
+        {
+          "to": "Gw_updcompl",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    }
+  ],
+  "counts": {
+    "nodes": 30,
+    "sequence_flows": 41,
+    "split_gateways": 11,
+    "outgoing_split_branches": 23
+  }
+}

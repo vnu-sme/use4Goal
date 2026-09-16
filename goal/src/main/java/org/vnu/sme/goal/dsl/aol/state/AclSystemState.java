@@ -55,15 +55,22 @@ public final class AclSystemState implements AclOclState {
     static Map<String, AclRelation> relationIndex(AclModel model) {
         Map<String, AclRelation> result = new LinkedHashMap<>();
         model.relations().forEach(relation -> result.put(relation.name(), relation));
-        model.orgContexts().forEach(context -> context.members().forEach(member -> {
-            String name = AclContainment.relationName(context.name(), member.type());
-            result.putIfAbsent(name, new AclRelation(RelationKind.COMPOSITION, name,
-                    new AclEndpoint(context.name(), AclCardinality.bounded(1, 1),
-                            Optional.of(AclContainment.wholeRoleName())),
-                    new AclEndpoint(member.type(), member.multiplicity(),
-                            Optional.of(AclContainment.partRoleName(member.type())))));
-        }));
+        model.groups().forEach(context -> {
+            context.members().forEach(member -> addContainment(result, context.name(), member.type(), member.multiplicity()));
+            context.roles().forEach(role -> addContainment(result, context.name(), role.roleName(), role.cardinality()));
+            context.entities().forEach(entity -> addContainment(result, context.name(), entity.entityName(), entity.cardinality()));
+            context.subgroups().forEach(subgroup -> addContainment(result, context.name(), subgroup.group().name(), subgroup.cardinality()));
+        });
         return result;
+    }
+
+    private static void addContainment(Map<String, AclRelation> result, String contextName, String targetType, AclCardinality multiplicity) {
+        String name = AclContainment.relationName(contextName, targetType);
+        result.putIfAbsent(name, new AclRelation(RelationKind.COMPOSITION, name,
+                new AclEndpoint(contextName, AclCardinality.bounded(1, 1),
+                        Optional.of(AclContainment.wholeRoleName())),
+                new AclEndpoint(targetType, multiplicity,
+                        Optional.of(AclContainment.partRoleName(targetType)))));
     }
 
     public AclModel model() { return model; }

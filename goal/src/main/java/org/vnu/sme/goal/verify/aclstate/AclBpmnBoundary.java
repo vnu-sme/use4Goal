@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 import org.vnu.sme.goal.dsl.acl.mm.AclModel;
 
-/** Finite scope used by Kodkod to generate ACL object diagrams symbolically. */
+/** Finite scope used by Kodkod to generate CSL object diagrams symbolically. */
 public record AclBpmnBoundary(Path file, String name, int snapshots, int loopBound,
                               int integerMin, int integerMax,
                               Map<String, Scope> objectScopes,
@@ -23,7 +23,7 @@ public record AclBpmnBoundary(Path file, String name, int snapshots, int loopBou
                               List<String> stringAtoms,
                               List<String> realAtoms) {
     private static final Pattern HEADER = Pattern.compile(
-            "(?s)\\s*acl-bpmn-boundary\\s+v1\\.0\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*\\{(.*)}\\s*");
+            "(?s)\\s*(?:csl|acl)-bpmn-boundary\\s+v1\\.0\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*\\{(.*)}\\s*");
     private static final Pattern CARDINALITY = Pattern.compile("(\\d+)(?:\\.\\.(\\d+))?");
 
     public record Scope(int lower, int upper) {
@@ -53,7 +53,7 @@ public record AclBpmnBoundary(Path file, String name, int snapshots, int loopBou
         String text = Files.readString(file).replaceAll("(?m)//.*$", "");
         Matcher header = HEADER.matcher(text);
         if (!header.matches()) {
-            throw new IllegalArgumentException("Expected: acl-bpmn-boundary v1.0 Name { ... }");
+            throw new IllegalArgumentException("Expected: csl-bpmn-boundary v1.0 Name { ... }");
         }
 
         Integer snapshots = null;
@@ -115,8 +115,12 @@ public record AclBpmnBoundary(Path file, String name, int snapshots, int loopBou
         model.entities().forEach(value -> classifiers.add(value.name()));
         model.roles().forEach(value -> classifiers.add(value.name()));
         model.groups().forEach(value -> classifiers.add(value.name()));
+        // "Agent" is a built-in, model-independent type — always valid in a boundary, never required.
+        classifiers.add("Agent");
         List<String> diagnostics = new ArrayList<>();
         for (String classifier : classifiers) {
+            // "Agent" scope is optional (has a computed default), so skip the missing-scope check.
+            if (classifier.equals("Agent")) continue;
             if (!objects.containsKey(classifier)) diagnostics.add("missing objects scope for " + classifier);
         }
         objects.keySet().stream().filter(value -> !classifiers.contains(value))
@@ -138,7 +142,7 @@ public record AclBpmnBoundary(Path file, String name, int snapshots, int loopBou
             }
         }
         if (!diagnostics.isEmpty()) {
-            throw new IllegalArgumentException("Invalid ACL/BPMN boundary:\n" + String.join("\n", diagnostics));
+            throw new IllegalArgumentException("Invalid CSL/BPMN boundary:\n" + String.join("\n", diagnostics));
         }
 
         return new AclBpmnBoundary(file, header.group(1), snapshots, loopBound,

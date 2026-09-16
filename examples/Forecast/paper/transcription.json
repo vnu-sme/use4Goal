@@ -1,0 +1,744 @@
+{
+  "case": "SalesForecast",
+  "folder": "Forecast",
+  "stem": "sales-forecast",
+  "source_pdf_pages": [
+    6,
+    10,
+    14,
+    15
+  ],
+  "notes": [
+    "Uses the existing 52-node XML transcription, including return loops and the presale side branch.",
+    "Presale Yes/No routing is normalized from the drawn OR diamond to XOR; the diagram permits ambiguous concurrent interpretation."
+  ],
+  "nodes": [
+    {
+      "id": "Start_1",
+      "kind": "start",
+      "lane": "CustomerManager",
+      "name": "Deal opportunity",
+      "edges": [
+        {
+          "to": "Gw_newcust",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_newcust",
+      "kind": "gateway",
+      "lane": "CustomerManager",
+      "name": "New customer?",
+      "edges": [
+        {
+          "to": "Act_updcust",
+          "label": "No"
+        },
+        {
+          "to": "Act_ticket",
+          "label": "Yes"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_updcust",
+      "kind": "activity",
+      "lane": "CustomerManager",
+      "name": "Updating customer details",
+      "edges": [
+        {
+          "to": "Gw_cust_m",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_ticket",
+      "kind": "activity",
+      "lane": "CustomerManager",
+      "name": "Creating Customer Ticket",
+      "edges": [
+        {
+          "to": "Gw_cust_m",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_cust_m",
+      "kind": "gateway",
+      "lane": "CustomerManager",
+      "name": "Gw_cust_m",
+      "edges": [
+        {
+          "to": "Act_insertdeal",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_insertdeal",
+      "kind": "activity",
+      "lane": "CustomerManager",
+      "name": "Inserting and updating deal details",
+      "edges": [
+        {
+          "to": "Gw_presale",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_presale",
+      "kind": "gateway",
+      "lane": "CustomerManager",
+      "name": "Required Presale Engineer?",
+      "edges": [
+        {
+          "to": "Act_ps_bom",
+          "label": "Yes"
+        },
+        {
+          "to": "Gw_vendorbom",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_vendorbom",
+      "kind": "gateway",
+      "lane": "CustomerManager",
+      "name": "There is vendor BOM?",
+      "edges": [
+        {
+          "to": "Act_bommanual",
+          "label": "No"
+        },
+        {
+          "to": "Act_bomupdate",
+          "label": "Yes"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_bomupdate",
+      "kind": "activity",
+      "lane": "CustomerManager",
+      "name": "Updating BOM and HLD",
+      "edges": [
+        {
+          "to": "Gw_bom_m",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_bommanual",
+      "kind": "activity",
+      "lane": "CustomerManager",
+      "name": "Creating a BOM manually",
+      "edges": [
+        {
+          "to": "Gw_bom_m",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_bom_m",
+      "kind": "gateway",
+      "lane": "CustomerManager",
+      "name": "Gw_bom_m",
+      "edges": [
+        {
+          "to": "Gw_missingpn",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_missingpn",
+      "kind": "gateway",
+      "lane": "CustomerManager",
+      "name": "Missing PN?",
+      "edges": [
+        {
+          "to": "Act_pnsprice",
+          "label": "No"
+        },
+        {
+          "to": "Act_creatingpns",
+          "label": "Yes"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_pnsprice",
+      "kind": "activity",
+      "lane": "CustomerManager",
+      "name": "Updating PNs Price",
+      "edges": [
+        {
+          "to": "Act_svcpct",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_creatingpns",
+      "kind": "activity",
+      "lane": "CustomerManager",
+      "name": "Creating PNs",
+      "edges": [
+        {
+          "to": "Act_pnsprice",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_svcpct",
+      "kind": "activity",
+      "lane": "CustomerManager",
+      "name": "Updating percentages for service contract",
+      "edges": [
+        {
+          "to": "Gw_svcfee",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_svcfee",
+      "kind": "gateway",
+      "lane": "CustomerManager",
+      "name": "Service fee",
+      "edges": [
+        {
+          "to": "Act_sa_pending",
+          "label": "> 7%"
+        },
+        {
+          "to": "Gw_svc_m",
+          "label": "< 7%"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_svc_m",
+      "kind": "gateway",
+      "lane": "CustomerManager",
+      "name": "Gw_svc_m",
+      "edges": [
+        {
+          "to": "Act_updprofit",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_ps_bom",
+      "kind": "activity",
+      "lane": "PresaleEngineer",
+      "name": "Creating BOM",
+      "edges": [
+        {
+          "to": "Act_ps_hld",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_ps_hld",
+      "kind": "activity",
+      "lane": "PresaleEngineer",
+      "name": "Writing HLD Document",
+      "edges": [
+        {
+          "to": "Act_ps_send",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_ps_send",
+      "kind": "activity",
+      "lane": "PresaleEngineer",
+      "name": "Sending HLD to Customer Manager",
+      "edges": [
+        {
+          "to": "End_ps",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "End_ps",
+      "kind": "end",
+      "lane": "PresaleEngineer",
+      "name": "HLD sent",
+      "edges": [],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_sa_pending",
+      "kind": "activity",
+      "lane": "ServiceAgreements",
+      "name": "Pending approval",
+      "edges": [
+        {
+          "to": "Act_sa_review",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_sa_review",
+      "kind": "activity",
+      "lane": "ServiceAgreements",
+      "name": "Contract review and approval",
+      "edges": [
+        {
+          "to": "Gw_sa_appr",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_sa_appr",
+      "kind": "gateway",
+      "lane": "ServiceAgreements",
+      "name": "Approved?",
+      "edges": [
+        {
+          "to": "Act_svcpct",
+          "label": "No"
+        },
+        {
+          "to": "Gw_svc_m",
+          "label": "Yes"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_updprofit",
+      "kind": "activity",
+      "lane": "CustomerManager",
+      "name": "Updating deal profitability and closure percentages",
+      "edges": [
+        {
+          "to": "Gw_profit",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_loop_m",
+      "kind": "gateway",
+      "lane": "CustomerManager",
+      "name": "Gw_loop_m",
+      "edges": [
+        {
+          "to": "Act_updprofit",
+          "label": ""
+        }
+      ],
+      "gateway": "or"
+    },
+    {
+      "id": "Gw_profit",
+      "kind": "gateway",
+      "lane": "CustomerManager",
+      "name": "Profitability",
+      "edges": [
+        {
+          "to": "Gw_appr_m",
+          "label": "> 12%"
+        },
+        {
+          "to": "Act_dm_pending",
+          "label": "< 12%"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_dm_pending",
+      "kind": "activity",
+      "lane": "DepartmentManager",
+      "name": "Pending approval",
+      "edges": [
+        {
+          "to": "Act_dm_exam",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_dm_exam",
+      "kind": "activity",
+      "lane": "DepartmentManager",
+      "name": "Profitability examination",
+      "edges": [
+        {
+          "to": "Gw_dm_appr",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_dm_appr",
+      "kind": "gateway",
+      "lane": "DepartmentManager",
+      "name": "Approved?",
+      "edges": [
+        {
+          "to": "Gw_loop_m",
+          "label": "No"
+        },
+        {
+          "to": "Gw_kit_m",
+          "label": "> 10% Profitability"
+        },
+        {
+          "to": "Act_sm_pending",
+          "label": "< 10% Profitability"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_sm_pending",
+      "kind": "activity",
+      "lane": "SectorManager",
+      "name": "Pending approval",
+      "edges": [
+        {
+          "to": "Act_sm_exam",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_sm_exam",
+      "kind": "activity",
+      "lane": "SectorManager",
+      "name": "Profitability examination",
+      "edges": [
+        {
+          "to": "Gw_sm_lvl",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_sm_lvl",
+      "kind": "gateway",
+      "lane": "SectorManager",
+      "name": "Approved?",
+      "edges": [
+        {
+          "to": "Gw_loop_m",
+          "label": "No"
+        },
+        {
+          "to": "Act_vp_pending",
+          "label": "< 5% Profitability"
+        },
+        {
+          "to": "Gw_kit_m",
+          "label": "> 5% Profitability"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_vp_pending",
+      "kind": "activity",
+      "lane": "BusinessVP",
+      "name": "Pending approval",
+      "edges": [
+        {
+          "to": "Act_vp_exam",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_vp_exam",
+      "kind": "activity",
+      "lane": "BusinessVP",
+      "name": "Profitability examination",
+      "edges": [
+        {
+          "to": "Gw_vp_appr",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_vp_appr",
+      "kind": "gateway",
+      "lane": "BusinessVP",
+      "name": "Approved?",
+      "edges": [
+        {
+          "to": "Gw_loop_m",
+          "label": "No"
+        },
+        {
+          "to": "Gw_kit_m",
+          "label": "Yes"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_kit_m",
+      "kind": "gateway",
+      "lane": "CustomerManager",
+      "name": "Gw_kit_m",
+      "edges": [
+        {
+          "to": "Gw_appr_m",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_appr_m",
+      "kind": "gateway",
+      "lane": "CustomerManager",
+      "name": "Gw_appr_m",
+      "edges": [
+        {
+          "to": "Gw_250k",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_250k",
+      "kind": "gateway",
+      "lane": "CustomerManager",
+      "name": ">250,000 NIS?",
+      "edges": [
+        {
+          "to": "Gateway_0rt5rll",
+          "label": "No"
+        },
+        {
+          "to": "Act_fc_pending",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_dealapproved",
+      "kind": "activity",
+      "lane": "CustomerManager",
+      "name": "Deal approved",
+      "edges": [
+        {
+          "to": "Act_kitcomplete",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_kitcomplete",
+      "kind": "activity",
+      "lane": "CustomerManager",
+      "name": "Completion of kit components",
+      "edges": [
+        {
+          "to": "Act_transfer",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_transfer",
+      "kind": "activity",
+      "lane": "CustomerManager",
+      "name": "Transferring to order operator",
+      "edges": [
+        {
+          "to": "Act_createpo",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_createpo",
+      "kind": "activity",
+      "lane": "CustomerManager",
+      "name": "Creating PO in CRM System",
+      "edges": [
+        {
+          "to": "End_done",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "End_done",
+      "kind": "end",
+      "lane": "CustomerManager",
+      "name": "PO created",
+      "edges": [],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_fc_pending",
+      "kind": "activity",
+      "lane": "FinancialControl",
+      "name": "Pending approval",
+      "edges": [
+        {
+          "to": "Act_fc_exam",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_fc_exam",
+      "kind": "activity",
+      "lane": "FinancialControl",
+      "name": "Deal financial examination",
+      "edges": [
+        {
+          "to": "Gw_fc_appr",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_fc_appr",
+      "kind": "gateway",
+      "lane": "FinancialControl",
+      "name": "Approved?",
+      "edges": [
+        {
+          "to": "Act_insertdeal",
+          "label": "No"
+        },
+        {
+          "to": "Gateway_0rt5rll",
+          "label": "Yes"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_cc_pending",
+      "kind": "activity",
+      "lane": "CreditControl",
+      "name": "Pending approval",
+      "edges": [
+        {
+          "to": "Act_cc_exam",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Act_cc_exam",
+      "kind": "activity",
+      "lane": "CreditControl",
+      "name": "Deal credit examination",
+      "edges": [
+        {
+          "to": "Gw_cc_appr",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gw_cc_appr",
+      "kind": "gateway",
+      "lane": "CreditControl",
+      "name": "Approved?",
+      "edges": [
+        {
+          "to": "Act_dealapproved",
+          "label": "Yes"
+        },
+        {
+          "to": "End_reject",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "id": "End_reject",
+      "kind": "end",
+      "lane": "CreditControl",
+      "name": "Deal rejected",
+      "edges": [],
+      "gateway": "xor"
+    },
+    {
+      "id": "Gateway_0rt5rll",
+      "kind": "gateway",
+      "lane": "CustomerManager",
+      "name": "Gateway_0rt5rll",
+      "edges": [
+        {
+          "to": "Act_cc_pending",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    }
+  ],
+  "counts": {
+    "nodes": 52,
+    "sequence_flows": 64,
+    "split_gateways": 13,
+    "outgoing_split_branches": 28
+  }
+}

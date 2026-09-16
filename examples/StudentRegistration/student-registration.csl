@@ -1,0 +1,55 @@
+// CSL specification for Process 3: Student Registration.
+csl v3.0 StudentRegistrationState {
+  orgContext StudentRegistrationCase {
+    role InformationAgent {
+      registeredCandidateCount : Integer mutable default 0;
+    }
+
+    role RegistrationCoordinator {
+      validatedKitCount : Integer mutable default 0;
+    }
+
+    role AcademicAdvisor {
+      interviewedCandidateCount : Integer mutable default 0;
+    }
+
+    role TuitionDepartment {
+      paymentProcessedCount : Integer mutable default 0;
+    }
+
+    role AcademicCenter;
+
+    role AcademicVP;
+
+    role Candidate;
+
+    entity Registration {
+      received : Boolean mutable default false;
+      termsChecked : Boolean mutable default false;
+      bypassedTerms : Boolean mutable default false;
+      interviewConducted : Boolean mutable default false;
+      kitValidated : Boolean mutable default false;
+      incompleteKitTransferred : Boolean mutable default false;
+      paymentProcessed : Boolean mutable default false;
+      deferredPayment : Boolean mutable default false;
+      kitApproved : Boolean mutable default false;
+      candidateNotified : Boolean mutable default false;
+      enrolled : Boolean mutable default false;
+    }
+  }
+
+  context InformationAgent inv NonNegativeRegistered:
+    self.registeredCandidateCount >= 0;
+
+  context RegistrationCoordinator inv NonNegativeValidated:
+    self.validatedKitCount >= 0;
+
+  context AcademicAdvisor inv NonNegativeInterviewed:
+    self.interviewedCandidateCount >= 0;
+
+  context TuitionDepartment inv NonNegativePayment:
+    self.paymentProcessedCount >= 0;
+
+  context Registration inv NotificationRequiresReceived:
+    self.candidateNotified implies self.received;
+}

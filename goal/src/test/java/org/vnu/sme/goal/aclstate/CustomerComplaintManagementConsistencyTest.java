@@ -31,8 +31,8 @@ class CustomerComplaintManagementConsistencyTest {
                 result.nonGoalAchievingExecutions(), result.riskyExecutions(), elapsedMillis);
         System.out.println(result.summary());
 
-        assertEquals(ConsistencyVerdict.WEAKLY_CONSISTENT, result.consistency(), result::summary);
-        assertEquals(RiskVerdict.RISK_PRONE, result.risk(), result::summary);
+        assertEquals(ConsistencyVerdict.WEAK_CONFORMANCE, result.consistency(), result::summary);
+        assertEquals(RiskVerdict.RISKY, result.risk(), result::summary);
         assertEquals(10, result.realizableExecutions(), result::summary);
         assertEquals(9, result.goalAchievingExecutions(), result::summary);
         assertEquals(1, result.nonGoalAchievingExecutions(), result::summary);

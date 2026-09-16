@@ -42,9 +42,10 @@ import org.tzi.use.gui.main.MainWindow;
 import org.tzi.use.main.Session;
 import org.vnu.sme.goal.trace.bpmn.BpmnAolTraceFile;
 import org.vnu.sme.goal.verify.conformance.AolBpmnTraceRunner;
+import org.vnu.sme.goal.gui.OfficialExamples;
 
 /**
- * Runs a BPMN process seeded by a concrete AOL population and saves the resulting execution
+ * Runs a BPMN process seeded by a concrete state snapshot and saves the resulting execution
  * trace to a {@code .bpmntrace} file. Generation and viewing are deliberately two separate
  * tools: this one only produces the trace file; {@link BpmnAolTraceViewerForm} (a separate
  * action) is what opens and steps through it.
@@ -83,7 +84,7 @@ public final class BpmnAolScenarioForm extends JDialog {
     private static final Font  F_LABEL   = new Font(Font.SANS_SERIF, Font.PLAIN, 12);
 
     public BpmnAolScenarioForm(Session session, MainWindow mainWindow) {
-        super(mainWindow, "Generate BPMN Trace from AOL", false);
+        super(mainWindow, "Generate Process Scenarios", false);
         this.session = session;
         this.mainWindow = mainWindow;
         buildUI();
@@ -126,9 +127,9 @@ public final class BpmnAolScenarioForm extends JDialog {
         gc.gridy = 0;
         addInputRow(panel, gc, "BPMN process", bpmnField, "BPMN2 files (*.bpmn2)", "bpmn2");
         gc.gridy = 1;
-        addInputRow(panel, gc, "ACL structure", aclField, "ACL files (*.acl)", "acl");
+        addInputRow(panel, gc, "CSL state model", aclField, "CSL files (*.csl)", "csl");
         gc.gridy = 2;
-        addInputRow(panel, gc, "AOL population", aolField, "AOL files (*.aol)", "aol");
+        addInputRow(panel, gc, "Initial state snapshot", aolField, "State snapshots (*.aol)", "aol");
 
         JPanel buttons = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 6, 0));
         runButton = primaryButton("▶  Run");
@@ -182,7 +183,7 @@ public final class BpmnAolScenarioForm extends JDialog {
     }
 
     private void chooseFile(JTextField field, String filterLabel, String extension) {
-        JFileChooser fc = new JFileChooser();
+        JFileChooser fc = OfficialExamples.chooser(field.getText().trim());
         fc.setFileFilter(new FileNameExtensionFilter(filterLabel, extension));
         String cur = field.getText().trim();
         if (!cur.isEmpty()) fc.setSelectedFile(new File(cur));
@@ -299,7 +300,7 @@ public final class BpmnAolScenarioForm extends JDialog {
         String aclPath  = aclField.getText().trim();
         String aolPath  = aolField.getText().trim();
         if (bpmnPath.isEmpty() || aclPath.isEmpty() || aolPath.isEmpty()) {
-            status("BPMN, ACL, and AOL paths are all required.", C_ERR);
+            status("BPMN, CSL, and initial-state paths are all required.", C_ERR);
             return;
         }
         PREFS.put(PREF_BPMN, bpmnPath);

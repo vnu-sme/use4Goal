@@ -25,9 +25,9 @@ class ProposalReviewWholeConsistencyTest {
         session.loadBoundary(EXAMPLE.resolve("proposal_review.aclboundary"));
 
         var result = session.validateWholeBpmnProcess();
-        assertEquals(ConsistencyVerdict.WEAKLY_CONSISTENT, result.consistency(),
+        assertEquals(ConsistencyVerdict.WEAK_CONFORMANCE, result.consistency(),
                 () -> result.summary() + " " + result.processes());
-        assertEquals(RiskVerdict.RISK_PRONE, result.risk(), result::summary);
+        assertEquals(RiskVerdict.RISKY, result.risk(), result::summary);
         assertEquals(2, result.realizableExecutions(), result::summary);
         assertEquals(1, result.goalAchievingExecutions(), result::summary);
         assertEquals(1, result.nonGoalAchievingExecutions(), result::summary);

@@ -9,7 +9,7 @@ import org.tzi.use.gui.main.MainWindow;
 import org.tzi.use.runtime.gui.IPluginAction;
 import org.tzi.use.runtime.gui.IPluginActionDelegate;
 
-/** Opens the ACL/AOL snapshot evaluator. */
+/** Opens bounded goal-process conformance checking over CSL states. */
 public final class ActionOpenAclStateEvaluator implements IPluginActionDelegate {
     @Override
     public void performAction(IPluginAction pluginAction) {

@@ -126,7 +126,7 @@ public final class VisualConformanceSession {
             List<Integer> choicePlan) throws Exception {
         require(istar, ".istar");
         require(bpmn, ".bpmn2");
-        require(acl, ".acl");
+        require(acl, ".csl");
         require(soil, ".soil");
 
         AclCompiler.Result aclResult = AclCompiler.compile(acl);
@@ -135,7 +135,7 @@ public final class VisualConformanceSession {
         if (!bpmnResult.ok()) throw new IllegalArgumentException(String.join("\n", bpmnResult.errors()));
         if (bpmnResult.model().processes().isEmpty()) throw new IllegalArgumentException("BPMN has no process");
 
-        Path useFile = Files.createTempFile("acl-visual-", ".use");
+        Path useFile = Files.createTempFile("csl-visual-", ".use");
         Files.writeString(useFile, Acl2UseTranslator.translate(aclResult.model()));
         String initialSoil = Files.readString(soil).stripTrailing() + "\n";
         Path executionFile = Files.createTempFile("scenario-trace-", ".soil");

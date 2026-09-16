@@ -1,0 +1,45 @@
+// CSL specification for Process 4: Purchase Order.
+csl v3.0 PurchaseOrderState {
+  orgContext PurchaseOrderCase {
+    role PurchaseInitiator {
+      initiatedCount : Integer mutable default 0;
+    }
+
+    role PurchaseManager {
+      processedOrderCount : Integer mutable default 0;
+    }
+
+    role DepartmentManager;
+
+    role Director;
+
+    role CFO;
+
+    role CEO;
+
+    role PurchaseCommittee;
+
+    entity Order {
+      created : Boolean mutable default false;
+      quotationCollected : Boolean mutable default false;
+      multipleQuotesCompared : Boolean mutable default false;
+      departmentApproved : Boolean mutable default false;
+      cfoApproved : Boolean mutable default false;
+      directorApproved : Boolean mutable default false;
+      ceoApproved : Boolean mutable default false;
+      bypassedApproval : Boolean mutable default false;
+      orderPlaced : Boolean mutable default false;
+      goodsReceived : Boolean mutable default false;
+      completed : Boolean mutable default false;
+    }
+  }
+
+  context PurchaseInitiator inv NonNegativeInitiated:
+    self.initiatedCount >= 0;
+
+  context PurchaseManager inv NonNegativeProcessed:
+    self.processedOrderCount >= 0;
+
+  context Order inv GoodsReceivedRequiresPlacement:
+    self.goodsReceived implies self.orderPlaced;
+}

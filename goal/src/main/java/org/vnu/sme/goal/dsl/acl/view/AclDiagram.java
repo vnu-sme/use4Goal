@@ -66,8 +66,8 @@ public final class AclDiagram extends DiagramView {
         addMouseListener(inputHandling);
         addKeyListener(inputHandling);
         setFocusable(true);
-        fActionSaveLayout = new ActionSaveLayout("USE ACL layout", "dlt", this);
-        fActionLoadLayout = new ActionLoadLayout("USE ACL layout", "dlt", this);
+        fActionSaveLayout = new ActionSaveLayout("USE CSL layout", "dlt", this);
+        fActionLoadLayout = new ActionLoadLayout("USE CSL layout", "dlt", this);
         getOptions().setDoAntiAliasing(true);
     }
 
@@ -85,8 +85,8 @@ public final class AclDiagram extends DiagramView {
         this.sourceFile = sourceFile;
         if (sourceFile != null) {
             fOpt = new AclDiagramOptions(sourceFile);
-            fActionSaveLayout = new ActionSaveLayout("USE ACL layout", "dlt", this);
-            fActionLoadLayout = new ActionLoadLayout("USE ACL layout", "dlt", this);
+            fActionSaveLayout = new ActionSaveLayout("USE CSL layout", "dlt", this);
+            fActionLoadLayout = new ActionLoadLayout("USE CSL layout", "dlt", this);
             getOptions().setDoAntiAliasing(true);
         }
     }
@@ -218,7 +218,7 @@ public final class AclDiagram extends DiagramView {
 
     @Override
     public void hideAll() {
-        throw new UnsupportedOperationException("ACL diagram does not support hiding all nodes.");
+        throw new UnsupportedOperationException("CSL diagram does not support hiding all nodes.");
     }
 
     @Override
@@ -246,7 +246,7 @@ public final class AclDiagram extends DiagramView {
 
     @Override
     protected String getDefaultLayoutFileSuffix() {
-        String name = sourceFile == null ? (model == null ? "acl" : model.name()) : sourceFile.getFileName().toString();
+        String name = sourceFile == null ? (model == null ? "csl" : model.name()) : sourceFile.getFileName().toString();
         return "_" + name + "_default.dlt";
     }
 }

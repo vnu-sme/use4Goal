@@ -1,0 +1,105 @@
+csl v1.0 SalesForecast {
+
+    datatype DateTime;
+
+    enum DealPhase {
+        DRAFT,
+        CUSTOMER_RECORDED,
+        DETAILS_RECORDED,
+        TECHNICAL_READY,
+        PRICING_READY,
+        PROFITABILITY_ASSESSED,
+        APPROVED,
+        REJECTED,
+        COMPLETED
+    }
+
+    enum ApprovalOutcome {
+        PENDING,
+        APPROVED,
+        REJECTED
+    }
+
+    role DealParticipant {
+        email : String;
+    }
+
+    role Approver specializes DealParticipant {
+        authorityLevel : Integer;
+    }
+
+    orgContext Deal {
+        attribute dealId : Integer required;
+        attribute title : String required;
+        attribute dealValue : Integer required;
+        attribute state : DealPhase required mutable default DRAFT;
+
+        role CustomerManager specializes DealParticipant;
+        role PresaleEngineer specializes DealParticipant;
+        role Customer specializes DealParticipant;
+        role DeptManager specializes Approver {
+            profitabilityCeilingPct : Integer default 10;
+        }
+        role SectorManager specializes Approver {
+            profitabilityCeilingPct : Integer default 5;
+        }
+        role BusinessVp specializes Approver;
+        role FinancialControl specializes Approver {
+            dealValueThreshold : Integer default 250000;
+        }
+        role CreditControl specializes Approver;
+
+        entity ProposalRevision {
+            attribute revisionNo : Integer required;
+            attribute profitabilityPct : Integer required;
+            attribute createdAt : DateTime required;
+        }
+    }
+
+    entity ApprovalDecision {
+        attribute outcome : ApprovalOutcome required;
+        attribute decidedAt : DateTime required;
+    }
+
+    entity TechnicalPackage {
+        attribute bomReady : Boolean required;
+        attribute hldReady : Boolean required;
+    }
+
+    composition DealRevisions {
+        Deal [1] role deal;
+        ProposalRevision [0..*] role revisions;
+    }
+
+    association CustomerManagerSubmits {
+        CustomerManager [1] role manager;
+        ProposalRevision [0..*] role revisions;
+    }
+
+    association ApproverDecisions {
+        Approver [1] role approver;
+        ApprovalDecision [0..*] role decisions;
+    }
+
+    composition RevisionDecisions {
+        ProposalRevision [1] role revision;
+        ApprovalDecision [0..*] role decisions;
+    }
+
+    composition DealTechPackages {
+        Deal [1] role deal;
+        TechnicalPackage [0..*] role packages;
+    }
+
+    context Deal inv UniqueRevisionNumbers:
+        self.revisions->forAll(r1 | self.revisions->forAll(r2 | r1 = r2 or r1.revisionNo <> r2.revisionNo));
+
+    context Deal inv ApproversBelongToDeal:
+        self.revisions.decisions->forAll(d |
+            self.deptManager->includes(d.approver) or
+            self.sectorManager->includes(d.approver) or
+            self.businessVp->includes(d.approver) or
+            self.financialControl->includes(d.approver) or
+            self.creditControl->includes(d.approver)
+        );
+}

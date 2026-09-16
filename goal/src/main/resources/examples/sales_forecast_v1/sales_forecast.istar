@@ -1,0 +1,112 @@
+// SalesForecast intentional model.
+//
+// OCL context convention: self : Deal
+
+istar SalesForecastGoals {
+
+  agent Deal {
+
+    goal DealClosedSuccessfully : Achieve
+
+    goal DealApprovedAndCompleted : Achieve
+      > or DealClosedSuccessfully
+
+    goal DealPreparedAndAssessed : Sustain
+      > or DealClosedSuccessfully
+
+    goal CustomerRecordedAndDetailsEntered : None
+      > DealPreparedAndAssessed
+
+    goal TechnicalPackagePrepared : None
+      > DealPreparedAndAssessed
+
+    goal PricingAndProfitabilityAssessed : None
+      > DealPreparedAndAssessed
+
+    goal RecordCustomerDetails : Achieve
+      > CustomerRecordedAndDetailsEntered
+    condition {[
+      self.state = DealPhase::CUSTOMER_RECORDED
+    ]}
+
+    goal EnterDealDetails : None
+      > CustomerRecordedAndDetailsEntered
+    condition {[
+      self.dealValue > 0
+    ]}
+
+    goal PrepareTechnicalBOM : Achieve
+      > or TechnicalPackagePrepared
+    condition {[
+      self.TechnicalPackage->notEmpty()
+      and
+      self.TechnicalPackage->forAll(p | p.bomReady = true)
+    ]}
+
+    goal AssessProfitability : Achieve
+      > or PricingAndProfitabilityAssessed
+    condition {[
+      self.ProposalRevision->notEmpty()
+      and
+      self.ProposalRevision->forAll(r | r.profitabilityPct > 0)
+    ]}
+
+    goal CustomerReviewReceived : None
+      > DealPreparedAndAssessed
+
+    goal DealApprovedByManagement : Achieve
+      > or DealApprovedAndCompleted
+    condition {[
+      self.ProposalRevision->notEmpty()
+      and
+      self.ProposalRevision.decisions->notEmpty()
+      and
+      self.ProposalRevision.decisions->forAll(d | d.outcome = ApprovalOutcome::APPROVED)
+    ]}
+
+    goal DealRejectedByManagement : None
+      > or DealApprovedAndCompleted
+
+    task SubmitForApproval
+      > or DealApprovedByManagement
+    pre {[
+      self.state = DealPhase::PRICING_READY
+    ]}
+    post {[
+      self.state = DealPhase::PROFITABILITY_ASSESSED
+    ]}
+
+    task ApproveDeal
+      > or DealApprovedByManagement
+    pre {[
+      self.state = DealPhase::PROFITABILITY_ASSESSED
+    ]}
+    post {[
+      self.state = DealPhase::APPROVED
+    ]}
+
+    task CompleteDeal
+      > or DealApprovedAndCompleted
+    pre {[
+      self.state = DealPhase::APPROVED
+    ]}
+    post {[
+      self.state = DealPhase::COMPLETED
+    ]}
+  }
+
+  role Approver {
+
+    task ReviewAndApproveDeal
+    pre {[
+      self.ProposalRevision->notEmpty()
+    ]}
+    post {[
+      self.ProposalRevision.decisions->exists(d | d.outcome = ApprovalOutcome::APPROVED)
+    ]}
+  }
+
+  depend Deal.CustomerReviewReceived
+    -> goal DealReviewedByApprover
+    -> Approver.ReviewAndApproveDeal
+}

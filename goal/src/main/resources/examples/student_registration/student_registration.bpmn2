@@ -1,0 +1,223 @@
+// Enhanced executable BPMN for Process 3: Student Registration (21 nodes).
+model StudentRegistrationProcess {
+  pool StudentRegistrationHandling for StudentRegistrationCase {
+    name "Student Registration Management"
+    lane InformationAgent;
+    lane RegistrationCoordinator;
+    lane AcademicAdvisor;
+    lane TuitionDepartment;
+    lane AcademicCenter;
+  }
+
+  start candidateRequestReceived {
+    lane InformationAgent
+    trigger none
+    pre {[
+      not self.registration.received
+      and not self.registration.enrolled
+    ]}
+    flow receiveRequest
+  }
+
+  activity receiveRequest {
+    name "Receiving candidate request"
+    type task
+    lane InformationAgent
+    post {[
+      self.registration.received
+      and self.informationAgent.registeredCandidateCount =
+        self.informationAgent.registeredCandidateCount@pre + 1
+    ]}
+    flow termsDecision
+  }
+
+  gateway termsDecision {
+    lane InformationAgent
+    type xor
+    flow checkAcceptanceTerms post {[
+      not self.registration.bypassedTerms
+    ]}
+    flow bypassAcceptanceTerms post {[
+      self.registration.bypassedTerms
+    ]}
+  }
+
+  activity checkAcceptanceTerms {
+    name "Checking acceptance terms"
+    type task
+    lane InformationAgent
+    pre {[
+      self.registration.received
+    ]}
+    post {[
+      self.registration.termsChecked
+    ]}
+    flow termsMerge
+  }
+
+  activity bypassAcceptanceTerms {
+    name "Fast-tracking acceptance terms check"
+    type task
+    lane InformationAgent
+    pre {[
+      self.registration.received
+    ]}
+    post {[
+      self.registration.bypassedTerms
+    ]}
+    flow termsMerge
+  }
+
+  gateway termsMerge {
+    lane InformationAgent
+    type xor
+    flow interviewRequirementDecision
+  }
+
+  gateway interviewRequirementDecision {
+    lane AcademicAdvisor
+    type xor
+    flow conductAcademicInterview post {[
+      self.registration.interviewConducted
+    ]}
+    flow skipInterview post {[
+      not self.registration.interviewConducted
+    ]}
+  }
+
+  activity conductAcademicInterview {
+    name "Conducting academic admission interview"
+    type task
+    lane AcademicAdvisor
+    post {[
+      self.registration.interviewConducted
+      and self.academicAdvisor.interviewedCandidateCount =
+        self.academicAdvisor.interviewedCandidateCount@pre + 1
+    ]}
+    flow interviewMerge
+  }
+
+  activity skipInterview {
+    name "Direct admission without interview"
+    type task
+    lane AcademicAdvisor
+    post {[
+      not self.registration.interviewConducted
+    ]}
+    flow interviewMerge
+  }
+
+  gateway interviewMerge {
+    lane AcademicAdvisor
+    type xor
+    flow kitValidationDecision
+  }
+
+  gateway kitValidationDecision {
+    lane RegistrationCoordinator
+    type xor
+    flow validateKit post {[
+      not self.registration.incompleteKitTransferred
+    ]}
+    flow transferIncompleteKit post {[
+      self.registration.incompleteKitTransferred
+    ]}
+  }
+
+  activity validateKit {
+    name "Validating registration kit completeness"
+    type task
+    lane RegistrationCoordinator
+    post {[
+      self.registration.kitValidated
+      and self.registrationCoordinator.validatedKitCount =
+        self.registrationCoordinator.validatedKitCount@pre + 1
+    ]}
+    flow kitMerge
+  }
+
+  activity transferIncompleteKit {
+    name "Transferring incomplete registration kit workaround"
+    type task
+    lane RegistrationCoordinator
+    post {[
+      self.registration.incompleteKitTransferred
+    ]}
+    flow kitMerge
+  }
+
+  gateway kitMerge {
+    lane RegistrationCoordinator
+    type xor
+    flow tuitionPaymentDecision
+  }
+
+  gateway tuitionPaymentDecision {
+    lane TuitionDepartment
+    type xor
+    flow processTuitionPayment post {[
+      self.registration.paymentProcessed
+    ]}
+    flow deferredPaymentAgreement post {[
+      self.registration.deferredPayment
+      and not self.registration.paymentProcessed
+    ]}
+  }
+
+  activity processTuitionPayment {
+    name "Processing tuition payment"
+    type task
+    lane TuitionDepartment
+    post {[
+      self.registration.paymentProcessed
+      and self.tuitionDepartment.paymentProcessedCount =
+        self.tuitionDepartment.paymentProcessedCount@pre + 1
+    ]}
+    flow tuitionMerge
+  }
+
+  activity deferredPaymentAgreement {
+    name "Granting deferred payment agreement"
+    type task
+    lane TuitionDepartment
+    post {[
+      self.registration.deferredPayment
+    ]}
+    flow tuitionMerge
+  }
+
+  gateway tuitionMerge {
+    lane TuitionDepartment
+    type xor
+    flow approveKit
+  }
+
+  activity approveKit {
+    name "Approving registration kit"
+    type task
+    lane AcademicCenter
+    post {[
+      self.registration.kitApproved
+    ]}
+    flow notifyCandidate
+  }
+
+  activity notifyCandidate {
+    name "Notifying candidate and completing enrollment"
+    type task
+    lane AcademicCenter
+    pre {[
+      self.registration.kitApproved
+    ]}
+    post {[
+      self.registration.candidateNotified
+      and self.registration.enrolled
+    ]}
+    flow registrationCompleted
+  }
+
+  end registrationCompleted {
+    lane AcademicCenter
+    trigger none
+  }
+}

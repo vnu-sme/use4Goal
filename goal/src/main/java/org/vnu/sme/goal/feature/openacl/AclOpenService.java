@@ -9,7 +9,7 @@ import org.tzi.use.gui.main.MainWindow;
 import org.vnu.sme.goal.dsl.acl.parser.AclCompiler;
 import org.vnu.sme.goal.dsl.acl.view.AclView;
 
-/** Application boundary for the Open-ACL use case; Swing forms do not parse or build views. */
+/** Application boundary for the State View Model use case. */
 public final class AclOpenService {
     public enum Target { USE_DESKTOP, POPUP_WINDOW }
     public record Result(boolean opened, List<String> errors) {

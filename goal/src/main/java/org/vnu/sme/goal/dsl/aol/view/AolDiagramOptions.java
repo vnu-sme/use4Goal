@@ -27,10 +27,10 @@ public final class AolDiagramOptions extends DiagramOptions {
         registerTypeColor(EDGE_COLOR, Color.BLACK, Color.BLACK);
         registerTypeColor(EDGE_LABEL_COLOR, Color.BLACK, Color.BLACK);
         registerTypeColor(EDGE_SELECTED_COLOR, Color.ORANGE, new Color(0x50, 0x50, 0x50));
-        registerTypeColor(AGENT_FILL, new Color(255, 249, 219), new Color(240, 240, 240));
-        registerTypeColor(GROUP_FILL, Color.WHITE, new Color(240, 240, 240));
-        registerTypeColor(PLAY_FILL, new Color(238, 248, 255), new Color(240, 240, 240));
-        registerTypeColor(ENTITY_FILL, new Color(238, 255, 240), new Color(240, 240, 240));
+        registerTypeColor(AGENT_FILL, new Color(240, 240, 240), new Color(200, 200, 200));
+        registerTypeColor(GROUP_FILL, Color.WHITE, new Color(235, 235, 235));
+        registerTypeColor(PLAY_FILL, Color.WHITE, new Color(235, 235, 235));
+        registerTypeColor(ENTITY_FILL, Color.WHITE, new Color(235, 235, 235));
     }
 
     @Override
@@ -40,4 +40,8 @@ public final class AolDiagramOptions extends DiagramOptions {
 
     @Override
     public void setShowMutliplicities(boolean showMutliplicities) {}
+
+    private boolean showAssociationNames = true;
+    public boolean isShowAssociationNames() { return showAssociationNames; }
+    public void setShowAssociationNames(boolean v) { this.showAssociationNames = v; }
 }

@@ -1,0 +1,1285 @@
+{
+  "case": "StudentRegistration",
+  "folder": "StudentRegistration",
+  "stem": "student-registration",
+  "source_pdf_pages": [
+    8,
+    12,
+    17,
+    18
+  ],
+  "notes": [
+    "Calendar timers are retained as untimed event nodes. Unlabelled OR reporting splits use XOR abstraction; see audit."
+  ],
+  "nodes": [
+    {
+      "kind": "start",
+      "id": "caseStarted",
+      "lane": "InformationCenter",
+      "name": "Candidate contact",
+      "edges": [
+        {
+          "to": "contact",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "contact",
+      "lane": "InformationCenter",
+      "name": "Contact a candidate",
+      "edges": [
+        {
+          "to": "createTicket",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "createTicket",
+      "lane": "InformationCenter",
+      "name": "Create a candidate ticket",
+      "edges": [
+        {
+          "to": "checkTerms",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "checkTerms",
+      "lane": "InformationCenter",
+      "name": "Checking acceptance terms",
+      "edges": [
+        {
+          "to": "threshold",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "threshold",
+      "lane": "InformationCenter",
+      "name": "Meets threshold conditions?",
+      "edges": [
+        {
+          "to": "further",
+          "label": "Yes"
+        },
+        {
+          "to": "rejectTicket",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "rejectTicket",
+      "lane": "InformationCenter",
+      "name": "Update candidate ticket - threshold rejection",
+      "edges": [
+        {
+          "to": "endThreshold",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "end",
+      "id": "endThreshold",
+      "lane": "InformationCenter",
+      "name": "Candidate does not meet threshold",
+      "edges": [],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "further",
+      "lane": "InformationCenter",
+      "name": "Requires further examination?",
+      "edges": [
+        {
+          "to": "clarifyTerms",
+          "label": "Yes"
+        },
+        {
+          "to": "updateTicket",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "clarifyTerms",
+      "lane": "InformationCenter",
+      "name": "Clarification of acceptance terms",
+      "edges": [
+        {
+          "to": "pendingClarification",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "pendingClarification",
+      "lane": "InformationCenter",
+      "name": "Pending activity update",
+      "edges": [
+        {
+          "to": "headPending",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "headPending",
+      "lane": "CRMHead",
+      "name": "Activity should be handled",
+      "edges": [
+        {
+          "to": "exceptionalCandidate",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "exceptionalCandidate",
+      "lane": "CRMHead",
+      "name": "Checking exceptional candidate",
+      "edges": [
+        {
+          "to": "updateHeadTicket",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "updateHeadTicket",
+      "lane": "CRMHead",
+      "name": "Update candidate ticket",
+      "edges": [
+        {
+          "to": "updateTermsFile",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "updateTermsFile",
+      "lane": "InformationCenter",
+      "name": "Update acceptance terms file",
+      "edges": [
+        {
+          "to": "suitable",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "suitable",
+      "lane": "InformationCenter",
+      "name": "Found suitable?",
+      "edges": [
+        {
+          "to": "updateTicket",
+          "label": "Yes"
+        },
+        {
+          "to": "rejectStatus",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "rejectStatus",
+      "lane": "InformationCenter",
+      "name": "Change status to rejected",
+      "edges": [
+        {
+          "to": "endRejected",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "end",
+      "id": "endRejected",
+      "lane": "InformationCenter",
+      "name": "Candidate rejected after examination",
+      "edges": [],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "updateTicket",
+      "lane": "InformationCenter",
+      "name": "Update candidate ticket",
+      "edges": [
+        {
+          "to": "pendingUpdate",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "pendingUpdate",
+      "lane": "InformationCenter",
+      "name": "Pending activity update",
+      "edges": [
+        {
+          "to": "feeFork",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "feeFork",
+      "lane": "InformationCenter",
+      "name": "Registration and fee update routing",
+      "edges": [
+        {
+          "to": "openMerge",
+          "label": ""
+        },
+        {
+          "to": "feeMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "openMerge",
+      "lane": "RegistrationCoordinator",
+      "name": "Registration ticket merge",
+      "edges": [
+        {
+          "to": "openKit",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "openKit",
+      "lane": "RegistrationCoordinator",
+      "name": "A ticket must be opened",
+      "edges": [
+        {
+          "to": "feeCheckMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "event",
+      "id": "feeTimer",
+      "lane": "RegistrationCoordinator",
+      "name": "Every two days",
+      "edges": [
+        {
+          "to": "feeReport",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "feeReport",
+      "lane": "RegistrationCoordinator",
+      "name": "Generate registration fee payment report",
+      "edges": [
+        {
+          "to": "feeCheckMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "feeCheckMerge",
+      "lane": "RegistrationCoordinator",
+      "name": "Fee examination merge",
+      "edges": [
+        {
+          "to": "feePaid",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "feePaid",
+      "lane": "RegistrationCoordinator",
+      "name": "Registration fee paid?",
+      "edges": [
+        {
+          "to": "createStudent",
+          "label": "Yes"
+        },
+        {
+          "to": "feeWait",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "feeWait",
+      "lane": "RegistrationCoordinator",
+      "name": "Waiting for registration fee",
+      "edges": [
+        {
+          "to": "feeTimer",
+          "label": ""
+        },
+        {
+          "to": "feeMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "feeMerge",
+      "lane": "TuitionDepartment",
+      "name": "Registration fee update merge",
+      "edges": [
+        {
+          "to": "updateFee",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "updateFee",
+      "lane": "TuitionDepartment",
+      "name": "Update registration fee",
+      "edges": [
+        {
+          "to": "endFee",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "end",
+      "id": "endFee",
+      "lane": "TuitionDepartment",
+      "name": "Registration fee updated",
+      "edges": [],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "createStudent",
+      "lane": "RegistrationCoordinator",
+      "name": "Creating a student ticket",
+      "edges": [
+        {
+          "to": "completeKit",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "completeKit",
+      "lane": "RegistrationCoordinator",
+      "name": "Registration kit completion",
+      "edges": [
+        {
+          "to": "updateStudent",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "updateStudent",
+      "lane": "RegistrationCoordinator",
+      "name": "Updating a student ticket",
+      "edges": [
+        {
+          "to": "facultyRoute",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "facultyRoute",
+      "lane": "RegistrationCoordinator",
+      "name": "Faculty transfer route",
+      "edges": [
+        {
+          "to": "transferFaculty",
+          "label": ""
+        },
+        {
+          "to": "transferException",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "transferFaculty",
+      "lane": "RegistrationCoordinator",
+      "name": "Update status - transferred to faculty",
+      "edges": [
+        {
+          "to": "facultyMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "transferException",
+      "lane": "RegistrationCoordinator",
+      "name": "Update status - transferred as an exception",
+      "edges": [
+        {
+          "to": "facultyMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "facultyMerge",
+      "lane": "RegistrationCoordinator",
+      "name": "Faculty transfer merge",
+      "edges": [
+        {
+          "to": "updateFaculty",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "updateFaculty",
+      "lane": "RegistrationCoordinator",
+      "name": "Relevant faculty update",
+      "edges": [
+        {
+          "to": "advisorMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "advisorMerge",
+      "lane": "AcademicAdvisor",
+      "name": "Candidate examination merge",
+      "edges": [
+        {
+          "to": "candidateWaiting",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "candidateWaiting",
+      "lane": "AcademicAdvisor",
+      "name": "A new candidate is waiting",
+      "edges": [
+        {
+          "to": "examMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "examMerge",
+      "lane": "AcademicAdvisor",
+      "name": "Examination and report routing",
+      "edges": [
+        {
+          "to": "examineKit",
+          "label": ""
+        },
+        {
+          "to": "weeklyTimer",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "event",
+      "id": "weeklyTimer",
+      "lane": "AcademicAdvisor",
+      "name": "Every week",
+      "edges": [
+        {
+          "to": "candidateReport",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "candidateReport",
+      "lane": "AcademicAdvisor",
+      "name": "Generate candidates report",
+      "edges": [
+        {
+          "to": "examineKit",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "examineKit",
+      "lane": "AcademicAdvisor",
+      "name": "Candidate ticket examination and update",
+      "edges": [
+        {
+          "to": "exceptional",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "exceptional",
+      "lane": "AcademicAdvisor",
+      "name": "Exceptional candidate?",
+      "edges": [
+        {
+          "to": "updateExceptional",
+          "label": "Yes"
+        },
+        {
+          "to": "acceptanceTest",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "updateExceptional",
+      "lane": "AcademicAdvisor",
+      "name": "Update exceptional candidates list",
+      "edges": [
+        {
+          "to": "exceptionTimer",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "event",
+      "id": "exceptionTimer",
+      "lane": "AcademicAdvisor",
+      "name": "Month before start of academic year",
+      "edges": [
+        {
+          "to": "examineKit",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "acceptanceTest",
+      "lane": "AcademicAdvisor",
+      "name": "Requires acceptance test?",
+      "edges": [
+        {
+          "to": "coordinateTest",
+          "label": "Yes"
+        },
+        {
+          "to": "coordinateInterview",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "coordinateTest",
+      "lane": "AcademicAdvisor",
+      "name": "Coordinating internal or external test",
+      "edges": [
+        {
+          "to": "passedTest",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "passedTest",
+      "lane": "AcademicAdvisor",
+      "name": "Passed the test?",
+      "edges": [
+        {
+          "to": "conductInterview",
+          "label": "Yes"
+        },
+        {
+          "to": "accepted",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "coordinateInterview",
+      "lane": "AcademicAdvisor",
+      "name": "Coordinating interview",
+      "edges": [
+        {
+          "to": "conductInterview",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "conductInterview",
+      "lane": "AcademicAdvisor",
+      "name": "Conducting interview",
+      "edges": [
+        {
+          "to": "accepted",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "accepted",
+      "lane": "AcademicAdvisor",
+      "name": "Candidate accepted?",
+      "edges": [
+        {
+          "to": "transferCenter",
+          "label": "Yes"
+        },
+        {
+          "to": "rejectAdvisorTicket",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "rejectAdvisorTicket",
+      "lane": "AcademicAdvisor",
+      "name": "Update ticket and change to rejected",
+      "edges": [
+        {
+          "to": "rejectedMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "rejectedMerge",
+      "lane": "RegistrationCoordinator",
+      "name": "Rejected candidate reporting",
+      "edges": [
+        {
+          "to": "registrationReport",
+          "label": ""
+        },
+        {
+          "to": "rejectedTimer",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "event",
+      "id": "rejectedTimer",
+      "lane": "RegistrationCoordinator",
+      "name": "Every week",
+      "edges": [
+        {
+          "to": "rejectedStatistics",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "rejectedStatistics",
+      "lane": "RegistrationCoordinator",
+      "name": "Rejected candidate statistics",
+      "edges": [
+        {
+          "to": "registrationReport",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "registrationReport",
+      "lane": "RegistrationCoordinator",
+      "name": "Generating registration status report",
+      "edges": [
+        {
+          "to": "suggestAlternative",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "suggestAlternative",
+      "lane": "RegistrationCoordinator",
+      "name": "Suggest alternative program",
+      "edges": [
+        {
+          "to": "alternative",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "alternative",
+      "lane": "RegistrationCoordinator",
+      "name": "Suitable alternative program?",
+      "edges": [
+        {
+          "to": "changeProgram",
+          "label": "Yes"
+        },
+        {
+          "to": "closeRejected",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "closeRejected",
+      "lane": "RegistrationCoordinator",
+      "name": "Update and status change",
+      "edges": [
+        {
+          "to": "endNoAlternative",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "end",
+      "id": "endNoAlternative",
+      "lane": "RegistrationCoordinator",
+      "name": "No alternative program",
+      "edges": [],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "changeProgram",
+      "lane": "RegistrationCoordinator",
+      "name": "Program update and status change",
+      "edges": [
+        {
+          "to": "updateAlternativeFaculty",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "updateAlternativeFaculty",
+      "lane": "RegistrationCoordinator",
+      "name": "Relevant faculty update",
+      "edges": [
+        {
+          "to": "advisorMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "transferCenter",
+      "lane": "AcademicAdvisor",
+      "name": "Update ticket and transfer to academic center",
+      "edges": [
+        {
+          "to": "examineRegistration",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "examineRegistration",
+      "lane": "AcademicAdvisor",
+      "name": "Registration kit required examination",
+      "edges": [
+        {
+          "to": "pendingKit",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "pendingKit",
+      "lane": "AcademicCenter",
+      "name": "Pending registration kit",
+      "edges": [
+        {
+          "to": "signatureMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "signatureMerge",
+      "lane": "AcademicCenter",
+      "name": "Signature routing",
+      "edges": [
+        {
+          "to": "prepareSignature",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "prepareSignature",
+      "lane": "AcademicCenter",
+      "name": "Prepare registration kit for signature",
+      "edges": [
+        {
+          "to": "pendingStatus",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "pendingStatus",
+      "lane": "AcademicCenter",
+      "name": "Update pending registration kit status",
+      "edges": [
+        {
+          "to": "transferApproval",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "transferApproval",
+      "lane": "AcademicCenter",
+      "name": "Transfer registration kit for approval",
+      "edges": [
+        {
+          "to": "checkIntegrity",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "checkIntegrity",
+      "lane": "AcademicVP",
+      "name": "Check registration kit integrity",
+      "edges": [
+        {
+          "to": "kitApproved",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "kitApproved",
+      "lane": "AcademicVP",
+      "name": "Approved?",
+      "edges": [
+        {
+          "to": "signKit",
+          "label": "Yes"
+        },
+        {
+          "to": "signatureMerge",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "signKit",
+      "lane": "AcademicVP",
+      "name": "Signing and approving registration kit",
+      "edges": [
+        {
+          "to": "acceptedStatus",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "acceptedStatus",
+      "lane": "AcademicCenter",
+      "name": "Status update to accepted",
+      "edges": [
+        {
+          "to": "paymentVoucher",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "paymentVoucher",
+      "lane": "AcademicCenter",
+      "name": "Payment voucher or arrangement required",
+      "edges": [
+        {
+          "to": "paymentPending",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "paymentPending",
+      "lane": "TuitionDepartment",
+      "name": "Payment arrangement pending",
+      "edges": [
+        {
+          "to": "updatePayment",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "updatePayment",
+      "lane": "TuitionDepartment",
+      "name": "Update or approve payment and direct debit",
+      "edges": [
+        {
+          "to": "paymentFork",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "paymentFork",
+      "lane": "TuitionDepartment",
+      "name": "Payment document and status routing",
+      "edges": [
+        {
+          "to": "printVoucher",
+          "label": ""
+        },
+        {
+          "to": "checkPayment",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "printVoucher",
+      "lane": "TuitionDepartment",
+      "name": "Print a direct debit voucher",
+      "edges": [
+        {
+          "to": "printAcceptance",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "printAcceptance",
+      "lane": "AcademicCenter",
+      "name": "Print and send acceptance letter",
+      "edges": [
+        {
+          "to": "acceptanceFork",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "acceptanceFork",
+      "lane": "AcademicCenter",
+      "name": "Acceptance letter routing",
+      "edges": [
+        {
+          "to": "endAcceptance",
+          "label": ""
+        },
+        {
+          "to": "paymentReportMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "end",
+      "id": "endAcceptance",
+      "lane": "AcademicCenter",
+      "name": "Acceptance letter sent",
+      "edges": [],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "paymentReportMerge",
+      "lane": "AcademicAdvisor",
+      "name": "Payment report merge",
+      "edges": [
+        {
+          "to": "paymentReport",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "paymentReport",
+      "lane": "AcademicAdvisor",
+      "name": "Generate payment status report",
+      "edges": [
+        {
+          "to": "arranged",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "arranged",
+      "lane": "AcademicAdvisor",
+      "name": "Academic payment arranged?",
+      "edges": [
+        {
+          "to": "prepareCurriculum",
+          "label": "Yes"
+        },
+        {
+          "to": "twoWeekTimer",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "event",
+      "id": "twoWeekTimer",
+      "lane": "AcademicAdvisor",
+      "name": "Two weeks",
+      "edges": [
+        {
+          "to": "paymentReportMerge",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "prepareCurriculum",
+      "lane": "AcademicAdvisor",
+      "name": "Preparation of an academic curriculum",
+      "edges": [
+        {
+          "to": "endCurriculum",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "end",
+      "id": "endCurriculum",
+      "lane": "AcademicAdvisor",
+      "name": "Academic curriculum prepared",
+      "edges": [],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "checkPayment",
+      "lane": "TuitionDepartment",
+      "name": "Checking payment status",
+      "edges": [
+        {
+          "to": "paymentMade",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "gateway",
+      "id": "paymentMade",
+      "lane": "TuitionDepartment",
+      "name": "Payment required or made?",
+      "edges": [
+        {
+          "to": "paymentStatus",
+          "label": "Yes"
+        },
+        {
+          "to": "dailyTimer",
+          "label": "No"
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "event",
+      "id": "dailyTimer",
+      "lane": "TuitionDepartment",
+      "name": "Every day",
+      "edges": [
+        {
+          "to": "checkPayment",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "activity",
+      "id": "paymentStatus",
+      "lane": "TuitionDepartment",
+      "name": "Update payment status",
+      "edges": [
+        {
+          "to": "endPayment",
+          "label": ""
+        }
+      ],
+      "gateway": "xor"
+    },
+    {
+      "kind": "end",
+      "id": "endPayment",
+      "lane": "TuitionDepartment",
+      "name": "Payment recorded",
+      "edges": [],
+      "gateway": "xor"
+    }
+  ],
+  "counts": {
+    "nodes": 94,
+    "sequence_flows": 106,
+    "split_gateways": 19,
+    "outgoing_split_branches": 38
+  }
+}

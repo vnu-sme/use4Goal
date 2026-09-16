@@ -13,8 +13,8 @@
     <artifactId>goal</artifactId>
     <packaging>jar</packaging>
 
-    <name>Goal Plugin</name>
-    <description>Goal modeling plugin for USE</description>
+    <name>Conformance of Processes and Goals</name>
+    <description>USE plugin for process, goal and state views, bounded conformance checking, and process-scenario generation</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -70,6 +70,15 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <!-- Canonical case studies live in the repository-level examples/ directory. -->
+                    <exclude>examples/**</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

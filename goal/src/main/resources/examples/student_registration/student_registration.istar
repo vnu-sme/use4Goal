@@ -1,0 +1,81 @@
+// Intentional view corresponding to Student Registration Process 3.
+istar StudentRegistrationGoals {
+  role InformationAgent {
+    goal CandidateRegistrationHandled : Achieve
+    condition {[
+      self.orgContext.registration.received
+    ]}
+
+    goal TermsValidated : Achieve
+    condition {[
+      self.orgContext.registration.termsChecked
+      or self.orgContext.registration.bypassedTerms
+    ]}
+
+    task ReceiveRequest
+    post {[
+      self.orgContext.registration.received
+    ]}
+  }
+
+  role RegistrationCoordinator {
+    goal KitValidationHandled : Achieve
+    condition {[
+      self.orgContext.registration.kitValidated
+      or self.orgContext.registration.incompleteKitTransferred
+    ]}
+
+    // Safety goal: Candidate should only be enrolled after proper terms check and full kit validation
+    goal RegistrationIntegrity : Maintain
+    condition {[
+      not self.orgContext.registration.enrolled
+      or (self.orgContext.registration.termsChecked
+        and self.orgContext.registration.kitValidated)
+    ]}
+
+    task ValidateKit
+    post {[
+      self.orgContext.registration.kitValidated
+    ]}
+  }
+
+  role AcademicAdvisor {
+    goal InterviewHandled : Achieve
+    condition {[
+      self.orgContext.registration.interviewConducted
+      or not self.orgContext.registration.interviewConducted
+    ]}
+
+    task ConductAcademicInterview
+    post {[
+      self.orgContext.registration.interviewConducted
+    ]}
+  }
+
+  role TuitionDepartment {
+    goal PaymentCompleted : Achieve
+    condition {[
+      self.orgContext.registration.paymentProcessed
+      or self.orgContext.registration.deferredPayment
+    ]}
+
+    task ProcessTuitionPayment
+    post {[
+      self.orgContext.registration.paymentProcessed
+    ]}
+  }
+
+  role AcademicCenter {
+    goal EnrollmentCompleted : Achieve
+    condition {[
+      self.orgContext.registration.kitApproved
+      and self.orgContext.registration.candidateNotified
+      and self.orgContext.registration.enrolled
+    ]}
+
+    task ApproveKit
+    post {[
+      self.orgContext.registration.kitApproved
+    ]}
+  }
+}

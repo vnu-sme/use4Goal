@@ -86,7 +86,7 @@ Theo lựa chọn của bạn: OCL được nhúng dạng text tham khảo, khô
 
 ## ACL redesign (structural pass)
 
-`sales-forecast.acl` was reworked from a flag bag into a structural model:
+`sales-forecast.csl` was reworked from a flag bag into a structural model:
 
 - **All ten organisational participants are first-class `role`s with their
   own state** — `CustomerManager.authorityLevel`/`openDealCount`,

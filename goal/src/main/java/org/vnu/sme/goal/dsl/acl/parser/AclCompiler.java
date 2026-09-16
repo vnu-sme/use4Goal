@@ -47,8 +47,8 @@ public final class AclCompiler {
 
     private static Result compileStream(CharStream input, String sourceName) {
         List<String> errors = new ArrayList<>();
-        ACLLexer lexer = new ACLLexer(input);
-        ACLParser parser = new ACLParser(new CommonTokenStream(lexer));
+        CSLLexer lexer = new CSLLexer(input);
+        CSLParser parser = new CSLParser(new CommonTokenStream(lexer));
 
         lexer.removeErrorListeners();
         parser.removeErrorListeners();
@@ -62,7 +62,7 @@ public final class AclCompiler {
         lexer.addErrorListener(listener);
         parser.addErrorListener(listener);
 
-        ACLParser.ModelContext parseTree = parser.model();
+        CSLParser.ModelContext parseTree = parser.model();
         if (!errors.isEmpty()) return new Result(null, null, errors);
 
         AclModelCS ast = new AclBuildingVisitor().visitModel(parseTree);

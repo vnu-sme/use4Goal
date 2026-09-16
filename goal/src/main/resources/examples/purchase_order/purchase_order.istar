@@ -1,0 +1,73 @@
+// Intentional view corresponding to Purchase Order Process 4.
+istar PurchaseOrderGoals {
+  role PurchaseInitiator {
+    goal PurchaseCompleted : Achieve
+    condition {[
+      self.orgContext.order.goodsReceived
+      and self.orgContext.order.completed
+    ]}
+
+    task CreateRequisition
+    post {[
+      self.orgContext.order.created
+    ]}
+  }
+
+  role PurchaseManager {
+    goal VendorSelectionCompleted : Achieve
+    condition {[
+      self.orgContext.order.multipleQuotesCompared
+      or not self.orgContext.order.multipleQuotesCompared
+    ]}
+
+    // Safety goal: Order placement requires manager and CFO or CEO approval unless emergency bypass occurred
+    goal PurchaseApprovalIntegrity : Maintain
+    condition {[
+      not self.orgContext.order.orderPlaced
+      or (self.orgContext.order.departmentApproved
+        and (self.orgContext.order.cfoApproved
+          or self.orgContext.order.ceoApproved))
+    ]}
+
+    task PlaceOrder
+    post {[
+      self.orgContext.order.orderPlaced
+    ]}
+  }
+
+  role DepartmentManager {
+    goal DepartmentApprovalCompleted : Achieve
+    condition {[
+      self.orgContext.order.departmentApproved
+    ]}
+
+    task DepartmentApproval
+    post {[
+      self.orgContext.order.departmentApproved
+    ]}
+  }
+
+  role CFO {
+    goal CFOApprovalCompleted : Achieve
+    condition {[
+      self.orgContext.order.cfoApproved
+    ]}
+
+    task CFOApprovalPath
+    post {[
+      self.orgContext.order.cfoApproved
+    ]}
+  }
+
+  role CEO {
+    goal CEOApprovalCompleted : Achieve
+    condition {[
+      self.orgContext.order.ceoApproved
+    ]}
+
+    task DirectorCeoApprovalPath
+    post {[
+      self.orgContext.order.ceoApproved
+    ]}
+  }
+}

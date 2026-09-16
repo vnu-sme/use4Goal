@@ -24,6 +24,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.tzi.use.gui.main.MainWindow;
+import org.vnu.sme.goal.gui.OfficialExamples;
 @SuppressWarnings("serial")
 public final class AclForm extends JDialog {
     private static final Preferences PREFS = Preferences.userNodeForPackage(AclForm.class);
@@ -37,7 +38,7 @@ public final class AclForm extends JDialog {
     private JButton openMenuButton;
 
     public AclForm(MainWindow mainWindow, AclOpenService openService) {
-        super(mainWindow, "Open ACL", false);
+        super(mainWindow, "State View Model", false);
         this.openService = openService;
         buildUI();
         pathField.setText(PREFS.get(PREF_ACL, ""));
@@ -56,7 +57,7 @@ public final class AclForm extends JDialog {
     private JPanel buildFileRow() {
         JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         pathField = new JTextField(42);
-        pathField.setToolTipText("Path to .acl file");
+        pathField.setToolTipText("Path to .csl file");
         pathField.addActionListener(e -> open(OpenTarget.USE_DESKTOP));
 
         JButton browse = new JButton("Browse");
@@ -90,8 +91,8 @@ public final class AclForm extends JDialog {
     }
 
     private void chooseFile() {
-        JFileChooser fc = new JFileChooser();
-        fc.setFileFilter(new FileNameExtensionFilter("ACL files (*.acl)", "acl"));
+        JFileChooser fc = OfficialExamples.chooser(pathField.getText().trim());
+        fc.setFileFilter(new FileNameExtensionFilter("CSL files (*.csl)", "csl"));
         String cur = pathField.getText().trim();
         if (!cur.isEmpty()) fc.setSelectedFile(new File(cur));
         if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -126,7 +127,7 @@ public final class AclForm extends JDialog {
         text.setCaretPosition(0);
         JScrollPane scroll = new JScrollPane(text);
         scroll.setPreferredSize(new Dimension(850, Math.min(520, 80 + errors.size() * 22)));
-        JOptionPane.showMessageDialog(this, scroll, "ACL Errors (" + errors.size() + ")",
+        JOptionPane.showMessageDialog(this, scroll, "CSL Errors (" + errors.size() + ")",
                 JOptionPane.ERROR_MESSAGE);
     }
 

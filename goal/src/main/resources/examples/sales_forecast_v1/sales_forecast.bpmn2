@@ -1,0 +1,148 @@
+model SalesForecastProcess {
+
+  pool ProposalApproval for Deal {
+    name "Price proposal approval and response"
+    lane CustomerManager;
+    lane Approver;
+  }
+
+  start proposalReceived {
+    name "Proposal received"
+    lane CustomerManager
+    trigger none
+
+    pre {[
+      self.state = DealPhase::DRAFT
+    ]}
+
+    flow prepareProposal
+  }
+
+  activity prepareProposal {
+    name "Prepare price proposal"
+    type task
+    lane CustomerManager
+
+    pre {[
+      self.state = DealPhase::DRAFT
+    ]}
+
+    post {[
+      self.state = DealPhase::CUSTOMER_RECORDED
+    ]}
+
+    flow submitForApproval
+  }
+
+  activity submitForApproval {
+    name "Submit proposal for approval"
+    type task
+    lane CustomerManager
+
+    pre {[
+      self.state = DealPhase::CUSTOMER_RECORDED
+    ]}
+
+    post {[
+      self.state = DealPhase::PRICING_READY
+    ]}
+
+    flow reviewTiming
+  }
+
+  gateway reviewTiming {
+    name "Review timing"
+    lane Approver
+    type xor
+
+    flow reviewProposalLate when {[
+      self.dealValue > 250000
+    ]}
+
+    flow reviewProposalOnTime default
+  }
+
+  activity reviewProposalOnTime {
+    name "Review price proposal on time"
+    type task
+    lane Approver
+
+    pre {[
+      self.state = DealPhase::PRICING_READY
+    ]}
+
+    post {[
+      self.state = DealPhase::PROFITABILITY_ASSESSED
+    ]}
+
+    flow approvalDecision
+  }
+
+  activity reviewProposalLate {
+    name "Review price proposal late"
+    type task
+    lane Approver
+
+    pre {[
+      self.state = DealPhase::PRICING_READY
+    ]}
+
+    post {[
+      self.state = DealPhase::PROFITABILITY_ASSESSED
+    ]}
+
+    flow approvalDecision
+  }
+
+  gateway approvalDecision {
+    name "Approval decision"
+    lane Approver
+    type xor
+
+    flow approveProposal when {[
+      self.ProposalRevision->notEmpty()
+      and
+      self.ProposalRevision->forAll(r | r.profitabilityPct >= 5)
+    ]}
+
+    flow rejectProposal default
+  }
+
+  activity approveProposal {
+    name "Approve proposal"
+    type task
+    lane Approver
+
+    pre {[
+      self.state = DealPhase::PROFITABILITY_ASSESSED
+    ]}
+
+    post {[
+      self.state = DealPhase::APPROVED
+    ]}
+
+    flow proposalHandled
+  }
+
+  activity rejectProposal {
+    name "Reject proposal"
+    type task
+    lane Approver
+
+    pre {[
+      self.state = DealPhase::PROFITABILITY_ASSESSED
+    ]}
+
+    post {[
+      self.state = DealPhase::REJECTED
+    ]}
+
+    flow proposalHandled
+  }
+
+  end proposalHandled {
+    name "Proposal handled"
+    lane CustomerManager
+    trigger none
+  }
+}

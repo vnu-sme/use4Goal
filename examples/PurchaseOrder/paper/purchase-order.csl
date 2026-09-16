@@ -1,0 +1,17 @@
+// Operational state abstraction; see evaluation/AUDIT.md.
+csl v3.0 PurchaseOrderState {
+  orgContext PurchaseOrderCase {
+    role CEO;
+    role CFO;
+    role DepartmentManager;
+    role Director;
+    role PurchaseInitiator;
+    role PurchaseManager;
+    created : Boolean mutable default false;
+    departmentApproved : Boolean mutable default false;
+    quotesChecked : Boolean mutable default false;
+    budgetChecked : Boolean mutable default false;
+    executiveApproved : Boolean mutable default false;
+    ordered : Boolean mutable default false;
+  }
+}

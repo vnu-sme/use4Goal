@@ -1,0 +1,18 @@
+acl-bpmn-boundary v1.0 SalesForecastBound {
+  snapshots 20;
+  loop-bound 1;
+  integer 0..10;
+
+  objects SalesCase 1;
+  objects Management 1;
+  objects CustomerManager 1;
+  objects Approver 1;
+  objects Customer 1;
+  objects Proposal 1;
+
+  links SalesCase_contains_Management 1;
+  links SalesCase_contains_CustomerManager 1;
+  links SalesCase_contains_Approver 1;
+  links SalesCase_contains_Customer 1;
+  links SalesCase_contains_Proposal 1;
+}

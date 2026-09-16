@@ -1,0 +1,20 @@
+csl-bpmn-boundary v1.0 StudentRegistrationBound {
+  snapshots 64;
+  loop-bound 1;
+  integer 0..1;
+  objects StudentRegistrationCase 1;
+  objects AcademicAdvisor 1;
+  objects AcademicCenter 1;
+  objects AcademicVP 1;
+  objects CRMHead 1;
+  objects InformationCenter 1;
+  objects RegistrationCoordinator 1;
+  objects TuitionDepartment 1;
+  links StudentRegistrationCase_contains_AcademicAdvisor 1;
+  links StudentRegistrationCase_contains_AcademicCenter 1;
+  links StudentRegistrationCase_contains_AcademicVP 1;
+  links StudentRegistrationCase_contains_CRMHead 1;
+  links StudentRegistrationCase_contains_InformationCenter 1;
+  links StudentRegistrationCase_contains_RegistrationCoordinator 1;
+  links StudentRegistrationCase_contains_TuitionDepartment 1;
+}

@@ -1,0 +1,24 @@
+acl-bpmn-boundary v1.0 StudentRegistrationBound {
+  snapshots 24;
+  loop-bound 1;
+  integer 0..10;
+
+  objects StudentRegistrationCase 1;
+  objects InformationAgent 1;
+  objects RegistrationCoordinator 1;
+  objects AcademicAdvisor 1;
+  objects TuitionDepartment 1;
+  objects AcademicCenter 1;
+  objects AcademicVP 1;
+  objects Candidate 1;
+  objects Registration 1;
+
+  links StudentRegistrationCase_contains_InformationAgent 1;
+  links StudentRegistrationCase_contains_RegistrationCoordinator 1;
+  links StudentRegistrationCase_contains_AcademicAdvisor 1;
+  links StudentRegistrationCase_contains_TuitionDepartment 1;
+  links StudentRegistrationCase_contains_AcademicCenter 1;
+  links StudentRegistrationCase_contains_AcademicVP 1;
+  links StudentRegistrationCase_contains_Candidate 1;
+  links StudentRegistrationCase_contains_Registration 1;
+}

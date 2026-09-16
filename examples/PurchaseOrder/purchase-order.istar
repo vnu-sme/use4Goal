@@ -1,0 +1,60 @@
+// Intentional model for Purchase Order — designed for WEAK_CONFORMANCE.
+//
+// PurchaseApprovalIntegrity (Maintain) is the key safety property:
+//   an order may not be placed unless departmentApproved AND (cfoApproved OR ceoApproved).
+//
+// In the 4 NORMAL execution paths this is always satisfied (approval chain runs fully).
+// In the BYPASS path, departmentApproved = false → VIOLATED → WEAK_CONFORMANCE, RISKY.
+//
+// CFO and CEO roles intentionally have no individual goals to avoid false violations
+// in paths where the other approval branch is taken (XOR exclusion).
+istar PurchaseOrderGoals {
+
+  role PurchaseInitiator {
+
+    goal PurchaseCompleted : Achieve
+    condition {[
+      self.orgContext.order.goodsReceived
+      and self.orgContext.order.completed
+    ]}
+
+    task CreateRequisition
+    post {[
+      self.orgContext.order.created
+    ]}
+  }
+
+  role PurchaseManager {
+
+    // Core safety property: order placement must follow proper approval chain.
+    // Violated in the emergency bypass path → non-conforming execution.
+    goal PurchaseApprovalIntegrity : Maintain
+    condition {[
+      not self.orgContext.order.orderPlaced
+      or (self.orgContext.order.departmentApproved
+        and (self.orgContext.order.cfoApproved
+          or self.orgContext.order.ceoApproved))
+    ]}
+
+    task PlaceOrder
+    post {[
+      self.orgContext.order.orderPlaced
+    ]}
+  }
+
+  role DepartmentManager {
+
+    // Accepts bypass as a legitimate alternative to formal department approval.
+    // Satisfied in all paths: normal paths set departmentApproved, bypass sets bypassedApproval.
+    goal DepartmentApprovalHandled : Achieve
+    condition {[
+      self.orgContext.order.departmentApproved
+      or self.orgContext.order.bypassedApproval
+    ]}
+
+    task DepartmentApproval
+    post {[
+      self.orgContext.order.departmentApproved
+    ]}
+  }
+}

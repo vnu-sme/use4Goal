@@ -1,0 +1,82 @@
+// Operationalized goals grounded in Appendix 3; see evaluation/AUDIT.md.
+istar PurchaseOrderGoals {
+  role CEO {
+    goal ExecutiveApproval : Maintain description "Purchase approval according to world-wide view"
+    condition {[ not self.orgContext.ordered or self.orgContext.executiveApproved ]}
+    task ceoPending description "Pending purchase requisition"
+    task ceoBudget description "Legality and budget check"
+    post {[ self.orgContext.budgetChecked ]}
+    task cancelCeo description "Cancel and change status"
+    task ceoApprove description "Approve and change status"
+    post {[ self.orgContext.executiveApproved ]}
+    task informCFO description "Inform the CFO"
+  }
+  role CFO {
+    goal BudgetApproval : Maintain description "Purchase approval according to budget"
+    condition {[ not self.orgContext.ordered or self.orgContext.budgetChecked ]}
+    task cfoStatus description "Change status"
+    task informFinance description "Inform financial manager"
+    task updateCfoDetails description "Update details"
+  }
+  role DepartmentManager {
+    task departmentPending description "Pending purchase requisition"
+    task examineDetails description "Examining purchase details"
+    task departmentBudget description "Check departmental budget status"
+    task requestChange description "Request for changes and change status"
+    task departmentApprove description "Approve and change status"
+    post {[ self.orgContext.departmentApproved ]}
+    task informPurchaseManager description "Inform purchase manager"
+    task finalPending description "Pending purchase requisition"
+    task finalCheck description "Check details"
+    task cancelFinal description "Cancel and change status"
+    task finalApprove description "Approved and change status"
+    task finalInform description "Inform purchase manager"
+  }
+  role Director {
+    task directorPending description "Pending purchase requisition"
+    task directorCheck description "Check details"
+    task cancelDirector description "Cancel and change status"
+    task directorApprove description "Change status to approved"
+    task informManager description "Inform purchase manager"
+    task requestDirectorApproval description "Change status to director approval"
+    task informDirector description "Inform the Director"
+  }
+  role PurchaseInitiator {
+    goal PurchasePerformed : Achieve description "Purchase actions according to departmental needs"
+    condition {[ self.orgContext.ordered ]}
+    task createRequisition description "Create or update purchase requisition"
+    post {[ self.orgContext.created ]}
+    task createPN description "PN creation"
+    task updatePN description "Enter or update PNs"
+    task estimatedCost description "Updating estimated cost and budget details"
+    task cancelPurchase description "Abort purchase and change status"
+    task supplierStatus description "Update supplier and change status"
+    task informDepartment description "Inform department manager"
+    task initiatorApproval description "Purchase requisition approval"
+  }
+  role PurchaseManager {
+    goal ControlledPurchase : Maintain description "Controlled purchase management"
+    condition {[ not self.orgContext.ordered or self.orgContext.departmentApproved ]}
+    task managerPending description "Pending purchase requisition"
+    task legality description "Legality and total sum check"
+    task createRFP description "Create draft RFP document"
+    task requestThree description "Request more than three quotes"
+    task checkQuotes description "Quotation check"
+    post {[ self.orgContext.quotesChecked ]}
+    task requestTwo description "Request two quotes"
+    task quotationCheck description "Quotation check"
+    post {[ self.orgContext.quotesChecked ]}
+    task updateSupplier description "Update supplier"
+    task prepareCommittee description "Prepare documents for purchase committee"
+    task scheduleCommittee description "Schedule purchase committee"
+    task committeeRecord description "Purchase committee record"
+    task prepareTender description "Prepare RFP document for approval"
+    task scheduleTender description "Schedule tender committee"
+    task tenderCommittee description "Tender committee"
+    task orderPending description "Pending purchase requisition"
+    task createOrder description "Create order according to purchase requisition"
+    post {[ self.orgContext.ordered ]}
+    task orderClosure description "Order creation and purchase closure"
+    task informInitiator description "Inform the initiator"
+  }
+}

@@ -1,0 +1,520 @@
+// Source-preserving control flow with explicit bounded state annotations.
+model PurchaseOrderProcess {
+  pool PurchaseOrderHandling for PurchaseOrderCase {
+    name "PurchaseOrder"
+    lane CEO;
+    lane CFO;
+    lane DepartmentManager;
+    lane Director;
+    lane PurchaseInitiator;
+    lane PurchaseManager;
+  }
+  start caseStarted {
+    name "Purchase request"
+    lane PurchaseInitiator
+    trigger none
+    pre {[ not self.created and not self.departmentApproved and not self.quotesChecked and not self.budgetChecked and not self.executiveApproved and not self.ordered ]}
+    flow createRequisition
+  }
+  gateway requisitionMerge {
+    name "Requisition revision merge"
+    lane PurchaseInitiator
+    type xor
+    flow createRequisition
+  }
+  activity createRequisition {
+    name "Create or update purchase requisition"
+    type task
+    lane PurchaseInitiator
+    post {[ self.created ]}
+    flow needPN
+  }
+  gateway needPN {
+    name "Required to create PN?"
+    lane PurchaseInitiator
+    type xor
+    flow createPN label "Yes"
+    flow pnMerge label "No"
+  }
+  activity createPN {
+    name "PN creation"
+    type task
+    lane PurchaseInitiator
+    flow pnMerge
+  }
+  gateway pnMerge {
+    name "PN merge"
+    lane PurchaseInitiator
+    type xor
+    flow updatePN
+  }
+  activity updatePN {
+    name "Enter or update PNs"
+    type task
+    lane PurchaseInitiator
+    flow estimatedCost
+  }
+  activity estimatedCost {
+    name "Updating estimated cost and budget details"
+    type task
+    lane PurchaseInitiator
+    flow cancel
+  }
+  gateway cancel {
+    name "Reason to cancel?"
+    lane PurchaseInitiator
+    type xor
+    flow cancelPurchase label "Yes"
+    flow supplierStatus label "No"
+  }
+  activity cancelPurchase {
+    name "Abort purchase and change status"
+    type task
+    lane PurchaseInitiator
+    flow endCancelled
+  }
+  end endCancelled {
+    name "Purchase cancelled"
+    lane PurchaseInitiator
+    trigger none
+  }
+  activity supplierStatus {
+    name "Update supplier and change status"
+    type task
+    lane PurchaseInitiator
+    flow informDepartment
+  }
+  activity informDepartment {
+    name "Inform department manager"
+    type task
+    lane PurchaseInitiator
+    flow departmentPending
+  }
+  activity departmentPending {
+    name "Pending purchase requisition"
+    type task
+    lane DepartmentManager
+    flow examineDetails
+  }
+  activity examineDetails {
+    name "Examining purchase details"
+    type task
+    lane DepartmentManager
+    flow departmentBudget
+  }
+  activity departmentBudget {
+    name "Check departmental budget status"
+    type task
+    lane DepartmentManager
+    flow departmentApproved
+  }
+  gateway departmentApproved {
+    name "Approved?"
+    lane DepartmentManager
+    type xor
+    flow departmentApprove label "Yes"
+    flow requestChange label "No"
+  }
+  activity requestChange {
+    name "Request for changes and change status"
+    type task
+    lane DepartmentManager
+    flow requisitionMerge
+  }
+  activity departmentApprove {
+    name "Approve and change status"
+    type task
+    lane DepartmentManager
+    post {[ self.departmentApproved ]}
+    flow informPurchaseManager
+  }
+  activity informPurchaseManager {
+    name "Inform purchase manager"
+    type task
+    lane DepartmentManager
+    flow managerPending
+  }
+  activity managerPending {
+    name "Pending purchase requisition"
+    type task
+    lane PurchaseManager
+    flow legality
+  }
+  activity legality {
+    name "Legality and total sum check"
+    type task
+    lane PurchaseManager
+    flow approvedSupplier
+  }
+  gateway approvedSupplier {
+    name "From approved suppliers?"
+    lane PurchaseManager
+    type xor
+    flow supplierMerge label "Yes"
+    flow amount label "No"
+  }
+  gateway amount {
+    name "Sum of requisition"
+    lane PurchaseManager
+    type xor
+    flow createRFP label "over100000"
+    flow requestThree label "8001to99999"
+    flow requestTwo label "4001to8000"
+    flow quoteMerge label "under4000"
+  }
+  activity createRFP {
+    name "Create draft RFP document"
+    type task
+    lane PurchaseManager
+    flow committeeMerge
+  }
+  activity requestThree {
+    name "Request more than three quotes"
+    type task
+    lane PurchaseManager
+    flow checkQuotes
+  }
+  activity checkQuotes {
+    name "Quotation check"
+    type task
+    lane PurchaseManager
+    post {[ self.quotesChecked ]}
+    flow committeeMerge
+  }
+  activity requestTwo {
+    name "Request two quotes"
+    type task
+    lane PurchaseManager
+    flow quoteMerge
+  }
+  gateway quoteMerge {
+    name "Quotation merge"
+    lane PurchaseManager
+    type xor
+    flow quotationCheck
+  }
+  activity quotationCheck {
+    name "Quotation check"
+    type task
+    lane PurchaseManager
+    post {[ self.quotesChecked ]}
+    flow updateSupplier
+  }
+  activity updateSupplier {
+    name "Update supplier"
+    type task
+    lane PurchaseManager
+    flow supplierMerge
+  }
+  gateway supplierMerge {
+    name "Approved supplier merge"
+    lane PurchaseManager
+    type xor
+    flow cfoMerge
+  }
+  gateway committeeMerge {
+    name "Purchase committee preparation merge"
+    lane PurchaseManager
+    type xor
+    flow prepareCommittee
+  }
+  activity prepareCommittee {
+    name "Prepare documents for purchase committee"
+    type task
+    lane PurchaseManager
+    flow scheduleCommittee
+  }
+  activity scheduleCommittee {
+    name "Schedule purchase committee"
+    type task
+    lane PurchaseManager
+    flow committeeTimer
+  }
+  event committeeTimer {
+    name "Every week"
+    lane PurchaseManager
+    trigger timer
+    direction catching
+    flow committeeRecord
+  }
+  activity committeeRecord {
+    name "Purchase committee record"
+    type task
+    lane PurchaseManager
+    flow needTender
+  }
+  gateway needTender {
+    name "Need a tender?"
+    lane PurchaseManager
+    type xor
+    flow prepareTender label "Yes"
+    flow committeeApproved label "No"
+  }
+  activity prepareTender {
+    name "Prepare RFP document for approval"
+    type task
+    lane PurchaseManager
+    flow scheduleTender
+  }
+  activity scheduleTender {
+    name "Schedule tender committee"
+    type task
+    lane PurchaseManager
+    flow tenderTimer
+  }
+  event tenderTimer {
+    name "Every month or quarter"
+    lane PurchaseManager
+    trigger timer
+    direction catching
+    flow tenderCommittee
+  }
+  activity tenderCommittee {
+    name "Tender committee"
+    type task
+    lane PurchaseManager
+    flow tenderApproved
+  }
+  gateway tenderApproved {
+    name "Approved?"
+    lane PurchaseManager
+    type xor
+    flow committeeMerge label "Yes"
+    flow endTender label "No"
+  }
+  end endTender {
+    name "Tender rejected"
+    lane PurchaseManager
+    trigger none
+  }
+  gateway committeeApproved {
+    name "Approved?"
+    lane PurchaseManager
+    type xor
+    flow cfoMerge label "Yes"
+    flow requireChanges label "No"
+  }
+  gateway requireChanges {
+    name "Require changes?"
+    lane PurchaseManager
+    type xor
+    flow ceoMerge label "Yes"
+    flow endCommittee label "No"
+  }
+  end endCommittee {
+    name "Committee rejected"
+    lane PurchaseManager
+    trigger none
+  }
+  gateway cfoMerge {
+    name "Financial examination merge"
+    lane CFO
+    type xor
+    flow cfoStatus
+  }
+  activity cfoStatus {
+    name "Change status"
+    type task
+    lane CFO
+    flow informFinance
+  }
+  activity informFinance {
+    name "Inform financial manager"
+    type task
+    lane CFO
+    flow ceoPending
+  }
+  gateway ceoMerge {
+    name "Rejected approval merge"
+    lane CFO
+    type xor
+    flow updateCfoDetails
+  }
+  activity updateCfoDetails {
+    name "Update details"
+    type task
+    lane CFO
+    flow modificationDecision
+  }
+  gateway modificationDecision {
+    name "Require initiator update?"
+    lane PurchaseManager
+    type xor
+    flow requisitionMerge label "Yes"
+    flow legality label "No"
+  }
+  activity ceoPending {
+    name "Pending purchase requisition"
+    type task
+    lane CEO
+    flow ceoBudget
+  }
+  activity ceoBudget {
+    name "Legality and budget check"
+    type task
+    lane CEO
+    post {[ self.budgetChecked ]}
+    flow ceoApproved
+  }
+  gateway ceoApproved {
+    name "Approved?"
+    lane CEO
+    type xor
+    flow ceoApprove label "Yes"
+    flow cancelCeo label "No"
+  }
+  activity cancelCeo {
+    name "Cancel and change status"
+    type task
+    lane CEO
+    flow ceoMerge
+  }
+  activity ceoApprove {
+    name "Approve and change status"
+    type task
+    lane CEO
+    post {[ self.executiveApproved ]}
+    flow informCFO
+  }
+  activity informCFO {
+    name "Inform the CFO"
+    type task
+    lane CEO
+    flow directorPending
+  }
+  activity directorPending {
+    name "Pending purchase requisition"
+    type task
+    lane Director
+    flow directorCheck
+  }
+  activity directorCheck {
+    name "Check details"
+    type task
+    lane Director
+    flow directorApproved
+  }
+  gateway directorApproved {
+    name "Approved?"
+    lane Director
+    type xor
+    flow directorAmount label "Yes"
+    flow cancelDirector label "No"
+  }
+  activity cancelDirector {
+    name "Cancel and change status"
+    type task
+    lane Director
+    flow ceoMerge
+  }
+  gateway directorAmount {
+    name "Requisition exceeds 20000 NIS?"
+    lane Director
+    type xor
+    flow directorApprove label "Yes"
+    flow requestDirectorApproval label "No"
+  }
+  activity directorApprove {
+    name "Change status to approved"
+    type task
+    lane Director
+    flow informManager
+  }
+  activity informManager {
+    name "Inform purchase manager"
+    type task
+    lane Director
+    flow orderMerge
+  }
+  activity requestDirectorApproval {
+    name "Change status to director approval"
+    type task
+    lane Director
+    flow informDirector
+  }
+  activity informDirector {
+    name "Inform the Director"
+    type task
+    lane Director
+    flow finalPending
+  }
+  activity finalPending {
+    name "Pending purchase requisition"
+    type task
+    lane DepartmentManager
+    flow finalCheck
+  }
+  activity finalCheck {
+    name "Check details"
+    type task
+    lane DepartmentManager
+    flow finalApproved
+  }
+  gateway finalApproved {
+    name "Approved?"
+    lane DepartmentManager
+    type xor
+    flow finalApprove label "Yes"
+    flow cancelFinal label "No"
+  }
+  activity cancelFinal {
+    name "Cancel and change status"
+    type task
+    lane DepartmentManager
+    flow ceoMerge
+  }
+  activity finalApprove {
+    name "Approved and change status"
+    type task
+    lane DepartmentManager
+    flow finalInform
+  }
+  activity finalInform {
+    name "Inform purchase manager"
+    type task
+    lane DepartmentManager
+    flow orderMerge
+  }
+  gateway orderMerge {
+    name "Order operation merge"
+    lane PurchaseManager
+    type xor
+    flow orderPending
+  }
+  activity orderPending {
+    name "Pending purchase requisition"
+    type task
+    lane PurchaseManager
+    flow createOrder
+  }
+  activity createOrder {
+    name "Create order according to purchase requisition"
+    type task
+    lane PurchaseManager
+    post {[ self.ordered ]}
+    flow orderClosure
+  }
+  activity orderClosure {
+    name "Order creation and purchase closure"
+    type task
+    lane PurchaseManager
+    flow informInitiator
+  }
+  activity informInitiator {
+    name "Inform the initiator"
+    type task
+    lane PurchaseManager
+    flow initiatorApproval
+  }
+  activity initiatorApproval {
+    name "Purchase requisition approval"
+    type task
+    lane PurchaseInitiator
+    flow endOrder
+  }
+  end endOrder {
+    name "Purchase order completed"
+    lane PurchaseInitiator
+    trigger none
+  }
+}

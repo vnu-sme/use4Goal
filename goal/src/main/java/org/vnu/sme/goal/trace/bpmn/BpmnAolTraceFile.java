@@ -58,7 +58,7 @@ public final class BpmnAolTraceFile {
     public static void write(Path file, String aclLabel, AolBpmnTraceRunner.Result runResult) throws IOException {
         StringBuilder out = new StringBuilder();
         out.append("bpmn-trace v1\n");
-        out.append("acl ").append(aclLabel).append("\n\n");
+        out.append("csl ").append(aclLabel).append("\n\n");
         for (AolBpmnTraceRunner.InstanceTrace trace : runResult.traces()) {
             out.append("PROCESS ").append(trace.processId()).append(' ')
                     .append(nz(trace.groupClass())).append(' ')
@@ -109,6 +109,7 @@ public final class BpmnAolTraceFile {
         int i = 0;
         while (i < lines.size()) {
             String line = lines.get(i).strip();
+            if (line.startsWith("csl ")) { aclLabel = line.substring(4).strip(); i++; continue; }
             if (line.startsWith("acl ")) { aclLabel = line.substring(4).strip(); i++; continue; }
             if (line.startsWith("PROCESS ")) break;
             i++;
